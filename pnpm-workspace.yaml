@@ -2,5 +2,7 @@ packages:
   - apps/*
   - libs/*
 allowBuilds:
-  nx: set this to true or false
-  unrs-resolver: set this to true or false
+  '@swc/core': true
+  esbuild: true
+  nx: true
+  unrs-resolver: true

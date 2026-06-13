@@ -2,5 +2,47 @@
   "installation": {
     "version": "22.7.5"
   },
-  "$schema": "./node_modules/nx/schemas/nx-schema.json"
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "plugins": [
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    }
+  ],
+  "targetDefaults": {
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "json": "{workspaceRoot}/tsconfig.json",
+          "fields": [
+            "extends",
+            "files",
+            "include"
+          ]
+        }
+      ]
+    }
+  }
 }
