@@ -1,0 +1,13 @@
+{
+  "name": "node-runtime",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/node-runtime/src",
+  "projectType": "library",
+  "tags": [
+    "type:lib",
+    "scope:runtime",
+    "platform:node"
+  ],
+  "// targets": "to see all targets run: nx show project node-runtime --web",
+  "targets": {}
+}

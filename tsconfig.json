@@ -5,6 +5,15 @@
   "references": [
     {
       "path": "./apps/server"
+    },
+    {
+      "path": "./libs/core"
+    },
+    {
+      "path": "./libs/gpio"
+    },
+    {
+      "path": "./libs/node-runtime"
     }
   ]
 }

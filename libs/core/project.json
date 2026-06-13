@@ -1,0 +1,13 @@
+{
+  "name": "core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/core/src",
+  "projectType": "library",
+  "tags": [
+    "type:lib",
+    "scope:shared",
+    "layer:core"
+  ],
+  "// targets": "to see all targets run: nx show project core --web",
+  "targets": {}
+}

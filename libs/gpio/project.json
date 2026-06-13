@@ -1,0 +1,13 @@
+{
+  "name": "gpio",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/gpio/src",
+  "projectType": "library",
+  "tags": [
+    "type:lib",
+    "scope:hardware",
+    "layer:domain"
+  ],
+  "// targets": "to see all targets run: nx show project gpio --web",
+  "targets": {}
+}
