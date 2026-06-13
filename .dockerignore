@@ -1,0 +1,8 @@
+.git
+.nx/cache
+.nx/installation
+.nx/workspace-data
+.pnpm-store
+node_modules
+dist
+tmp
