@@ -1,0 +1,11 @@
+services:
+  chirimen-server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    image: chirimen-raspi-docker/server:phase1
+    environment:
+      HOST: 0.0.0.0
+      PORT: 33330
+    ports:
+      - "33330:33330"

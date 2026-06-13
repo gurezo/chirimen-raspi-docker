@@ -1,0 +1,10 @@
+
+.pnpm-store
+node_modules
+dist
+tmp
+
+.nx/installation
+.nx/cache
+.nx/workspace-data
+.nx/self-healing
