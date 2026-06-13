@@ -37,6 +37,18 @@ Nx graph は以下で確認できます。
 npx nx graph
 ```
 
+## Nx MCP (Cursor)
+
+Cursor で Nx workspace の context を AI agent に提供するため、`.cursor/mcp.json` に Nx MCP 設定を含めています。
+
+1. Cursor Settings → MCP で `nx-mcp` が有効になっていることを確認する
+2. 反映されない場合は Cursor を再起動する
+3. 以下で MCP コマンドが利用可能か確認できる
+
+```sh
+npx nx mcp --help
+```
+
 ## Docker で起動
 
 ```sh
