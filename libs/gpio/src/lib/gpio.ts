@@ -1,7 +1,9 @@
-export type GpioDirection = 'in' | 'out';
-export type GpioValue = 0 | 1;
-
-export interface GpioPortDescriptor {
-  portNumber: number;
-  direction?: GpioDirection;
-}
+export type { GpioDirection } from './gpio-direction.js';
+export { isGpioDirection } from './gpio-direction.js';
+export type { GpioValue } from './gpio-value.js';
+export { isGpioValue } from './gpio-value.js';
+export type { GpioEdge } from './gpio-edge.js';
+export { isGpioEdge } from './gpio-edge.js';
+export type { GpioPortNumber } from './gpio-port-number.js';
+export { isGpioPortNumber } from './gpio-port-number.js';
+export type { GpioPortDescriptor } from './gpio-port-descriptor.js';
