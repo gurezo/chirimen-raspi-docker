@@ -9,3 +9,9 @@ services:
       PORT: 33330
     ports:
       - "33330:33330"
+    # GPIO access without privileged mode (Raspberry Pi host).
+    # node-web-gpio uses /sys/class/gpio; /dev/gpiomem is exposed for host GPIO access.
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
+    volumes:
+      - /sys/class/gpio:/sys/class/gpio
