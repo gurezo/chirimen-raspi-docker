@@ -141,6 +141,110 @@ describe('GpioSession', () => {
     });
     expect(session.isOpen(17)).toBe(false);
   });
+
+  it('releases an open port and allows re-open', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    await session.open(26, 'in');
+    await session.release(26);
+
+    expect(port.unexport).toHaveBeenCalledTimes(1);
+    expect(session.isOpen(26)).toBe(false);
+
+    await session.open(26, 'out');
+    expect(port.export).toHaveBeenCalledTimes(2);
+    expect(port.export).toHaveBeenLastCalledWith('out');
+    expect(session.isOpen(26)).toBe(true);
+  });
+
+  it('treats release of unopened or already released ports as no-op', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    await expect(session.release(26)).resolves.toBeUndefined();
+    expect(port.unexport).not.toHaveBeenCalled();
+
+    await session.open(26, 'in');
+    await session.release(26);
+    await expect(session.release(26)).resolves.toBeUndefined();
+    expect(port.unexport).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects invalid port number on release', async () => {
+    const session = createGpioSession(createAccessMock(new Map()));
+
+    await expect(session.release(-1)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+    await expect(session.release('26')).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+  });
+
+  it('releaseAll unexports all opened ports', async () => {
+    const port26 = createPortMock(26);
+    const port17 = createPortMock(17);
+    const session = createGpioSession(
+      createAccessMock(
+        new Map([
+          [26, port26],
+          [17, port17],
+        ])
+      )
+    );
+
+    await session.open(26, 'in');
+    await session.open(17, 'out');
+    await session.releaseAll();
+
+    expect(port26.unexport).toHaveBeenCalledTimes(1);
+    expect(port17.unexport).toHaveBeenCalledTimes(1);
+    expect(session.isOpen(26)).toBe(false);
+    expect(session.isOpen(17)).toBe(false);
+  });
+
+  it('maps unexport failures to ChirimenError', async () => {
+    const port = createPortMock(17);
+    (port.unexport as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new InvalidAccessError('unexport denied')
+    );
+    const session = createGpioSession(
+      createAccessMock(new Map([[17, port]]))
+    );
+
+    await session.open(17, 'out');
+    await expect(session.release(17)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: 'unexport denied',
+    });
+    expect(session.isOpen(17)).toBe(true);
+  });
+
+  it('releaseAll clears tracking even when unexport fails', async () => {
+    const port = createPortMock(17);
+    (port.unexport as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new InvalidAccessError('unexport denied')
+    );
+    const session = createGpioSession(
+      createAccessMock(new Map([[17, port]]))
+    );
+
+    await session.open(17, 'out');
+    await expect(session.releaseAll()).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: 'unexport denied',
+    });
+    expect(session.isOpen(17)).toBe(false);
+  });
 });
 
 describe('NodeWebGpioPortAdapter.export direction validation', () => {
