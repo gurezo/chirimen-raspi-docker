@@ -104,6 +104,27 @@ export class NodeWebGpioPortAdapter implements GpioPort {
   }
 
   async write(value: GpioValue): Promise<void> {
+    if (!isGpioValue(value)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid GPIO value: ${String(value)}`
+      );
+    }
+
+    if (!this.exported) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `GPIO port ${this.portNumber} is not exported`
+      );
+    }
+
+    if (this.direction !== 'out') {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `GPIO port ${this.portNumber} direction is '${this.direction}', expected 'out' for write`
+      );
+    }
+
     try {
       await this.nativePort.write(value);
     } catch (error) {

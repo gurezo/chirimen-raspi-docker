@@ -55,6 +55,9 @@ describe('NodeWebGpioPortAdapter', () => {
     expect(port.exported).toBe(true);
 
     await expect(port.read()).resolves.toBe(0);
+
+    await port.export('out');
+    expect(port.direction).toBe('out');
     await port.write(1);
     expect(nativePort.write).toHaveBeenCalledWith(1);
 
