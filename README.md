@@ -182,11 +182,22 @@ getent group i2c
 
 I2C が無効な場合、host で有効化してから container を起動します。
 
+#### script で有効化する（推奨）
+
+```sh
+chmod +x scripts/enable-i2c.sh
+sudo ./scripts/enable-i2c.sh
+sudo reboot
+sudo ./scripts/enable-i2c.sh --check
+```
+
+`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認します。script は `raspi-config` で I2C を有効化し、必要なら boot config に `dtparam=i2c_arm=on` を追加します。**reboot が必要**です。
+
+#### 手動で有効化する
+
 1. `sudo raspi-config` → Interface Options → I2C → Enable
 2. または `/boot/firmware/config.txt`（Bookworm）に `dtparam=i2c_arm=on` を追加
 3. reboot 後、`ls -l /dev/i2c-1` で device を確認
-
-自動化 script（`scripts/enable-i2c.sh`）は別 Issue（#28）の対象です。
 
 ### 起動と検証
 
