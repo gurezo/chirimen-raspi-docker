@@ -13,6 +13,9 @@
       "path": "./libs/gpio"
     },
     {
+      "path": "./libs/i2c"
+    },
+    {
       "path": "./libs/node-runtime"
     }
   ]
