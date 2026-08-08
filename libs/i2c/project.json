@@ -1,0 +1,23 @@
+{
+  "name": "i2c",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/i2c/src",
+  "projectType": "library",
+  "tags": [
+    "type:lib",
+    "scope:hardware",
+    "layer:domain"
+  ],
+  "// targets": "to see all targets run: nx show project i2c --web",
+  "targets": {
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
+      "options": {
+        "reportsDirectory": "../../coverage/libs/i2c"
+      }
+    }
+  }
+}
