@@ -83,6 +83,37 @@ export class I2cSession {
     this.#opened.set(key, device);
     return device;
   }
+
+  /**
+   * 指定 I2C slave device を close する。
+   * 未 open / 既 close の場合は idempotent に no-op とする。
+   * node-web-i2c に native close が無いため、session 追跡の解除のみ行う。
+   */
+  async close(portNumber: unknown, slaveAddress: unknown): Promise<void> {
+    if (!isI2CPortNumber(portNumber)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C port number: ${String(portNumber)}`
+      );
+    }
+
+    if (!isI2CSlaveAddress(slaveAddress)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C slave address: ${String(slaveAddress)}`
+      );
+    }
+
+    this.#opened.delete(toOpenedDeviceKey(portNumber, slaveAddress));
+  }
+
+  /**
+   * session 内の open 済み I2C device をすべて解放する。
+   * client disconnect 時の cleanup 用 API。
+   */
+  async closeAll(): Promise<void> {
+    this.#opened.clear();
+  }
 }
 
 /** I2CAccess から session を生成する */
