@@ -4,5 +4,6 @@ packages:
 allowBuilds:
   '@swc/core': true
   esbuild: true
+  i2c-bus: true
   nx: true
   unrs-resolver: true

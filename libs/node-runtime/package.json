@@ -18,7 +18,9 @@
   "dependencies": {
     "core": "workspace:*",
     "gpio": "workspace:*",
+    "i2c": "workspace:*",
     "node-web-gpio": "^1.1.72",
+    "node-web-i2c": "^1.1.80",
     "tslib": "^2.3.0"
   }
 }
