@@ -7,3 +7,10 @@ export { isGpioEdge } from './gpio-edge.js';
 export type { GpioPortNumber } from './gpio-port-number.js';
 export { isGpioPortNumber } from './gpio-port-number.js';
 export type { GpioPortDescriptor } from './gpio-port-descriptor.js';
+export type { GpioPort } from './gpio-port.js';
+export type {
+  GpioAccess,
+  GpioChangeEvent,
+  GpioChangeEventHandler,
+  GpioPortMap,
+} from './gpio-access.js';
