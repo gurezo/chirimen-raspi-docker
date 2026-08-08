@@ -9,9 +9,11 @@ services:
       PORT: 33330
     ports:
       - "33330:33330"
-    # GPIO access without privileged mode (Raspberry Pi host).
+    # GPIO / I2C access without privileged mode (Raspberry Pi host).
     # node-web-gpio uses /sys/class/gpio; /dev/gpiomem is exposed for host GPIO access.
+    # node-web-i2c uses /dev/i2c-1 for the primary I2C bus.
     devices:
       - /dev/gpiomem:/dev/gpiomem
+      - /dev/i2c-1:/dev/i2c-1
     volumes:
       - /sys/class/gpio:/sys/class/gpio
