@@ -7,6 +7,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 33330;
 async function main(): Promise<void> {
   const app = express();
   const runtimeContext = await createNodeRuntimeContext();
+  let shuttingDown = false;
 
   app.get('/', (req, res) => {
     res.json({
@@ -19,8 +20,33 @@ async function main(): Promise<void> {
     res.json(runtimeContext.health);
   });
 
-  app.listen(port, host, () => {
+  const server = app.listen(port, host, () => {
     console.log(`[ ready ] http://${host}:${port}`);
+  });
+
+  const shutdown = async (signal: string): Promise<void> => {
+    if (shuttingDown) {
+      return;
+    }
+    shuttingDown = true;
+    console.log(`[ shutdown ] received ${signal}, cleaning up GPIO`);
+
+    try {
+      await runtimeContext.cleanup();
+    } catch (error: unknown) {
+      console.error('[ shutdown ] GPIO cleanup failed', error);
+    }
+
+    server.close(() => {
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', () => {
+    void shutdown('SIGINT');
+  });
+  process.on('SIGTERM', () => {
+    void shutdown('SIGTERM');
   });
 }
 
