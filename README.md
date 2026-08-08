@@ -14,7 +14,7 @@ Phase 1 では、以下の最小構成を提供します。
 - `docker/server/Dockerfile`: server 用 Docker image
 - `compose.yaml`: server 起動用 Docker Compose 設定
 
-現時点では GPIO / I2C の実ハードウェア操作は未実装です。Docker Compose で server を起動し、health endpoint の応答を確認できる状態を Phase 1 の対象にしています。
+GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C の実ハードウェア接続は別 Issue の対象です。
 
 ## 必要環境
 
@@ -70,3 +70,51 @@ curl http://localhost:33330/health
   "version": "0.0.1"
 }
 ```
+
+## Raspberry Pi 上での GPIO（Docker）
+
+`compose.yaml` は `privileged: true` を使わず、次だけを container に渡します。
+
+- `devices`: `/dev/gpiomem`
+- `volumes`: `/sys/class/gpio`（`node-web-gpio` が sysfs 経由で GPIO を操作するため）
+
+### host の事前確認
+
+Raspberry Pi 実機で次を確認します。
+
+```sh
+ls -l /dev/gpiomem
+ls -l /sys/class/gpio
+getent group gpio
+```
+
+- `/dev/gpiomem` と `/sys/class/gpio` が存在すること
+- `gpio` グループの GID を控えておくこと（将来 container を non-root 化する際に `group_add` で合わせる）
+
+現在の server image は root で起動するため、当面 `group_add` は必須ではありません。
+
+### 起動と検証
+
+```sh
+docker compose up --build
+```
+
+container 内で device / sysfs が見えること:
+
+```sh
+docker compose exec chirimen-server ls -l /dev/gpiomem /sys/class/gpio
+```
+
+`node-web-gpio` の初期化（`requestGPIOAccess()`）が例外なく完了すること。可能なら 1 pin の `export` / `write` / `unexport` まで試し、Permission denied が出ないことを確認します。
+
+### Raspberry Pi 3 / 4 と 5 の違い
+
+- **Pi 3 / 4**: `/dev/gpiomem` が一般的です。`compose.yaml` の設定で十分な想定です。
+- **Pi 5**: `/dev/gpiomem` が無い、または `/dev/gpiochip*`（例: `gpiochip0`）が主になる場合があります。不足する場合は host で `ls -l /dev/gpiomem* /dev/gpiochip*` を確認し、必要な device を compose の `devices` に追加してください。存在しない device を並べると Pi 3 / 4 で起動に失敗するため、共通の `compose.yaml` には入れていません。
+
+### 非 Pi（macOS など）での注意
+
+`/dev/gpiomem` が無い環境では `docker compose up` が失敗します。GPIO の検証は Raspberry Pi 上で行ってください。非 Pi では次のいずれかで TypeScript / server 開発を続けられます。
+
+- `compose.yaml` の `devices` / `volumes` を一時的に外す
+- `npx nx build server` やローカル実行（`nx serve` 等）を使う
