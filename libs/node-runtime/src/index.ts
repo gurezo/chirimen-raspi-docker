@@ -10,3 +10,8 @@ export { NodeWebI2CPortAdapter } from './lib/i2c/i2c-port-adapter.js';
 export { NodeWebI2CSlaveDeviceAdapter } from './lib/i2c/i2c-slave-device-adapter.js';
 export { mapI2cError } from './lib/i2c/map-i2c-error.js';
 export { I2cSession, createI2cSession } from './lib/i2c/i2c-session.js';
+export {
+  I2C_SCAN_ADDRESS_MAX,
+  I2C_SCAN_ADDRESS_MIN,
+  scanI2cPort,
+} from './lib/i2c/scan-i2c-port.js';
