@@ -1,3 +1,7 @@
+/**
+ * I2C domain public API.
+ * Node / Browser 固有の実装詳細は含めない。
+ */
 export type { I2CPortNumber } from './lib/i2c-port-number.js';
 export { isI2CPortNumber } from './lib/i2c-port-number.js';
 export type { I2CSlaveAddress } from './lib/i2c-slave-address.js';
