@@ -17,23 +17,26 @@ vi.mock('node-web-gpio', async (importOriginal) => {
 });
 
 function createNativePortMock(portNumber: number) {
-  return {
+  const port = {
     portNumber,
     portName: `GPIO${portNumber}`,
     pinName: `PIN${portNumber}`,
     exported: false,
-    direction: 'out' as const,
-    export: vi.fn(async () => {
-      // no-op for unit tests
+    direction: '' as '' | 'in' | 'out',
+    export: vi.fn(async (direction: 'in' | 'out') => {
+      port.direction = direction;
+      port.exported = true;
     }),
     unexport: vi.fn(async () => {
-      // no-op for unit tests
+      port.exported = false;
+      port.direction = '';
     }),
     read: vi.fn(async () => 0 as const),
     write: vi.fn(async () => {
       // no-op for unit tests
     }),
   };
+  return port;
 }
 
 describe('NodeWebGpioPortAdapter', () => {
@@ -44,10 +47,12 @@ describe('NodeWebGpioPortAdapter', () => {
     expect(port.portNumber).toBe(26);
     expect(port.portName).toBe('GPIO26');
     expect(port.pinName).toBe('PIN26');
-    expect(port.direction).toBe('out');
+    expect(port.exported).toBe(false);
 
     await port.export('in');
     expect(nativePort.export).toHaveBeenCalledWith('in');
+    expect(port.direction).toBe('in');
+    expect(port.exported).toBe(true);
 
     await expect(port.read()).resolves.toBe(0);
     await port.write(1);
@@ -59,13 +64,15 @@ describe('NodeWebGpioPortAdapter', () => {
 
   it('maps native errors through mapGpioError', async () => {
     const nativePort = createNativePortMock(17);
-    nativePort.read.mockRejectedValueOnce(new InvalidAccessError('not exported'));
+    nativePort.exported = true;
+    nativePort.direction = 'in';
+    nativePort.read.mockRejectedValueOnce(new InvalidAccessError('native failure'));
     const port = new NodeWebGpioPortAdapter(nativePort as never);
 
     await expect(port.read()).rejects.toMatchObject({
       name: 'ChirimenError',
       code: 'InvalidAccess',
-      message: 'not exported',
+      message: 'native failure',
     });
   });
 });
