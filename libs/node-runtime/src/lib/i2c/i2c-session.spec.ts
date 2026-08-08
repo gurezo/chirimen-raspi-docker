@@ -206,4 +206,37 @@ describe('I2cSession', () => {
     await session.open(1, 0x48);
     expect(session.isOpen(1, 0x48)).toBe(true);
   });
+
+  it('scan returns responding addresses without tracking them', async () => {
+    const responding = new Set([0x48]);
+    const port = createPortMock(1);
+    (port.open as ReturnType<typeof vi.fn>).mockImplementation(
+      async (slaveAddress: number) => {
+        if (!responding.has(slaveAddress)) {
+          throw new Error('no device');
+        }
+        return createSlaveDeviceMock(slaveAddress);
+      }
+    );
+    const session = createI2cSession(createAccessMock(new Map([[1, port]])));
+
+    await expect(session.scan(1)).resolves.toEqual([0x48]);
+    expect(session.isOpen(1, 0x48)).toBe(false);
+  });
+
+  it('scan rejects invalid or missing port', async () => {
+    const session = createI2cSession(
+      createAccessMock(new Map([[1, createPortMock(1)]]))
+    );
+
+    await expect(session.scan(-1)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+    await expect(session.scan(2)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: 'I2C port 2 is not available',
+    });
+  });
 });

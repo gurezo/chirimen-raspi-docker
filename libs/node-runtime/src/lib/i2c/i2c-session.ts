@@ -8,6 +8,7 @@ import {
   type I2CSlaveDevice,
 } from 'i2c';
 import { mapI2cError } from './map-i2c-error.js';
+import { scanI2cPort } from './scan-i2c-port.js';
 
 type OpenedDeviceKey = `${I2CPortNumber}:${I2CSlaveAddress}`;
 
@@ -113,6 +114,29 @@ export class I2cSession {
    */
   async closeAll(): Promise<void> {
     this.#opened.clear();
+  }
+
+  /**
+   * 指定 I2C port 上で応答する slave address を走査する。
+   * scan 中の open は session 追跡に載せない（一時 probe）。
+   */
+  async scan(portNumber: unknown): Promise<I2CSlaveAddress[]> {
+    if (!isI2CPortNumber(portNumber)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C port number: ${String(portNumber)}`
+      );
+    }
+
+    const port = this.#access.ports.get(portNumber);
+    if (!port) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `I2C port ${portNumber} is not available`
+      );
+    }
+
+    return scanI2cPort(port);
   }
 }
 

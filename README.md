@@ -15,7 +15,7 @@ Phase 1 では、以下の最小構成を提供します。
 - `docker/server/Dockerfile`: server 用 Docker image
 - `compose.yaml`: server 起動用 Docker Compose 設定
 
-GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）を管理できます。Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
+GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）と scan を管理できます。Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
 
 ### I2C read / write と node-web-i2c の対応
 
@@ -31,6 +31,29 @@ domain `I2CSlaveDevice`（CHIRIMEN polyfill 互換）の各操作は、同名の
 | `writeByte(byte)` | `writeByte(byte)` | 同上。domain は `void` |
 | `readBytes(length)` | `readBytes(length)` | `length` は 1–127。戻り値 `Uint8Array` |
 | `writeBytes(bytes)` | `writeBytes(bytes)` | 各要素を byte として検証。戻り値 `Uint8Array` |
+
+### I2C Scan
+
+Node Runtime（`libs/node-runtime`）に I2C bus 上の応答 slave address を走査する API があります（Web I2C 仕様外 / chirimen-server 参照実装互換）。
+
+- 走査範囲: `0x03`–`0x77`（`I2C_SCAN_ADDRESS_MIN` / `I2C_SCAN_ADDRESS_MAX`）
+- probe: 各 address で `open` + `writeByte(0x00)`。両方成功した address を返す
+- address 単位の失敗は無視（応答なし）。不正 / 未存在 port は `ChirimenError(InvalidAccess)`
+- scan 中の open は `I2cSession` の opened map に載せない
+
+```ts
+import { createI2cSession, requestNodeI2CAccess, scanI2cPort } from 'node-runtime';
+
+const access = await requestNodeI2CAccess();
+const session = createI2cSession(access);
+const addresses = await session.scan(1); // I2CSlaveAddress[]
+
+// または port を直接渡す
+const port = access.ports.get(1);
+if (port) {
+  const found = await scanI2cPort(port);
+}
+```
 
 ## 必要環境
 
