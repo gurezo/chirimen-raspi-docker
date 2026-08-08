@@ -15,7 +15,7 @@ Phase 1 では、以下の最小構成を提供します。
 - `docker/server/Dockerfile`: server 用 Docker image
 - `compose.yaml`: server 起動用 Docker Compose 設定
 
-GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
+GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）を管理できます。Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
 
 ## 必要環境
 

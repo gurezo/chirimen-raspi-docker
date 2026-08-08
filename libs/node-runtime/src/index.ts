@@ -9,3 +9,4 @@ export { NodeWebI2CAccessAdapter } from './lib/i2c/i2c-access-adapter.js';
 export { NodeWebI2CPortAdapter } from './lib/i2c/i2c-port-adapter.js';
 export { NodeWebI2CSlaveDeviceAdapter } from './lib/i2c/i2c-slave-device-adapter.js';
 export { mapI2cError } from './lib/i2c/map-i2c-error.js';
+export { I2cSession, createI2cSession } from './lib/i2c/i2c-session.js';
