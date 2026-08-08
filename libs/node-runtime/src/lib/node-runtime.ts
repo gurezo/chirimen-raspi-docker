@@ -1,20 +1,60 @@
 import { createRuntimeHealth, type RuntimeHealth } from 'core';
-import type { GpioPortDescriptor } from 'gpio';
+import {
+  isGpioDirection,
+  type GpioAccess,
+  type GpioPortDescriptor,
+} from 'gpio';
+import { requestNodeGpioAccess } from './gpio/request-node-gpio-access.js';
 
 export interface NodeRuntimeContext {
   health: RuntimeHealth;
   gpio: {
     available: boolean;
     ports: GpioPortDescriptor[];
+    access?: GpioAccess;
   };
 }
 
-export function createNodeRuntimeContext(): NodeRuntimeContext {
+function toGpioPortDescriptors(access: GpioAccess): GpioPortDescriptor[] {
+  const descriptors: GpioPortDescriptor[] = [];
+  for (const [portNumber, port] of access.ports) {
+    const descriptor: GpioPortDescriptor = { portNumber };
+    if (isGpioDirection(port.direction)) {
+      descriptor.direction = port.direction;
+    }
+    descriptors.push(descriptor);
+  }
+  return descriptors;
+}
+
+function createUnavailableGpioContext(): NodeRuntimeContext['gpio'] {
   return {
-    health: createRuntimeHealth('chirimen-raspi-docker-server'),
-    gpio: {
-      available: false,
-      ports: [],
-    },
+    available: false,
+    ports: [],
   };
+}
+
+/**
+ * Node Runtime コンテキストを生成する。
+ * GPIO が利用可能な環境では port 一覧を取得し、失敗時は unavailable stub にフォールバックする。
+ */
+export async function createNodeRuntimeContext(): Promise<NodeRuntimeContext> {
+  const health = createRuntimeHealth('chirimen-raspi-docker-server');
+
+  try {
+    const access = await requestNodeGpioAccess();
+    return {
+      health,
+      gpio: {
+        available: true,
+        ports: toGpioPortDescriptors(access),
+        access,
+      },
+    };
+  } catch {
+    return {
+      health,
+      gpio: createUnavailableGpioContext(),
+    };
+  }
 }
