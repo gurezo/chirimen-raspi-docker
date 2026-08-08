@@ -17,6 +17,21 @@ Phase 1 では、以下の最小構成を提供します。
 
 GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）を管理できます。Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
 
+### I2C read / write と node-web-i2c の対応
+
+domain `I2CSlaveDevice`（CHIRIMEN polyfill 互換）の各操作は、同名の `node-web-i2c` API へ委譲します。
+
+| domain / polyfill | node-web-i2c | 備考 |
+| --- | --- | --- |
+| `read8(reg)` | `read8(reg)` | レジスタ 8-bit 読み取り |
+| `read16(reg)` | `read16(reg)` | レジスタ 16-bit 読み取り |
+| `write8(reg, value)` | `write8(reg, value)` | native の戻り値 `number` は破棄し `void` |
+| `write16(reg, value)` | `write16(reg, value)` | 同上 |
+| `readByte()` | `readByte()` | レジスタ無し raw 1 byte（Web I2C 仕様外） |
+| `writeByte(byte)` | `writeByte(byte)` | 同上。domain は `void` |
+| `readBytes(length)` | `readBytes(length)` | `length` は 1–127。戻り値 `Uint8Array` |
+| `writeBytes(bytes)` | `writeBytes(bytes)` | 各要素を byte として検証。戻り値 `Uint8Array` |
+
 ## 必要環境
 
 - Node.js
