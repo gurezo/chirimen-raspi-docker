@@ -9,8 +9,8 @@ import {
 import { mapGpioError } from './map-gpio-error.js';
 
 /**
- * 同一 session 内で open 済み GPIO port を追跡し、重複 open を拒否する。
- * release / cleanup は後続 Issue で扱う。
+ * 同一 session 内で open 済み GPIO port を追跡し、
+ * open / release / releaseAll で lifecycle を管理する。
  */
 export class GpioSession {
   readonly #access: GpioAccess;
@@ -67,6 +67,49 @@ export class GpioSession {
 
     this.#opened.set(portNumber, port);
     return port;
+  }
+
+  /**
+   * 指定 GPIO port を release（unexport）する。
+   * 未 open / 既 release の場合は idempotent に no-op とする。
+   */
+  async release(portNumber: unknown): Promise<void> {
+    if (!isGpioPortNumber(portNumber)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid GPIO port number: ${String(portNumber)}`
+      );
+    }
+
+    const port = this.#opened.get(portNumber);
+    if (!port) {
+      return;
+    }
+
+    try {
+      await port.unexport();
+    } catch (error) {
+      throw mapGpioError(error);
+    }
+
+    this.#opened.delete(portNumber);
+  }
+
+  /**
+   * session 内の open 済み GPIO をすべて解放する。
+   * client disconnect 時の cleanup 用 API。
+   */
+  async releaseAll(): Promise<void> {
+    const opened = [...this.#opened.entries()];
+    for (const [portNumber, port] of opened) {
+      try {
+        await port.unexport();
+      } catch (error) {
+        throw mapGpioError(error);
+      } finally {
+        this.#opened.delete(portNumber);
+      }
+    }
   }
 }
 

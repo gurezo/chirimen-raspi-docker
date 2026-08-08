@@ -4,6 +4,7 @@ import {
   type GpioAccess,
   type GpioPortDescriptor,
 } from 'gpio';
+import { mapGpioError } from './gpio/map-gpio-error.js';
 import { requestNodeGpioAccess } from './gpio/request-node-gpio-access.js';
 
 export interface NodeRuntimeContext {
@@ -13,6 +14,7 @@ export interface NodeRuntimeContext {
     ports: GpioPortDescriptor[];
     access?: GpioAccess;
   };
+  cleanup(): Promise<void>;
 }
 
 function toGpioPortDescriptors(access: GpioAccess): GpioPortDescriptor[] {
@@ -34,6 +36,18 @@ function createUnavailableGpioContext(): NodeRuntimeContext['gpio'] {
   };
 }
 
+async function cleanupGpioAccess(access?: GpioAccess): Promise<void> {
+  if (!access) {
+    return;
+  }
+
+  try {
+    await access.unexportAll();
+  } catch (error) {
+    throw mapGpioError(error);
+  }
+}
+
 /**
  * Node Runtime コンテキストを生成する。
  * GPIO が利用可能な環境では port 一覧を取得し、失敗時は unavailable stub にフォールバックする。
@@ -50,11 +64,17 @@ export async function createNodeRuntimeContext(): Promise<NodeRuntimeContext> {
         ports: toGpioPortDescriptors(access),
         access,
       },
+      async cleanup() {
+        await cleanupGpioAccess(access);
+      },
     };
   } catch {
     return {
       health,
       gpio: createUnavailableGpioContext(),
+      async cleanup() {
+        await cleanupGpioAccess();
+      },
     };
   }
 }
