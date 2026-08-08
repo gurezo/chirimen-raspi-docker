@@ -15,6 +15,9 @@
       "path": "../gpio/tsconfig.lib.json"
     },
     {
+      "path": "../i2c/tsconfig.lib.json"
+    },
+    {
       "path": "../core/tsconfig.lib.json"
     }
   ]

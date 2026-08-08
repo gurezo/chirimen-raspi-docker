@@ -1,17 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createNodeRuntimeContext } from './node-runtime.js';
 
-const { requestNodeGpioAccessMock } = vi.hoisted(() => ({
-  requestNodeGpioAccessMock: vi.fn(),
-}));
+const { requestNodeGpioAccessMock, requestNodeI2CAccessMock } = vi.hoisted(
+  () => ({
+    requestNodeGpioAccessMock: vi.fn(),
+    requestNodeI2CAccessMock: vi.fn(),
+  })
+);
 
 vi.mock('./gpio/request-node-gpio-access.js', () => ({
   requestNodeGpioAccess: requestNodeGpioAccessMock,
 }));
 
+vi.mock('./i2c/request-node-i2c-access.js', () => ({
+  requestNodeI2CAccess: requestNodeI2CAccessMock,
+}));
+
 describe('createNodeRuntimeContext', () => {
   beforeEach(() => {
     requestNodeGpioAccessMock.mockReset();
+    requestNodeI2CAccessMock.mockReset();
+    requestNodeI2CAccessMock.mockRejectedValue(new Error('no i2c'));
   });
 
   it('sets available ports when GPIO access succeeds', async () => {
@@ -39,6 +48,7 @@ describe('createNodeRuntimeContext', () => {
     expect(context.gpio.available).toBe(true);
     expect(context.gpio.ports).toEqual([{ portNumber: 26, direction: 'out' }]);
     expect(context.gpio.access).toBeDefined();
+    expect(context.i2c.available).toBe(false);
   });
 
   it('falls back to unavailable stub when GPIO access fails', async () => {
@@ -48,6 +58,40 @@ describe('createNodeRuntimeContext', () => {
     expect(context.gpio.available).toBe(false);
     expect(context.gpio.ports).toEqual([]);
     expect(context.gpio.access).toBeUndefined();
+  });
+
+  it('sets available ports when I2C access succeeds', async () => {
+    requestNodeGpioAccessMock.mockRejectedValueOnce(new Error('no gpio'));
+    requestNodeI2CAccessMock.mockReset();
+    requestNodeI2CAccessMock.mockResolvedValueOnce({
+      ports: new Map([
+        [
+          1,
+          {
+            portNumber: 1,
+            portName: 'I2C1',
+            pinName: '',
+            open: vi.fn(),
+          },
+        ],
+      ]),
+    });
+
+    const context = await createNodeRuntimeContext();
+    expect(context.i2c.available).toBe(true);
+    expect(context.i2c.ports).toEqual([{ portNumber: 1, portName: 'I2C1' }]);
+    expect(context.i2c.access).toBeDefined();
+  });
+
+  it('falls back to unavailable stub when I2C access fails', async () => {
+    requestNodeGpioAccessMock.mockRejectedValueOnce(new Error('no gpio'));
+    requestNodeI2CAccessMock.mockReset();
+    requestNodeI2CAccessMock.mockRejectedValueOnce(new Error('no i2c'));
+
+    const context = await createNodeRuntimeContext();
+    expect(context.i2c.available).toBe(false);
+    expect(context.i2c.ports).toEqual([]);
+    expect(context.i2c.access).toBeUndefined();
   });
 
   it('cleanup calls unexportAll when GPIO is available', async () => {

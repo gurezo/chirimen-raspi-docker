@@ -4,3 +4,8 @@ export { NodeWebGpioAccessAdapter } from './lib/gpio/gpio-access-adapter.js';
 export { NodeWebGpioPortAdapter } from './lib/gpio/gpio-port-adapter.js';
 export { mapGpioError } from './lib/gpio/map-gpio-error.js';
 export { GpioSession, createGpioSession } from './lib/gpio/gpio-session.js';
+export { requestNodeI2CAccess } from './lib/i2c/request-node-i2c-access.js';
+export { NodeWebI2CAccessAdapter } from './lib/i2c/i2c-access-adapter.js';
+export { NodeWebI2CPortAdapter } from './lib/i2c/i2c-port-adapter.js';
+export { NodeWebI2CSlaveDeviceAdapter } from './lib/i2c/i2c-slave-device-adapter.js';
+export { mapI2cError } from './lib/i2c/map-i2c-error.js';
