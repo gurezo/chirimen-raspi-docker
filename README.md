@@ -15,7 +15,7 @@ Phase 1 では、以下の最小構成を提供します。
 - `docker/server/Dockerfile`: server 用 Docker image
 - `compose.yaml`: server 起動用 Docker Compose 設定
 
-GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）と scan を管理できます。Docker への `/dev/i2c-1` 通しは別 Issue の対象です。
+GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。Docker Compose では `/dev/gpiomem` と `/sys/class/gpio` を container に通し、Raspberry Pi 上で GPIO を利用できます。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）と scan を管理できます。Docker Compose では `/dev/i2c-1` も container に通し、Raspberry Pi 上で I2C bus を利用できます。
 
 ### I2C read / write と node-web-i2c の対応
 
@@ -153,7 +153,62 @@ docker compose exec chirimen-server ls -l /dev/gpiomem /sys/class/gpio
 
 ### 非 Pi（macOS など）での注意
 
-`/dev/gpiomem` が無い環境では `docker compose up` が失敗します。GPIO の検証は Raspberry Pi 上で行ってください。非 Pi では次のいずれかで TypeScript / server 開発を続けられます。
+`/dev/gpiomem` や `/dev/i2c-1` が無い環境では `docker compose up` が失敗します。GPIO / I2C の検証は Raspberry Pi 上で行ってください。非 Pi では次のいずれかで TypeScript / server 開発を続けられます。
 
 - `compose.yaml` の `devices` / `volumes` を一時的に外す
 - `npx nx build server` やローカル実行（`nx serve` 等）を使う
+
+## Raspberry Pi 上での I2C（Docker）
+
+`compose.yaml` は `privileged: true` を使わず、次を container に渡します。
+
+- `devices`: `/dev/i2c-1`（`node-web-i2c` / `i2c-bus` が host の I2C bus を open するため）
+
+### host の事前確認
+
+Raspberry Pi 実機で次を確認します。
+
+```sh
+ls -l /dev/i2c-1
+getent group i2c
+```
+
+- `/dev/i2c-1` が存在すること
+- `i2c` グループの GID を控えておくこと（将来 container を non-root 化する際に `group_add` で合わせる）
+
+現在の server image は root で起動するため、当面 `group_add` は必須ではありません。
+
+### host で I2C を有効化する
+
+I2C が無効な場合、host で有効化してから container を起動します。
+
+1. `sudo raspi-config` → Interface Options → I2C → Enable
+2. または `/boot/firmware/config.txt`（Bookworm）に `dtparam=i2c_arm=on` を追加
+3. reboot 後、`ls -l /dev/i2c-1` で device を確認
+
+自動化 script（`scripts/enable-i2c.sh`）は別 Issue（#28）の対象です。
+
+### 起動と検証
+
+```sh
+docker compose up --build
+```
+
+container 内で device が見えること:
+
+```sh
+docker compose exec chirimen-server ls -l /dev/i2c-1
+```
+
+`requestNodeI2CAccess()` が例外なく完了し、port `1` の `open` が Permission denied にならないこと。可能なら `I2cSession.scan(1)` や slave device の read / write まで試してください。
+
+### device が存在しない場合
+
+`/dev/i2c-1` が host に無いと `docker compose up` は起動に失敗します（GPIO の `/dev/gpiomem` と同様）。I2C 未有効・非 Pi 環境では `compose.yaml` の `devices` から `/dev/i2c-1` を外すか、Nx ローカル実行で開発を続けてください。
+
+Node Runtime 側では I2C device 欠如時、`requestNodeI2CAccess()` が失敗し `NodeRuntimeContext.i2c.available` が `false` になります（server は起動し続けますが、I2C 操作は利用できません）。
+
+### Raspberry Pi 3 / 4 と 5
+
+- **Pi 3 / 4 / 5**: 標準の primary bus は `/dev/i2c-1` です。`compose.yaml` の設定で十分な想定です。
+- 別名 bus（例: `/dev/i2c-0`）が必要な場合は host で `ls -l /dev/i2c-*` を確認し、必要な device を compose の `devices` に追加してください。存在しない device を並べると起動に失敗するため、共通の `compose.yaml` には `/dev/i2c-1` のみ入れています。
