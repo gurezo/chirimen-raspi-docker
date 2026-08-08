@@ -52,6 +52,13 @@ export class NodeWebGpioPortAdapter implements GpioPort {
   }
 
   async export(direction: GpioDirection): Promise<void> {
+    if (!isGpioDirection(direction)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid GPIO direction: ${String(direction)}`
+      );
+    }
+
     try {
       await this.nativePort.export(direction);
     } catch (error) {
