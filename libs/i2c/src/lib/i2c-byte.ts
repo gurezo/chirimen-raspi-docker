@@ -23,3 +23,16 @@ export function isI2CWord(value: unknown): value is I2CWord {
     value <= 0xffff
   );
 }
+
+/** `readBytes` の length（1–127。CHIRIMEN polyfill 上限に合わせる） */
+export type I2CBytesLength = number;
+
+/** `value` が有効な I2C bytes length かどうか */
+export function isI2CBytesLength(value: unknown): value is I2CBytesLength {
+  return (
+    typeof value === 'number' &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= 127
+  );
+}

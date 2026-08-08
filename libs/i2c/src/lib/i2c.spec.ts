@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   isI2CByte,
+  isI2CBytesLength,
   isI2CPortNumber,
   isI2CRegisterNumber,
   isI2CSlaveAddress,
@@ -48,10 +49,18 @@ describe('i2c domain guards', () => {
     expect(isI2CWord(0xffff)).toBe(true);
     expect(isI2CWord(0x10000)).toBe(false);
   });
+
+  it('accepts bytes length in 1–127', () => {
+    expect(isI2CBytesLength(1)).toBe(true);
+    expect(isI2CBytesLength(127)).toBe(true);
+    expect(isI2CBytesLength(0)).toBe(false);
+    expect(isI2CBytesLength(128)).toBe(false);
+    expect(isI2CBytesLength(1.5)).toBe(false);
+  });
 });
 
 describe('I2CPort / I2CSlaveDevice contract', () => {
-  it('supports open, write8, and read8 via a mock port', async () => {
+  it('supports open, register, and byte operations via a mock port', async () => {
     const port = createMockI2CPort(1);
     const device = await port.open(0x48);
 
@@ -62,6 +71,15 @@ describe('I2CPort / I2CSlaveDevice contract', () => {
 
     await device.write16(0x10, 0x1234);
     expect(await device.read16(0x10)).toBe(0x1234);
+
+    await device.writeByte(0xaa);
+    expect(await device.readByte()).toBe(0xaa);
+
+    const written = await device.writeBytes([0x01, 0x02, 0x03]);
+    expect(written).toEqual(new Uint8Array([0x01, 0x02, 0x03]));
+    await expect(device.readBytes(3)).resolves.toEqual(
+      new Uint8Array([0x01, 0x02, 0x03])
+    );
   });
 });
 
@@ -115,6 +133,8 @@ function createMockI2CSlaveDevice(
 ): I2CSlaveDevice {
   const registers8 = new Map<number, I2CByte>();
   const registers16 = new Map<number, I2CWord>();
+  let lastByte: I2CByte = 0;
+  let lastBytes = new Uint8Array();
 
   return {
     slaveAddress,
@@ -129,6 +149,19 @@ function createMockI2CSlaveDevice(
     },
     async write16(registerNumber, value) {
       registers16.set(registerNumber, value);
+    },
+    async readByte() {
+      return lastByte;
+    },
+    async writeByte(byte) {
+      lastByte = byte;
+    },
+    async readBytes(length) {
+      return lastBytes.slice(0, length);
+    },
+    async writeBytes(bytes) {
+      lastBytes = new Uint8Array(bytes);
+      return lastBytes;
     },
   };
 }

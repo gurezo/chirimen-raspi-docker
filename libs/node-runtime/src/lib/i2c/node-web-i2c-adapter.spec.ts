@@ -31,10 +31,10 @@ function createNativeSlaveDeviceMock(slaveAddress: number) {
     read16: vi.fn(async () => 0x1234),
     write8: vi.fn(async () => 0),
     write16: vi.fn(async () => 0),
-    readByte: vi.fn(async () => 0),
-    readBytes: vi.fn(async () => new Uint8Array()),
+    readByte: vi.fn(async () => 0x55),
+    readBytes: vi.fn(async (length: number) => new Uint8Array(length).fill(0x11)),
     writeByte: vi.fn(async () => 0),
-    writeBytes: vi.fn(async () => new Uint8Array()),
+    writeBytes: vi.fn(async (bytes: number[]) => new Uint8Array(bytes)),
   };
 }
 
@@ -68,15 +68,44 @@ describe('NodeWebI2CSlaveDeviceAdapter', () => {
     expect(nativeDevice.write16).toHaveBeenCalledWith(0x04, 0xabcd);
   });
 
+  it('delegates readByte/writeByte/readBytes/writeBytes and maps values', async () => {
+    const nativeDevice = createNativeSlaveDeviceMock(0x48);
+    const device = new NodeWebI2CSlaveDeviceAdapter(nativeDevice as never);
+
+    await expect(device.readByte()).resolves.toBe(0x55);
+    expect(nativeDevice.readByte).toHaveBeenCalledOnce();
+
+    await device.writeByte(0xaa);
+    expect(nativeDevice.writeByte).toHaveBeenCalledWith(0xaa);
+
+    await expect(device.readBytes(3)).resolves.toEqual(
+      new Uint8Array([0x11, 0x11, 0x11])
+    );
+    expect(nativeDevice.readBytes).toHaveBeenCalledWith(3);
+
+    await expect(device.writeBytes([0x01, 0x02])).resolves.toEqual(
+      new Uint8Array([0x01, 0x02])
+    );
+    expect(nativeDevice.writeBytes).toHaveBeenCalledWith([0x01, 0x02]);
+  });
+
   it('maps native errors through mapI2cError', async () => {
     const nativeDevice = createNativeSlaveDeviceMock(0x48);
     nativeDevice.read8.mockRejectedValueOnce(new OperationError('native failure'));
+    nativeDevice.readByte.mockRejectedValueOnce(
+      new OperationError('byte failure')
+    );
     const device = new NodeWebI2CSlaveDeviceAdapter(nativeDevice as never);
 
     await expect(device.read8(0x01)).rejects.toMatchObject({
       name: 'ChirimenError',
       code: 'Operation',
       message: 'native failure',
+    });
+    await expect(device.readByte()).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'Operation',
+      message: 'byte failure',
     });
   });
 
@@ -96,9 +125,28 @@ describe('NodeWebI2CSlaveDeviceAdapter', () => {
       name: 'ChirimenError',
       code: 'InvalidAccess',
     });
+    await expect(device.writeByte(0x100 as never)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+    await expect(device.readBytes(0)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+    await expect(device.readBytes(128)).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
+    await expect(device.writeBytes([0x100])).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+    });
     expect(nativeDevice.read8).not.toHaveBeenCalled();
     expect(nativeDevice.write8).not.toHaveBeenCalled();
     expect(nativeDevice.write16).not.toHaveBeenCalled();
+    expect(nativeDevice.writeByte).not.toHaveBeenCalled();
+    expect(nativeDevice.readBytes).not.toHaveBeenCalled();
+    expect(nativeDevice.writeBytes).not.toHaveBeenCalled();
   });
 });
 
