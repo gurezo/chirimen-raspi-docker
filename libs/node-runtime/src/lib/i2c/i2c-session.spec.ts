@@ -29,6 +29,12 @@ function createSlaveDeviceMock(slaveAddress: number): I2CSlaveDevice {
     write16: vi.fn(async () => {
       // no-op for unit tests
     }),
+    readByte: vi.fn(async () => 0),
+    writeByte: vi.fn(async () => {
+      // no-op for unit tests
+    }),
+    readBytes: vi.fn(async () => new Uint8Array()),
+    writeBytes: vi.fn(async (bytes) => new Uint8Array(bytes)),
   };
 }
 
