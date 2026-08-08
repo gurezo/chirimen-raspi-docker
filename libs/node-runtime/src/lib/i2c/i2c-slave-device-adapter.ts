@@ -1,10 +1,12 @@
 import { ChirimenError } from 'core';
 import {
   isI2CByte,
+  isI2CBytesLength,
   isI2CRegisterNumber,
   isI2CSlaveAddress,
   isI2CWord,
   type I2CByte,
+  type I2CBytesLength,
   type I2CRegisterNumber,
   type I2CSlaveAddress,
   type I2CSlaveDevice,
@@ -119,6 +121,89 @@ export class NodeWebI2CSlaveDeviceAdapter implements I2CSlaveDevice {
 
     try {
       await this.nativeDevice.write16(registerNumber, value);
+    } catch (error) {
+      throw mapI2cError(error);
+    }
+  }
+
+  async readByte(): Promise<I2CByte> {
+    try {
+      const value = await this.nativeDevice.readByte();
+      if (!isI2CByte(value)) {
+        throw new ChirimenError(
+          'Operation',
+          `Invalid I2C byte read: ${String(value)}`
+        );
+      }
+      return value;
+    } catch (error) {
+      throw mapI2cError(error);
+    }
+  }
+
+  async writeByte(byte: I2CByte): Promise<void> {
+    if (!isI2CByte(byte)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C byte: ${String(byte)}`
+      );
+    }
+
+    try {
+      await this.nativeDevice.writeByte(byte);
+    } catch (error) {
+      throw mapI2cError(error);
+    }
+  }
+
+  async readBytes(length: I2CBytesLength): Promise<Uint8Array> {
+    if (!isI2CBytesLength(length)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C bytes length: ${String(length)}`
+      );
+    }
+
+    try {
+      const value = await this.nativeDevice.readBytes(length);
+      if (!(value instanceof Uint8Array)) {
+        throw new ChirimenError(
+          'Operation',
+          `Invalid I2C bytes read: ${String(value)}`
+        );
+      }
+      return value;
+    } catch (error) {
+      throw mapI2cError(error);
+    }
+  }
+
+  async writeBytes(bytes: readonly number[]): Promise<Uint8Array> {
+    if (!Array.isArray(bytes)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C bytes: ${String(bytes)}`
+      );
+    }
+
+    for (const byte of bytes) {
+      if (!isI2CByte(byte)) {
+        throw new ChirimenError(
+          'InvalidAccess',
+          `Invalid I2C byte: ${String(byte)}`
+        );
+      }
+    }
+
+    try {
+      const value = await this.nativeDevice.writeBytes([...bytes]);
+      if (!(value instanceof Uint8Array)) {
+        throw new ChirimenError(
+          'Operation',
+          `Invalid I2C bytes write result: ${String(value)}`
+        );
+      }
+      return value;
     } catch (error) {
       throw mapI2cError(error);
     }
