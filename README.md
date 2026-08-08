@@ -110,6 +110,30 @@ curl http://localhost:33330/health
 }
 ```
 
+## Raspberry Pi 上での事前診断（doctor）
+
+`docker compose up` の前に、host の前提条件を一括確認できます。
+
+```sh
+chmod +x scripts/doctor.sh
+./scripts/doctor.sh
+```
+
+`scripts/doctor.sh` は sudo 不要で、次を確認します。
+
+- Raspberry Pi model
+- architecture（`aarch64` / `armv7l`）
+- Docker（インストールと daemon 稼働）
+- Docker Compose
+- `/dev/gpiomem`
+- `/dev/i2c-1`
+
+結果は `[ok]` / `[error]` / `[warn]` で表示されます。`[error]` がある場合は exit 1 です。
+
+- **I2C 不足**: `[error]` とともに `scripts/enable-i2c.sh` の実行案内が表示されます
+- **Pi 5 で `/dev/gpiomem` 不足**: `[warn]` と `/dev/gpiochip*` の案内が表示されます（[Raspberry Pi 3 / 4 と 5 の違い](#raspberry-pi-3--4-と-5-の違い) を参照）
+- **非 Pi 環境**: Pi / device 関連が `[error]` になり、Raspberry Pi 実機での検証が必要なことが分かります
+
 ## Raspberry Pi 上での GPIO（Docker）
 
 `compose.yaml` は `privileged: true` を使わず、次だけを container に渡します。
