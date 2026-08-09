@@ -19,6 +19,8 @@ export {
   isProtocolSuccessResponse,
 } from './lib/messages.js';
 export type {
+  GpioProtocolEventOperation,
+  GpioProtocolOperation,
   ProtocolEventOperation,
   ProtocolEventPayload,
   ProtocolEventPayloadMap,
@@ -30,7 +32,23 @@ export type {
   ProtocolSuccessPayload,
   ProtocolSuccessPayloadMap,
 } from './lib/operations.js';
-export { isProtocolOperation } from './lib/operations.js';
+export {
+  isGpioExportRequestPayload,
+  isGpioOnChangeEventPayload,
+  isGpioPortOnlyRequestPayload,
+  isGpioProtocolOperation,
+  isGpioWriteRequestPayload,
+  isProtocolGpioDirection,
+  isProtocolGpioPortNumber,
+  isProtocolGpioValue,
+  isProtocolOperation,
+} from './lib/operations.js';
+export type { GpioOperationRuntimeMapping } from './lib/gpio-operation-mapping.js';
+export {
+  GPIO_OPERATION_RUNTIME_MAPPINGS,
+  gpioOperationFromLegacyFunctionId,
+  legacyFunctionIdFromGpioOperation,
+} from './lib/gpio-operation-mapping.js';
 export {
   LegacyFunctionId,
   LegacyMessageKind,
