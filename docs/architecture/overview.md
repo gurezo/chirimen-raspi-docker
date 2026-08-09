@@ -1,0 +1,160 @@
+# Architecture overview
+
+Wiki の設計意図と、実装後のリポジトリ構造をまとめる。
+
+関連:
+
+- 親 Issue: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
+- 子 Issue: [#45 Architecture / Guide docs を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/45)
+- Wiki: [01.Development-Concept](https://github.com/gurezo/chirimen-raspi-docker/wiki/01.Development-Concept)
+- Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
+
+## 目的
+
+Raspberry Pi 3 / 4 / 5 上で、次の操作だけで CHIRIMEN 開発を始められる Runtime を提供する。
+
+```text
+git clone
+docker compose up
+```
+
+既存 CHIRIMEN の Web GPIO / Web I2C 風の開発体験を維持しつつ、実装を TypeScript / Nx / Docker ベースに再構築する。
+
+## 背景（旧構成）
+
+従来はブラウザ側の `polyfill.js` と Raspberry Pi 側の `srv.js` が WebSocket 経由で通信し、GPIO / I2C を操作していた。
+
+```text
+Browser JavaScript
+  ↓ navigator.requestGPIOAccess() / navigator.requestI2CAccess()
+polyfill.js
+  ↓ WebSocket
+srv.js
+  ↓ onoff / i2c-bus
+Raspberry Pi GPIO / I2C
+```
+
+課題の例:
+
+- JavaScript 実装で型安全性が弱い
+- `srv.js` に責務が集中している
+- `polyfill.js` と `srv.js` の通信仕様が分かりにくい
+- カスタムイメージ / `setup.sh` / `release.sh` による環境構築・配布の負担が大きい
+
+本リポジトリではそのまま移植するのではなく、責務を分割したうえで再設計する。
+
+## 現行アーキテクチャ
+
+```text
+Browser
+  ↓
+libs/browser-polyfill
+  ↓ WebSocket（libs/protocol の JSON メッセージ）
+apps/server
+  ↓
+libs/node-runtime
+  ↓
+node-web-gpio / node-web-i2c
+  ↓
+Raspberry Pi GPIO / I2C
+```
+
+Browser と Node Runtime の間の通信契約は `libs/protocol` に集約する。`browser-polyfill` と `node-runtime` は直接依存しない。
+
+## 技術スタック
+
+| 項目 | 技術 |
+| --- | --- |
+| Monorepo | Nx（統合型。`apps/*` / `libs/*` に個別 `package.json` は無い） |
+| Language | TypeScript |
+| Package manager | pnpm |
+| Runtime | Node.js |
+| GPIO | node-web-gpio |
+| I2C | node-web-i2c |
+| HTTP | Express |
+| Realtime | WebSocket (`ws`) |
+| Container | Docker / Docker Compose |
+| Docs | Typedoc + `docs/architecture` / `docs/guides` |
+
+## 対応対象
+
+### 対応
+
+- Raspberry Pi 3
+- Raspberry Pi 4
+- Raspberry Pi 5
+
+### 非対応（現時点）
+
+- Orange Pi / Banana Pi / Jetson / Rock Pi など他の SBC
+
+## リポジトリ構成（現状）
+
+```text
+chirimen-raspi-docker/
+├── apps/
+│   └── server/                 # Express + WebSocket server
+├── libs/
+│   ├── core/                   # 共通エラー / 型
+│   ├── gpio/                   # Web GPIO 風 domain（型・契約）
+│   ├── i2c/                    # Web I2C 風 domain（型・契約）
+│   ├── protocol/               # Browser ↔ Server 通信契約
+│   ├── node-runtime/           # node-web-gpio / node-web-i2c adapter
+│   └── browser-polyfill/       # navigator.request*Access polyfill
+├── docker/
+│   └── server/
+│       └── Dockerfile
+├── scripts/
+│   ├── doctor.sh
+│   └── enable-i2c.sh
+├── docs/
+│   ├── architecture/
+│   ├── guides/
+│   └── api/                    # Typedoc 生成物（git 管理外）
+├── compose.yaml
+├── package.json
+├── pnpm-workspace.yaml
+└── README.md
+```
+
+未実装（予定）:
+
+- `apps/web-demo`
+- `docker/nginx`
+- `docs/examples`
+
+## apps / libs の責務
+
+| Path | 責務 |
+| --- | --- |
+| `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
+| `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
+| `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
+| `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |
+| `libs/protocol` | request / response / event、GPIO / I2C operations、encode / decode |
+| `libs/node-runtime` | `node-web-gpio` / `node-web-i2c` の wrapper、session / scan |
+| `libs/browser-polyfill` | `navigator.requestGPIOAccess` / `requestI2CAccess`、WebSocket client |
+
+依存の詳細と ESLint 制約は [nx-boundaries.md](./nx-boundaries.md) を参照。
+
+## Docker と scripts
+
+- 起動入口は root の `compose.yaml`（`docker compose up --build`）
+- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す
+- host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
+
+詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
+
+## 関連ドキュメント
+
+| ドキュメント | 内容 |
+| --- | --- |
+| [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations |
+| [docker.md](./docker.md) | Docker / Compose / device mount |
+| [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
+| [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
+| [Getting Started](../guides/getting-started.md) | 初回起動手順 |
+| [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
+| [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
+
+公開 TypeScript API のリファレンスは `pnpm docs:api`（出力先 `docs/api/`、git 管理外）。
