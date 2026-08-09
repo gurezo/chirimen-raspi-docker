@@ -219,9 +219,9 @@ describe('WebSocketClientTransport', () => {
 
   it('forwards protocol events to onEvent', async () => {
     const events: ProtocolEvent[] = [];
-    let socketRef: FakeWebSocket | null = null;
+    const socketHolder: { current: FakeWebSocket | null } = { current: null };
     onSend = (data, socket) => {
-      socketRef = socket;
+      socketHolder.current = socket;
       replyWithSuccess(data, socket);
     };
 
@@ -233,7 +233,7 @@ describe('WebSocketClientTransport', () => {
     await transport.connect();
     await transport.request('gpio.subscribe', { portNumber: 26 });
 
-    socketRef?.emitMessage(
+    socketHolder.current?.emitMessage(
       encodeProtocolMessage({
         kind: 'event',
         operation: 'gpio.onchange',

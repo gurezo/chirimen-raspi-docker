@@ -16,9 +16,15 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": [
-      "chirimen-raspi-docker"
-    ],
+    "baseUrl": ".",
+    "paths": {
+      "core": ["libs/core/src/index.ts"],
+      "gpio": ["libs/gpio/src/index.ts"],
+      "i2c": ["libs/i2c/src/index.ts"],
+      "protocol": ["libs/protocol/src/index.ts"],
+      "node-runtime": ["libs/node-runtime/src/index.ts"],
+      "browser-polyfill": ["libs/browser-polyfill/src/index.ts"]
+    },
     "noUncheckedSideEffectImports": false,
     "types": [
       "*"

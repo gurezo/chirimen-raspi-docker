@@ -4,17 +4,16 @@
     "outDir": "dist",
     "types": ["node"],
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "tsBuildInfoFile": "dist/tsconfig.bundle.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
   "exclude": [
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
-  ],
-  "references": [
-    {
-      "path": "../../libs/node-runtime/tsconfig.lib.json"
-    }
   ]
 }

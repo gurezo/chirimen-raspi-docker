@@ -10,10 +10,6 @@ RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json tsconfig.json ./
-COPY apps/server/package.json apps/server/package.json
-COPY libs/core/package.json libs/core/package.json
-COPY libs/gpio/package.json libs/gpio/package.json
-COPY libs/node-runtime/package.json libs/node-runtime/package.json
 
 RUN pnpm install --frozen-lockfile
 
