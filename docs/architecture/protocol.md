@@ -12,6 +12,8 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#33 I2C protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/33)
 - 子 Issue: [#34 Protocol encode / decode を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/34)
 - 子 Issue: [#36 WebSocket client transport を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/36)
+- 親 Issue: [#5 Phase 5: WebSocket and GPIO onchange](https://github.com/gurezo/chirimen-raspi-docker/issues/5)
+- 子 Issue: [#39 WebSocket server lifecycle を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/39)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -196,6 +198,24 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 
 実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
 
+## WebSocket server lifecycle
+
+Node server 側の接続管理は `apps/server` が担う（Issue #39）。
+
+| 項目 | 決定 |
+| --- | --- |
+| 搬送 | 既存 Express/HTTP server（port `33330`）へ `ws` の `WebSocketServer` を attach |
+| session | 接続ごとに `sessionId`（UUID）と `GpioSession` / `I2cSession` を作成 |
+| disconnect | `close` / `error` で `GpioSession.releaseAll()` と `I2cSession.closeAll()` を実行 |
+| shutdown | 全 session を cleanup → WebSocket server close → process 全体の GPIO `unexportAll` |
+| メッセージ処理 | #39 では no-op。protocol routing / GPIO onchange は Phase 5 後続 Issue |
+
+実装:
+
+- `apps/server/src/app/client-session.ts`
+- `apps/server/src/app/client-session-registry.ts`
+- `apps/server/src/app/websocket-server.ts`
+
 ## Browser GPIO polyfill 入口
 
 `navigator.requestGPIOAccess()` は Issue #37 で `libs/browser-polyfill` に実装する。
@@ -250,3 +270,7 @@ const device = await port?.open(0x48);
 | #36 | WebSocket client transport（本節で完了） |
 | #37 | `navigator.requestGPIOAccess()`（本節「Browser GPIO polyfill 入口」で完了） |
 | #38 | `navigator.requestI2CAccess()`（本節「Browser I2C polyfill 入口」で完了） |
+| #39 | WebSocket server lifecycle（本節「WebSocket server lifecycle」で完了） |
+| #40 | GPIO event subscribe / unsubscribe |
+| #41 | Browser GPIO onchange |
+| #42 | WebSocket reconnect |

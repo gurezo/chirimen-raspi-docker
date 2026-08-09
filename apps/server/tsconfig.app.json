@@ -8,13 +8,25 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-setup.ts",
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
   ],
   "references": [
     {
+      "path": "../../libs/protocol/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/node-runtime/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/i2c/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/gpio/tsconfig.lib.json"
     }
   ]
 }

@@ -11,14 +11,15 @@
     "nx": "nx",
     "build": "nx build server",
     "serve": "nx serve server",
-    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill",
+    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server",
     "graph": "nx graph"
   },
   "dependencies": {
     "express": "^4.21.2",
     "node-web-gpio": "^1.1.72",
     "node-web-i2c": "^1.1.80",
-    "tslib": "^2.8.1"
+    "tslib": "^2.8.1",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -35,6 +36,7 @@
     "@swc/helpers": "~0.5.23",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "@types/ws": "^8.18.1",
     "esbuild": "^0.28.2",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",

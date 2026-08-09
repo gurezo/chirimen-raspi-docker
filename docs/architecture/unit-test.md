@@ -26,8 +26,9 @@ Jest は導入しない。既存の `@nx/vite:test` と Vitest を正式な基�
 | `protocol` | `libs/protocol` |
 | `node-runtime` | `libs/node-runtime` |
 | `browser-polyfill` | `libs/browser-polyfill` |
+| `server` | `apps/server` |
 
-新規 lib を追加するときは、同様に `vite.config.mts`・`tsconfig.spec.json`・`project.json` の `test` target を揃える。
+新規 lib / app を追加するときは、同様に `vite.config.mts`・`tsconfig.spec.json`・`project.json` の `test` target を揃える。
 
 統合型モノレポでは依存は root の `package.json` に集約し、project 間の import（例: `node-runtime` → `core` / `gpio` / `i2c`）は `tsconfig.base.json` の `paths` と、各 lib の Vitest 設定の `resolve.alias` で `libs/*/src/index.ts` へ解決する。CI で `dist` 未生成でもソースを直接参照できる。
 
@@ -48,6 +49,7 @@ pnpm nx test i2c
 pnpm nx test protocol
 pnpm nx test node-runtime
 pnpm nx test browser-polyfill
+pnpm nx test server
 ```
 
 ## CI
