@@ -12,7 +12,6 @@ import {
   type WebSocketConstructor,
 } from './websocket-client-transport.js';
 
-let lastFake: FakeWebSocket | null = null;
 let autoOpen = true;
 let onSend: ((data: string, socket: FakeWebSocket) => void) | null = null;
 
@@ -29,7 +28,6 @@ class FakeWebSocket {
   onmessage: ((event: MessageEvent) => void) | null = null;
 
   constructor(public readonly url: string) {
-    lastFake = this;
     queueMicrotask(() => {
       if (!autoOpen) {
         return;
@@ -90,7 +88,6 @@ function replyWithSuccess(
 
 describe('WebSocketClientTransport', () => {
   beforeEach(() => {
-    lastFake = null;
     autoOpen = true;
     onSend = null;
   });
@@ -216,7 +213,9 @@ describe('WebSocketClientTransport', () => {
 
   it('forwards protocol events to onEvent', async () => {
     const events: ProtocolEvent[] = [];
+    let socketRef: FakeWebSocket | null = null;
     onSend = (data, socket) => {
+      socketRef = socket;
       replyWithSuccess(data, socket);
     };
 
@@ -228,7 +227,7 @@ describe('WebSocketClientTransport', () => {
     await transport.connect();
     await transport.request('gpio.subscribe', { portNumber: 26 });
 
-    lastFake?.emitMessage(
+    socketRef?.emitMessage(
       encodeProtocolMessage({
         kind: 'event',
         operation: 'gpio.onchange',
