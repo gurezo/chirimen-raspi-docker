@@ -69,3 +69,27 @@ export function toChirimenError(
 
   return new ChirimenError('Unknown', fallbackMessage, { cause: error });
 }
+
+/**
+ * Browser protocol へ渡すための plain なエラー表現。
+ * `cause` や Node 固有の Error 本体は含めない。
+ */
+export interface ChirimenErrorPayload {
+  readonly code: ChirimenErrorCode;
+  readonly message: string;
+}
+
+/**
+ * ChirimenError（または未知の例外）を protocol 向け payload へ変換する。
+ * Node 固有の Error object をそのまま流さない。
+ */
+export function toChirimenErrorPayload(
+  error: unknown,
+  fallbackMessage = 'Unknown error'
+): ChirimenErrorPayload {
+  const chirimenError = toChirimenError(error, fallbackMessage);
+  return {
+    code: chirimenError.code,
+    message: chirimenError.message,
+  };
+}
