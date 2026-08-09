@@ -2,13 +2,14 @@
 
 Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `libs/protocol` に集約する。
 
-本ドキュメントは Issue #31 時点の **型としてのメッセージ封筒** と、既存 CHIRIMEN（`polyfill.js` / `srv.js`）の function id 方式からの継承・変更方針、および Issue #32 の **GPIO protocol ↔ Node Runtime 対応** を記録する。
+本ドキュメントは Issue #31 時点の **型としてのメッセージ封筒** と、既存 CHIRIMEN（`polyfill.js` / `srv.js`）の function id 方式からの継承・変更方針、および Issue #32 / #33 の **GPIO / I2C protocol ↔ Node Runtime 対応** を記録する。
 
 関連:
 
 - 親 Issue: [#3 Phase 3-4: Protocol and Browser Polyfill](https://github.com/gurezo/chirimen-raspi-docker/issues/3)
 - 子 Issue: [#31 Protocol message model を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/31)
 - 子 Issue: [#32 GPIO protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/32)
+- 子 Issue: [#33 I2C protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/33)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -34,7 +35,7 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 
 - TypeScript 上の `operation` は文字列の判別共用体（例: `gpio.export`, `i2c.read8`）
 - `payload` は operation ごとに型付けする（`gpio` / `i2c` lib には依存しない plain 値）
-- GPIO の runtime 対応詳細は #32 で確定。I2C は #33、数値 function id の encode / decode は #34
+- GPIO の runtime 対応詳細は #32、I2C は #33 で確定。数値 function id の encode / decode は #34
 
 ## GPIO protocol ↔ Node Runtime 対応
 
@@ -70,6 +71,56 @@ operation 名は legacy / WebGPIO domain（`export` / `unexport`）に揃え、I
 | `gpio.unsubscribe` | `{ portNumber }` | `{}` |
 | event `gpio.onchange` | — | `{ portNumber, value: 0 \| 1 }`（event payload） |
 
+## I2C protocol ↔ Node Runtime 対応
+
+Browser 起点の I2C `operation` は Node Runtime の `I2cSession` / `I2CSlaveDevice` と 1:1 に対応する。  
+旧 polyfill では少数の function id（`0x20`–`0x23`）に複数 API がパックされていたが、新 protocol では domain API（`I2CSlaveDevice`）に近い operation 名にする。
+
+| Protocol `operation` | Legacy id | Node Runtime | Domain |
+| --- | --- | --- | --- |
+| `i2c.open` | `0x20` | `I2cSession.open(portNumber, slaveAddress)` | `I2CPort.open(slaveAddress)` |
+| `i2c.close` | `0x20` | `I2cSession.close(portNumber, slaveAddress)` | （session 追跡解除） |
+| `i2c.write8` | `0x21` | open 済み `I2CSlaveDevice.write8(...)` | `write8` |
+| `i2c.write16` | `0x21` | open 済み `I2CSlaveDevice.write16(...)` | `write16` |
+| `i2c.writeByte` | `0x21` | open 済み `I2CSlaveDevice.writeByte(...)` | `writeByte` |
+| `i2c.writeBytes` | `0x21` | open 済み `I2CSlaveDevice.writeBytes(...)` | `writeBytes` |
+| `i2c.readByte` | `0x22` | open 済み `I2CSlaveDevice.readByte()` | `readByte` |
+| `i2c.readBytes` | `0x22` | open 済み `I2CSlaveDevice.readBytes(length)` | `readBytes` |
+| `i2c.read8` | `0x23` | open 済み `I2CSlaveDevice.read8(...)` | `read8` |
+| `i2c.read16` | `0x23` | open 済み `I2CSlaveDevice.read16(...)` | `read16` |
+
+### 責務分界
+
+- `libs/protocol` は対応定数・型・type guard のみを提供し、`i2c` / `node-runtime` には依存しない
+- `I2cSession.closeAll()` は切断時 cleanup 用であり、Browser 起点の protocol operation には含めない
+- `I2cSession.scan()` は Scan example 向けの runtime API であり、本 protocol の Browser request には含めない
+- Legacy function id は 1:N（例: `0x20` → `i2c.open` / `i2c.close`）。数値 code の wire 変換は #34
+- コード上の対応表: `libs/protocol/src/lib/i2c-operation-mapping.ts`
+
+### Request / response payload（I2C）
+
+| operation | request payload | success payload |
+| --- | --- | --- |
+| `i2c.open` | `{ portNumber, slaveAddress }` | `{}` |
+| `i2c.close` | `{ portNumber, slaveAddress }` | `{}` |
+| `i2c.read8` | `{ portNumber, slaveAddress, registerNumber }` | `{ value }` |
+| `i2c.read16` | `{ portNumber, slaveAddress, registerNumber }` | `{ value }` |
+| `i2c.write8` | `{ portNumber, slaveAddress, registerNumber, value }` | `{}` |
+| `i2c.write16` | `{ portNumber, slaveAddress, registerNumber, value }` | `{}` |
+| `i2c.readByte` | `{ portNumber, slaveAddress }` | `{ value }` |
+| `i2c.writeByte` | `{ portNumber, slaveAddress, value }` | `{}` |
+| `i2c.readBytes` | `{ portNumber, slaveAddress, length }` | `{ bytes }` |
+| `i2c.writeBytes` | `{ portNumber, slaveAddress, bytes }` | `{ bytes }` |
+
+値域（protocol 上の plain 値。domain と揃える）:
+
+- `portNumber`: 非負整数
+- `slaveAddress`: `0x00`–`0x7f`
+- `registerNumber`: `0`–`0xffff`
+- byte `value` / `bytes` 要素: `0`–`0xff`
+- word `value`（`read16` / `write16`）: `0`–`0xffff`
+- `length` / `bytes` 長: `1`–`127`
+
 ## Legacy function id 対応表
 
 | function id | 旧 polyfill / srv | 新 `operation`（型） |
@@ -88,7 +139,7 @@ operation 名は legacy / WebGPIO domain（`export` / `unexport`）に揃え、I
 
 | 継承 | 変更 |
 | --- | --- |
-| GPIO `0x10`–`0x14` / I2C `0x20`–`0x23` の操作集合の概念 | TS 上は文字列 `operation`。GPIO runtime 対応は #32。数値 code の wire 変換は #34 |
+| GPIO `0x10`–`0x14` / I2C `0x20`–`0x23` の操作集合の概念 | TS 上は文字列 `operation`。GPIO runtime 対応は #32、I2C は #33。数値 code の wire 変換は #34 |
 | リクエスト相関 ID | 名称を `requestId` に。`sessionId` と分離 |
 | GPIO onchange を非同期 event として送る | `kind: 'event'` を明示 |
 | OK / NG 判定 | `ChirimenErrorPayload`（`code` + `message`）による構造化 error response |
@@ -105,6 +156,6 @@ operation 名は legacy / WebGPIO domain（`export` / `unexport`）に揃え、I
 | Issue | 内容 |
 | --- | --- |
 | #32 | GPIO protocol operations の runtime 対応詳細（本節で完了） |
-| #33 | I2C protocol operations の runtime 対応詳細 |
+| #33 | I2C protocol operations の runtime 対応詳細（本節で完了） |
 | #34 | encode / decode |
 | #35–#38 | browser-polyfill / WebSocket transport |
