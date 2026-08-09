@@ -336,4 +336,69 @@ describe('navigator.requestGPIOAccess', () => {
       1
     );
   });
+
+  it('restores export and subscribe after reconnect', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    class TrackingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    onSend = (data, socket) => {
+      replyWithSuccess(data, socket);
+    };
+
+    await installBrowserPolyfill({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 50,
+    });
+
+    const access = await navigator.requestGPIOAccess();
+    const port = access.ports.get(26);
+    expect(port).toBeDefined();
+    if (!port) {
+      throw new Error('expected port 26');
+    }
+
+    await port.export('in');
+    const handler = vi.fn();
+    port.onchange = handler;
+
+    await vi.waitFor(() => {
+      expect(sentOperations.filter((op) => op === 'gpio.subscribe')).toHaveLength(
+        1
+      );
+    });
+
+    const operationsBeforeDisconnect = [...sentOperations];
+    sockets[0]?.close();
+
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.waitFor(() => {
+      expect(sockets).toHaveLength(2);
+    });
+
+    await vi.waitFor(() => {
+      const restored = sentOperations.slice(operationsBeforeDisconnect.length);
+      expect(restored).toEqual(['gpio.export', 'gpio.subscribe']);
+    });
+
+    expect(port.exported).toBe(true);
+    expect(port.onchange).toBe(handler);
+
+    sockets[1]?.emitMessage(
+      encodeProtocolMessage({
+        kind: 'event',
+        operation: 'gpio.onchange',
+        payload: { portNumber: 26, value: 1 },
+      })
+    );
+    expect(handler).toHaveBeenCalledWith({ portNumber: 26, value: 1 });
+
+    vi.useRealTimers();
+  });
 });
