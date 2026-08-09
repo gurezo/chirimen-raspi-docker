@@ -11,7 +11,7 @@
     "nx": "nx",
     "build": "nx build server",
     "serve": "nx serve server",
-    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill",
+    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server",
     "graph": "nx graph"
   },
   "dependencies": {
