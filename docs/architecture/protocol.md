@@ -217,6 +217,28 @@ const access = await navigator.requestGPIOAccess();
 const port = access.ports.get(26);
 ```
 
+## Browser I2C polyfill 入口
+
+`navigator.requestI2CAccess()` は Issue #38 で `libs/browser-polyfill` に実装する。
+
+| 項目 | 決定 |
+| --- | --- |
+| 初期化 | `installBrowserPolyfill(options)` で共有 `WebSocketClientTransport` を接続し、`navigator.requestI2CAccess` も登録する |
+| 取得 | `await navigator.requestI2CAccess()` → domain `I2CAccess`（`BrowserI2CAccess`） |
+| ports | CHIRIMEN / Raspberry Pi 慣例の固定バス一覧（`1`） |
+| 操作 | `I2CPort.open` → `i2c.open`。slave の read/write → 対応する `i2c.*` |
+| 依存 | `protocol` / `i2c` / `core`。`node-runtime` には依存しない |
+| 非対象 | domain に無い `i2c.close` 呼び出し（今回は open / read / write のみ） |
+
+利用例:
+
+```ts
+await installBrowserPolyfill({ url: 'ws://localhost:33330/' });
+const access = await navigator.requestI2CAccess();
+const port = access.ports.get(1);
+const device = await port?.open(0x48);
+```
+
 ## 後続 Issue
 
 | Issue | 内容 |
@@ -227,4 +249,4 @@ const port = access.ports.get(26);
 | #35 | `libs/browser-polyfill` 作成（完了） |
 | #36 | WebSocket client transport（本節で完了） |
 | #37 | `navigator.requestGPIOAccess()`（本節「Browser GPIO polyfill 入口」で完了） |
-| #38 | `navigator.requestI2CAccess()` |
+| #38 | `navigator.requestI2CAccess()`（本節「Browser I2C polyfill 入口」で完了） |
