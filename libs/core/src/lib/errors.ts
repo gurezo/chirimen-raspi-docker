@@ -1,5 +1,30 @@
 /** Chirimen runtime / hardware エラーの種別 */
-export type ChirimenErrorCode = 'InvalidAccess' | 'Operation' | 'Unknown';
+export type ChirimenErrorCode =
+  | 'InvalidAccess'
+  | 'InvalidArgument'
+  | 'DeviceUnavailable'
+  | 'PermissionDenied'
+  | 'ResourceBusy'
+  | 'Operation'
+  | 'Unknown';
+
+const CHIRIMEN_ERROR_CODES: readonly ChirimenErrorCode[] = [
+  'InvalidAccess',
+  'InvalidArgument',
+  'DeviceUnavailable',
+  'PermissionDenied',
+  'ResourceBusy',
+  'Operation',
+  'Unknown',
+] as const;
+
+/** `value` が ChirimenErrorCode かどうか */
+export function isChirimenErrorCode(value: unknown): value is ChirimenErrorCode {
+  return (
+    typeof value === 'string' &&
+    (CHIRIMEN_ERROR_CODES as readonly string[]).includes(value)
+  );
+}
 
 /**
  * ドメイン横断で扱うハードウェア／ランタイムエラー。
