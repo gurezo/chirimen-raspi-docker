@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "libs/gpio/src/index.ts",
+    "libs/i2c/src/index.ts",
+    "libs/protocol/src/index.ts",
+    "libs/browser-polyfill/src/index.ts"
+  ],
+  "entryPointStrategy": "resolve",
+  "tsconfig": "tsconfig.typedoc.json",
+  "out": "docs/api",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "excludePrivate": true,
+  "excludeExternals": true,
+  "readme": "none",
+  "name": "chirimen-raspi-docker",
+  "intentionallyNotExported": [
+    "libs/core/src/lib/errors.ts:ChirimenErrorPayload"
+  ]
+}
