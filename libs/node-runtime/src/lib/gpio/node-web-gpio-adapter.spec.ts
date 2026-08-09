@@ -31,7 +31,7 @@ function createNativePortMock(portNumber: number) {
       port.exported = false;
       port.direction = '';
     }),
-    read: vi.fn(async () => 0 as const),
+    read: vi.fn(async (): Promise<0 | 1> => 0),
     write: vi.fn(async () => {
       // no-op for unit tests
     }),

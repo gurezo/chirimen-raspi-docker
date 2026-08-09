@@ -1,12 +1,24 @@
 /// <reference types='vitest' />
+import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import { workspaceLibAliases } from '../../tools/vite/workspace-aliases.mts';
+
+const workspaceRoot = resolve(import.meta.dirname, '../..');
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/libs/browser-polyfill',
   resolve: {
-    alias: workspaceLibAliases,
+    alias: {
+      core: resolve(workspaceRoot, 'libs/core/src/index.ts'),
+      gpio: resolve(workspaceRoot, 'libs/gpio/src/index.ts'),
+      i2c: resolve(workspaceRoot, 'libs/i2c/src/index.ts'),
+      protocol: resolve(workspaceRoot, 'libs/protocol/src/index.ts'),
+      'node-runtime': resolve(workspaceRoot, 'libs/node-runtime/src/index.ts'),
+      'browser-polyfill': resolve(
+        workspaceRoot,
+        'libs/browser-polyfill/src/index.ts'
+      ),
+    },
   },
   test: {
     watch: false,

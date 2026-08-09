@@ -19,11 +19,12 @@
         "platform": "node",
         "outputPath": "apps/server/dist",
         "format": [
-          "cjs"
+          "esm"
         ],
-        "bundle": false,
+        "bundle": true,
+        "thirdParty": false,
         "main": "apps/server/src/main.ts",
-        "tsConfig": "apps/server/tsconfig.app.json",
+        "tsConfig": "apps/server/tsconfig.bundle.json",
         "assets": [
           "apps/server/src/assets"
         ],
@@ -45,40 +46,6 @@
           }
         }
       }
-    },
-    "prune-lockfile": {
-      "dependsOn": [
-        "build"
-      ],
-      "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/apps/server/dist/package.json",
-        "{workspaceRoot}/apps/server/dist/pnpm-lock.yaml"
-      ],
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "copy-workspace-modules": {
-      "dependsOn": [
-        "build"
-      ],
-      "cache": true,
-      "outputs": [
-        "{workspaceRoot}/apps/server/dist/workspace_modules"
-      ],
-      "executor": "@nx/js:copy-workspace-modules",
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "prune": {
-      "dependsOn": [
-        "prune-lockfile",
-        "copy-workspace-modules"
-      ],
-      "executor": "nx:noop"
     },
     "serve": {
       "continuous": true,
