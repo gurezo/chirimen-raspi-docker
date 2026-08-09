@@ -15,7 +15,7 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/gpio"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/gpio"
       }
     }
   }

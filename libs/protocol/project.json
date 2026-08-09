@@ -15,7 +15,7 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/protocol"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/protocol"
       }
     }
   }

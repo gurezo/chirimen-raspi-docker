@@ -15,7 +15,7 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/i2c"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/i2c"
       }
     }
   }
