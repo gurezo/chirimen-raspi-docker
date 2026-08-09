@@ -1,6 +1,11 @@
 export { PROTOCOL_PACKAGE_NAME } from './lib/protocol.js';
 export type { RequestId } from './lib/request-id.js';
+export { isRequestId } from './lib/request-id.js';
 export type { SessionId } from './lib/session-id.js';
+export {
+  decodeProtocolMessage,
+  encodeProtocolMessage,
+} from './lib/codec.js';
 export type {
   ProtocolErrorResponse,
   ProtocolEvent,
