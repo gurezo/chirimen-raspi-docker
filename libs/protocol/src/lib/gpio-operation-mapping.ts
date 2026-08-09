@@ -15,7 +15,7 @@ export interface GpioOperationRuntimeMapping {
   readonly legacyFunctionId: LegacyFunctionId | null;
   /** Node Runtime 側の対応（公開 API 名） */
   readonly nodeRuntime: string;
-  /** Domain `GpioPort` 側の対応。Phase 5 待ちは null */
+  /** Domain `GpioPort` 側の対応。session 専用 API のみの場合は null になり得る */
   readonly domainPort: string | null;
   /**
    * Browser 起点の request として扱うか。
@@ -61,22 +61,22 @@ export const GPIO_OPERATION_RUNTIME_MAPPINGS: readonly GpioOperationRuntimeMappi
     {
       operation: 'gpio.subscribe',
       legacyFunctionId: null,
-      nodeRuntime: 'Phase 5 (#40) GPIO event subscribe',
-      domainPort: null,
+      nodeRuntime: 'GpioSession.subscribe(portNumber, listener)',
+      domainPort: 'onchange',
       browserRequest: true,
     },
     {
       operation: 'gpio.unsubscribe',
       legacyFunctionId: null,
-      nodeRuntime: 'Phase 5 (#40) GPIO event unsubscribe',
-      domainPort: null,
+      nodeRuntime: 'GpioSession.unsubscribe(portNumber, listener?)',
+      domainPort: 'onchange = null',
       browserRequest: true,
     },
     {
       operation: 'gpio.onchange',
       legacyFunctionId: LegacyFunctionId.GpioOnChange,
-      nodeRuntime: 'Phase 5 server→browser GPIO onchange event',
-      domainPort: null,
+      nodeRuntime: 'server→browser event via GpioSession subscribe listener',
+      domainPort: 'onchange handler',
       browserRequest: false,
     },
   ] as const;
