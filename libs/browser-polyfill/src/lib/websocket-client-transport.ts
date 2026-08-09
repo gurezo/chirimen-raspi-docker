@@ -12,12 +12,16 @@ import {
   type SessionId,
 } from 'protocol';
 
+/** デフォルトの request timeout（ms） */
+export const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
+
 /** DI 可能な WebSocket コンストラクタ（テスト用 Fake を差し替えられる） */
 export type WebSocketConstructor = new (url: string) => WebSocket;
 
 export interface WebSocketClientTransportOptions {
   readonly url: string;
-  /** 未接続時に request を送る前に待つ最大時間などは connect 側で扱う */
+  /** request の timeout（ms）。省略時は DEFAULT_REQUEST_TIMEOUT_MS */
+  readonly timeoutMs?: number;
   readonly webSocketImpl?: WebSocketConstructor;
   readonly onEvent?: (event: ProtocolEvent) => void;
   readonly sessionId?: SessionId;
@@ -26,6 +30,7 @@ export interface WebSocketClientTransportOptions {
 type PendingEntry = {
   readonly resolve: (response: ProtocolSuccessResponse) => void;
   readonly reject: (error: ChirimenError) => void;
+  readonly timer: ReturnType<typeof setTimeout>;
 };
 
 type WaitQueueEntry = {
@@ -39,6 +44,7 @@ type WaitQueueEntry = {
  */
 export class WebSocketClientTransport {
   private readonly url: string;
+  private readonly timeoutMs: number;
   private readonly WebSocketImpl: WebSocketConstructor;
   private readonly onEvent?: (event: ProtocolEvent) => void;
   private readonly sessionId?: SessionId;
@@ -52,6 +58,7 @@ export class WebSocketClientTransport {
 
   constructor(options: WebSocketClientTransportOptions) {
     this.url = options.url;
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
     this.WebSocketImpl = options.webSocketImpl ?? WebSocket;
     this.onEvent = options.onEvent;
     this.sessionId = options.sessionId;
@@ -99,17 +106,22 @@ export class WebSocketClientTransport {
       };
 
       socket.onclose = () => {
-        this.status = 0;
-        this.socket = null;
+        this.handleDisconnect(
+          new ChirimenError(
+            'DeviceUnavailable',
+            'WebSocket disconnected'
+          )
+        );
       };
     });
   }
 
-  /** 接続を閉じる */
+  /** 接続を閉じ、pending request を error にする */
   disconnect(): void {
     const socket = this.socket;
-    this.socket = null;
-    this.status = 0;
+    this.handleDisconnect(
+      new ChirimenError('DeviceUnavailable', 'WebSocket disconnected')
+    );
     // CONNECTING(0) / OPEN(1) のときだけ close する
     if (socket !== null && socket.readyState <= 1) {
       socket.close();
@@ -118,7 +130,7 @@ export class WebSocketClientTransport {
 
   /**
    * protocol request を送信し、対応する success response を返す。
-   * error response は ChirimenError で reject する。
+   * error response / timeout / disconnect は ChirimenError で reject する。
    */
   async request<Op extends ProtocolOperation>(
     operation: Op,
@@ -137,16 +149,31 @@ export class WebSocketClientTransport {
 
     const responsePromise = new Promise<ProtocolSuccessResponse<Op>>(
       (resolve, reject) => {
+        const timer = setTimeout(() => {
+          const pending = this.pending.get(requestId);
+          if (pending === undefined) {
+            return;
+          }
+          this.pending.delete(requestId);
+          pending.reject(
+            new ChirimenError(
+              'Operation',
+              `Protocol request timed out after ${this.timeoutMs}ms`
+            )
+          );
+        }, this.timeoutMs);
+
         this.pending.set(requestId, {
           resolve: resolve as (response: ProtocolSuccessResponse) => void,
           reject,
+          timer,
         });
       }
     );
 
     const socket = this.socket;
     if (socket === null || socket.readyState !== 1) {
-      this.pending.delete(requestId);
+      this.clearPending(requestId);
       throw new ChirimenError(
         'DeviceUnavailable',
         'WebSocket is not connected'
@@ -156,7 +183,7 @@ export class WebSocketClientTransport {
     try {
       socket.send(encodeProtocolMessage(message));
     } catch (cause) {
-      this.pending.delete(requestId);
+      this.clearPending(requestId);
       throw new ChirimenError(
         'Operation',
         'Failed to send protocol request',
@@ -197,6 +224,31 @@ export class WebSocketClientTransport {
     }
   }
 
+  private handleDisconnect(error: ChirimenError): void {
+    this.socket = null;
+    this.status = 0;
+    this.failWaitQueue(error);
+    this.rejectAllPending(error);
+  }
+
+  private clearPending(requestId: RequestId): void {
+    const pending = this.pending.get(requestId);
+    if (pending === undefined) {
+      return;
+    }
+    clearTimeout(pending.timer);
+    this.pending.delete(requestId);
+  }
+
+  private rejectAllPending(error: ChirimenError): void {
+    const entries = [...this.pending.entries()];
+    this.pending.clear();
+    for (const [, pending] of entries) {
+      clearTimeout(pending.timer);
+      pending.reject(error);
+    }
+  }
+
   private handleMessage(data: unknown): void {
     if (typeof data !== 'string') {
       return;
@@ -214,6 +266,7 @@ export class WebSocketClientTransport {
       if (pending === undefined) {
         return;
       }
+      clearTimeout(pending.timer);
       this.pending.delete(message.requestId);
 
       if (message.ok) {
