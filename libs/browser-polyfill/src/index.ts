@@ -13,7 +13,7 @@ export {
   installBrowserPolyfill,
   requestGPIOAccess,
   requestI2CAccess,
-} from './lib/navigator-gpio.js';
+} from './lib/navigator-polyfill.js';
 export {
   DEFAULT_REQUEST_TIMEOUT_MS,
   WebSocketClientTransport,

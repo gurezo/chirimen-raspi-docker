@@ -10,7 +10,7 @@ import {
   installBrowserPolyfill,
   requestGPIOAccess,
   resetBrowserPolyfillForTests,
-} from './navigator-gpio.js';
+} from './navigator-polyfill.js';
 import type { WebSocketConstructor } from './websocket-client-transport.js';
 
 let autoOpen = true;
