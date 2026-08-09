@@ -28,6 +28,7 @@ Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/
 | `core` | `libs/core` | `type:lib`, `scope:shared`, `layer:core` |
 | `gpio` | `libs/gpio` | `type:lib`, `scope:hardware`, `layer:domain` |
 | `i2c` | `libs/i2c` | `type:lib`, `scope:hardware`, `layer:domain` |
+| `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
 | `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:runtime`, `platform:node` |
 
 tags は各 `project.json` の `tags` 配列に設定する。
@@ -36,7 +37,6 @@ tags は各 `project.json` の `tags` 配列に設定する。
 
 | Project | Path（予定） | tags |
 | --- | --- | --- |
-| `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
 | `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
 | `web-demo` | `apps/web-demo` | `type:app`, `scope:demo`, `platform:browser` |
 
@@ -98,7 +98,7 @@ platform:browser ↔ platform:node の直接依存
 | `platform:node` | `notDependOnLibsWithTags: ['platform:browser']` | Node-only → Browser-only を禁止 |
 | `layer:core` | `onlyDependOnLibsWithTags: []` | `core` は他 lib に依存しない |
 | `layer:domain` | `onlyDependOnLibsWithTags: ['layer:core']` | `gpio` / `i2c` → `core` のみ |
-| `layer:protocol` | `onlyDependOnLibsWithTags: ['layer:core']` | 将来 `protocol` → `core` のみ |
+| `layer:protocol` | `onlyDependOnLibsWithTags: ['layer:core']` | `protocol` → `core` のみ |
 | `scope:runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
 | `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
 | `scope:server` | `onlyDependOnLibsWithTags: ['scope:runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の server 許可依存 |
@@ -114,6 +114,7 @@ pnpm nx show project server --json
 pnpm nx show project core --json
 pnpm nx show project gpio --json
 pnpm nx show project i2c --json
+pnpm nx show project protocol --json
 pnpm nx show project node-runtime --json
 pnpm nx graph
 ```
