@@ -196,6 +196,27 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 
 実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
 
+## Browser GPIO polyfill 入口
+
+`navigator.requestGPIOAccess()` は Issue #37 で `libs/browser-polyfill` に実装する。
+
+| 項目 | 決定 |
+| --- | --- |
+| 初期化 | `installBrowserPolyfill(options)` で `WebSocketClientTransport` を接続し、`navigator.requestGPIOAccess` を登録する |
+| 取得 | `await navigator.requestGPIOAccess()` → domain `GpioAccess`（`BrowserGpioAccess`） |
+| ports | CHIRIMEN `polyfill.js` と同じ BCM ピン固定一覧（含む `26`） |
+| 操作 | `GpioPort.export` / `read` / `write` / `unexport` → `gpio.export` / `read` / `write` / `unexport` |
+| 依存 | `protocol` / `gpio` / `core`。`node-runtime` には依存しない |
+| 非対象 | `gpio.subscribe` / `onchange`（Phase 5） |
+
+利用例:
+
+```ts
+await installBrowserPolyfill({ url: 'ws://localhost:33330/' });
+const access = await navigator.requestGPIOAccess();
+const port = access.ports.get(26);
+```
+
 ## 後続 Issue
 
 | Issue | 内容 |
@@ -205,5 +226,5 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 | #34 | encode / decode（本節「Wire format」で完了） |
 | #35 | `libs/browser-polyfill` 作成（完了） |
 | #36 | WebSocket client transport（本節で完了） |
-| #37 | `navigator.requestGPIOAccess()` |
+| #37 | `navigator.requestGPIOAccess()`（本節「Browser GPIO polyfill 入口」で完了） |
 | #38 | `navigator.requestI2CAccess()` |

@@ -92,6 +92,9 @@ importers:
       core:
         specifier: workspace:*
         version: link:../core
+      gpio:
+        specifier: workspace:*
+        version: link:../gpio
       protocol:
         specifier: workspace:*
         version: link:../protocol
