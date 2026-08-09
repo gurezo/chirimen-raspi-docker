@@ -11,6 +11,7 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#32 GPIO protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/32)
 - 子 Issue: [#33 I2C protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/33)
 - 子 Issue: [#34 Protocol encode / decode を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/34)
+- 子 Issue: [#36 WebSocket client transport を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/36)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -180,6 +181,21 @@ Browser 起点の I2C `operation` は Node Runtime の `I2cSession` / `I2CSlaveD
 
 詳細は [nx-boundaries.md](./nx-boundaries.md) を参照。
 
+## WebSocket client transport
+
+Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClientTransport` が担う（Issue #36）。
+
+| 項目 | 決定 |
+| --- | --- |
+| 搬送 | WebSocket text frame + `encodeProtocolMessage` / `decodeProtocolMessage` |
+| 相関 | 送信時に `requestId`（`0`–`0xffff`）を発行し、response を対応 Promise へ返す |
+| timeout | デフォルト 10000ms。期限切れは `ChirimenError`（`code: 'Operation'`） |
+| disconnect | `close` / 明示 `disconnect()` 時、pending request を `ChirimenError`（`code: 'DeviceUnavailable'`）で reject |
+| event | 相関対象外。任意の `onEvent` コールバックへ転送（GPIO onchange 本実装は Phase 5） |
+| 依存 | `protocol` / `core` のみ。`node-runtime` には依存しない |
+
+実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
+
 ## 後続 Issue
 
 | Issue | 内容 |
@@ -187,4 +203,7 @@ Browser 起点の I2C `operation` は Node Runtime の `I2cSession` / `I2CSlaveD
 | #32 | GPIO protocol operations の runtime 対応詳細（本節で完了） |
 | #33 | I2C protocol operations の runtime 対応詳細（本節で完了） |
 | #34 | encode / decode（本節「Wire format」で完了） |
-| #35–#38 | browser-polyfill / WebSocket transport |
+| #35 | `libs/browser-polyfill` 作成（完了） |
+| #36 | WebSocket client transport（本節で完了） |
+| #37 | `navigator.requestGPIOAccess()` |
+| #38 | `navigator.requestI2CAccess()` |
