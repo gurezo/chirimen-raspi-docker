@@ -8,7 +8,7 @@ import {
 
 import {
   installBrowserPolyfill,
-  requestGPIOAccess,
+  requestI2CAccess,
   resetBrowserPolyfillForTests,
 } from './navigator-polyfill.js';
 import type { WebSocketConstructor } from './websocket-client-transport.js';
@@ -82,7 +82,7 @@ function replyWithSuccess(
   socket.emitMessage(encodeProtocolMessage(response));
 }
 
-describe('navigator.requestGPIOAccess', () => {
+describe('navigator.requestI2CAccess', () => {
   beforeEach(() => {
     autoOpen = true;
     onSend = null;
@@ -95,38 +95,47 @@ describe('navigator.requestGPIOAccess', () => {
   });
 
   it('rejects when polyfill is not installed', async () => {
-    await expect(requestGPIOAccess()).rejects.toMatchObject({
+    await expect(requestI2CAccess()).rejects.toMatchObject({
       code: 'InvalidAccess',
     });
   });
 
-  it('resolves after install and exposes port 26', async () => {
+  it('resolves after install and exposes port 1', async () => {
     await installBrowserPolyfill({
       url: 'ws://localhost:33330/',
       webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
     });
 
-    const access = await navigator.requestGPIOAccess();
-    const port = access.ports.get(26);
+    const access = await navigator.requestI2CAccess();
+    const port = access.ports.get(1);
 
     expect(port).toBeDefined();
-    expect(port?.portNumber).toBe(26);
-    expect(port?.portName).toBe('GPIO26');
-    expect(port?.pinName).toBe('PIN26');
-    expect(port?.exported).toBe(false);
+    expect(port?.portNumber).toBe(1);
+    expect(port?.portName).toBe('I2C1');
+    expect(port?.pinName).toBe('PIN1');
   });
 
-  it('routes export/read/write/unexport through gpio protocol operations', async () => {
+  it('routes open/read/write through i2c protocol operations', async () => {
     onSend = (data, socket) => {
       const request = decodeProtocolMessage(data);
       if (!isProtocolRequest(request)) {
         throw new Error('expected protocol request');
       }
-      if (request.operation === 'gpio.read') {
-        replyWithSuccess(data, socket, { value: 1 });
-        return;
+      switch (request.operation) {
+        case 'i2c.read8':
+        case 'i2c.readByte':
+          replyWithSuccess(data, socket, { value: 0x42 });
+          return;
+        case 'i2c.read16':
+          replyWithSuccess(data, socket, { value: 0x1234 });
+          return;
+        case 'i2c.readBytes':
+        case 'i2c.writeBytes':
+          replyWithSuccess(data, socket, { bytes: [0x01, 0x02] });
+          return;
+        default:
+          replyWithSuccess(data, socket);
       }
-      replyWithSuccess(data, socket);
     };
 
     await installBrowserPolyfill({
@@ -134,35 +143,43 @@ describe('navigator.requestGPIOAccess', () => {
       webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
     });
 
-    const access = await navigator.requestGPIOAccess();
-    const port = access.ports.get(26);
+    const access = await navigator.requestI2CAccess();
+    const port = access.ports.get(1);
     expect(port).toBeDefined();
     if (!port) {
-      throw new Error('expected port 26');
+      throw new Error('expected port 1');
     }
 
-    await port.export('out');
-    expect(port.exported).toBe(true);
-    expect(port.direction).toBe('out');
+    const device = await port.open(0x48);
+    expect(device.slaveAddress).toBe(0x48);
 
-    await port.write(1);
-
-    await port.export('in');
-    expect(await port.read()).toBe(1);
-
-    await port.unexport();
-    expect(port.exported).toBe(false);
+    expect(await device.read8(0x00)).toBe(0x42);
+    expect(await device.read16(0x01)).toBe(0x1234);
+    await device.write8(0x02, 0x10);
+    await device.write16(0x03, 0xabcd);
+    expect(await device.readByte()).toBe(0x42);
+    await device.writeByte(0x55);
+    await expect(device.readBytes(2)).resolves.toEqual(
+      Uint8Array.from([0x01, 0x02])
+    );
+    await expect(device.writeBytes([0x01, 0x02])).resolves.toEqual(
+      Uint8Array.from([0x01, 0x02])
+    );
 
     expect(sentOperations).toEqual([
-      'gpio.export',
-      'gpio.write',
-      'gpio.export',
-      'gpio.read',
-      'gpio.unexport',
+      'i2c.open',
+      'i2c.read8',
+      'i2c.read16',
+      'i2c.write8',
+      'i2c.write16',
+      'i2c.readByte',
+      'i2c.writeByte',
+      'i2c.readBytes',
+      'i2c.writeBytes',
     ]);
   });
 
-  it('unexportAll releases exported ports', async () => {
+  it('rejects invalid slave address on open', async () => {
     onSend = (data, socket) => {
       replyWithSuccess(data, socket);
     };
@@ -172,42 +189,17 @@ describe('navigator.requestGPIOAccess', () => {
       webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
     });
 
-    const access = await navigator.requestGPIOAccess();
-    const port26 = access.ports.get(26);
-    const port17 = access.ports.get(17);
-    expect(port26).toBeDefined();
-    expect(port17).toBeDefined();
-    if (!port26 || !port17) {
-      throw new Error('expected ports 26 and 17');
-    }
-
-    await port26.export('out');
-    await port17.export('in');
-    await access.unexportAll();
-
-    expect(port26.exported).toBe(false);
-    expect(port17.exported).toBe(false);
-    expect(sentOperations.filter((op) => op === 'gpio.unexport')).toHaveLength(
-      2
-    );
-  });
-
-  it('rejects read/write when port is not exported', async () => {
-    await installBrowserPolyfill({
-      url: 'ws://localhost:33330/',
-      webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
-    });
-
-    const access = await navigator.requestGPIOAccess();
-    const port = access.ports.get(26);
+    const access = await navigator.requestI2CAccess();
+    const port = access.ports.get(1);
     expect(port).toBeDefined();
     if (!port) {
-      throw new Error('expected port 26');
+      throw new Error('expected port 1');
     }
 
-    await expect(port.read()).rejects.toBeInstanceOf(ChirimenError);
-    await expect(port.write(1)).rejects.toMatchObject({
+    await expect(port.open(0x80 as never)).rejects.toBeInstanceOf(ChirimenError);
+    await expect(port.open(0x80 as never)).rejects.toMatchObject({
       code: 'InvalidAccess',
     });
+    expect(sentOperations).toEqual([]);
   });
 });

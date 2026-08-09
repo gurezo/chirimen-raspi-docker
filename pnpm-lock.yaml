@@ -95,6 +95,9 @@ importers:
       gpio:
         specifier: workspace:*
         version: link:../gpio
+      i2c:
+        specifier: workspace:*
+        version: link:../i2c
       protocol:
         specifier: workspace:*
         version: link:../protocol
