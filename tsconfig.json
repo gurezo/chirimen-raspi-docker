@@ -20,6 +20,9 @@
     },
     {
       "path": "./libs/protocol"
+    },
+    {
+      "path": "./libs/browser-polyfill"
     }
   ]
 }
