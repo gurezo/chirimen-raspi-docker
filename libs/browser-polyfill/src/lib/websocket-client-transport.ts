@@ -82,6 +82,7 @@ export class WebSocketClientTransport {
   private manualClose = false;
   private hasConnectedOnce = false;
   private reconnectAttempts = 0;
+  private reconnectInProgress = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: WebSocketClientTransportOptions) {
@@ -140,6 +141,7 @@ export class WebSocketClientTransport {
         this.hasConnectedOnce = true;
         this.status = 2;
         this.reconnectAttempts = 0;
+        this.reconnectInProgress = false;
         const queue = this.waitQueue;
         this.waitQueue = [];
         for (const entry of queue) {
@@ -151,15 +153,27 @@ export class WebSocketClientTransport {
       };
 
       socket.onerror = () => {
-        if (this.status === 1) {
-          const error = new ChirimenError(
-            'DeviceUnavailable',
-            'WebSocket connection failed'
-          );
-          this.failWaitQueue(error);
-          this.status = 0;
-          this.socket = null;
+        if (this.status !== 1) {
+          return;
         }
+        const error = new ChirimenError(
+          'DeviceUnavailable',
+          'WebSocket connection failed'
+        );
+        this.status = 0;
+        this.socket = null;
+        if (this.reconnectInProgress) {
+          // ensureConnected 待機者は残し、この connect() の Promise だけ reject する
+          const index = this.waitQueue.findIndex(
+            (entry) => entry.resolve === resolve
+          );
+          if (index >= 0) {
+            this.waitQueue.splice(index, 1);
+          }
+          reject(error);
+          return;
+        }
+        this.failWaitQueue(error);
       };
 
       socket.onmessage = (event: MessageEvent) => {
@@ -289,8 +303,11 @@ export class WebSocketClientTransport {
   }
 
   private handleSocketClose(): void {
-    // 一度でも接続成功した後の予期せぬ切断のみ自動 reconnect する
-    const shouldReconnect = !this.manualClose && this.hasConnectedOnce;
+    // reconnect 試行中の失敗は scheduleReconnect 側で再スケジュールする
+    const shouldReconnect =
+      !this.manualClose &&
+      this.hasConnectedOnce &&
+      !this.reconnectInProgress;
     // disconnect() 済みなら cleanup 済み。onclose の二重呼び出しを無視する
     if (this.status !== 0 || this.socket !== null) {
       this.handleDisconnect(
@@ -345,14 +362,26 @@ export class WebSocketClientTransport {
       }
 
       this.reconnectAttempts += 1;
+      this.reconnectInProgress = true;
       void this.connect().then(
-        () => undefined,
         () => {
-          // onclose が来る環境ではそちらで再スケジュールされる。
-          // Fake など onclose が無い失敗経路向けに再スケジュールする。
-          if (!this.manualClose && this.status === 0) {
-            this.scheduleReconnect();
+          this.reconnectInProgress = false;
+        },
+        () => {
+          this.reconnectInProgress = false;
+          if (this.manualClose) {
+            return;
           }
+          if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            this.failWaitQueue(
+              new ChirimenError(
+                'DeviceUnavailable',
+                'WebSocket reconnect failed'
+              )
+            );
+            return;
+          }
+          this.scheduleReconnect();
         }
       );
     }, this.reconnectIntervalMs);
