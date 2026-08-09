@@ -38,7 +38,10 @@ export type GpioProtocolEventOperation = 'gpio.onchange';
 /** Server → Browser の event operation */
 export type ProtocolEventOperation = GpioProtocolEventOperation;
 
-/** GPIO direction（domain の 'in' | 'out' と一致。wire 上の 0/1 変換は #34） */
+/**
+ * GPIO direction（domain の 'in' | 'out' と一致）。
+ * JSON wire 上も文字列のまま送る（旧バイナリの 0/1 変換は行わない。#34）。
+ */
 export type ProtocolGpioDirection = 'in' | 'out';
 
 /** GPIO value（0 | 1） */

@@ -1,5 +1,5 @@
 /**
  * request / response の相関 ID。
- * 旧 polyfill の session カウンタ相当。wire 表現（0..0xffff など）は #34 で確定する。
+ * 旧 polyfill の session カウンタ相当。wire 上は整数 `0`–`0xffff`（#34）。
  */
 export type RequestId = number;
