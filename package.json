@@ -4,11 +4,14 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.20.0",
+  "nx": {
+    "includedScripts": []
+  },
   "scripts": {
     "nx": "nx",
     "build": "nx build server",
     "serve": "nx serve server",
-    "test": "nx run-many -t test",
+    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill",
     "graph": "nx graph"
   },
   "dependencies": {

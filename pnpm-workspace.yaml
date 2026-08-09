@@ -1,5 +1,8 @@
+# apps/* / libs/* に package.json は置かない（統合型）。
+# glob は将来のパッケージ追加用に残し、現状は root のみがパッケージになる。
 packages:
-  - .
+  - apps/*
+  - libs/*
 
 allowBuilds:
   '@swc/core': true
