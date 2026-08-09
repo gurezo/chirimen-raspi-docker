@@ -1,13 +1,13 @@
 # Nx project tags / module boundaries
 
-Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/wiki/01.Development-Concept) で定義した library / application の責務を、Nx project tags で表現する。
+Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/wiki/01.Development-Concept) で定義した library / application の責務を、Nx project tags と `@nx/enforce-module-boundaries` の `depConstraints` で表現する。
 
-本ドキュメントは tags の命名規則と現行・将来 project への割当を記録する。`@nx/enforce-module-boundaries` による依存制約の詳細は Issue #12 で追加する。
+本ドキュメントは tags の命名規則・現行/将来 project への割当、および ESLint による依存制約を記録する。
 
 ## 目的
 
 - 各 project の責務（app / lib、shared / hardware / runtime など）をコード上で可視化する
-- 後続の module boundary 設定（#12）で禁止依存を lint 検出できるようにする準備をする
+- Wiki で禁止した依存（例: `browser-polyfill` → `node-runtime`）を CI / `pnpm lint` で検出する
 
 ## Tag 次元
 
@@ -42,7 +42,71 @@ tags は各 `project.json` の `tags` 配列に設定する。
 
 新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
 
+## 依存方向（Wiki）
+
+許可する依存方向は次のとおり。
+
+```text
+apps/server
+  → libs/node-runtime
+  → libs/protocol
+  → libs/gpio
+  → libs/i2c
+  → libs/core
+
+libs/browser-polyfill
+  → libs/protocol
+  → libs/gpio
+  → libs/i2c
+  → libs/core
+
+apps/web-demo
+  → libs/browser-polyfill
+  → libs/gpio
+  → libs/i2c
+  → libs/core
+
+libs/node-runtime
+  → libs/gpio
+  → libs/i2c
+  → libs/core
+
+libs/protocol → libs/core
+libs/gpio → libs/core
+libs/i2c → libs/core
+```
+
+禁止する依存の例:
+
+```text
+libs/core → 他 lib
+libs/gpio / libs/i2c / libs/protocol → apps/*
+libs/browser-polyfill → libs/node-runtime
+libs/node-runtime → libs/browser-polyfill
+platform:browser ↔ platform:node の直接依存
+```
+
+## Module boundary（depConstraints）
+
+ルート [`eslint.config.mjs`](../../eslint.config.mjs) の `@nx/enforce-module-boundaries` に、次の `depConstraints` を設定する。Nx はマッチした制約をすべて満たす必要がある。
+
+| sourceTag | 制約 | 意図 |
+| --- | --- | --- |
+| `type:app` | `onlyDependOnLibsWithTags: ['type:lib']` | app → app を禁止 |
+| `type:lib` | `notDependOnLibsWithTags: ['type:app']` | domain/shared/runtime → application を禁止 |
+| `platform:browser` | `notDependOnLibsWithTags: ['platform:node']` | Browser-only → Node-only を禁止 |
+| `platform:node` | `notDependOnLibsWithTags: ['platform:browser']` | Node-only → Browser-only を禁止 |
+| `layer:core` | `onlyDependOnLibsWithTags: []` | `core` は他 lib に依存しない |
+| `layer:domain` | `onlyDependOnLibsWithTags: ['layer:core']` | `gpio` / `i2c` → `core` のみ |
+| `layer:protocol` | `onlyDependOnLibsWithTags: ['layer:core']` | 将来 `protocol` → `core` のみ |
+| `scope:runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
+| `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
+| `scope:server` | `onlyDependOnLibsWithTags: ['scope:runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の server 許可依存 |
+| `scope:demo` | `onlyDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:shared', 'layer:domain', 'layer:core']` | 将来 `web-demo` 用 |
+
 ## 確認方法
+
+### tags
 
 ```bash
 pnpm nx show projects
@@ -54,8 +118,12 @@ pnpm nx show project node-runtime --json
 pnpm nx graph
 ```
 
-`pnpm nx show project <name> --json` の `tags` に期待値が含まれること、`pnpm nx graph` で project 関係を確認できることを完了条件とする。
+`pnpm nx show project <name> --json` の `tags` に期待値が含まれること、`pnpm nx graph` で project 関係を確認できることを確認する。
 
-## Module boundary について
+### module boundary
 
-依存方向の禁止ルール（例: `browser-polyfill` → `node-runtime` の禁止、domain lib → application の禁止）は、本ドキュメントの tags を前提に Issue #12 で `eslint.config.mjs` の `depConstraints` へ反映する。
+```bash
+pnpm lint
+```
+
+意図的に禁止 import（例: `libs/gpio` から `server` や `node-runtime` を import）を追加すると lint が失敗し、削除すると成功することを確認する。
