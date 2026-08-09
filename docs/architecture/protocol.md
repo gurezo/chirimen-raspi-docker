@@ -12,6 +12,8 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#33 I2C protocol operations を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/33)
 - 子 Issue: [#34 Protocol encode / decode を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/34)
 - 子 Issue: [#36 WebSocket client transport を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/36)
+- 親 Issue: [#5 Phase 5: WebSocket and GPIO onchange](https://github.com/gurezo/chirimen-raspi-docker/issues/5)
+- 子 Issue: [#39 WebSocket server lifecycle を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/39)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
