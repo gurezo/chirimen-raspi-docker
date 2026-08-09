@@ -8,10 +8,9 @@
     "scope:shared",
     "layer:protocol"
   ],
-  "// targets": "to see all targets run: nx show project protocol --web",
   "targets": {
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": [
         "{options.reportsDirectory}"
       ],

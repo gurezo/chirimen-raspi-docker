@@ -9,3 +9,5 @@ tmp
 .nx/self-healing
 vite.config.*.timestamp*
 coverage
+
+.nx/migrate-runs

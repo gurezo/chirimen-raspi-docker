@@ -24,5 +24,8 @@
     {
       "path": "./libs/browser-polyfill"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0"
+  }
 }
