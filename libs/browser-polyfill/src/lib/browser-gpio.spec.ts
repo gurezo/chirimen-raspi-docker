@@ -210,4 +210,130 @@ describe('navigator.requestGPIOAccess', () => {
       code: 'InvalidAccess',
     });
   });
+
+  it('subscribes on onchange set and dispatches gpio.onchange events', async () => {
+    const socketHolder: { current: FakeWebSocket | null } = { current: null };
+    onSend = (data, socket) => {
+      socketHolder.current = socket;
+      replyWithSuccess(data, socket);
+    };
+
+    await installBrowserPolyfill({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
+    });
+
+    const access = await navigator.requestGPIOAccess();
+    const port = access.ports.get(26);
+    const other = access.ports.get(17);
+    expect(port).toBeDefined();
+    expect(other).toBeDefined();
+    if (!port || !other) {
+      throw new Error('expected ports 26 and 17');
+    }
+
+    await port.export('in');
+    await other.export('in');
+
+    const handler = vi.fn();
+    const otherHandler = vi.fn();
+    port.onchange = handler;
+    other.onchange = otherHandler;
+
+    await vi.waitFor(() => {
+      expect(sentOperations.filter((op) => op === 'gpio.subscribe')).toEqual([
+        'gpio.subscribe',
+        'gpio.subscribe',
+      ]);
+    });
+
+    socketHolder.current?.emitMessage(
+      encodeProtocolMessage({
+        kind: 'event',
+        operation: 'gpio.onchange',
+        payload: { portNumber: 26, value: 1 },
+      })
+    );
+
+    expect(handler).toHaveBeenCalledWith({ portNumber: 26, value: 1 });
+    expect(otherHandler).not.toHaveBeenCalled();
+
+    port.onchange = null;
+    await vi.waitFor(() => {
+      expect(sentOperations.filter((op) => op === 'gpio.unsubscribe')).toContain(
+        'gpio.unsubscribe'
+      );
+    });
+
+    handler.mockClear();
+    socketHolder.current?.emitMessage(
+      encodeProtocolMessage({
+        kind: 'event',
+        operation: 'gpio.onchange',
+        payload: { portNumber: 26, value: 0 },
+      })
+    );
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('rejects onchange when port is not exported', async () => {
+    await installBrowserPolyfill({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
+    });
+
+    const access = await navigator.requestGPIOAccess();
+    const port = access.ports.get(26);
+    expect(port).toBeDefined();
+    if (!port) {
+      throw new Error('expected port 26');
+    }
+
+    expect(() => {
+      port.onchange = () => undefined;
+    }).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+      })
+    );
+    expect(port.onchange).toBeNull();
+    expect(sentOperations).not.toContain('gpio.subscribe');
+  });
+
+  it('clears onchange and unsubscribes on unexport', async () => {
+    onSend = (data, socket) => {
+      replyWithSuccess(data, socket);
+    };
+
+    await installBrowserPolyfill({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
+    });
+
+    const access = await navigator.requestGPIOAccess();
+    const port = access.ports.get(26);
+    expect(port).toBeDefined();
+    if (!port) {
+      throw new Error('expected port 26');
+    }
+
+    await port.export('in');
+    const handler = vi.fn();
+    port.onchange = handler;
+
+    await vi.waitFor(() => {
+      expect(sentOperations).toContain('gpio.subscribe');
+    });
+
+    await port.unexport();
+
+    expect(port.onchange).toBeNull();
+    expect(sentOperations.filter((op) => op === 'gpio.unsubscribe')).toHaveLength(
+      1
+    );
+    expect(sentOperations.filter((op) => op === 'gpio.unexport')).toHaveLength(
+      1
+    );
+  });
 });
