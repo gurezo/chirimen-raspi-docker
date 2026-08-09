@@ -91,81 +91,6 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(@types/node@26.2.0)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0))
 
-  apps/server:
-    dependencies:
-      express:
-        specifier: ^4.21.2
-        version: 4.22.2(supports-color@8.1.1)
-      node-runtime:
-        specifier: workspace:*
-        version: link:../../libs/node-runtime
-
-  libs/browser-polyfill:
-    dependencies:
-      core:
-        specifier: workspace:*
-        version: link:../core
-      gpio:
-        specifier: workspace:*
-        version: link:../gpio
-      i2c:
-        specifier: workspace:*
-        version: link:../i2c
-      protocol:
-        specifier: workspace:*
-        version: link:../protocol
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/core:
-    dependencies:
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/gpio:
-    dependencies:
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/i2c:
-    dependencies:
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/node-runtime:
-    dependencies:
-      core:
-        specifier: workspace:*
-        version: link:../core
-      gpio:
-        specifier: workspace:*
-        version: link:../gpio
-      i2c:
-        specifier: workspace:*
-        version: link:../i2c
-      node-web-gpio:
-        specifier: ^1.1.72
-        version: 1.1.72
-      node-web-i2c:
-        specifier: ^1.1.80
-        version: 1.1.80
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/protocol:
-    dependencies:
-      core:
-        specifier: workspace:*
-        version: link:../core
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
 packages:
 
   '@babel/code-frame@7.29.7':
@@ -6551,23 +6476,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  body-parser@1.20.6(supports-color@8.1.1):
-    dependencies:
-      bytes: 3.1.2
-      content-type: 1.0.5
-      debug: 2.6.9(supports-color@8.1.1)
-      depd: 2.0.0
-      destroy: 1.2.0
-      http-errors: 2.0.1
-      iconv-lite: 0.4.24
-      on-finished: 2.4.1
-      qs: 6.15.3
-      raw-body: 2.5.3
-      type-is: 1.6.18
-      unpipe: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
-
   brace-expansion@1.1.18:
     dependencies:
       balanced-match: 1.0.2
@@ -6717,12 +6625,6 @@ snapshots:
       ms: 2.0.0
     optionalDependencies:
       supports-color: 7.2.0
-
-  debug@2.6.9(supports-color@8.1.1):
-    dependencies:
-      ms: 2.0.0
-    optionalDependencies:
-      supports-color: 8.1.1
 
   debug@4.3.1(supports-color@7.2.0):
     dependencies:
@@ -7000,42 +6902,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  express@4.22.2(supports-color@8.1.1):
-    dependencies:
-      accepts: 1.3.8
-      array-flatten: 1.1.1
-      body-parser: 1.20.6(supports-color@8.1.1)
-      content-disposition: 0.5.4
-      content-type: 1.0.5
-      cookie: 0.7.2
-      cookie-signature: 1.0.7
-      debug: 2.6.9(supports-color@8.1.1)
-      depd: 2.0.0
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      finalhandler: 1.3.2(supports-color@8.1.1)
-      fresh: 0.5.2
-      http-errors: 2.0.1
-      merge-descriptors: 1.0.3
-      methods: 1.1.2
-      on-finished: 2.4.1
-      parseurl: 1.3.3
-      path-to-regexp: 0.1.13
-      proxy-addr: 2.0.7
-      qs: 6.15.3
-      range-parser: 1.2.1
-      safe-buffer: 5.2.1
-      send: 0.19.2(supports-color@8.1.1)
-      serve-static: 1.16.3(supports-color@8.1.1)
-      setprototypeof: 1.2.0
-      statuses: 2.0.2
-      type-is: 1.6.18
-      utils-merge: 1.0.1
-      vary: 1.1.2
-    transitivePeerDependencies:
-      - supports-color
-
   fast-deep-equal@3.1.3: {}
 
   fast-json-stable-stringify@2.1.0: {}
@@ -7065,18 +6931,6 @@ snapshots:
   finalhandler@1.3.2(supports-color@7.2.0):
     dependencies:
       debug: 2.6.9(supports-color@7.2.0)
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      on-finished: 2.4.1
-      parseurl: 1.3.3
-      statuses: 2.0.2
-      unpipe: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
-
-  finalhandler@1.3.2(supports-color@8.1.1):
-    dependencies:
-      debug: 2.6.9(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -8274,39 +8128,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  send@0.19.2(supports-color@8.1.1):
-    dependencies:
-      debug: 2.6.9(supports-color@8.1.1)
-      depd: 2.0.0
-      destroy: 1.2.0
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      fresh: 0.5.2
-      http-errors: 2.0.1
-      mime: 1.6.0
-      ms: 2.1.3
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      statuses: 2.0.2
-    transitivePeerDependencies:
-      - supports-color
-
   serve-static@1.16.3(supports-color@7.2.0):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
       send: 0.19.2(supports-color@7.2.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  serve-static@1.16.3(supports-color@8.1.1):
-    dependencies:
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      parseurl: 1.3.3
-      send: 0.19.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
