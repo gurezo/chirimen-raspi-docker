@@ -1,7 +1,8 @@
 /**
  * 旧 CHIRIMEN polyfill.js / srv.js の function id。
  * GPIO の runtime 対応は gpio-operation-mapping（#32）を参照。
- * I2C ops 詳細は #33、encode / decode は #34。
+ * I2C の runtime 対応は i2c-operation-mapping（#33）を参照。
+ * encode / decode は #34。
  * 本モジュールは数値定数のみを提供し、シリアライズは行わない。
  *
  * @see docs/architecture/protocol.md

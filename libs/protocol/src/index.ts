@@ -21,6 +21,7 @@ export {
 export type {
   GpioProtocolEventOperation,
   GpioProtocolOperation,
+  I2cProtocolOperation,
   ProtocolEventOperation,
   ProtocolEventPayload,
   ProtocolEventPayloadMap,
@@ -38,9 +39,23 @@ export {
   isGpioPortOnlyRequestPayload,
   isGpioProtocolOperation,
   isGpioWriteRequestPayload,
+  isI2cPortSlaveRequestPayload,
+  isI2cProtocolOperation,
+  isI2cReadBytesRequestPayload,
+  isI2cRegisterReadRequestPayload,
+  isI2cWrite16RequestPayload,
+  isI2cWrite8RequestPayload,
+  isI2cWriteByteRequestPayload,
+  isI2cWriteBytesRequestPayload,
   isProtocolGpioDirection,
   isProtocolGpioPortNumber,
   isProtocolGpioValue,
+  isProtocolI2cByte,
+  isProtocolI2cBytesLength,
+  isProtocolI2cPortNumber,
+  isProtocolI2cRegisterNumber,
+  isProtocolI2cSlaveAddress,
+  isProtocolI2cWord,
   isProtocolOperation,
 } from './lib/operations.js';
 export type { GpioOperationRuntimeMapping } from './lib/gpio-operation-mapping.js';
@@ -49,6 +64,12 @@ export {
   gpioOperationFromLegacyFunctionId,
   legacyFunctionIdFromGpioOperation,
 } from './lib/gpio-operation-mapping.js';
+export type { I2cOperationRuntimeMapping } from './lib/i2c-operation-mapping.js';
+export {
+  I2C_OPERATION_RUNTIME_MAPPINGS,
+  i2cOperationsFromLegacyFunctionId,
+  legacyFunctionIdFromI2cOperation,
+} from './lib/i2c-operation-mapping.js';
 export {
   LegacyFunctionId,
   LegacyMessageKind,
