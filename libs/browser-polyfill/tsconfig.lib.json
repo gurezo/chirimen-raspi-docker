@@ -5,11 +5,15 @@
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
     "emitDeclarationOnly": false,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2022", "DOM"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
+    {
+      "path": "../core/tsconfig.lib.json"
+    },
     {
       "path": "../protocol/tsconfig.lib.json"
     }
