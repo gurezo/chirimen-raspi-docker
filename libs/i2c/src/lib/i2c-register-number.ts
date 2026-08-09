@@ -1,7 +1,10 @@
-/** I2C レジスタ番号 */
+/** I2C レジスタ番号（0–0xffff） */
 export type I2CRegisterNumber = number;
 
-/** `value` が有効な I2C register number かどうか */
+/**
+ * `value` が有効な {@link I2CRegisterNumber} かどうか。
+ * @param value - 判定対象
+ */
 export function isI2CRegisterNumber(
   value: unknown
 ): value is I2CRegisterNumber {

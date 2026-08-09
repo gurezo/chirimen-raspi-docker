@@ -1,6 +1,10 @@
 /**
- * I2C domain public API.
+ * I2C domain の公開 API。
+ *
+ * Web I2C に近い型契約のみを提供する。
  * Node / Browser 固有の実装詳細は含めない。
+ *
+ * @packageDocumentation
  */
 export type { I2CPortNumber } from './lib/i2c-port-number.js';
 export { isI2CPortNumber } from './lib/i2c-port-number.js';
