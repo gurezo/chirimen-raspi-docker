@@ -87,6 +87,15 @@ importers:
         specifier: workspace:*
         version: link:../../libs/node-runtime
 
+  libs/browser-polyfill:
+    dependencies:
+      protocol:
+        specifier: workspace:*
+        version: link:../protocol
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/core:
     dependencies:
       tslib:
