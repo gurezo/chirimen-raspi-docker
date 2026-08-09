@@ -17,6 +17,8 @@ vi.mock('node-web-gpio', async (importOriginal) => {
 });
 
 function createNativePortMock(portNumber: number) {
+  const listeners = new Map<string, Set<(...args: unknown[]) => void>>();
+
   const port = {
     portNumber,
     portName: `GPIO${portNumber}`,
@@ -35,6 +37,21 @@ function createNativePortMock(portNumber: number) {
     write: vi.fn(async () => {
       // no-op for unit tests
     }),
+    on: vi.fn((event: string, listener: (...args: unknown[]) => void) => {
+      const set = listeners.get(event) ?? new Set();
+      set.add(listener);
+      listeners.set(event, set);
+      return port;
+    }),
+    off: vi.fn((event: string, listener: (...args: unknown[]) => void) => {
+      listeners.get(event)?.delete(listener);
+      return port;
+    }),
+    emit(event: string, ...args: unknown[]) {
+      for (const listener of listeners.get(event) ?? []) {
+        listener(...args);
+      }
+    },
   };
   return port;
 }
@@ -166,6 +183,43 @@ describe('NodeWebGpioPortAdapter', () => {
     });
     expect(nativePort.read).not.toHaveBeenCalled();
     expect(nativePort.write).not.toHaveBeenCalled();
+  });
+
+  it('forwards native change events through onchange', () => {
+    const nativePort = createNativePortMock(26);
+    const port = new NodeWebGpioPortAdapter(nativePort as never);
+    const handler = vi.fn();
+
+    expect(port.onchange).toBeNull();
+    port.onchange = handler;
+    expect(nativePort.on).toHaveBeenCalledWith('change', expect.any(Function));
+
+    nativePort.emit('change', { value: 1, port: nativePort });
+    expect(handler).toHaveBeenCalledWith({ value: 1, portNumber: 26 });
+
+    port.onchange = null;
+    expect(nativePort.off).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    );
+    nativePort.emit('change', { value: 0, port: nativePort });
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears onchange listener on unexport', async () => {
+    const nativePort = createNativePortMock(26);
+    const port = new NodeWebGpioPortAdapter(nativePort as never);
+    const handler = vi.fn();
+
+    port.onchange = handler;
+    await port.unexport();
+
+    expect(port.onchange).toBeNull();
+    expect(nativePort.off).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    );
+    expect(nativePort.unexport).toHaveBeenCalled();
   });
 });
 

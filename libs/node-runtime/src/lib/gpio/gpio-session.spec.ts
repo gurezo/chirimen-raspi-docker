@@ -266,6 +266,8 @@ describe('NodeWebGpioPortAdapter.export direction validation', () => {
       write: vi.fn(async () => {
         // no-op for unit tests
       }),
+      on: vi.fn(),
+      off: vi.fn(),
     };
     const port = new NodeWebGpioPortAdapter(nativePort as never);
 
