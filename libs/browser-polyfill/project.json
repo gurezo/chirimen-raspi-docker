@@ -8,15 +8,14 @@
     "scope:polyfill",
     "platform:browser"
   ],
-  "// targets": "to see all targets run: nx show project browser-polyfill --web",
   "targets": {
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": [
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/browser-polyfill"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/browser-polyfill"
       }
     }
   }

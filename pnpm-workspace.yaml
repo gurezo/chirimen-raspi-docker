@@ -1,9 +1,30 @@
 packages:
   - apps/*
   - libs/*
+
 allowBuilds:
   '@swc/core': true
   esbuild: true
   i2c-bus: true
   nx: true
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - esbuild
+  - '@esbuild/*'
+  - '@types/node'
+  - '@typescript-eslint/*'
+  - typescript-eslint
+  - eslint
+  - jsonc-eslint-parser
+  - node-web-gpio
+  - node-web-i2c
+  - verkit
+  - vite
+
+# 明示設定時は strict がデフォルト true。false なら未成熟版へフォールバック可
+minimumReleaseAgeStrict: false
+
+# Malicious releases are often detected and removed within a week.
+# 7 days x 24h x 60 min
+minimumReleaseAge: 10080

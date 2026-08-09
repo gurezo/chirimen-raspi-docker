@@ -8,15 +8,14 @@
     "scope:shared",
     "layer:core"
   ],
-  "// targets": "to see all targets run: nx show project core --web",
   "targets": {
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": [
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/core"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/core"
       }
     }
   }

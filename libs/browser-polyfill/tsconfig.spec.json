@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "./out-tsc/vitest",
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"],
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "."
   },
   "include": [
     "vite.config.mts",

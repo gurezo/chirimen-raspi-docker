@@ -8,15 +8,14 @@
     "scope:runtime",
     "platform:node"
   ],
-  "// targets": "to see all targets run: nx show project node-runtime --web",
   "targets": {
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": [
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "../../coverage/libs/node-runtime"
+        "reportsDirectory": "{workspaceRoot}/coverage/libs/node-runtime"
       }
     }
   }
