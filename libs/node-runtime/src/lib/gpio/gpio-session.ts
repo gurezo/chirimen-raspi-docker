@@ -32,6 +32,29 @@ export class GpioSession {
   }
 
   /**
+   * この session で open 済みの port を返す。
+   * 未 open の場合は InvalidAccess。
+   */
+  getOpenedPort(portNumber: unknown): GpioPort {
+    if (!isGpioPortNumber(portNumber)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid GPIO port number: ${String(portNumber)}`
+      );
+    }
+
+    const port = this.#opened.get(portNumber);
+    if (!port) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `GPIO port ${portNumber} is not open in this session`
+      );
+    }
+
+    return port;
+  }
+
+  /**
    * 指定 GPIO port を input / output として open（export）する。
    * 同一 session で既に open 済みの port は direction に関わらず拒否する。
    */

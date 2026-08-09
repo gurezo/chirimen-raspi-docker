@@ -344,6 +344,23 @@ describe('GpioSession', () => {
       message: "GPIO port 26 direction is 'out', expected 'in' for subscribe",
     });
   });
+
+  it('returns opened port via getOpenedPort', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    expect(() => session.getOpenedPort(26)).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+      })
+    );
+
+    await session.open(26, 'in');
+    expect(session.getOpenedPort(26)).toBe(port);
+  });
 });
 
 describe('NodeWebGpioPortAdapter.export direction validation', () => {

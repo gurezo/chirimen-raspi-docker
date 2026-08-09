@@ -19,8 +19,15 @@ export type WebSocketMessageHandler = (
 
 export interface AttachWebSocketServerOptions {
   readonly registryOptions?: ClientSessionRegistryOptions;
-  /** protocol ルーティング用。未指定時は no-op（#39 スコープ外） */
+  /** protocol ルーティング用。未指定時は no-op */
   readonly onMessage?: WebSocketMessageHandler;
+  /**
+   * registry 生成後に message handler を構築する。
+   * `onMessage` より優先される。
+   */
+  readonly createMessageHandler?: (
+    registry: ClientSessionRegistry
+  ) => WebSocketMessageHandler;
 }
 
 export interface AttachedWebSocketServer {
@@ -43,7 +50,8 @@ export function attachWebSocketServer(
     options.registryOptions
   );
   const wss = new WebSocketServer({ server: httpServer });
-  const onMessage = options.onMessage;
+  const onMessage =
+    options.createMessageHandler?.(registry) ?? options.onMessage;
 
   wss.on('connection', (socket) => {
     const session = registry.create();

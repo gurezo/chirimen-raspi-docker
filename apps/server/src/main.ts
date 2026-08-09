@@ -1,4 +1,5 @@
 import { createExpressApp } from './app/express-app.js';
+import { createGpioProtocolMessageHandler } from './app/protocol-router.js';
 import { createRuntimeContext } from './app/runtime-context.js';
 import { attachWebSocketServer } from './app/websocket-server.js';
 
@@ -14,7 +15,9 @@ async function main(): Promise<void> {
     console.log(`[ ready ] http://${host}:${port}`);
   });
 
-  const ws = attachWebSocketServer(server, runtimeContext);
+  const ws = attachWebSocketServer(server, runtimeContext, {
+    createMessageHandler: createGpioProtocolMessageHandler,
+  });
 
   const shutdown = async (signal: string): Promise<void> => {
     if (shuttingDown) {
