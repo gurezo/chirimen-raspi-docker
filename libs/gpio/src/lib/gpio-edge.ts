@@ -8,7 +8,10 @@ const GPIO_EDGES: readonly GpioEdge[] = [
   'both',
 ];
 
-/** `value` が有効な GPIO edge かどうか */
+/**
+ * `value` が有効な {@link GpioEdge} かどうか。
+ * @param value - 判定対象
+ */
 export function isGpioEdge(value: unknown): value is GpioEdge {
   return (
     typeof value === 'string' && (GPIO_EDGES as readonly string[]).includes(value)
