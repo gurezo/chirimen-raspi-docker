@@ -15,6 +15,12 @@ import {
 let autoOpen = true;
 let onSend: ((data: string, socket: FakeWebSocket) => void) | null = null;
 
+/** Node（CI）でも動くよう DOM Event グローバルに依存しない */
+type FakeOpenEvent = { readonly type: 'open' };
+type FakeCloseEvent = { readonly type: 'close' };
+type FakeErrorEvent = { readonly type: 'error' };
+type FakeMessageEvent = { readonly type: 'message'; readonly data: string };
+
 class FakeWebSocket {
   static readonly CONNECTING = 0;
   static readonly OPEN = 1;
@@ -22,10 +28,10 @@ class FakeWebSocket {
   static readonly CLOSED = 3;
 
   readyState = FakeWebSocket.CONNECTING;
-  onopen: ((event: Event) => void) | null = null;
-  onclose: ((event: CloseEvent) => void) | null = null;
-  onerror: ((event: Event) => void) | null = null;
-  onmessage: ((event: MessageEvent) => void) | null = null;
+  onopen: ((event: FakeOpenEvent) => void) | null = null;
+  onclose: ((event: FakeCloseEvent) => void) | null = null;
+  onerror: ((event: FakeErrorEvent) => void) | null = null;
+  onmessage: ((event: FakeMessageEvent) => void) | null = null;
 
   constructor(public readonly url: string) {
     queueMicrotask(() => {
@@ -33,7 +39,7 @@ class FakeWebSocket {
         return;
       }
       this.readyState = FakeWebSocket.OPEN;
-      this.onopen?.(new Event('open'));
+      this.onopen?.({ type: 'open' });
     });
   }
 
@@ -46,11 +52,11 @@ class FakeWebSocket {
       return;
     }
     this.readyState = FakeWebSocket.CLOSED;
-    this.onclose?.(new CloseEvent('close'));
+    this.onclose?.({ type: 'close' });
   }
 
   emitMessage(data: string): void {
-    this.onmessage?.(new MessageEvent('message', { data }));
+    this.onmessage?.({ type: 'message', data });
   }
 }
 
