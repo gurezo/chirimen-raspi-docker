@@ -89,6 +89,9 @@ importers:
 
   libs/browser-polyfill:
     dependencies:
+      core:
+        specifier: workspace:*
+        version: link:../core
       protocol:
         specifier: workspace:*
         version: link:../protocol
