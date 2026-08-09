@@ -11,7 +11,8 @@ export default [
                 "error",
                 {
                     ignoredFiles: [
-                        "{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}"
+                        "{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}",
+                        "{projectRoot}/vite.config.{js,ts,mjs,mts}"
                     ]
                 }
             ]
