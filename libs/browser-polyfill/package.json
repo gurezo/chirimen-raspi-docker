@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "core": "workspace:*",
+    "gpio": "workspace:*",
     "protocol": "workspace:*",
     "tslib": "^2.3.0"
   }
