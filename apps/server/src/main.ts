@@ -1,12 +1,12 @@
 import express from 'express';
-import { createNodeRuntimeContext } from 'node-runtime';
+import { createRuntimeContext } from './app/runtime-context.js';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 33330;
 
 async function main(): Promise<void> {
   const app = express();
-  const runtimeContext = await createNodeRuntimeContext();
+  const runtimeContext = await createRuntimeContext();
   let shuttingDown = false;
 
   app.get('/', (req, res) => {
