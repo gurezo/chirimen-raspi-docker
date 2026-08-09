@@ -9,20 +9,27 @@ import {
   type GpioValue,
 } from 'gpio';
 
-import type { WebSocketClientTransport } from './websocket-client-transport.js';
+import type {
+  ProtocolEventListener,
+  WebSocketClientTransport,
+} from './websocket-client-transport.js';
 
 /**
  * protocol transport 経由で GpioPort 契約を満たす Browser 実装。
- * onchange / subscribe 配線は Phase 5 #41。
+ * onchange 設定時に gpio.subscribe、解除時に gpio.unsubscribe を送る。
  */
 export class BrowserGpioPort implements GpioPort {
   readonly portNumber: GpioPortNumber;
   readonly portName: string;
   readonly pinName: string;
-  onchange: GpioChangeEventHandler | null = null;
 
   #exported = false;
   #direction: GpioDirection = 'in';
+  #onchange: GpioChangeEventHandler | null = null;
+  #eventListener: ProtocolEventListener | null = null;
+  #subscribed = false;
+  #subscribePending = false;
+  #subscriptionEpoch = 0;
   readonly #transport: WebSocketClientTransport;
 
   constructor(
@@ -43,6 +50,30 @@ export class BrowserGpioPort implements GpioPort {
     return this.#direction;
   }
 
+  get onchange(): GpioChangeEventHandler | null {
+    return this.#onchange;
+  }
+
+  set onchange(handler: GpioChangeEventHandler | null) {
+    this.#detachSubscription();
+
+    if (handler === null) {
+      this.#onchange = null;
+      return;
+    }
+
+    if (!this.#exported) {
+      this.#onchange = null;
+      throw new ChirimenError(
+        'InvalidAccess',
+        `GPIO port ${this.portNumber} is not exported`
+      );
+    }
+
+    this.#onchange = handler;
+    this.#attachSubscription();
+  }
+
   async export(direction: GpioDirection): Promise<void> {
     if (!isGpioDirection(direction)) {
       throw new ChirimenError(
@@ -60,6 +91,7 @@ export class BrowserGpioPort implements GpioPort {
   }
 
   async unexport(): Promise<void> {
+    this.onchange = null;
     await this.#transport.request('gpio.unexport', {
       portNumber: this.portNumber,
     });
@@ -120,5 +152,70 @@ export class BrowserGpioPort implements GpioPort {
       portNumber: this.portNumber,
       value,
     });
+  }
+
+  #attachSubscription(): void {
+    const listener: ProtocolEventListener = (event) => {
+      if (event.operation !== 'gpio.onchange') {
+        return;
+      }
+      if (event.payload.portNumber !== this.portNumber) {
+        return;
+      }
+      if (!isGpioValue(event.payload.value)) {
+        return;
+      }
+      const handler = this.#onchange;
+      if (handler === null) {
+        return;
+      }
+      handler({
+        portNumber: this.portNumber,
+        value: event.payload.value,
+      });
+    };
+
+    this.#eventListener = listener;
+    this.#transport.addEventListener(listener);
+    this.#subscribePending = true;
+    const epoch = this.#subscriptionEpoch;
+
+    void this.#transport
+      .request('gpio.subscribe', { portNumber: this.portNumber })
+      .then(() => {
+        if (epoch !== this.#subscriptionEpoch) {
+          void this.#transport
+            .request('gpio.unsubscribe', { portNumber: this.portNumber })
+            .catch(() => undefined);
+          return;
+        }
+        this.#subscribePending = false;
+        this.#subscribed = true;
+      })
+      .catch(() => {
+        if (epoch === this.#subscriptionEpoch) {
+          this.#subscribePending = false;
+        }
+      });
+  }
+
+  #detachSubscription(): void {
+    if (this.#eventListener !== null) {
+      this.#transport.removeEventListener(this.#eventListener);
+      this.#eventListener = null;
+    }
+
+    const shouldUnsubscribe = this.#subscribed || this.#subscribePending;
+    this.#subscriptionEpoch += 1;
+    this.#subscribed = false;
+    this.#subscribePending = false;
+
+    if (!shouldUnsubscribe) {
+      return;
+    }
+
+    void this.#transport
+      .request('gpio.unsubscribe', { portNumber: this.portNumber })
+      .catch(() => undefined);
   }
 }
