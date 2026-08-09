@@ -1,17 +1,12 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
+import { workspaceLibAliases } from '../../tools/vite/workspace-aliases.mts';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/libs/protocol',
-  // workspace packages export source via customConditions (tsconfig.base.json)
   resolve: {
-    conditions: ['chirimen-raspi-docker'],
-  },
-  ssr: {
-    resolve: {
-      conditions: ['chirimen-raspi-docker'],
-    },
+    alias: workspaceLibAliases,
   },
   test: {
     watch: false,
