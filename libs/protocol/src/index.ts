@@ -18,3 +18,24 @@ export {
   isProtocolResponse,
   isProtocolSuccessResponse,
 } from './lib/messages.js';
+export type {
+  ProtocolEventOperation,
+  ProtocolEventPayload,
+  ProtocolEventPayloadMap,
+  ProtocolGpioDirection,
+  ProtocolGpioValue,
+  ProtocolOperation,
+  ProtocolRequestPayload,
+  ProtocolRequestPayloadMap,
+  ProtocolSuccessPayload,
+  ProtocolSuccessPayloadMap,
+} from './lib/operations.js';
+export { isProtocolOperation } from './lib/operations.js';
+export {
+  LegacyFunctionId,
+  LegacyMessageKind,
+} from './lib/legacy-function-ids.js';
+export type {
+  LegacyFunctionId as LegacyFunctionIdCode,
+  LegacyMessageKind as LegacyMessageKindCode,
+} from './lib/legacy-function-ids.js';

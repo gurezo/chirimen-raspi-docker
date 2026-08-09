@@ -1,5 +1,12 @@
 import type { ChirimenErrorPayload } from 'core';
 
+import type {
+  ProtocolEventOperation,
+  ProtocolEventPayload,
+  ProtocolOperation,
+  ProtocolRequestPayload,
+  ProtocolSuccessPayload,
+} from './operations.js';
 import type { RequestId } from './request-id.js';
 import type { SessionId } from './session-id.js';
 
@@ -8,33 +15,33 @@ export type ProtocolMessageKind = 'request' | 'response' | 'event';
 
 /**
  * Browser → Server の操作要求。
- * `operation` / `payload` の具体型は operations 層（#31 後半）で絞り込む。
+ * `Op` を指定すると payload が operation に対応する型になる。
  */
 export interface ProtocolRequest<
-  Op extends string = string,
-  Payload = unknown,
+  Op extends ProtocolOperation = ProtocolOperation,
 > {
   readonly kind: 'request';
   readonly requestId: RequestId;
   readonly sessionId?: SessionId;
   readonly operation: Op;
-  readonly payload: Payload;
+  readonly payload: ProtocolRequestPayload<Op>;
 }
 
 /** 成功レスポンス */
 export interface ProtocolSuccessResponse<
-  Op extends string = string,
-  Payload = unknown,
+  Op extends ProtocolOperation = ProtocolOperation,
 > {
   readonly kind: 'response';
   readonly requestId: RequestId;
   readonly ok: true;
   readonly operation: Op;
-  readonly payload: Payload;
+  readonly payload: ProtocolSuccessPayload<Op>;
 }
 
 /** 失敗レスポンス（構造化エラー） */
-export interface ProtocolErrorResponse<Op extends string = string> {
+export interface ProtocolErrorResponse<
+  Op extends ProtocolOperation = ProtocolOperation,
+> {
   readonly kind: 'response';
   readonly requestId: RequestId;
   readonly ok: false;
@@ -43,21 +50,19 @@ export interface ProtocolErrorResponse<Op extends string = string> {
 }
 
 export type ProtocolResponse<
-  Op extends string = string,
-  Payload = unknown,
-> = ProtocolSuccessResponse<Op, Payload> | ProtocolErrorResponse<Op>;
+  Op extends ProtocolOperation = ProtocolOperation,
+> = ProtocolSuccessResponse<Op> | ProtocolErrorResponse<Op>;
 
 /**
  * Server → Browser の非同期通知。
  * 例: GPIO onchange（旧 function id 0x14）。
  */
 export interface ProtocolEvent<
-  Op extends string = string,
-  Payload = unknown,
+  Op extends ProtocolEventOperation = ProtocolEventOperation,
 > {
   readonly kind: 'event';
   readonly operation: Op;
-  readonly payload: Payload;
+  readonly payload: ProtocolEventPayload<Op>;
 }
 
 export type ProtocolMessage =
