@@ -3,6 +3,7 @@ import {
   isGpioDirection,
   isGpioPortNumber,
   isGpioValue,
+  type GpioChangeEventHandler,
   type GpioDirection,
   type GpioPort,
   type GpioPortNumber,
@@ -11,10 +12,18 @@ import {
 import type { GPIOPort as NativeGpioPort } from 'node-web-gpio';
 import { mapGpioError } from './map-gpio-error.js';
 
+type NativeChangeEvent = {
+  readonly value: unknown;
+  readonly port: NativeGpioPort;
+};
+
 /**
  * node-web-gpio の GPIOPort を domain GpioPort へ委譲する adapter。
  */
 export class NodeWebGpioPortAdapter implements GpioPort {
+  #onchange: GpioChangeEventHandler | null = null;
+  #nativeChangeListener: ((event: NativeChangeEvent) => void) | null = null;
+
   constructor(private readonly nativePort: NativeGpioPort) {}
 
   get portNumber(): GpioPortNumber {
@@ -51,6 +60,18 @@ export class NodeWebGpioPortAdapter implements GpioPort {
     return value;
   }
 
+  get onchange(): GpioChangeEventHandler | null {
+    return this.#onchange;
+  }
+
+  set onchange(handler: GpioChangeEventHandler | null) {
+    this.#detachNativeListener();
+    this.#onchange = handler;
+    if (handler) {
+      this.#attachNativeListener();
+    }
+  }
+
   async export(direction: GpioDirection): Promise<void> {
     if (!isGpioDirection(direction)) {
       throw new ChirimenError(
@@ -67,6 +88,8 @@ export class NodeWebGpioPortAdapter implements GpioPort {
   }
 
   async unexport(): Promise<void> {
+    this.onchange = null;
+
     try {
       await this.nativePort.unexport();
     } catch (error) {
@@ -130,5 +153,30 @@ export class NodeWebGpioPortAdapter implements GpioPort {
     } catch (error) {
       throw mapGpioError(error);
     }
+  }
+
+  #attachNativeListener(): void {
+    const listener = (event: NativeChangeEvent): void => {
+      if (!this.#onchange) {
+        return;
+      }
+      if (!isGpioValue(event.value)) {
+        return;
+      }
+      this.#onchange({
+        value: event.value,
+        portNumber: this.portNumber,
+      });
+    };
+    this.#nativeChangeListener = listener;
+    this.nativePort.on('change', listener);
+  }
+
+  #detachNativeListener(): void {
+    if (!this.#nativeChangeListener) {
+      return;
+    }
+    this.nativePort.off('change', this.#nativeChangeListener);
+    this.#nativeChangeListener = null;
   }
 }

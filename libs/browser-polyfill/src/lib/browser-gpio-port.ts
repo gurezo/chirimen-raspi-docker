@@ -2,6 +2,7 @@ import { ChirimenError } from 'core';
 import {
   isGpioDirection,
   isGpioValue,
+  type GpioChangeEventHandler,
   type GpioDirection,
   type GpioPort,
   type GpioPortNumber,
@@ -12,11 +13,13 @@ import type { WebSocketClientTransport } from './websocket-client-transport.js';
 
 /**
  * protocol transport 経由で GpioPort 契約を満たす Browser 実装。
+ * onchange / subscribe 配線は Phase 5 #41。
  */
 export class BrowserGpioPort implements GpioPort {
   readonly portNumber: GpioPortNumber;
   readonly portName: string;
   readonly pinName: string;
+  onchange: GpioChangeEventHandler | null = null;
 
   #exported = false;
   #direction: GpioDirection = 'in';

@@ -79,15 +79,15 @@ operation 名は legacy / WebGPIO domain（`export` / `unexport`）に揃え、I
 | `gpio.write` | `0x11` | open 済み `GpioPort.write(value)` | `write` |
 | `gpio.read` | `0x12` | open 済み `GpioPort.read()` | `read` |
 | `gpio.unexport` | `0x13` | `GpioSession.release(port)` | `unexport` |
-| `gpio.subscribe` | （`0x14` 周辺の制御） | Phase 5 [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で実装予定 | （現状なし） |
-| `gpio.unsubscribe` | （`0x14` 周辺の制御） | Phase 5 [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で実装予定 | （現状なし） |
-| event `gpio.onchange` | `0x14` | Phase 5 で server→browser 通知 | （現状なし） |
+| `gpio.subscribe` | （`0x14` 周辺の制御） | `GpioSession.subscribe(port, listener)` | `onchange` |
+| `gpio.unsubscribe` | （`0x14` 周辺の制御） | `GpioSession.unsubscribe(port, listener?)` | `onchange = null` |
+| event `gpio.onchange` | `0x14` | subscribe listener → WebSocket event | `onchange` handler |
 
 ### 責務分界
 
 - `libs/protocol` は対応定数・型・type guard のみを提供し、`gpio` / `node-runtime` には依存しない
 - `GpioSession.releaseAll()` は切断時 cleanup 用であり、Browser 起点の protocol operation には含めない
-- `gpio.subscribe` / `gpio.unsubscribe` / event `gpio.onchange` は protocol 上の型として定義済み。実装は Phase 5
+- `gpio.subscribe` / `gpio.unsubscribe` / event `gpio.onchange` は Issue [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で server / Node Runtime に実装済み。Browser 側 `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41)
 - コード上の対応表: `libs/protocol/src/lib/gpio-operation-mapping.ts`
 
 ### Request / response payload（GPIO）
@@ -193,14 +193,14 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 | 相関 | 送信時に `requestId`（`0`–`0xffff`）を発行し、response を対応 Promise へ返す |
 | timeout | デフォルト 10000ms。期限切れは `ChirimenError`（`code: 'Operation'`） |
 | disconnect | `close` / 明示 `disconnect()` 時、pending request を `ChirimenError`（`code: 'DeviceUnavailable'`）で reject |
-| event | 相関対象外。任意の `onEvent` コールバックへ転送（GPIO onchange 本実装は Phase 5） |
+| event | 相関対象外。任意の `onEvent` コールバックへ転送。server 側 `gpio.onchange` 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40)、Browser `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) |
 | 依存 | `protocol` / `core` のみ。`node-runtime` には依存しない |
 
 実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
 
 ## WebSocket server lifecycle
 
-Node server 側の接続管理は `apps/server` が担う（Issue #39）。
+Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO request routing / onchange 配信は Issue #40。
 
 | 項目 | 決定 |
 | --- | --- |
@@ -208,13 +208,14 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。
 | session | 接続ごとに `sessionId`（UUID）と `GpioSession` / `I2cSession` を作成 |
 | disconnect | `close` / `error` で `GpioSession.releaseAll()` と `I2cSession.closeAll()` を実行 |
 | shutdown | 全 session を cleanup → WebSocket server close → process 全体の GPIO `unexportAll` |
-| メッセージ処理 | #39 では no-op。protocol routing / GPIO onchange は Phase 5 後続 Issue |
+| メッセージ処理 | GPIO request（`export` / `read` / `write` / `unexport` / `subscribe` / `unsubscribe`）を routing。subscribe 中のみ `gpio.onchange` event を送る。I2C routing は未実装 |
 
 実装:
 
 - `apps/server/src/app/client-session.ts`
 - `apps/server/src/app/client-session-registry.ts`
 - `apps/server/src/app/websocket-server.ts`
+- `apps/server/src/app/protocol-router.ts`
 
 ## Browser GPIO polyfill 入口
 
@@ -227,7 +228,7 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。
 | ports | CHIRIMEN `polyfill.js` と同じ BCM ピン固定一覧（含む `26`） |
 | 操作 | `GpioPort.export` / `read` / `write` / `unexport` → `gpio.export` / `read` / `write` / `unexport` |
 | 依存 | `protocol` / `gpio` / `core`。`node-runtime` には依存しない |
-| 非対象 | `gpio.subscribe` / `onchange`（Phase 5） |
+| 非対象 | Browser `GpioPort.onchange` 配線（[#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41)）。server 側 `gpio.subscribe` / event 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で完了 |
 
 利用例:
 
@@ -271,6 +272,6 @@ const device = await port?.open(0x48);
 | #37 | `navigator.requestGPIOAccess()`（本節「Browser GPIO polyfill 入口」で完了） |
 | #38 | `navigator.requestI2CAccess()`（本節「Browser I2C polyfill 入口」で完了） |
 | #39 | WebSocket server lifecycle（本節「WebSocket server lifecycle」で完了） |
-| #40 | GPIO event subscribe / unsubscribe |
+| #40 | GPIO event subscribe / unsubscribe（本節・server routing で完了） |
 | #41 | Browser GPIO onchange |
 | #42 | WebSocket reconnect |

@@ -1,3 +1,4 @@
+import type { GpioChangeEventHandler } from './gpio-access.js';
 import type { GpioDirection } from './gpio-direction.js';
 import type { GpioPortNumber } from './gpio-port-number.js';
 import type { GpioValue } from './gpio-value.js';
@@ -12,6 +13,8 @@ export interface GpioPort {
   readonly pinName: string;
   readonly exported: boolean;
   readonly direction: GpioDirection;
+  /** 値変化ハンドラ。未設定時は null */
+  onchange: GpioChangeEventHandler | null;
   export(direction: GpioDirection): Promise<void>;
   unexport(): Promise<void>;
   read(): Promise<GpioValue>;

@@ -7,6 +7,7 @@ import { createGpioSession } from './gpio-session.js';
 function createPortMock(portNumber: number): GpioPort {
   let exported = false;
   let direction: 'in' | 'out' = 'out';
+  let onchange: GpioPort['onchange'] = null;
 
   return {
     portNumber,
@@ -18,12 +19,19 @@ function createPortMock(portNumber: number): GpioPort {
     get direction() {
       return direction;
     },
+    get onchange() {
+      return onchange;
+    },
+    set onchange(handler) {
+      onchange = handler;
+    },
     export: vi.fn(async (nextDirection: 'in' | 'out') => {
       direction = nextDirection;
       exported = true;
     }),
     unexport: vi.fn(async () => {
       exported = false;
+      onchange = null;
     }),
     read: vi.fn(async () => 0 as const),
     write: vi.fn(async () => {
@@ -245,6 +253,114 @@ describe('GpioSession', () => {
     });
     expect(session.isOpen(17)).toBe(false);
   });
+
+  it('subscribes to an input port and fans out change events', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+
+    await session.open(26, 'in');
+    await session.subscribe(26, listenerA);
+    await session.subscribe(26, listenerB);
+
+    expect(port.onchange).toEqual(expect.any(Function));
+    port.onchange?.({ value: 1, portNumber: 26 });
+
+    expect(listenerA).toHaveBeenCalledWith({ value: 1, portNumber: 26 });
+    expect(listenerB).toHaveBeenCalledWith({ value: 1, portNumber: 26 });
+  });
+
+  it('stops watch when the last subscriber unsubscribes', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+
+    await session.open(26, 'in');
+    await session.subscribe(26, listenerA);
+    await session.subscribe(26, listenerB);
+
+    await session.unsubscribe(26, listenerA);
+    expect(port.onchange).toEqual(expect.any(Function));
+    port.onchange?.({ value: 1, portNumber: 26 });
+    expect(listenerA).not.toHaveBeenCalled();
+    expect(listenerB).toHaveBeenCalledTimes(1);
+
+    await session.unsubscribe(26, listenerB);
+    expect(port.onchange).toBeNull();
+  });
+
+  it('clears all subscribers when unsubscribe omits listener', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    await session.open(26, 'in');
+    await session.subscribe(26, vi.fn());
+    await session.subscribe(26, vi.fn());
+    await session.unsubscribe(26);
+
+    expect(port.onchange).toBeNull();
+  });
+
+  it('clears watch on release even while subscribed', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+    const listener = vi.fn();
+
+    await session.open(26, 'in');
+    await session.subscribe(26, listener);
+    await session.release(26);
+
+    expect(port.onchange).toBeNull();
+    expect(port.unexport).toHaveBeenCalledTimes(1);
+    expect(session.isOpen(26)).toBe(false);
+  });
+
+  it('rejects subscribe when port is not open or not input', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    await expect(session.subscribe(26, vi.fn())).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: 'GPIO port 26 is not open in this session',
+    });
+
+    await session.open(26, 'out');
+    await expect(session.subscribe(26, vi.fn())).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: "GPIO port 26 direction is 'out', expected 'in' for subscribe",
+    });
+  });
+
+  it('returns opened port via getOpenedPort', async () => {
+    const port = createPortMock(26);
+    const session = createGpioSession(
+      createAccessMock(new Map([[26, port]]))
+    );
+
+    expect(() => session.getOpenedPort(26)).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+      })
+    );
+
+    await session.open(26, 'in');
+    expect(session.getOpenedPort(26)).toBe(port);
+  });
 });
 
 describe('NodeWebGpioPortAdapter.export direction validation', () => {
@@ -266,6 +382,8 @@ describe('NodeWebGpioPortAdapter.export direction validation', () => {
       write: vi.fn(async () => {
         // no-op for unit tests
       }),
+      on: vi.fn(),
+      off: vi.fn(),
     };
     const port = new NodeWebGpioPortAdapter(nativePort as never);
 
