@@ -249,4 +249,55 @@ describe('WebSocketClientTransport', () => {
       },
     ]);
   });
+
+  it('forwards protocol events to addEventListener listeners and onEvent', async () => {
+    const onEventEvents: ProtocolEvent[] = [];
+    const listenerAEvents: ProtocolEvent[] = [];
+    const listenerBEvents: ProtocolEvent[] = [];
+    const socketHolder: { current: FakeWebSocket | null } = { current: null };
+    onSend = (data, socket) => {
+      socketHolder.current = socket;
+      replyWithSuccess(data, socket);
+    };
+
+    const transport = createTransport({
+      onEvent: (event) => {
+        onEventEvents.push(event);
+      },
+    });
+    const listenerA = (event: ProtocolEvent) => {
+      listenerAEvents.push(event);
+    };
+    const listenerB = (event: ProtocolEvent) => {
+      listenerBEvents.push(event);
+    };
+    transport.addEventListener(listenerA);
+    transport.addEventListener(listenerB);
+    await transport.connect();
+    await transport.request('gpio.subscribe', { portNumber: 26 });
+
+    const eventMessage = {
+      kind: 'event' as const,
+      operation: 'gpio.onchange' as const,
+      payload: { portNumber: 26, value: 1 },
+    };
+    socketHolder.current?.emitMessage(encodeProtocolMessage(eventMessage));
+
+    expect(onEventEvents).toEqual([eventMessage]);
+    expect(listenerAEvents).toEqual([eventMessage]);
+    expect(listenerBEvents).toEqual([eventMessage]);
+
+    transport.removeEventListener(listenerA);
+    socketHolder.current?.emitMessage(
+      encodeProtocolMessage({
+        kind: 'event',
+        operation: 'gpio.onchange',
+        payload: { portNumber: 26, value: 0 },
+      })
+    );
+
+    expect(listenerAEvents).toHaveLength(1);
+    expect(listenerBEvents).toHaveLength(2);
+    expect(onEventEvents).toHaveLength(2);
+  });
 });

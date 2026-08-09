@@ -18,12 +18,15 @@ export const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 /** DI 可能な WebSocket コンストラクタ（テスト用 Fake を差し替えられる） */
 export type WebSocketConstructor = new (url: string) => WebSocket;
 
+/** protocol event を受け取る listener */
+export type ProtocolEventListener = (event: ProtocolEvent) => void;
+
 export interface WebSocketClientTransportOptions {
   readonly url: string;
   /** request の timeout（ms）。省略時は DEFAULT_REQUEST_TIMEOUT_MS */
   readonly timeoutMs?: number;
   readonly webSocketImpl?: WebSocketConstructor;
-  readonly onEvent?: (event: ProtocolEvent) => void;
+  readonly onEvent?: ProtocolEventListener;
   readonly sessionId?: SessionId;
 }
 
@@ -46,8 +49,9 @@ export class WebSocketClientTransport {
   private readonly url: string;
   private readonly timeoutMs: number;
   private readonly WebSocketImpl: WebSocketConstructor;
-  private readonly onEvent?: (event: ProtocolEvent) => void;
+  private readonly onEvent?: ProtocolEventListener;
   private readonly sessionId?: SessionId;
+  private readonly eventListeners = new Set<ProtocolEventListener>();
 
   private socket: WebSocket | null = null;
   /** 0: init / closed, 1: connecting, 2: connected */
@@ -62,6 +66,16 @@ export class WebSocketClientTransport {
     this.WebSocketImpl = options.webSocketImpl ?? WebSocket;
     this.onEvent = options.onEvent;
     this.sessionId = options.sessionId;
+  }
+
+  /** protocol event listener を追加する（重複登録は Set で無視） */
+  addEventListener(listener: ProtocolEventListener): void {
+    this.eventListeners.add(listener);
+  }
+
+  /** protocol event listener を解除する */
+  removeEventListener(listener: ProtocolEventListener): void {
+    this.eventListeners.delete(listener);
   }
 
   /** WebSocket を開き、open まで待つ */
@@ -281,6 +295,9 @@ export class WebSocketClientTransport {
 
     if (isProtocolEvent(message)) {
       this.onEvent?.(message);
+      for (const listener of this.eventListeners) {
+        listener(message);
+      }
     }
   }
 }

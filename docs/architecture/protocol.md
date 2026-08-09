@@ -87,7 +87,7 @@ operation 名は legacy / WebGPIO domain（`export` / `unexport`）に揃え、I
 
 - `libs/protocol` は対応定数・型・type guard のみを提供し、`gpio` / `node-runtime` には依存しない
 - `GpioSession.releaseAll()` は切断時 cleanup 用であり、Browser 起点の protocol operation には含めない
-- `gpio.subscribe` / `gpio.unsubscribe` / event `gpio.onchange` は Issue [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で server / Node Runtime に実装済み。Browser 側 `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41)
+- `gpio.subscribe` / `gpio.unsubscribe` / event `gpio.onchange` は Issue [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で server / Node Runtime に実装済み。Browser 側 `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) で完了
 - コード上の対応表: `libs/protocol/src/lib/gpio-operation-mapping.ts`
 
 ### Request / response payload（GPIO）
@@ -193,7 +193,7 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 | 相関 | 送信時に `requestId`（`0`–`0xffff`）を発行し、response を対応 Promise へ返す |
 | timeout | デフォルト 10000ms。期限切れは `ChirimenError`（`code: 'Operation'`） |
 | disconnect | `close` / 明示 `disconnect()` 時、pending request を `ChirimenError`（`code: 'DeviceUnavailable'`）で reject |
-| event | 相関対象外。任意の `onEvent` コールバックへ転送。server 側 `gpio.onchange` 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40)、Browser `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) |
+| event | 相関対象外。constructor の `onEvent` と `addEventListener` / `removeEventListener` へ fan-out。server 側 `gpio.onchange` 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40)、Browser `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) で完了 |
 | 依存 | `protocol` / `core` のみ。`node-runtime` には依存しない |
 
 実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
@@ -227,8 +227,10 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO 
 | 取得 | `await navigator.requestGPIOAccess()` → domain `GpioAccess`（`BrowserGpioAccess`） |
 | ports | CHIRIMEN `polyfill.js` と同じ BCM ピン固定一覧（含む `26`） |
 | 操作 | `GpioPort.export` / `read` / `write` / `unexport` → `gpio.export` / `read` / `write` / `unexport` |
+| onchange | `GpioPort.onchange` 設定で `gpio.subscribe`、`null` 解除で `gpio.unsubscribe`。event `gpio.onchange` を portNumber で demux して handler を呼ぶ（[#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41)） |
+| reconnect 方針 | 再 subscribe 対象は `onchange !== null` の port。ローカル handler は disconnect 後も残し、reconnect 成功後に `gpio.subscribe` を再送する（実装は [#42](https://github.com/gurezo/chirimen-raspi-docker/issues/42)） |
 | 依存 | `protocol` / `gpio` / `core`。`node-runtime` には依存しない |
-| 非対象 | Browser `GpioPort.onchange` 配線（[#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41)）。server 側 `gpio.subscribe` / event 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で完了 |
+| 非対象 | WebSocket reconnect / retry（[#42](https://github.com/gurezo/chirimen-raspi-docker/issues/42)）。server 側 `gpio.subscribe` / event 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40) で完了 |
 
 利用例:
 
@@ -236,6 +238,13 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO 
 await installBrowserPolyfill({ url: 'ws://localhost:33330/' });
 const access = await navigator.requestGPIOAccess();
 const port = access.ports.get(26);
+if (!port) {
+  throw new Error('GPIO26 is not available');
+}
+await port.export('in');
+port.onchange = (event) => {
+  console.log(event.portNumber, event.value);
+};
 ```
 
 ## Browser I2C polyfill 入口
@@ -273,5 +282,5 @@ const device = await port?.open(0x48);
 | #38 | `navigator.requestI2CAccess()`（本節「Browser I2C polyfill 入口」で完了） |
 | #39 | WebSocket server lifecycle（本節「WebSocket server lifecycle」で完了） |
 | #40 | GPIO event subscribe / unsubscribe（本節・server routing で完了） |
-| #41 | Browser GPIO onchange |
-| #42 | WebSocket reconnect |
+| #41 | Browser GPIO onchange（本節「Browser GPIO polyfill 入口」で完了） |
+| #42 | WebSocket reconnect（reconnect 後の GPIO subscription 復元を含む） |

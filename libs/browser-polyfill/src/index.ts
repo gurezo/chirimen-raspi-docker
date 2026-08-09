@@ -17,6 +17,7 @@ export {
 export {
   DEFAULT_REQUEST_TIMEOUT_MS,
   WebSocketClientTransport,
+  type ProtocolEventListener,
   type WebSocketClientTransportOptions,
   type WebSocketConstructor,
 } from './lib/websocket-client-transport.js';
