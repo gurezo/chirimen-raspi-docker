@@ -17,6 +17,9 @@
     },
     {
       "path": "./libs/node-runtime"
+    },
+    {
+      "path": "./libs/protocol"
     }
   ]
 }
