@@ -15,18 +15,33 @@ import {
 /** デフォルトの request timeout（ms） */
 export const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 
+/** デフォルトの reconnect 間隔（ms） */
+export const DEFAULT_RECONNECT_INTERVAL_MS = 1_000;
+
 /** DI 可能な WebSocket コンストラクタ（テスト用 Fake を差し替えられる） */
 export type WebSocketConstructor = new (url: string) => WebSocket;
 
 /** protocol event を受け取る listener */
 export type ProtocolEventListener = (event: ProtocolEvent) => void;
 
+/** reconnect 成功時に呼ばれる listener */
+export type ReconnectListener = () => void;
+
 export interface WebSocketClientTransportOptions {
   readonly url: string;
   /** request の timeout（ms）。省略時は DEFAULT_REQUEST_TIMEOUT_MS */
   readonly timeoutMs?: number;
+  /** 予期せぬ切断後の reconnect 間隔（ms）。省略時は DEFAULT_RECONNECT_INTERVAL_MS */
+  readonly reconnectIntervalMs?: number;
+  /**
+   * 予期せぬ切断後の最大 reconnect 試行回数。
+   * 省略時は Infinity（成功するまで繰り返す）。
+   */
+  readonly maxReconnectAttempts?: number;
   readonly webSocketImpl?: WebSocketConstructor;
   readonly onEvent?: ProtocolEventListener;
+  /** reconnect 成功時の callback（addReconnectListener と併用可） */
+  readonly onReconnect?: ReconnectListener;
   readonly sessionId?: SessionId;
 }
 
@@ -44,14 +59,19 @@ type WaitQueueEntry = {
 /**
  * Browser Polyfill ↔ Node server 間の WebSocket client transport。
  * protocol の JSON text frame を送受信し、requestId で Promise を相関する。
+ * 予期せぬ切断時は自動 reconnect し、切断時点の pending request は reject する。
  */
 export class WebSocketClientTransport {
   private readonly url: string;
   private readonly timeoutMs: number;
+  private readonly reconnectIntervalMs: number;
+  private readonly maxReconnectAttempts: number;
   private readonly WebSocketImpl: WebSocketConstructor;
   private readonly onEvent?: ProtocolEventListener;
+  private readonly onReconnectCallback?: ReconnectListener;
   private readonly sessionId?: SessionId;
   private readonly eventListeners = new Set<ProtocolEventListener>();
+  private readonly reconnectListeners = new Set<ReconnectListener>();
 
   private socket: WebSocket | null = null;
   /** 0: init / closed, 1: connecting, 2: connected */
@@ -59,12 +79,21 @@ export class WebSocketClientTransport {
   private nextRequestId: RequestId = 0;
   private readonly pending = new Map<RequestId, PendingEntry>();
   private waitQueue: WaitQueueEntry[] = [];
+  private manualClose = false;
+  private hasConnectedOnce = false;
+  private reconnectAttempts = 0;
+  private reconnectInProgress = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: WebSocketClientTransportOptions) {
     this.url = options.url;
     this.timeoutMs = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
+    this.reconnectIntervalMs =
+      options.reconnectIntervalMs ?? DEFAULT_RECONNECT_INTERVAL_MS;
+    this.maxReconnectAttempts = options.maxReconnectAttempts ?? Number.POSITIVE_INFINITY;
     this.WebSocketImpl = options.webSocketImpl ?? WebSocket;
     this.onEvent = options.onEvent;
+    this.onReconnectCallback = options.onReconnect;
     this.sessionId = options.sessionId;
   }
 
@@ -78,8 +107,20 @@ export class WebSocketClientTransport {
     this.eventListeners.delete(listener);
   }
 
+  /** reconnect 成功 listener を追加する（重複登録は Set で無視） */
+  addReconnectListener(listener: ReconnectListener): void {
+    this.reconnectListeners.add(listener);
+  }
+
+  /** reconnect 成功 listener を解除する */
+  removeReconnectListener(listener: ReconnectListener): void {
+    this.reconnectListeners.delete(listener);
+  }
+
   /** WebSocket を開き、open まで待つ */
   connect(): Promise<void> {
+    this.manualClose = false;
+
     if (this.status === 2) {
       return Promise.resolve();
     }
@@ -87,6 +128,7 @@ export class WebSocketClientTransport {
       return this.waitUntilConnected();
     }
 
+    this.clearReconnectTimer();
     this.status = 1;
     const socket = new this.WebSocketImpl(this.url);
     this.socket = socket;
@@ -95,24 +137,43 @@ export class WebSocketClientTransport {
       this.waitQueue.push({ resolve, reject });
 
       socket.onopen = () => {
+        const isReconnect = this.hasConnectedOnce;
+        this.hasConnectedOnce = true;
         this.status = 2;
+        this.reconnectAttempts = 0;
+        this.reconnectInProgress = false;
         const queue = this.waitQueue;
         this.waitQueue = [];
         for (const entry of queue) {
           entry.resolve();
         }
+        if (isReconnect) {
+          this.notifyReconnectListeners();
+        }
       };
 
       socket.onerror = () => {
-        if (this.status === 1) {
-          const error = new ChirimenError(
-            'DeviceUnavailable',
-            'WebSocket connection failed'
-          );
-          this.failWaitQueue(error);
-          this.status = 0;
-          this.socket = null;
+        if (this.status !== 1) {
+          return;
         }
+        const error = new ChirimenError(
+          'DeviceUnavailable',
+          'WebSocket connection failed'
+        );
+        this.status = 0;
+        this.socket = null;
+        if (this.reconnectInProgress) {
+          // ensureConnected 待機者は残し、この connect() の Promise だけ reject する
+          const index = this.waitQueue.findIndex(
+            (entry) => entry.resolve === resolve
+          );
+          if (index >= 0) {
+            this.waitQueue.splice(index, 1);
+          }
+          reject(error);
+          return;
+        }
+        this.failWaitQueue(error);
       };
 
       socket.onmessage = (event: MessageEvent) => {
@@ -120,18 +181,18 @@ export class WebSocketClientTransport {
       };
 
       socket.onclose = () => {
-        this.handleDisconnect(
-          new ChirimenError(
-            'DeviceUnavailable',
-            'WebSocket disconnected'
-          )
-        );
+        this.handleSocketClose();
       };
     });
   }
 
-  /** 接続を閉じ、pending request を error にする */
+  /**
+   * 接続を閉じ、pending request を error にする。
+   * 意図的な切断のため自動 reconnect は行わない。
+   */
   disconnect(): void {
+    this.manualClose = true;
+    this.clearReconnectTimer();
     const socket = this.socket;
     this.handleDisconnect(
       new ChirimenError('DeviceUnavailable', 'WebSocket disconnected')
@@ -221,6 +282,9 @@ export class WebSocketClientTransport {
     if (this.status === 1) {
       return this.waitUntilConnected();
     }
+    if (this.reconnectTimer !== null) {
+      return this.waitUntilConnected();
+    }
     return this.connect();
   }
 
@@ -238,11 +302,104 @@ export class WebSocketClientTransport {
     }
   }
 
+  private handleSocketClose(): void {
+    // reconnect 試行中の失敗は scheduleReconnect 側で再スケジュールする
+    const shouldReconnect =
+      !this.manualClose &&
+      this.hasConnectedOnce &&
+      !this.reconnectInProgress;
+    // disconnect() 済みなら cleanup 済み。onclose の二重呼び出しを無視する
+    if (this.status !== 0 || this.socket !== null) {
+      this.handleDisconnect(
+        new ChirimenError(
+          'DeviceUnavailable',
+          'WebSocket disconnected'
+        )
+      );
+    }
+    if (shouldReconnect) {
+      this.scheduleReconnect();
+    }
+  }
+
   private handleDisconnect(error: ChirimenError): void {
     this.socket = null;
     this.status = 0;
     this.failWaitQueue(error);
     this.rejectAllPending(error);
+  }
+
+  private scheduleReconnect(): void {
+    if (this.manualClose) {
+      return;
+    }
+    if (this.reconnectTimer !== null) {
+      return;
+    }
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      this.failWaitQueue(
+        new ChirimenError(
+          'DeviceUnavailable',
+          'WebSocket reconnect failed'
+        )
+      );
+      return;
+    }
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      if (this.manualClose) {
+        return;
+      }
+      if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+        this.failWaitQueue(
+          new ChirimenError(
+            'DeviceUnavailable',
+            'WebSocket reconnect failed'
+          )
+        );
+        return;
+      }
+
+      this.reconnectAttempts += 1;
+      this.reconnectInProgress = true;
+      void this.connect().then(
+        () => {
+          this.reconnectInProgress = false;
+        },
+        () => {
+          this.reconnectInProgress = false;
+          if (this.manualClose) {
+            return;
+          }
+          if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            this.failWaitQueue(
+              new ChirimenError(
+                'DeviceUnavailable',
+                'WebSocket reconnect failed'
+              )
+            );
+            return;
+          }
+          this.scheduleReconnect();
+        }
+      );
+    }, this.reconnectIntervalMs);
+  }
+
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer === null) {
+      return;
+    }
+    clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+  }
+
+  private notifyReconnectListeners(): void {
+    this.onReconnectCallback?.();
+    for (const listener of this.reconnectListeners) {
+      listener();
+    }
   }
 
   private clearPending(requestId: RequestId): void {

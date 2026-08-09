@@ -15,9 +15,11 @@ export {
   requestI2CAccess,
 } from './lib/navigator-polyfill.js';
 export {
+  DEFAULT_RECONNECT_INTERVAL_MS,
   DEFAULT_REQUEST_TIMEOUT_MS,
   WebSocketClientTransport,
   type ProtocolEventListener,
+  type ReconnectListener,
   type WebSocketClientTransportOptions,
   type WebSocketConstructor,
 } from './lib/websocket-client-transport.js';

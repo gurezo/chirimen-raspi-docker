@@ -11,12 +11,14 @@ import {
 
 import type {
   ProtocolEventListener,
+  ReconnectListener,
   WebSocketClientTransport,
 } from './websocket-client-transport.js';
 
 /**
  * protocol transport 経由で GpioPort 契約を満たす Browser 実装。
  * onchange 設定時に gpio.subscribe、解除時に gpio.unsubscribe を送る。
+ * reconnect 成功後は export / subscribe をサーバ側 session に復元する。
  */
 export class BrowserGpioPort implements GpioPort {
   readonly portNumber: GpioPortNumber;
@@ -31,6 +33,7 @@ export class BrowserGpioPort implements GpioPort {
   #subscribePending = false;
   #subscriptionEpoch = 0;
   readonly #transport: WebSocketClientTransport;
+  readonly #reconnectListener: ReconnectListener;
 
   constructor(
     portNumber: GpioPortNumber,
@@ -40,6 +43,10 @@ export class BrowserGpioPort implements GpioPort {
     this.portName = `GPIO${portNumber}`;
     this.pinName = `PIN${portNumber}`;
     this.#transport = transport;
+    this.#reconnectListener = () => {
+      void this.#restoreAfterReconnect();
+    };
+    this.#transport.addReconnectListener(this.#reconnectListener);
   }
 
   get exported(): boolean {
@@ -152,6 +159,44 @@ export class BrowserGpioPort implements GpioPort {
       portNumber: this.portNumber,
       value,
     });
+  }
+
+  /**
+   * reconnect 後にサーバ側 session へ export / subscribe を復元する。
+   * ローカルの handler / exported / direction は切断後も維持する。
+   */
+  async #restoreAfterReconnect(): Promise<void> {
+    if (!this.#exported) {
+      return;
+    }
+
+    try {
+      await this.#transport.request('gpio.export', {
+        portNumber: this.portNumber,
+        direction: this.#direction,
+      });
+    } catch {
+      return;
+    }
+
+    if (this.#onchange === null) {
+      return;
+    }
+
+    // サーバ session は既に空のため unsubscribe は不要。
+    // ローカル handler は残し、wire 上の subscribe だけ張り直す。
+    this.#resetSubscriptionWireState();
+    this.#attachSubscription();
+  }
+
+  #resetSubscriptionWireState(): void {
+    if (this.#eventListener !== null) {
+      this.#transport.removeEventListener(this.#eventListener);
+      this.#eventListener = null;
+    }
+    this.#subscriptionEpoch += 1;
+    this.#subscribed = false;
+    this.#subscribePending = false;
   }
 
   #attachSubscription(): void {

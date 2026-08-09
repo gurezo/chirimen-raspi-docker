@@ -63,7 +63,10 @@ class FakeWebSocket {
 function createTransport(
   options: {
     timeoutMs?: number;
+    reconnectIntervalMs?: number;
+    maxReconnectAttempts?: number;
     onEvent?: (event: ProtocolEvent) => void;
+    onReconnect?: () => void;
   } = {}
 ): WebSocketClientTransport {
   return new WebSocketClientTransport({
@@ -299,5 +302,186 @@ describe('WebSocketClientTransport', () => {
     expect(listenerAEvents).toHaveLength(1);
     expect(listenerBEvents).toHaveLength(2);
     expect(onEventEvents).toHaveLength(2);
+  });
+
+  it('reconnects after unexpected close and notifies listeners', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    const OriginalFake = FakeWebSocket;
+    class TrackingFakeWebSocket extends OriginalFake {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    const onReconnect = vi.fn();
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 100,
+      onReconnect,
+    });
+
+    await transport.connect();
+    expect(sockets).toHaveLength(1);
+
+    sockets[0]?.close();
+    expect(onReconnect).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(100);
+    await vi.waitFor(() => {
+      expect(sockets).toHaveLength(2);
+    });
+    await vi.waitFor(() => {
+      expect(onReconnect).toHaveBeenCalledTimes(1);
+    });
+
+    onSend = (data, socket) => {
+      replyWithSuccess(data, socket, { value: 1 });
+    };
+    const response = await transport.request('gpio.read', {
+      portNumber: 26,
+    });
+    expect(response.payload).toEqual({ value: 1 });
+
+    vi.useRealTimers();
+  });
+
+  it('does not reconnect after manual disconnect', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    class TrackingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 100,
+    });
+
+    await transport.connect();
+    transport.disconnect();
+    expect(sockets).toHaveLength(1);
+
+    await vi.advanceTimersByTimeAsync(500);
+    expect(sockets).toHaveLength(1);
+
+    vi.useRealTimers();
+  });
+
+  it('rejects pending on disconnect and accepts new requests after reconnect', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    class TrackingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    let resolveSent!: () => void;
+    const sent = new Promise<void>((resolve) => {
+      resolveSent = resolve;
+    });
+    onSend = () => {
+      resolveSent();
+      // 応答しない
+    };
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 50,
+      timeoutMs: 60_000,
+    });
+
+    await transport.connect();
+    const pending = transport.request('gpio.read', { portNumber: 26 });
+    await sent;
+    sockets[0]?.close();
+
+    await expect(pending).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'DeviceUnavailable',
+      message: 'WebSocket disconnected',
+    });
+
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.waitFor(() => {
+      expect(sockets).toHaveLength(2);
+    });
+
+    onSend = (data, socket) => {
+      replyWithSuccess(data, socket, { value: 0 });
+    };
+    const response = await transport.request('gpio.read', {
+      portNumber: 26,
+    });
+    expect(response.payload).toEqual({ value: 0 });
+
+    vi.useRealTimers();
+  });
+
+  it('stops reconnecting after maxReconnectAttempts', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    let openCount = 0;
+    class FlakyFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+        queueMicrotask(() => {
+          openCount += 1;
+          if (openCount === 1) {
+            this.readyState = FakeWebSocket.OPEN;
+            this.onopen?.({ type: 'open' });
+            return;
+          }
+          // reconnect 試行は失敗させる
+          this.readyState = FakeWebSocket.CLOSED;
+          this.onerror?.({ type: 'error' });
+          this.onclose?.({ type: 'close' });
+        });
+      }
+    }
+
+    // autoOpen を無効化し Flaky 側で制御する
+    autoOpen = false;
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FlakyFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 20,
+      maxReconnectAttempts: 2,
+    });
+
+    await transport.connect();
+    expect(openCount).toBe(1);
+
+    sockets[0]?.close();
+
+    // reconnect 待機中に request を投げ、上限到達で reject されることを確認する
+    const waiting = transport.request('gpio.read', { portNumber: 26 });
+    const expectation = expect(waiting).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'DeviceUnavailable',
+      message: 'WebSocket reconnect failed',
+    });
+
+    await vi.advanceTimersByTimeAsync(20);
+    await vi.advanceTimersByTimeAsync(20);
+    await vi.advanceTimersByTimeAsync(20);
+
+    // 初回接続 + 失敗 2 回
+    expect(openCount).toBe(3);
+
+    await expectation;
+
+    vi.useRealTimers();
   });
 });
