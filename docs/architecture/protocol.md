@@ -193,7 +193,7 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 | 相関 | 送信時に `requestId`（`0`–`0xffff`）を発行し、response を対応 Promise へ返す |
 | timeout | デフォルト 10000ms。期限切れは `ChirimenError`（`code: 'Operation'`） |
 | disconnect | `close` / 明示 `disconnect()` 時、pending request を `ChirimenError`（`code: 'DeviceUnavailable'`）で reject |
-| event | 相関対象外。任意の `onEvent` コールバックへ転送（GPIO onchange 本実装は Phase 5） |
+| event | 相関対象外。任意の `onEvent` コールバックへ転送。server 側 `gpio.onchange` 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40)、Browser `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) |
 | 依存 | `protocol` / `core` のみ。`node-runtime` には依存しない |
 
 実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`
