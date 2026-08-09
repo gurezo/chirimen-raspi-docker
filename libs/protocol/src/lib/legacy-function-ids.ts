@@ -1,0 +1,30 @@
+/**
+ * 旧 CHIRIMEN polyfill.js / srv.js の function id。
+ * encode / decode（#34）や GPIO/I2C ops 詳細（#32/#33）の参照アンカー。
+ * 本モジュールは数値定数のみを提供し、シリアライズは行わない。
+ *
+ * @see docs/architecture/protocol.md
+ */
+export const LegacyFunctionId = {
+  GpioExport: 0x10,
+  GpioWrite: 0x11,
+  GpioRead: 0x12,
+  GpioUnexport: 0x13,
+  GpioOnChange: 0x14,
+  I2cOpenClose: 0x20,
+  I2cWrite: 0x21,
+  I2cRead: 0x22,
+  I2cRegisterRead: 0x23,
+} as const;
+
+export type LegacyFunctionId =
+  (typeof LegacyFunctionId)[keyof typeof LegacyFunctionId];
+
+/** 旧メッセージ先頭バイト（kind） */
+export const LegacyMessageKind = {
+  ApiRequestResponse: 1,
+  ChangeCallback: 2,
+} as const;
+
+export type LegacyMessageKind =
+  (typeof LegacyMessageKind)[keyof typeof LegacyMessageKind];

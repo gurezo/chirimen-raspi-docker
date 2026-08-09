@@ -1,2 +1,2 @@
-/** Protocol library identity until message model lands (#31). */
+/** Protocol library identity. */
 export const PROTOCOL_PACKAGE_NAME = 'protocol' as const;
