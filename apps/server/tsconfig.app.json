@@ -17,13 +17,16 @@
   ],
   "references": [
     {
+      "path": "../../libs/core/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/protocol/tsconfig.lib.json"
     },
     {
-      "path": "../../libs/node-runtime/tsconfig.lib.json"
+      "path": "../../libs/i2c/tsconfig.lib.json"
     },
     {
-      "path": "../../libs/i2c/tsconfig.lib.json"
+      "path": "../../libs/node-runtime/tsconfig.lib.json"
     },
     {
       "path": "../../libs/gpio/tsconfig.lib.json"

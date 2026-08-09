@@ -11,6 +11,7 @@
     "nx": "nx",
     "build": "nx build server",
     "serve": "nx serve server",
+    "lint": "nx run-many -t lint --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server",
     "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server",
     "graph": "nx graph"
   },
