@@ -29,7 +29,7 @@ Jest は導入しない。既存の `@nx/vite:test` と Vitest を正式な基�
 
 新規 lib を追加するときは、同様に `vite.config.mts`・`tsconfig.spec.json`・`project.json` の `test` target を揃える。
 
-workspace 依存（例: `node-runtime` → `core` / `gpio` / `i2c`）を import する lib の Vitest 設定では、`resolve.conditions` / `ssr.resolve.conditions` に `chirimen-raspi-docker` を指定する。`package.json` exports の当該条件が `./src/index.ts` を指すため、CI で `dist` 未生成でも解決できる。
+統合型モノレポでは依存は root の `package.json` に集約し、project 間の import（例: `node-runtime` → `core` / `gpio` / `i2c`）は `tsconfig.base.json` の `paths` と、各 lib の Vitest 設定の `resolve.alias` で `libs/*/src/index.ts` へ解決する。CI で `dist` 未生成でもソースを直接参照できる。
 
 ## 実行方法
 

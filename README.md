@@ -62,6 +62,8 @@ if (port) {
 - Docker
 - Docker Compose
 
+依存は root の `package.json` に集約した統合型 Nx モノレポ構成です。`apps/*` / `libs/*` に個別の `package.json` はありません。project 間の import（例: `from 'node-runtime'`）は `tsconfig.base.json` の `paths` で解決します。
+
 ## ローカル開発
 
 ```sh
