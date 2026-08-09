@@ -1,6 +1,6 @@
 {
   "installation": {
-    "version": "22.7.5"
+    "version": "23.1.1"
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "plugins": [
@@ -42,5 +42,6 @@
       "cache": true,
       "inputs": ["default", "^default"]
     }
-  }
+  },
+  "analytics": true
 }
