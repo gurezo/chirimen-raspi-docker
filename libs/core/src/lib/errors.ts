@@ -1,5 +1,30 @@
 /** Chirimen runtime / hardware エラーの種別 */
-export type ChirimenErrorCode = 'InvalidAccess' | 'Operation' | 'Unknown';
+export type ChirimenErrorCode =
+  | 'InvalidAccess'
+  | 'InvalidArgument'
+  | 'DeviceUnavailable'
+  | 'PermissionDenied'
+  | 'ResourceBusy'
+  | 'Operation'
+  | 'Unknown';
+
+const CHIRIMEN_ERROR_CODES: readonly ChirimenErrorCode[] = [
+  'InvalidAccess',
+  'InvalidArgument',
+  'DeviceUnavailable',
+  'PermissionDenied',
+  'ResourceBusy',
+  'Operation',
+  'Unknown',
+] as const;
+
+/** `value` が ChirimenErrorCode かどうか */
+export function isChirimenErrorCode(value: unknown): value is ChirimenErrorCode {
+  return (
+    typeof value === 'string' &&
+    (CHIRIMEN_ERROR_CODES as readonly string[]).includes(value)
+  );
+}
 
 /**
  * ドメイン横断で扱うハードウェア／ランタイムエラー。
@@ -43,4 +68,28 @@ export function toChirimenError(
   }
 
   return new ChirimenError('Unknown', fallbackMessage, { cause: error });
+}
+
+/**
+ * Browser protocol へ渡すための plain なエラー表現。
+ * `cause` や Node 固有の Error 本体は含めない。
+ */
+export interface ChirimenErrorPayload {
+  readonly code: ChirimenErrorCode;
+  readonly message: string;
+}
+
+/**
+ * ChirimenError（または未知の例外）を protocol 向け payload へ変換する。
+ * Node 固有の Error object をそのまま流さない。
+ */
+export function toChirimenErrorPayload(
+  error: unknown,
+  fallbackMessage = 'Unknown error'
+): ChirimenErrorPayload {
+  const chirimenError = toChirimenError(error, fallbackMessage);
+  return {
+    code: chirimenError.code,
+    message: chirimenError.message,
+  };
 }
