@@ -64,6 +64,22 @@ if (port) {
 
 依存は root の `package.json` に集約した統合型 Nx モノレポ構成です。`apps/*` / `libs/*` に個別の `package.json` はありません。project 間の import（例: `from 'node-runtime'`）は `tsconfig.base.json` の `paths` で解決します。
 
+## Documentation
+
+初めての利用者はガイドから始めてください。
+
+| ドキュメント | 内容 |
+| --- | --- |
+| [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `docker compose up` → health check |
+| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
+| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
+| [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
+| [docs/architecture/docker.md](docs/architecture/docker.md) | Docker / Compose / device mount |
+| [docs/architecture/protocol.md](docs/architecture/protocol.md) | Protocol メッセージモデル |
+| [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries |
+
+公開 TypeScript API の生成手順は下記「API ドキュメント（Typedoc）」を参照してください。
+
 ## ローカル開発
 
 ```sh
