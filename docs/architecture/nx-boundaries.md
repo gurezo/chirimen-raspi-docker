@@ -30,6 +30,7 @@ Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/
 | `i2c` | `libs/i2c` | `type:lib`, `scope:hardware`, `layer:domain` |
 | `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
 | `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:runtime`, `platform:node` |
+| `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
 
 tags は各 `project.json` の `tags` 配列に設定する。
 
@@ -37,7 +38,6 @@ tags は各 `project.json` の `tags` 配列に設定する。
 
 | Project | Path（予定） | tags |
 | --- | --- | --- |
-| `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
 | `web-demo` | `apps/web-demo` | `type:app`, `scope:demo`, `platform:browser` |
 
 新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
@@ -116,6 +116,7 @@ pnpm nx show project gpio --json
 pnpm nx show project i2c --json
 pnpm nx show project protocol --json
 pnpm nx show project node-runtime --json
+pnpm nx show project browser-polyfill --json
 pnpm nx graph
 ```
 
