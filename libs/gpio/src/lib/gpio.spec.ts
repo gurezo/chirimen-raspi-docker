@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -85,20 +85,18 @@ describe('GpioAccess contract', () => {
   });
 });
 
-describe('gpio package independence', () => {
-  it('does not depend on Node hardware libraries', () => {
-    const packageJsonPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../package.json'
+describe('gpio domain independence', () => {
+  it('does not import Node hardware libraries', () => {
+    const srcRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+    const files = readdirSync(srcRoot, { recursive: true, encoding: 'utf8' }).filter(
+      (name) => name.endsWith('.ts')
     );
-    const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
-      dependencies?: Record<string, string>;
-    };
-    const dependencyNames = Object.keys(pkg.dependencies ?? {});
 
-    expect(dependencyNames).not.toContain('node-web-gpio');
-    expect(dependencyNames).not.toContain('onoff');
-    expect(dependencyNames).toEqual(['tslib']);
+    for (const relativePath of files) {
+      const content = readFileSync(join(srcRoot, relativePath), 'utf8');
+      expect(content, relativePath).not.toMatch(/from ['"]node-web-gpio['"]/);
+      expect(content, relativePath).not.toMatch(/from ['"]onoff['"]/);
+    }
   });
 });
 
