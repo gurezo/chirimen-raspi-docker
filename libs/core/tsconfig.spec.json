@@ -4,7 +4,6 @@
     "outDir": "./out-tsc/vitest",
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"],
     "forceConsistentCasingInFileNames": true,
-    "ignoreDeprecations": "6.0",
     "rootDir": "."
   },
   "include": [

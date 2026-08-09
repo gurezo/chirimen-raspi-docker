@@ -9,8 +9,7 @@
     "lib": [
       "es2022",
       "DOM"
-    ],
-    "ignoreDeprecations": "6.0"
+    ]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
