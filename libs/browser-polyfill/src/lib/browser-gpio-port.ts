@@ -16,8 +16,8 @@ import type {
 } from './websocket-client-transport.js';
 
 /**
- * protocol transport 経由で GpioPort 契約を満たす Browser 実装。
- * onchange 設定時に gpio.subscribe、解除時に gpio.unsubscribe を送る。
+ * protocol transport 経由で {@link GpioPort} 契約を満たす Browser 実装。
+ * `onchange` 設定時に `gpio.subscribe`、解除時に `gpio.unsubscribe` を送る。
  * reconnect 成功後は export / subscribe をサーバ側 session に復元する。
  */
 export class BrowserGpioPort implements GpioPort {

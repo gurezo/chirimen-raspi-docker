@@ -1,3 +1,11 @@
+/**
+ * Browser 向け Web GPIO / Web I2C polyfill の公開 API。
+ *
+ * `installBrowserPolyfill` で WebSocket 経由の protocol 通信を張り、
+ * `navigator.requestGPIOAccess` / `requestI2CAccess` を提供する。
+ *
+ * @packageDocumentation
+ */
 export {
   BROWSER_POLYFILL_PACKAGE_NAME,
   BROWSER_POLYFILL_PROTOCOL_PACKAGE,
