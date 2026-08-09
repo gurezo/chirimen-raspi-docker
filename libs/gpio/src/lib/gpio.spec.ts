@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   isGpioDirection,
   isGpioEdge,
@@ -56,6 +56,17 @@ describe('GpioPort contract', () => {
     await port.unexport();
     expect(port.exported).toBe(false);
   });
+
+  it('supports onchange handler assignment', () => {
+    const port = createMockGpioPort(26);
+    const handler = vi.fn();
+
+    expect(port.onchange).toBeNull();
+    port.onchange = handler;
+    expect(port.onchange).toBe(handler);
+    port.onchange = null;
+    expect(port.onchange).toBeNull();
+  });
 });
 
 describe('GpioAccess contract', () => {
@@ -104,6 +115,7 @@ function createMockGpioPort(portNumber: number): GpioPort {
   let exported = false;
   let direction: GpioDirection = 'in';
   let value: GpioValue = 0;
+  let onchange: GpioPort['onchange'] = null;
 
   return {
     portNumber,
@@ -118,6 +130,12 @@ function createMockGpioPort(portNumber: number): GpioPort {
     },
     get direction() {
       return direction;
+    },
+    get onchange() {
+      return onchange;
+    },
+    set onchange(handler) {
+      onchange = handler;
     },
     async export(nextDirection) {
       direction = nextDirection;
