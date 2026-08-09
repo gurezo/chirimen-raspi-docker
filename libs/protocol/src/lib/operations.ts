@@ -1,14 +1,21 @@
 /**
- * Protocol 上の操作名。
- * domain API（GPIO / I2C）と 1:1 に近い文字列。数値 function id への対応は legacy-function-ids を参照。
+ * GPIO request operation。
+ * Node Runtime（`GpioSession` / `GpioPort`）との対応は gpio-operation-mapping を参照。
  */
-export type ProtocolOperation =
+export type GpioProtocolOperation =
   | 'gpio.export'
   | 'gpio.read'
   | 'gpio.write'
   | 'gpio.unexport'
   | 'gpio.subscribe'
-  | 'gpio.unsubscribe'
+  | 'gpio.unsubscribe';
+
+/**
+ * Protocol 上の操作名。
+ * domain API（GPIO / I2C）と 1:1 に近い文字列。数値 function id への対応は legacy-function-ids を参照。
+ */
+export type ProtocolOperation =
+  | GpioProtocolOperation
   | 'i2c.open'
   | 'i2c.close'
   | 'i2c.read8'
@@ -20,14 +27,97 @@ export type ProtocolOperation =
   | 'i2c.readBytes'
   | 'i2c.writeBytes';
 
+/** GPIO event operation（Server → Browser） */
+export type GpioProtocolEventOperation = 'gpio.onchange';
+
 /** Server → Browser の event operation */
-export type ProtocolEventOperation = 'gpio.onchange';
+export type ProtocolEventOperation = GpioProtocolEventOperation;
 
 /** GPIO direction（domain の 'in' | 'out' と一致。wire 上の 0/1 変換は #34） */
 export type ProtocolGpioDirection = 'in' | 'out';
 
 /** GPIO value（0 | 1） */
 export type ProtocolGpioValue = 0 | 1;
+
+const PROTOCOL_GPIO_DIRECTIONS: readonly ProtocolGpioDirection[] = [
+  'in',
+  'out',
+];
+
+/** `value` が ProtocolGpioDirection かどうか */
+export function isProtocolGpioDirection(
+  value: unknown
+): value is ProtocolGpioDirection {
+  return (
+    typeof value === 'string' &&
+    (PROTOCOL_GPIO_DIRECTIONS as readonly string[]).includes(value)
+  );
+}
+
+/** `value` が ProtocolGpioValue かどうか */
+export function isProtocolGpioValue(
+  value: unknown
+): value is ProtocolGpioValue {
+  return value === 0 || value === 1;
+}
+
+/** GPIO portNumber として有効な非負整数かどうか */
+export function isProtocolGpioPortNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** `gpio.export` request payload かどうか */
+export function isGpioExportRequestPayload(
+  value: unknown
+): value is ProtocolRequestPayloadMap['gpio.export'] {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  return (
+    isProtocolGpioPortNumber(value['portNumber']) &&
+    isProtocolGpioDirection(value['direction'])
+  );
+}
+
+/** `gpio.read` / `gpio.unexport` / `gpio.subscribe` / `gpio.unsubscribe` request payload かどうか */
+export function isGpioPortOnlyRequestPayload(
+  value: unknown
+): value is ProtocolRequestPayloadMap['gpio.read'] {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  return isProtocolGpioPortNumber(value['portNumber']);
+}
+
+/** `gpio.write` request payload かどうか */
+export function isGpioWriteRequestPayload(
+  value: unknown
+): value is ProtocolRequestPayloadMap['gpio.write'] {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  return (
+    isProtocolGpioPortNumber(value['portNumber']) &&
+    isProtocolGpioValue(value['value'])
+  );
+}
+
+/** `gpio.onchange` event payload かどうか */
+export function isGpioOnChangeEventPayload(
+  value: unknown
+): value is ProtocolEventPayloadMap['gpio.onchange'] {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  return (
+    isProtocolGpioPortNumber(value['portNumber']) &&
+    isProtocolGpioValue(value['value'])
+  );
+}
 
 /** operation ごとの request payload */
 export interface ProtocolRequestPayloadMap {
@@ -151,13 +241,17 @@ export type ProtocolSuccessPayload<Op extends ProtocolOperation> =
 export type ProtocolEventPayload<Op extends ProtocolEventOperation> =
   ProtocolEventPayloadMap[Op];
 
-const PROTOCOL_OPERATIONS: readonly ProtocolOperation[] = [
+const GPIO_PROTOCOL_OPERATIONS: readonly GpioProtocolOperation[] = [
   'gpio.export',
   'gpio.read',
   'gpio.write',
   'gpio.unexport',
   'gpio.subscribe',
   'gpio.unsubscribe',
+] as const;
+
+const PROTOCOL_OPERATIONS: readonly ProtocolOperation[] = [
+  ...GPIO_PROTOCOL_OPERATIONS,
   'i2c.open',
   'i2c.close',
   'i2c.read8',
@@ -169,6 +263,16 @@ const PROTOCOL_OPERATIONS: readonly ProtocolOperation[] = [
   'i2c.readBytes',
   'i2c.writeBytes',
 ] as const;
+
+/** `value` が GpioProtocolOperation かどうか */
+export function isGpioProtocolOperation(
+  value: unknown
+): value is GpioProtocolOperation {
+  return (
+    typeof value === 'string' &&
+    (GPIO_PROTOCOL_OPERATIONS as readonly string[]).includes(value)
+  );
+}
 
 /** `value` が ProtocolOperation かどうか */
 export function isProtocolOperation(
