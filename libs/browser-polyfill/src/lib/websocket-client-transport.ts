@@ -27,21 +27,26 @@ export type ProtocolEventListener = (event: ProtocolEvent) => void;
 /** reconnect 成功時に呼ばれる listener */
 export type ReconnectListener = () => void;
 
+/** WebSocket client transport の設定 */
 export interface WebSocketClientTransportOptions {
+  /** 接続先 WebSocket URL */
   readonly url: string;
-  /** request の timeout（ms）。省略時は DEFAULT_REQUEST_TIMEOUT_MS */
+  /** request の timeout（ms）。省略時は {@link DEFAULT_REQUEST_TIMEOUT_MS} */
   readonly timeoutMs?: number;
-  /** 予期せぬ切断後の reconnect 間隔（ms）。省略時は DEFAULT_RECONNECT_INTERVAL_MS */
+  /** 予期せぬ切断後の reconnect 間隔（ms）。省略時は {@link DEFAULT_RECONNECT_INTERVAL_MS} */
   readonly reconnectIntervalMs?: number;
   /**
    * 予期せぬ切断後の最大 reconnect 試行回数。
    * 省略時は Infinity（成功するまで繰り返す）。
    */
   readonly maxReconnectAttempts?: number;
+  /** WebSocket 実装（テスト用 Fake 差し替え用） */
   readonly webSocketImpl?: WebSocketConstructor;
+  /** 初期 event listener（`addEventListener` と併用可） */
   readonly onEvent?: ProtocolEventListener;
-  /** reconnect 成功時の callback（addReconnectListener と併用可） */
+  /** reconnect 成功時の callback（`addReconnectListener` と併用可） */
   readonly onReconnect?: ReconnectListener;
+  /** request に付与する任意の sessionId */
   readonly sessionId?: SessionId;
 }
 
@@ -206,6 +211,9 @@ export class WebSocketClientTransport {
   /**
    * protocol request を送信し、対応する success response を返す。
    * error response / timeout / disconnect は ChirimenError で reject する。
+   *
+   * @param operation - protocol operation 名
+   * @param payload - operation に対応する request payload
    */
   async request<Op extends ProtocolOperation>(
     operation: Op,

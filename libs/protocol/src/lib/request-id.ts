@@ -4,7 +4,10 @@
  */
 export type RequestId = number;
 
-/** `value` が RequestId（0–0xffff の整数）かどうか */
+/**
+ * `value` が {@link RequestId}（0–0xffff の整数）かどうか。
+ * @param value - 判定対象
+ */
 export function isRequestId(value: unknown): value is RequestId {
   return (
     typeof value === 'number' &&

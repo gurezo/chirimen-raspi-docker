@@ -12,3 +12,5 @@ vite.config.*.timestamp*
 coverage
 
 .nx/migrate-runs
+
+docs/api/

@@ -78,6 +78,16 @@ Nx graph は以下で確認できます。
 npx nx graph
 ```
 
+## API ドキュメント（Typedoc）
+
+公開 TypeScript API（`gpio` / `i2c` / `protocol` / `browser-polyfill`）のリファレンスは次で生成します。
+
+```sh
+pnpm docs:api
+```
+
+生成物は `docs/api/` に出力されます（git 管理外）。Web 公開は別 Issue で扱います。
+
 ## Nx MCP (Cursor)
 
 Cursor で Nx workspace の context を AI agent に提供するため、`.cursor/mcp.json` に Nx MCP 設定を含めています。

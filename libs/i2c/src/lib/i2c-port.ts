@@ -7,8 +7,15 @@ import type { I2CSlaveDevice } from './i2c-slave-device.js';
  * Node / Browser 固有の実装詳細は含めない。
  */
 export interface I2CPort {
+  /** ポート番号 */
   readonly portNumber: I2CPortNumber;
+  /** ポート名（表示用） */
   readonly portName: string;
+  /** ピン名（表示用） */
   readonly pinName: string;
+  /**
+   * 指定スレーブアドレスのデバイスを開く。
+   * @param slaveAddress - 7-bit スレーブアドレス
+   */
   open(slaveAddress: I2CSlaveAddress): Promise<I2CSlaveDevice>;
 }

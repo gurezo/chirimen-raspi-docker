@@ -11,7 +11,7 @@ import { BrowserI2CSlaveDevice } from './browser-i2c-slave-device.js';
 import type { WebSocketClientTransport } from './websocket-client-transport.js';
 
 /**
- * protocol transport 経由で I2CPort 契約を満たす Browser 実装。
+ * protocol transport 経由で {@link I2CPort} 契約を満たす Browser 実装。
  */
 export class BrowserI2CPort implements I2CPort {
   readonly portNumber: I2CPortNumber;

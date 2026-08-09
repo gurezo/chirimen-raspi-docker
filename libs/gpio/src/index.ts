@@ -1,3 +1,11 @@
+/**
+ * GPIO domain の公開 API。
+ *
+ * Web GPIO に近い型契約のみを提供する。
+ * Node / Browser 固有の実装詳細は含めない。
+ *
+ * @packageDocumentation
+ */
 export type { GpioDirection } from './lib/gpio-direction.js';
 export { isGpioDirection } from './lib/gpio-direction.js';
 export type { GpioValue } from './lib/gpio-value.js';

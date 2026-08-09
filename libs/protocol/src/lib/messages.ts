@@ -49,6 +49,7 @@ export interface ProtocolErrorResponse<
   readonly error: ChirimenErrorPayload;
 }
 
+/** Server → Browser の成功 / 失敗レスポンス */
 export type ProtocolResponse<
   Op extends ProtocolOperation = ProtocolOperation,
 > = ProtocolSuccessResponse<Op> | ProtocolErrorResponse<Op>;
@@ -65,12 +66,16 @@ export interface ProtocolEvent<
   readonly payload: ProtocolEventPayload<Op>;
 }
 
+/** wire 上を流れる protocol メッセージ全体 */
 export type ProtocolMessage =
   | ProtocolRequest
   | ProtocolResponse
   | ProtocolEvent;
 
-/** `value` が ProtocolRequest かどうか */
+/**
+ * `value` が {@link ProtocolRequest} かどうか（浅い判定）。
+ * @param value - 判定対象
+ */
 export function isProtocolRequest(
   value: unknown
 ): value is ProtocolRequest {
@@ -88,7 +93,10 @@ export function isProtocolRequest(
   );
 }
 
-/** `value` が ProtocolSuccessResponse かどうか */
+/**
+ * `value` が {@link ProtocolSuccessResponse} かどうか（浅い判定）。
+ * @param value - 判定対象
+ */
 export function isProtocolSuccessResponse(
   value: unknown
 ): value is ProtocolSuccessResponse {
@@ -105,7 +113,10 @@ export function isProtocolSuccessResponse(
   );
 }
 
-/** `value` が ProtocolErrorResponse かどうか */
+/**
+ * `value` が {@link ProtocolErrorResponse} かどうか（浅い判定）。
+ * @param value - 判定対象
+ */
 export function isProtocolErrorResponse(
   value: unknown
 ): value is ProtocolErrorResponse {
@@ -127,14 +138,20 @@ export function isProtocolErrorResponse(
   return typeof error['code'] === 'string' && typeof error['message'] === 'string';
 }
 
-/** `value` が ProtocolResponse かどうか */
+/**
+ * `value` が {@link ProtocolResponse} かどうか。
+ * @param value - 判定対象
+ */
 export function isProtocolResponse(
   value: unknown
 ): value is ProtocolResponse {
   return isProtocolSuccessResponse(value) || isProtocolErrorResponse(value);
 }
 
-/** `value` が ProtocolEvent かどうか */
+/**
+ * `value` が {@link ProtocolEvent} かどうか（浅い判定）。
+ * @param value - 判定対象
+ */
 export function isProtocolEvent(value: unknown): value is ProtocolEvent {
   if (typeof value !== 'object' || value === null) {
     return false;
@@ -147,7 +164,10 @@ export function isProtocolEvent(value: unknown): value is ProtocolEvent {
   );
 }
 
-/** `value` が ProtocolMessage かどうか */
+/**
+ * `value` が {@link ProtocolMessage} かどうか。
+ * @param value - 判定対象
+ */
 export function isProtocolMessage(
   value: unknown
 ): value is ProtocolMessage {

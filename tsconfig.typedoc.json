@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "noEmit": true,
+    "rootDir": ".",
+    "lib": ["es2022", "DOM"],
+    "types": ["node"]
+  },
+  "include": [
+    "libs/gpio/src/**/*.ts",
+    "libs/i2c/src/**/*.ts",
+    "libs/protocol/src/**/*.ts",
+    "libs/browser-polyfill/src/**/*.ts",
+    "libs/core/src/**/*.ts"
+  ],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+}

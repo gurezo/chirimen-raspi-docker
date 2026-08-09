@@ -1,7 +1,10 @@
-/** I2C 7-bit スレーブアドレス (0x00–0x7f) */
+/** I2C 7-bit スレーブアドレス（0x00–0x7f） */
 export type I2CSlaveAddress = number;
 
-/** `value` が有効な I2C slave address かどうか */
+/**
+ * `value` が有効な {@link I2CSlaveAddress} かどうか。
+ * @param value - 判定対象
+ */
 export function isI2CSlaveAddress(value: unknown): value is I2CSlaveAddress {
   return (
     typeof value === 'number' &&

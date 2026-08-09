@@ -5,10 +5,13 @@ import { CHIRIMEN_GPIO_PORTS } from './gpio-ports.js';
 import type { WebSocketClientTransport } from './websocket-client-transport.js';
 
 /**
- * protocol transport 経由で GpioAccess 契約を満たす Browser 実装。
- * ports は CHIRIMEN 互換の固定 BCM ピン一覧。
+ * protocol transport 経由で {@link GpioAccess} 契約を満たす Browser 実装。
+ * `ports` は CHIRIMEN 互換の固定 BCM ピン一覧。
+ *
+ * @param transport - 共有 WebSocket transport
  */
 export class BrowserGpioAccess implements GpioAccess {
+  /** CHIRIMEN 互換 GPIO ポート一覧 */
   readonly ports: GpioPortMap;
 
   constructor(transport: WebSocketClientTransport) {

@@ -217,8 +217,10 @@ function assertValidProtocolMessage(value: unknown): ProtocolMessage {
 }
 
 /**
- * ProtocolMessage を JSON テキスト（wire format）へ変換する。
+ * {@link ProtocolMessage} を JSON テキスト（wire format）へ変換する。
  * 不正な message は ChirimenError（InvalidArgument）を throw する。
+ *
+ * @param message - エンコード対象のメッセージ
  */
 export function encodeProtocolMessage(message: ProtocolMessage): string {
   assertValidProtocolMessage(message);
@@ -226,8 +228,10 @@ export function encodeProtocolMessage(message: ProtocolMessage): string {
 }
 
 /**
- * JSON テキスト（wire format）を ProtocolMessage へ変換する。
+ * JSON テキスト（wire format）を {@link ProtocolMessage} へ変換する。
  * 不正な入力は ChirimenError（InvalidArgument）を throw する。
+ *
+ * @param data - JSON 文字列
  */
 export function decodeProtocolMessage(data: string): ProtocolMessage {
   if (typeof data !== 'string') {

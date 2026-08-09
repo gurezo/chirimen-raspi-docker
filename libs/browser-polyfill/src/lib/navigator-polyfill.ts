@@ -19,8 +19,11 @@ declare global {
 let sharedTransport: WebSocketClientTransport | null = null;
 
 /**
- * WebSocket transport を接続し、navigator.requestGPIOAccess / requestI2CAccess を登録する。
+ * WebSocket transport を接続し、`navigator.requestGPIOAccess` / `requestI2CAccess` を登録する。
  * 既存の API があっても上書きする（再 install を許容）。
+ *
+ * @param options - WebSocket URL など transport 設定
+ * @returns 共有される {@link WebSocketClientTransport}
  */
 export async function installBrowserPolyfill(
   options: WebSocketClientTransportOptions
@@ -37,8 +40,8 @@ export async function installBrowserPolyfill(
 }
 
 /**
- * 共有 transport から GpioAccess を返す。
- * installBrowserPolyfill 呼び出し前は ChirimenError を投げる。
+ * 共有 transport から {@link GpioAccess} を返す。
+ * `installBrowserPolyfill` 呼び出し前は ChirimenError を投げる。
  */
 export async function requestGPIOAccess(): Promise<GpioAccess> {
   const transport = requireSharedTransport();
@@ -47,8 +50,8 @@ export async function requestGPIOAccess(): Promise<GpioAccess> {
 }
 
 /**
- * 共有 transport から I2CAccess を返す。
- * installBrowserPolyfill 呼び出し前は ChirimenError を投げる。
+ * 共有 transport から {@link I2CAccess} を返す。
+ * `installBrowserPolyfill` 呼び出し前は ChirimenError を投げる。
  */
 export async function requestI2CAccess(): Promise<I2CAccess> {
   const transport = requireSharedTransport();
