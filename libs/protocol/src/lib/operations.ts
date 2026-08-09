@@ -289,7 +289,7 @@ export function isI2cWriteBytesRequestPayload(
   );
 }
 
-/** operation ごとの request payload */
+/** request operation ごとの payload 型マップ */
 export interface ProtocolRequestPayloadMap {
   readonly 'gpio.export': {
     readonly portNumber: number;
@@ -362,7 +362,7 @@ export interface ProtocolRequestPayloadMap {
   };
 }
 
-/** operation ごとの success response payload */
+/** 成功レスポンス operation ごとの payload 型マップ */
 export interface ProtocolSuccessPayloadMap {
   readonly 'gpio.export': Record<string, never>;
   readonly 'gpio.read': {
@@ -394,7 +394,7 @@ export interface ProtocolSuccessPayloadMap {
   };
 }
 
-/** event operation ごとの payload */
+/** event operation ごとの payload 型マップ */
 export interface ProtocolEventPayloadMap {
   readonly 'gpio.onchange': {
     readonly portNumber: number;
@@ -402,12 +402,15 @@ export interface ProtocolEventPayloadMap {
   };
 }
 
+/** 指定 operation の request payload */
 export type ProtocolRequestPayload<Op extends ProtocolOperation> =
   ProtocolRequestPayloadMap[Op];
 
+/** 指定 operation の成功レスポンス payload */
 export type ProtocolSuccessPayload<Op extends ProtocolOperation> =
   ProtocolSuccessPayloadMap[Op];
 
+/** 指定 event operation の payload */
 export type ProtocolEventPayload<Op extends ProtocolEventOperation> =
   ProtocolEventPayloadMap[Op];
 

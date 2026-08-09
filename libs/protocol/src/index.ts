@@ -1,3 +1,11 @@
+/**
+ * Browser ↔ Server 間の JSON protocol 公開 API。
+ *
+ * request / response / event の型、codec、legacy function id 対応を提供する。
+ * Node Runtime / GPIO・I2C domain 実装への依存は持たない。
+ *
+ * @packageDocumentation
+ */
 export { PROTOCOL_PACKAGE_NAME } from './lib/protocol.js';
 export type { RequestId } from './lib/request-id.js';
 export { isRequestId } from './lib/request-id.js';
