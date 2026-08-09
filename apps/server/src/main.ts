@@ -1,24 +1,13 @@
-import express from 'express';
+import { createExpressApp } from './app/express-app.js';
 import { createRuntimeContext } from './app/runtime-context.js';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 33330;
 
 async function main(): Promise<void> {
-  const app = express();
   const runtimeContext = await createRuntimeContext();
+  const app = createExpressApp(runtimeContext);
   let shuttingDown = false;
-
-  app.get('/', (req, res) => {
-    res.json({
-      name: runtimeContext.health.name,
-      status: runtimeContext.health.status,
-    });
-  });
-
-  app.get('/health', (req, res) => {
-    res.json(runtimeContext.health);
-  });
 
   const server = app.listen(port, host, () => {
     console.log(`[ ready ] http://${host}:${port}`);
