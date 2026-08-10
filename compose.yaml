@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/server/Dockerfile
-    image: chirimen-raspi-docker/server:phase1
+    image: ghcr.io/gurezo/chirimen-raspi-docker/server:latest
     environment:
       HOST: 0.0.0.0
       PORT: 33330
