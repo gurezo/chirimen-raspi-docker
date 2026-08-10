@@ -15,7 +15,7 @@ Raspberry Pi 3 / 4 / 5 上で、次の操作だけで CHIRIMEN 開発を始め�
 
 ```text
 git clone
-docker compose up
+./scripts/start.sh
 ```
 
 既存 CHIRIMEN の Web GPIO / Web I2C 風の開発体験を維持しつつ、実装を TypeScript / Nx / Docker ベースに再構築する。
@@ -106,6 +106,7 @@ chirimen-raspi-docker/
 │       └── Dockerfile
 ├── scripts/
 │   ├── doctor.sh
+│   ├── start.sh
 │   └── enable-i2c.sh
 ├── docs/
 │   ├── architecture/
@@ -139,7 +140,8 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 起動入口は root の `compose.yaml`（`docker compose up --build`）
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す）
+- ベース定義は root の `compose.yaml`（`/sys/class/gpio` を常時 mount）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 

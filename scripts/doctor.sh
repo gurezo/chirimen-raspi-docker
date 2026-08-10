@@ -311,13 +311,13 @@ print_summary() {
     if [ "$WARN_COUNT" -gt 0 ]; then
       log "$WARN_COUNT warning(s) reported; review messages above before starting Docker Compose."
     fi
-    log "You can start Docker Compose:"
-    log "  docker compose up --build"
+    log "You can start with capability-aware mapping:"
+    log "  ./scripts/start.sh"
     return 0
   fi
 
   log "Some checks failed ($ERROR_COUNT error(s), $WARN_COUNT warning(s))."
-  log "Fix the errors above before running docker compose up."
+  log "Fix the errors above before running ./scripts/start.sh."
   return 1
 }
 

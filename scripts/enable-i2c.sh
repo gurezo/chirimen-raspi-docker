@@ -199,8 +199,8 @@ check_i2c() {
 
   log ""
   if [ "$ok" -eq 0 ]; then
-    log "I2C is ready. You can start Docker Compose:"
-    log "  docker compose up --build"
+    log "I2C is ready. You can start with capability-aware mapping:"
+    log "  ./scripts/start.sh"
     return 0
   fi
 
