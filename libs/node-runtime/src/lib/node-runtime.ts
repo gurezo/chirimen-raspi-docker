@@ -10,9 +10,12 @@ import {
 } from 'gpio';
 import type { I2CAccess, I2CPortNumber } from 'i2c';
 import { detectHardwareCapabilities } from './hardware/detect-hardware-capabilities.js';
+import {
+  selectRuntimeBackends,
+  type GpioBackendSelection,
+  type I2cBackendSelection,
+} from './hardware/select-runtime-backends.js';
 import { mapGpioError } from './gpio/map-gpio-error.js';
-import { requestNodeGpioAccess } from './gpio/request-node-gpio-access.js';
-import { requestNodeI2CAccess } from './i2c/request-node-i2c-access.js';
 
 export interface I2CPortDescriptor {
   portNumber: I2CPortNumber;
@@ -73,6 +76,32 @@ function createUnavailableI2CContext(): NodeRuntimeContext['i2c'] {
   };
 }
 
+function toGpioContext(
+  selection: GpioBackendSelection
+): NodeRuntimeContext['gpio'] {
+  if (selection.kind === 'sysfs') {
+    return {
+      available: true,
+      ports: toGpioPortDescriptors(selection.access),
+      access: selection.access,
+    };
+  }
+  return createUnavailableGpioContext();
+}
+
+function toI2CContext(
+  selection: I2cBackendSelection
+): NodeRuntimeContext['i2c'] {
+  if (selection.kind === 'i2c-dev') {
+    return {
+      available: true,
+      ports: toI2CPortDescriptors(selection.access),
+      access: selection.access,
+    };
+  }
+  return createUnavailableI2CContext();
+}
+
 async function cleanupGpioAccess(access?: GpioAccess): Promise<void> {
   if (!access) {
     return;
@@ -85,42 +114,18 @@ async function cleanupGpioAccess(access?: GpioAccess): Promise<void> {
   }
 }
 
-async function resolveGpioContext(): Promise<NodeRuntimeContext['gpio']> {
-  try {
-    const access = await requestNodeGpioAccess();
-    return {
-      available: true,
-      ports: toGpioPortDescriptors(access),
-      access,
-    };
-  } catch {
-    return createUnavailableGpioContext();
-  }
-}
-
-async function resolveI2CContext(): Promise<NodeRuntimeContext['i2c']> {
-  try {
-    const access = await requestNodeI2CAccess();
-    return {
-      available: true,
-      ports: toI2CPortDescriptors(access),
-      access,
-    };
-  } catch {
-    return createUnavailableI2CContext();
-  }
-}
-
 /**
  * Node Runtime コンテキストを生成する。
- * 起動時に hardware capability を一度だけ検出し、GPIO / I2C が利用可能な環境では port 一覧を取得する。
- * 失敗時は unavailable stub にフォールバックする。
+ * 起動時に hardware capability を一度だけ検出し、
+ * Runtime Factory で GPIO / I2C backend を選択して注入する。
+ * サーバー起動後に backend は切り替えない。
  */
 export async function createNodeRuntimeContext(): Promise<NodeRuntimeContext> {
   const health = createRuntimeHealth('chirimen-raspi-docker-server');
   const capabilities = detectHardwareCapabilities();
-  const gpio = await resolveGpioContext();
-  const i2c = await resolveI2CContext();
+  const backends = await selectRuntimeBackends(capabilities);
+  const gpio = toGpioContext(backends.gpio);
+  const i2c = toI2CContext(backends.i2c);
 
   return {
     health,
