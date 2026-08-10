@@ -14,3 +14,4 @@ coverage
 .nx/migrate-runs
 
 docs/api/
+_site/
