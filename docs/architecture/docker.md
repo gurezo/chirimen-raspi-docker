@@ -31,10 +31,18 @@ docker compose up --build
 | --- | --- |
 | Registry | GitHub Container Registry（`ghcr.io`） |
 | Image | `ghcr.io/gurezo/chirimen-raspi-docker/server` |
-| Platform | `linux/arm64` のみ |
+| 成果物 arch | `linux/arm64`（64-bit Raspberry Pi OS 向け） |
+| ビルド環境 | Raspberry Pi OS 上の **self-hosted runner**（ネイティブビルド） |
 | Workflow | [`.github/workflows/docker-release.yml`](../../.github/workflows/docker-release.yml) |
 
 以前のローカル向け image 名 `chirimen-raspi-docker/server:phase1` は、GHCR 公開名へ移行した。Compose の `image` は GHCR を参照する。
+
+### ビルド方針
+
+- リリース用 image は **Raspberry Pi OS（64-bit）上でネイティブビルド**する
+- GitHub-hosted `ubuntu-latest` + QEMU によるクロスビルドは使わない
+- workflow は `runs-on: [self-hosted, linux, ARM64]` を要求する。対象 Pi に [self-hosted runner](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners) を登録し、Docker が利用できる状態にしておく
+- runner が offline のあいだジョブは待ちになる
 
 ### アーキテクチャ対応範囲
 

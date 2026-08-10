@@ -138,7 +138,7 @@ docker compose up
 docker compose up --build
 ```
 
-server は default で `33330` 番 port を使用します。64-bit Raspberry Pi OS（`aarch64`）が前提です。tag 方針は [docs/architecture/docker.md](docs/architecture/docker.md) を参照してください。
+server は default で `33330` 番 port を使用します。64-bit Raspberry Pi OS（`aarch64`）が前提です。リリース用 image は Raspberry Pi OS 上の self-hosted runner でネイティブビルドします。tag 方針は [docs/architecture/docker.md](docs/architecture/docker.md) を参照してください。
 
 ```sh
 curl http://localhost:33330/health
