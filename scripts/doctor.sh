@@ -2,20 +2,31 @@
 #
 # Pre-flight checks for chirimen-raspi-docker on Raspberry Pi host.
 # Read-only diagnostics; sudo is not required.
+# Hardware capability classification matches Server / Node Runtime
+# (detectHardwareCapabilities / classifyHardwareCapabilities).
 #
 # Usage:
 #   ./scripts/doctor.sh
 #
 set -euo pipefail
 
-GPIO_DEVICE="/dev/gpiomem"
+SYSFS_GPIO_PATH="/sys/class/gpio"
 I2C_DEVICE="/dev/i2c-1"
 
 ERROR_COUNT=0
 WARN_COUNT=0
 PI_MODEL=""
 IS_RASPBERRY_PI=0
-IS_PI5=0
+
+# Probe findings (paths)
+SYSFS_GPIO=0
+GPIOMEM_DEVICES=()
+GPIOCHIP_DEVICES=()
+I2C_DEV=0
+
+# Classified backends (same names as HardwareCapabilities)
+GPIO_BACKEND="unavailable"
+I2C_BACKEND="unavailable"
 
 log() {
   printf '%s\n' "$*"
@@ -34,8 +45,11 @@ Usage: doctor.sh
     - architecture
     - Docker
     - Docker Compose
-    - /dev/gpiomem
-    - /dev/i2c-1
+    - hardware capabilities (same criteria as Server startup):
+        - /sys/class/gpio
+        - /dev/gpiomem*
+        - /dev/gpiochip*
+        - /dev/i2c-1
 
   Missing items are reported as [error] or [warn].
   Exit 0 when no errors; exit 1 when one or more errors are found.
@@ -72,19 +86,11 @@ is_raspberry_pi() {
   return 1
 }
 
-detect_pi_generation() {
-  IS_PI5=0
-  case "$PI_MODEL" in
-    *"Raspberry Pi 5"*) IS_PI5=1 ;;
-  esac
-}
-
 check_pi_model() {
   log "Checking Raspberry Pi model..."
 
   if is_raspberry_pi; then
     IS_RASPBERRY_PI=1
-    detect_pi_generation
     log "[ok] Raspberry Pi model: $PI_MODEL"
     return 0
   fi
@@ -160,70 +166,142 @@ check_docker_compose() {
   record_error
 }
 
-list_gpiochip_devices() {
-  local device
-  local found=0
-  for device in /dev/gpiochip*; do
-    if [ -e "$device" ]; then
-      ls -l "$device"
-      found=1
+collect_dev_entries_matching() {
+  # Prints matching /dev/<prefix>* paths, one per line (empty if none).
+  local prefix="$1"
+  local name
+  if [ ! -d /dev ]; then
+    return 0
+  fi
+  for name in /dev/"${prefix}"*; do
+    if [ -e "$name" ]; then
+      printf '%s\n' "$name"
     fi
   done
-  if [ "$found" -eq 0 ]; then
-    log "        no /dev/gpiochip* devices found"
-  fi
 }
 
-check_gpiomem() {
-  log "Checking $GPIO_DEVICE..."
+probe_hardware_paths() {
+  local device
 
-  if [ -e "$GPIO_DEVICE" ]; then
-    log "[ok] $GPIO_DEVICE exists"
-    ls -l "$GPIO_DEVICE"
-    return 0
+  SYSFS_GPIO=0
+  GPIOMEM_DEVICES=()
+  GPIOCHIP_DEVICES=()
+  I2C_DEV=0
+
+  if [ -e "$SYSFS_GPIO_PATH" ]; then
+    SYSFS_GPIO=1
   fi
 
-  if [ "$IS_RASPBERRY_PI" -eq 0 ]; then
-    log "[error] $GPIO_DEVICE not found (Raspberry Pi device node)"
-    record_error
-    return 0
-  fi
+  while IFS= read -r device; do
+    [ -n "$device" ] || continue
+    GPIOMEM_DEVICES+=("$device")
+  done < <(collect_dev_entries_matching "gpiomem")
 
-  if [ "$IS_PI5" -eq 1 ]; then
-    log "[warn] $GPIO_DEVICE not found on Raspberry Pi 5"
-    log "        Pi 5 may use /dev/gpiochip* instead:"
-    list_gpiochip_devices
-    log "        add required devices to compose.yaml devices if needed"
-    record_warn
-    return 0
-  fi
-
-  log "[error] $GPIO_DEVICE not found"
-  log "        verify GPIO is available on the host"
-  record_error
-}
-
-check_i2c_device() {
-  log "Checking $I2C_DEVICE..."
+  while IFS= read -r device; do
+    [ -n "$device" ] || continue
+    GPIOCHIP_DEVICES+=("$device")
+  done < <(collect_dev_entries_matching "gpiochip")
 
   if [ -e "$I2C_DEVICE" ]; then
+    I2C_DEV=1
+  fi
+}
+
+classify_hardware_capabilities() {
+  # GPIO priority: sysfs → gpiochip → unavailable (parent Issue #96)
+  if [ "$SYSFS_GPIO" -eq 1 ]; then
+    GPIO_BACKEND="sysfs"
+  elif [ "${#GPIOCHIP_DEVICES[@]}" -gt 0 ]; then
+    GPIO_BACKEND="gpiochip"
+  else
+    GPIO_BACKEND="unavailable"
+  fi
+
+  if [ "$I2C_DEV" -eq 1 ]; then
+    I2C_BACKEND="i2c-dev"
+  else
+    I2C_BACKEND="unavailable"
+  fi
+}
+
+list_path_details() {
+  local path
+  for path in "$@"; do
+    if [ -e "$path" ]; then
+      ls -l "$path"
+    fi
+  done
+}
+
+check_hardware_capabilities() {
+  log "Checking hardware capabilities (Runtime-aligned)..."
+
+  probe_hardware_paths
+  classify_hardware_capabilities
+
+  log "Probe findings:"
+  if [ "$SYSFS_GPIO" -eq 1 ]; then
+    log "[ok] $SYSFS_GPIO_PATH exists"
+    list_path_details "$SYSFS_GPIO_PATH"
+  else
+    log "[warn] $SYSFS_GPIO_PATH not found"
+  fi
+
+  if [ "${#GPIOMEM_DEVICES[@]}" -gt 0 ]; then
+    log "[ok] /dev/gpiomem* found (${#GPIOMEM_DEVICES[@]}):"
+    list_path_details "${GPIOMEM_DEVICES[@]}"
+  else
+    log "[warn] no /dev/gpiomem* devices found"
+  fi
+
+  if [ "${#GPIOCHIP_DEVICES[@]}" -gt 0 ]; then
+    log "[ok] /dev/gpiochip* found (${#GPIOCHIP_DEVICES[@]}):"
+    list_path_details "${GPIOCHIP_DEVICES[@]}"
+  else
+    log "[warn] no /dev/gpiochip* devices found"
+  fi
+
+  case "$GPIO_BACKEND" in
+    sysfs)
+      log "[ok] gpio backend: sysfs"
+      ;;
+    gpiochip)
+      log "[warn] gpio backend: gpiochip (unsupported; GPIO unavailable until backend is implemented)"
+      log "        server startup will log: gpio backend gpiochip is unsupported"
+      record_warn
+      ;;
+    unavailable)
+      log "[warn] gpio backend: unavailable (no GPIO interface found)"
+      if [ "$IS_RASPBERRY_PI" -eq 1 ]; then
+        log "        verify /sys/class/gpio or /dev/gpiochip* on the host"
+      fi
+      record_warn
+      ;;
+  esac
+
+  if [ "$I2C_BACKEND" = "i2c-dev" ]; then
     log "[ok] $I2C_DEVICE exists"
-    ls -l "$I2C_DEVICE"
-    return 0
-  fi
-
-  if [ "$IS_RASPBERRY_PI" -eq 0 ]; then
-    log "[error] $I2C_DEVICE not found (Raspberry Pi device node)"
+    list_path_details "$I2C_DEVICE"
+    log "[ok] i2c backend: i2c-dev"
+  else
+    log "[error] $I2C_DEVICE not found"
+    if [ "$IS_RASPBERRY_PI" -eq 1 ]; then
+      log "        enable I2C on the host, then reboot:"
+      log "          sudo ./scripts/enable-i2c.sh"
+      log "          sudo reboot"
+      log "          sudo ./scripts/enable-i2c.sh --check"
+    else
+      log "        (Raspberry Pi device node; expected on Pi host)"
+    fi
+    log "[error] i2c backend: unavailable"
     record_error
-    return 0
   fi
 
-  log "[error] $I2C_DEVICE not found"
-  log "        enable I2C on the host, then reboot:"
-  log "          sudo ./scripts/enable-i2c.sh"
-  log "          sudo reboot"
-  log "          sudo ./scripts/enable-i2c.sh --check"
-  record_error
+  # Same vocabulary as apps/server startup log
+  log "[ capabilities ] gpio=${GPIO_BACKEND} i2c=${I2C_BACKEND}"
+  if [ "$GPIO_BACKEND" = "gpiochip" ]; then
+    log "[ runtime ] gpio backend gpiochip is unsupported; GPIO unavailable"
+  fi
 }
 
 print_summary() {
@@ -269,9 +347,7 @@ main() {
   log ""
   check_docker_compose
   log ""
-  check_gpiomem
-  log ""
-  check_i2c_device
+  check_hardware_capabilities
   log ""
 
   print_summary
