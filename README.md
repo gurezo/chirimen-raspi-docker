@@ -66,6 +66,8 @@ if (port) {
 
 ## Documentation
 
+公開 Documentation: https://gurezo.github.io/chirimen-raspi-docker/
+
 初めての利用者はガイドから始めてください。
 
 | ドキュメント | 内容 |
@@ -78,7 +80,7 @@ if (port) {
 | [docs/architecture/protocol.md](docs/architecture/protocol.md) | Protocol メッセージモデル |
 | [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries |
 
-公開 TypeScript API の生成手順は下記「API ドキュメント（Typedoc）」を参照してください。
+公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照してください。ローカル生成手順は下記「API ドキュメント（Typedoc）」を参照してください。
 
 ## ローカル開発
 
@@ -96,13 +98,18 @@ npx nx graph
 
 ## API ドキュメント（Typedoc）
 
-公開 TypeScript API（`gpio` / `i2c` / `protocol` / `browser-polyfill`）のリファレンスは次で生成します。
+公開 TypeScript API（`gpio` / `i2c` / `protocol` / `browser-polyfill`）のリファレンスは次で閲覧できます。
+
+- Web: https://gurezo.github.io/chirimen-raspi-docker/api/
+- テーマ: [typedoc-rhineai-theme](https://www.npmjs.com/package/typedoc-rhineai-theme)
+
+ローカルでは次で生成します。
 
 ```sh
 pnpm docs:api
 ```
 
-生成物は `docs/api/` に出力されます（git 管理外）。Web 公開は別 Issue で扱います。
+生成物は `docs/api/` に出力されます（git 管理外）。`main` への push で GitHub Pages に公開されます。
 
 ## Nx MCP (Cursor)
 
