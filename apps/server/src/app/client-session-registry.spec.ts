@@ -37,6 +37,10 @@ function createRuntimeContextMock(
 ): NodeRuntimeContext {
   return {
     health: { name: 'test', status: 'ok', version: '0.0.1' },
+    capabilities: {
+      gpio: { backend: gpioAccess ? 'sysfs' : 'unavailable' },
+      i2c: { backend: 'unavailable' },
+    },
     gpio: {
       available: Boolean(gpioAccess),
       ports: [],

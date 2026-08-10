@@ -1,4 +1,9 @@
 export * from './lib/core.js';
+export type {
+  GpioBackendKind,
+  HardwareCapabilities,
+  I2cBackendKind,
+} from './lib/hardware-capabilities.js';
 export type { ChirimenErrorCode, ChirimenErrorPayload } from './lib/errors.js';
 export {
   ChirimenError,
