@@ -7,7 +7,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 - [Getting Started](./getting-started.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
-- `scripts/doctor.sh` / `scripts/enable-i2c.sh`
+- `scripts/doctor.sh` / `scripts/start.sh` / `scripts/enable-i2c.sh`
 
 ## 前提 OS
 
@@ -16,7 +16,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 
 ## Docker / Docker Compose
 
-Runtime の起動入口は `docker compose up` のため、host に Docker と Compose が必要。
+Runtime の推奨起動入口は `./scripts/start.sh` のため、host に Docker と Compose が必要。
 
 インストール後の確認例:
 
@@ -30,7 +30,7 @@ daemon が動いていない場合は Docker を起動してから再度確認�
 
 ## 事前診断（doctor）
 
-`docker compose up` の前に、host の前提条件を一括確認できる。
+`./scripts/start.sh` の前に、host の前提条件を一括確認できる。
 
 ```sh
 chmod +x scripts/doctor.sh
@@ -62,20 +62,22 @@ chmod +x scripts/doctor.sh
 ### host の確認
 
 ```sh
-ls -l /dev/gpiomem
 ls -l /sys/class/gpio
+ls -l /dev/gpiomem* /dev/gpiochip*
 getent group gpio
 ```
 
-- `/dev/gpiomem` と `/sys/class/gpio` が存在すること
+- `/sys/class/gpio` があること（現行 sysfs backend の主経路）
+- `/dev/gpiomem*` は任意（無くても sysfs があればよい）
 - `gpio` グループの GID を控えておくこと（将来 container を non-root 化する際に `group_add` で合わせる）
 
 現在の server image は root で起動するため、当面 `group_add` は必須ではない。
 
 ### Pi 3 / 4 と 5
 
-- **Pi 3 / 4**: `/dev/gpiomem` が一般的。`compose.yaml` の設定で足りる想定
-- **Pi 5**: `/dev/gpiomem` が無い、または `/dev/gpiochip*` が主になる場合がある。host で `ls -l /dev/gpiomem* /dev/gpiochip*` を確認し、必要な device を compose の `devices` に追加する
+- **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
+- **`gpiomem`**: Pi 3 / 4 では一般的。Pi 5 では無いことがある
+- **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
@@ -112,7 +114,7 @@ sudo ./scripts/enable-i2c.sh --check
 
 ### Pi 3 / 4 / 5
 
-標準の primary bus は `/dev/i2c-1`。別名 bus（例: `/dev/i2c-0`）が必要な場合は host で `ls -l /dev/i2c-*` を確認し、必要な device を compose の `devices` に追加する。
+標準の primary bus は `/dev/i2c-1`。`./scripts/start.sh` が存在時のみ container に渡す。別名 bus（例: `/dev/i2c-0`）が必要な場合は host で `ls -l /dev/i2c-*` を確認する。
 
 ## セットアップ後
 
@@ -120,6 +122,7 @@ sudo ./scripts/enable-i2c.sh --check
 
 ```sh
 ./scripts/doctor.sh
+./scripts/start.sh
 ```
 
 → [Getting Started](./getting-started.md)

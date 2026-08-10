@@ -16,7 +16,7 @@
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 
-開発マシン単体（macOS など）では `docker compose up` が device 欠如で失敗することがある。その場合は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
+開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
 
 ## 1. リポジトリを clone する
 
@@ -37,10 +37,11 @@ chmod +x scripts/doctor.sh
 ## 3. Runtime を起動する
 
 ```sh
-docker compose up --build
+chmod +x scripts/start.sh
+./scripts/start.sh
 ```
 
-server は default で `33330` 番 port を使用する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。
 
 ## 4. health check で確認する
 
@@ -60,10 +61,11 @@ curl http://localhost:33330/health
 }
 ```
 
-container 内で device が見えることの確認例:
+container 内で sysfs / device が見えることの確認例:
 
 ```sh
-docker compose exec chirimen-server ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpio
+docker compose exec chirimen-server ls -l /sys/class/gpio
+docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
 ## 次のステップ

@@ -8,28 +8,34 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
 - [Docker 構成](../architecture/docker.md)
 
-## `docker compose up` が device 欠如で失敗する
+## device が無く GPIO / I2C が unavailable になる
 
 ### 症状
 
-`/dev/gpiomem` や `/dev/i2c-1` が host に無いと、Compose が起動に失敗する。
+- doctor / server が `gpio=unavailable` や `i2c=unavailable` を出す
+- container 内に期待した `/dev/*` が無い
+- （旧手順で）固定 `devices` を並べた `docker compose up` が欠如 path で失敗する
 
 ### 確認
 
 ```sh
 ./scripts/doctor.sh
 ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
+./scripts/start.sh --help
 ```
+
+起動時の `mapping:` 行で、実際に渡した path を確認する。
 
 ### 対処
 
 | 原因 | 対処 |
 | --- | --- |
 | I2C 未有効 | [raspberry-pi-setup.md](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
-| GPIO device 不足（特に Pi 5） | host で `ls -l /dev/gpiomem* /dev/gpiochip*` を確認し、必要な device を `compose.yaml` の `devices` に追加 |
+| GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
+| 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
 
-存在しない device を共通の `compose.yaml` に並べると、他機種で起動に失敗するため、追加は必要な host だけに限定する。
+`compose.yaml` に任意 device を固定列挙しない。`scripts/start.sh` が capability-aware に追加する。
 
 ## I2C が使えない / scan が空
 
@@ -43,7 +49,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 1. host で I2C を有効化して reboot する（[raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 2. `sudo ./scripts/enable-i2c.sh --check`
-3. `docker compose up --build` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
+3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
 slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。
 
@@ -56,15 +62,16 @@ slave が接続されていない場合、scan 結果が空になるのは正常
 ### 確認
 
 ```sh
-ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpio
+ls -l /dev/gpiomem* /dev/i2c-1 /sys/class/gpio
 getent group gpio
 getent group i2c
-docker compose exec chirimen-server ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpio
+docker compose exec chirimen-server ls -l /sys/class/gpio
+docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/i2c-1 2>/dev/null || true
 ```
 
 ### 対処
 
-- 現行 image は root 起動のため、まずは host 側に device / sysfs が存在し、Compose の mount が効いているかを確認する
+- 現行 image は root 起動のため、まずは host 側に device / sysfs が存在し、`start.sh` の mapping が効いているかを確認する
 - mount 漏れなら [docker.md](../architecture/docker.md) の devices / volumes を見直す
 - 将来 non-root 化する場合は、host の `gpio` / `i2c` グループ GID を `group_add` で合わせる
 
@@ -80,7 +87,7 @@ server プロセス自体は起動し続ける。I2C device 欠如時は `reques
 
 ### 対処
 
-host / container の `/dev/i2c-1` を直し、必要なら container を再作成する。
+host で `/dev/i2c-1` を用意してから `./scripts/start.sh` で container を再作成する。
 
 ## Pi 5 で GPIO が不明 / gpiochip unsupported
 
@@ -103,17 +110,17 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 - `/sys/class/gpio` があれば Runtime は `sysfs` backend を使う（現行の実装経路）
 - sysfs が無く `/dev/gpiochip*` のみの場合、現状は backend 未実装のため GPIO は利用できない（doctor / server とも unsupported と表示）
-- Docker で必要な `gpiochip*` などを通す場合は `compose.yaml` の `devices` に追加する。共通 yaml への無条件追加は避ける（Pi 3 / 4 で起動失敗の原因になる）
+- `./scripts/start.sh` は存在する `gpiochip*` を container に渡す（detection 揃え用）。backend 実装は別 Issue
 
 ## 非 Pi 環境（macOS など）
 
 ### 症状
 
-`/dev/gpiomem` や `/dev/i2c-1` が無く `docker compose up` が失敗する。
+host に `/dev/gpiomem` や `/dev/i2c-1` が無い。GPIO / I2C は使えない。
 
 ### 対処（開発継続）
 
-- `compose.yaml` の `devices` / `volumes` を一時的に外す（GPIO / I2C 検証は不可）
+- `./scripts/start.sh` で任意 device なし起動を試みる（GPIO / I2C 検証は不可）
 - またはローカルで TypeScript / server 開発する:
 
 ```sh
