@@ -18,7 +18,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 ```sh
 ./scripts/doctor.sh
-ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpio
+ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 ```
 
 ### 対処
@@ -35,7 +35,7 @@ ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpio
 
 ### 症状
 
-- doctor で `/dev/i2c-1` が `[error]`
+- doctor で `i2c=unavailable` / `/dev/i2c-1` が `[error]`
 - container 内に `/dev/i2c-1` が無い
 - `requestNodeI2CAccess()` が失敗し、Runtime 上で I2C が unavailable
 
@@ -82,19 +82,28 @@ server プロセス自体は起動し続ける。I2C device 欠如時は `reques
 
 host / container の `/dev/i2c-1` を直し、必要なら container を再作成する。
 
-## Pi 5 で GPIO が不明
+## Pi 5 で GPIO が不明 / gpiochip unsupported
 
 ### 症状
 
-doctor が `/dev/gpiomem` 不足を `[warn]` で出す、または GPIO 初期化に失敗する。
+- doctor が `gpio=gpiochip` と `[warn]`（unsupported）を出す
+- または doctor / server が `gpio=unavailable` になる
+- GPIO 初期化に失敗する
+
+### 確認
+
+```sh
+./scripts/doctor.sh
+ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip*
+```
+
+doctor の `[ capabilities ]` 行は server startup log と同じ backend 名になる。
 
 ### 対処
 
-```sh
-ls -l /dev/gpiomem* /dev/gpiochip*
-```
-
-必要な `gpiochip*` などを `compose.yaml` の `devices` に追加する。共通 yaml への無条件追加は避ける（Pi 3 / 4 で起動失敗の原因になる）。
+- `/sys/class/gpio` があれば Runtime は `sysfs` backend を使う（現行の実装経路）
+- sysfs が無く `/dev/gpiochip*` のみの場合、現状は backend 未実装のため GPIO は利用できない（doctor / server とも unsupported と表示）
+- Docker で必要な `gpiochip*` などを通す場合は `compose.yaml` の `devices` に追加する。共通 yaml への無条件追加は避ける（Pi 3 / 4 で起動失敗の原因になる）
 
 ## 非 Pi 環境（macOS など）
 
@@ -121,7 +130,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 
 1. Raspberry Pi 実機か
 2. Docker / Compose / daemon
-3. `/dev/gpiomem`（または Pi 5 の代替 device）
-4. `/dev/i2c-1`（`enable-i2c.sh`）
+3. `/dev/i2c-1`（`enable-i2c.sh`）— `i2c=unavailable` は error
+4. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
 
 解消後に Getting Started へ戻る: [getting-started.md](./getting-started.md)
