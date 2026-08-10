@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createNodeRuntimeContext } from './node-runtime.js';
 
-const { requestNodeGpioAccessMock, requestNodeI2CAccessMock } = vi.hoisted(
-  () => ({
-    requestNodeGpioAccessMock: vi.fn(),
-    requestNodeI2CAccessMock: vi.fn(),
-  })
-);
+const {
+  requestNodeGpioAccessMock,
+  requestNodeI2CAccessMock,
+  detectHardwareCapabilitiesMock,
+} = vi.hoisted(() => ({
+  requestNodeGpioAccessMock: vi.fn(),
+  requestNodeI2CAccessMock: vi.fn(),
+  detectHardwareCapabilitiesMock: vi.fn(),
+}));
 
 vi.mock('./gpio/request-node-gpio-access.js', () => ({
   requestNodeGpioAccess: requestNodeGpioAccessMock,
@@ -16,11 +19,35 @@ vi.mock('./i2c/request-node-i2c-access.js', () => ({
   requestNodeI2CAccess: requestNodeI2CAccessMock,
 }));
 
+vi.mock('./hardware/detect-hardware-capabilities.js', () => ({
+  detectHardwareCapabilities: detectHardwareCapabilitiesMock,
+}));
+
 describe('createNodeRuntimeContext', () => {
   beforeEach(() => {
     requestNodeGpioAccessMock.mockReset();
     requestNodeI2CAccessMock.mockReset();
     requestNodeI2CAccessMock.mockRejectedValue(new Error('no i2c'));
+    detectHardwareCapabilitiesMock.mockReset();
+    detectHardwareCapabilitiesMock.mockReturnValue({
+      gpio: { backend: 'unavailable' },
+      i2c: { backend: 'unavailable' },
+    });
+  });
+
+  it('attaches hardware capabilities detected at startup', async () => {
+    detectHardwareCapabilitiesMock.mockReturnValueOnce({
+      gpio: { backend: 'sysfs' },
+      i2c: { backend: 'i2c-dev' },
+    });
+    requestNodeGpioAccessMock.mockRejectedValueOnce(new Error('no gpio'));
+
+    const context = await createNodeRuntimeContext();
+    expect(detectHardwareCapabilitiesMock).toHaveBeenCalledTimes(1);
+    expect(context.capabilities).toEqual({
+      gpio: { backend: 'sysfs' },
+      i2c: { backend: 'i2c-dev' },
+    });
   });
 
   it('sets available ports when GPIO access succeeds', async () => {

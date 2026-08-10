@@ -8,6 +8,10 @@ import { attachWebSocketServer } from './websocket-server.js';
 function createRuntimeContextMock(): NodeRuntimeContext {
   return {
     health: { name: 'test', status: 'ok', version: '0.0.1' },
+    capabilities: {
+      gpio: { backend: 'unavailable' },
+      i2c: { backend: 'unavailable' },
+    },
     gpio: {
       available: false,
       ports: [],
