@@ -6,6 +6,12 @@ export {
   type HardwareProbeFindings,
   type HardwareProbeFs,
 } from './lib/hardware/detect-hardware-capabilities.js';
+export {
+  selectRuntimeBackends,
+  type GpioBackendSelection,
+  type I2cBackendSelection,
+  type RuntimeBackendSelection,
+} from './lib/hardware/select-runtime-backends.js';
 export { requestNodeGpioAccess } from './lib/gpio/request-node-gpio-access.js';
 export { NodeWebGpioAccessAdapter } from './lib/gpio/gpio-access-adapter.js';
 export { NodeWebGpioPortAdapter } from './lib/gpio/gpio-port-adapter.js';
