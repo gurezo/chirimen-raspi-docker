@@ -160,14 +160,19 @@ chmod +x scripts/doctor.sh
 - architecture（`aarch64` / `armv7l`）
 - Docker（インストールと daemon 稼働）
 - Docker Compose
-- `/dev/gpiomem`
-- `/dev/i2c-1`
+- hardware capabilities（Server / Node Runtime と同じ判定基準）
+  - `/sys/class/gpio`
+  - `/dev/gpiomem*`
+  - `/dev/gpiochip*`
+  - `/dev/i2c-1`
 
-結果は `[ok]` / `[error]` / `[warn]` で表示されます。`[error]` がある場合は exit 1 です。
+結果は `[ok]` / `[error]` / `[warn]` で表示されます。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出ます。`[error]` がある場合は exit 1 です。
 
-- **I2C 不足**: `[error]` とともに `scripts/enable-i2c.sh` の実行案内が表示されます
-- **Pi 5 で `/dev/gpiomem` 不足**: `[warn]` と `/dev/gpiochip*` の案内が表示されます（[Raspberry Pi 3 / 4 と 5 の違い](#raspberry-pi-3--4-と-5-の違い) を参照）
-- **非 Pi 環境**: Pi / device 関連が `[error]` になり、Raspberry Pi 実機での検証が必要なことが分かります
+- **GPIO `sysfs`**: `/sys/class/gpio` があり、現行 backend で利用可能
+- **GPIO `gpiochip`**: sysfs が無く `/dev/gpiochip*` のみ → `[warn]` + unsupported（backend 未実装）
+- **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
+- **I2C `unavailable`**: `[error]` とともに `scripts/enable-i2c.sh` の実行案内が表示されます
+- **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になり、Raspberry Pi 実機での検証が必要なことが分かります
 
 ## Raspberry Pi 上での GPIO（Docker）
 
