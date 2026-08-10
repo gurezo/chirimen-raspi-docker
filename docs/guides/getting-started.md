@@ -74,7 +74,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem /dev/i2c-1 /sys/class/gpi
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
-| 公開 API リファレンス | リポジトリ root で `pnpm docs:api`（出力は `docs/api/`） |
+| 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
 
 ローカルで TypeScript を触る場合（Docker 以外）:
 

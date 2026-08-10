@@ -1,5 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "plugin": ["typedoc-rhineai-theme"],
   "entryPoints": [
     "libs/gpio/src/index.ts",
     "libs/i2c/src/index.ts",

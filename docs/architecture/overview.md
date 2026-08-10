@@ -157,4 +157,5 @@ chirimen-raspi-docker/
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 
-公開 TypeScript API のリファレンスは `pnpm docs:api`（出力先 `docs/api/`、git 管理外）。
+公開 TypeScript API のリファレンスは [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカル生成は `pnpm docs:api`、出力先 `docs/api/`、git 管理外）。
+Documentation ポータル: https://gurezo.github.io/chirimen-raspi-docker/
