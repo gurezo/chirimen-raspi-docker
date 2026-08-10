@@ -72,11 +72,11 @@ if (port) {
 
 | ドキュメント | 内容 |
 | --- | --- |
-| [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `docker compose up` → health check |
+| [docs/guides/getting-started.md](docs/guides/getting-started.md) | GHCR pull / clone → doctor → `docker compose up` → health check |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
 | [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
-| [docs/architecture/docker.md](docs/architecture/docker.md) | Docker / Compose / device mount |
+| [docs/architecture/docker.md](docs/architecture/docker.md) | Docker / Compose / GHCR release / device mount |
 | [docs/architecture/protocol.md](docs/architecture/protocol.md) | Protocol メッセージモデル |
 | [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries |
 
@@ -125,11 +125,20 @@ npx nx mcp --help
 
 ## Docker で起動
 
+公開 image（GHCR / `linux/arm64`）を利用する場合:
+
+```sh
+docker pull ghcr.io/gurezo/chirimen-raspi-docker/server:latest
+docker compose up
+```
+
+ローカルで Dockerfile から再構築する場合:
+
 ```sh
 docker compose up --build
 ```
 
-server は default で `33330` 番 port を使用します。
+server は default で `33330` 番 port を使用します。64-bit Raspberry Pi OS（`aarch64`）が前提です。tag 方針は [docs/architecture/docker.md](docs/architecture/docker.md) を参照してください。
 
 ```sh
 curl http://localhost:33330/health

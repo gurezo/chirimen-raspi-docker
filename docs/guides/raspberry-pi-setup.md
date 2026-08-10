@@ -12,7 +12,8 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 ## 前提 OS
 
 - Raspberry Pi 3 / 4 / 5
-- Raspberry Pi OS（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
+- **64-bit** Raspberry Pi OS（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
+- 公開 server image（`ghcr.io/gurezo/chirimen-raspi-docker/server`）は `linux/arm64` のみ。32-bit（`armv7l`）は非対応
 
 ## Docker / Docker Compose
 
@@ -24,9 +25,17 @@ Runtime の起動入口は `docker compose up` のため、host に Docker と C
 docker --version
 docker compose version
 docker info
+uname -m
+# aarch64 であること
 ```
 
 daemon が動いていない場合は Docker を起動してから再度確認する。一括診断は後述の `doctor.sh` を使う。
+
+公開 image の確認例:
+
+```sh
+docker pull ghcr.io/gurezo/chirimen-raspi-docker/server:latest
+```
 
 ## 事前診断（doctor）
 

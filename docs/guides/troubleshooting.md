@@ -8,6 +8,31 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
 - [Docker 構成](../architecture/docker.md)
 
+## GHCR image の pull / 起動に失敗する
+
+### 症状
+
+- `docker pull ghcr.io/gurezo/chirimen-raspi-docker/server:latest` が失敗する
+- Compose 起動時に image が見つからない / platform 不一致になる
+
+### 確認
+
+```sh
+uname -m
+docker pull ghcr.io/gurezo/chirimen-raspi-docker/server:latest
+```
+
+### 対処
+
+| 原因 | 対処 |
+| --- | --- |
+| 32-bit OS（`armv7l`） | 64-bit Raspberry Pi OS に切り替える（公開 image は `linux/arm64` のみ） |
+| ネットワーク / DNS | Pi から `ghcr.io` へ到達できるか確認する |
+| package が未公開 | 初回リリース前、または private の場合は GitHub Packages の可視性を確認する（public 想定） |
+| ローカルで開発したい | `docker compose up --build` で Dockerfile から再構築する |
+
+tag / version 方針は [docker.md](../architecture/docker.md) を参照。
+
 ## `docker compose up` が device 欠如で失敗する
 
 ### 症状
