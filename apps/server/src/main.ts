@@ -11,6 +11,11 @@ async function main(): Promise<void> {
   console.log(
     `[ capabilities ] gpio=${runtimeContext.capabilities.gpio.backend} i2c=${runtimeContext.capabilities.i2c.backend}`
   );
+  if (runtimeContext.capabilities.gpio.backend === 'gpiochip') {
+    console.log(
+      '[ runtime ] gpio backend gpiochip is unsupported; GPIO unavailable'
+    );
+  }
   const app = createExpressApp(runtimeContext);
   let shuttingDown = false;
 
