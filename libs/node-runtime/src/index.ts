@@ -1,4 +1,11 @@
 export * from './lib/node-runtime.js';
+export {
+  classifyHardwareCapabilities,
+  detectHardwareCapabilities,
+  probeHardwarePaths,
+  type HardwareProbeFindings,
+  type HardwareProbeFs,
+} from './lib/hardware/detect-hardware-capabilities.js';
 export { requestNodeGpioAccess } from './lib/gpio/request-node-gpio-access.js';
 export { NodeWebGpioAccessAdapter } from './lib/gpio/gpio-access-adapter.js';
 export { NodeWebGpioPortAdapter } from './lib/gpio/gpio-port-adapter.js';
