@@ -66,6 +66,10 @@ function createRegistryWithPort(port: GpioPort): {
   const registry = createClientSessionRegistry(
     {
       health: { name: 'test', status: 'ok', version: '0.0.1' },
+      capabilities: {
+        gpio: { backend: 'sysfs' },
+        i2c: { backend: 'unavailable' },
+      },
       gpio: { available: true, ports: [port.portNumber], access },
       i2c: { available: false, ports: [] },
       cleanup: vi.fn(async () => {

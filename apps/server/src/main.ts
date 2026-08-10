@@ -8,6 +8,9 @@ const port = process.env.PORT ? Number(process.env.PORT) : 33330;
 
 async function main(): Promise<void> {
   const runtimeContext = await createRuntimeContext();
+  console.log(
+    `[ capabilities ] gpio=${runtimeContext.capabilities.gpio.backend} i2c=${runtimeContext.capabilities.i2c.backend}`
+  );
   const app = createExpressApp(runtimeContext);
   let shuttingDown = false;
 
