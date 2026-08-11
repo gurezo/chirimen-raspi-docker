@@ -83,6 +83,39 @@ describe('createNodeRuntimeContext', () => {
     expect(context.i2c.available).toBe(false);
   });
 
+  it('keeps GPIO available when unexported ports throw on direction access', async () => {
+    detectHardwareCapabilitiesMock.mockReturnValueOnce({
+      gpio: { backend: 'sysfs' },
+      i2c: { backend: 'unavailable' },
+    });
+    requestNodeGpioAccessMock.mockResolvedValueOnce({
+      ports: new Map([
+        [
+          26,
+          {
+            portNumber: 26,
+            portName: 'GPIO26',
+            pinName: 'PIN26',
+            exported: false,
+            get direction() {
+              throw new Error('Unknown direction.');
+            },
+            export: vi.fn(),
+            unexport: vi.fn(),
+            read: vi.fn(),
+            write: vi.fn(),
+          },
+        ],
+      ]),
+      unexportAll: vi.fn(),
+    });
+
+    const context = await createNodeRuntimeContext();
+    expect(context.gpio.available).toBe(true);
+    expect(context.gpio.ports).toEqual([{ portNumber: 26 }]);
+    expect(context.gpio.access).toBeDefined();
+  });
+
   it('does not call node-web-gpio when GPIO capability is gpiochip', async () => {
     detectHardwareCapabilitiesMock.mockReturnValueOnce({
       gpio: { backend: 'gpiochip' },
