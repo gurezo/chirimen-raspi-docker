@@ -112,6 +112,32 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - sysfs が無く `/dev/gpiochip*` のみの場合、現状は backend 未実装のため GPIO は利用できない（doctor / server とも unsupported と表示）
 - `./scripts/start.sh` は存在する `gpiochip*` を container に渡す（detection 揃え用）。backend 実装は別 Issue
 
+## Docker build が `i2c-bus` / `node-gyp` で失敗する
+
+### 症状
+
+`./scripts/start.sh` や `docker compose up --build` で次のようなエラーになる。
+
+```text
+.../i2c-bus@... install$ node-gyp rebuild
+gyp ERR! find Python
+Could not find any Python installation to use
+```
+
+### 原因
+
+`node-web-i2c` が依存する `i2c-bus` は install 時に native rebuild する。`node:bookworm-slim` だけでは Python / コンパイラが無い。
+
+### 対処
+
+[`docker/server/Dockerfile`](../../docker/server/Dockerfile) の `deps` ステージに `python3` / `make` / `g++` が入っていること（現行 main）を確認し、再ビルドする。
+
+```sh
+./scripts/start.sh --build --force-recreate
+```
+
+`runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。
+
 ## 非 Pi 環境（macOS など）
 
 ### 症状
