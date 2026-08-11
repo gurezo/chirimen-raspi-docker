@@ -41,7 +41,7 @@ Usage: start.sh [docker compose up options...]
   devices that exist on this host (capability-aware mapping).
 
   Always uses:
-    - compose.yaml (includes /sys/class/gpio volume)
+    - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
 
   Optionally maps when present:

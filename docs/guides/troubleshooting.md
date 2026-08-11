@@ -75,6 +75,38 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/i2c-1 2>/dev/null |
 - mount 漏れなら [docker.md](../architecture/docker.md) の devices / volumes を見直す
 - 将来 non-root 化する場合は、host の `gpio` / `i2c` グループ GID を `group_add` で合わせる
 
+## GPIO export で EROFS（read-only file system）
+
+### 症状
+
+container 内で `node-web-gpio` の `export` が次で失敗する。
+
+```text
+OperationError: Error: EROFS: read-only file system, open '/sys/class/gpio/gpioN/direction'
+```
+
+host 上の `/sys/class/gpio` への書き込みは成功することがある。
+
+### 原因
+
+container の `/sys` は通常 read-only。`/sys/class/gpio` だけを bind すると `export` は通るが、作られる `gpioN` は `/sys/devices/...` への symlink のため、`direction` / `value` 書き込みが read-only な `/sys` に当たる。
+
+### 確認
+
+```sh
+docker compose exec chirimen-server sh -c 'mount | grep -E "sys|gpio"; ls -l /sys/class/gpio/gpio* 2>/dev/null | head'
+```
+
+`/sys` が `ro` で `/sys/class/gpio` だけが `rw`、かつ `gpioN` が `../../devices/...` を指していればこの症状。
+
+### 対処
+
+`compose.yaml` で `/sys/class/gpio` に加え `/sys/devices` も mount する（現行 main）。再作成後に再試行する。
+
+```sh
+./scripts/start.sh --force-recreate
+```
+
 ## health は OK だが I2C が unavailable
 
 ### 症状
