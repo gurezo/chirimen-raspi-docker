@@ -78,6 +78,7 @@ getent group gpio
 - **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
 - **`gpiomem`**: Pi 3 / 4 では一般的。Pi 5 では無いことがある
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
+- **Pi 5（#99）**: `/sys/class/gpio` が利用可能で Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
