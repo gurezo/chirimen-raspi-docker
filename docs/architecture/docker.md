@@ -58,9 +58,11 @@ curl http://localhost:33330/health
 | Stage | 役割 |
 | --- | --- |
 | `base` | `node:24-bookworm-slim`、corepack で pnpm を有効化 |
-| `deps` | lockfile から依存を install |
+| `deps` | native addon 用に `python3` / `make` / `g++` を入れ、lockfile から依存を install |
 | `build` | `pnpm nx build server` |
-| `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js` |
+| `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js`（build tools は含めない） |
+
+`deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
 
 本番 image も現状は workspace 一式をコピーする構成である（将来の slim 化は別 Issue）。
 

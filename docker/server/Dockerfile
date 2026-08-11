@@ -9,6 +9,15 @@ RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
 
 FROM base AS deps
 
+# i2c-bus (via node-web-i2c) and other native addons need node-gyp at install time.
+# Keep these packages in the deps/build stages only; runtime stays on slim base.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json tsconfig.json ./
 
 RUN pnpm install --frozen-lockfile
