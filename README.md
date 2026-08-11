@@ -16,7 +16,7 @@ Phase 1 では、以下の最小構成を提供します。
 - `compose.yaml`: server 起動用 Docker Compose 設定（sysfs GPIO 常時 mount）
 - `scripts/start.sh`: capability-aware な Docker 起動入口
 
-GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。推奨起動は `scripts/start.sh` で、host に存在する GPIO / I2C device だけを capability-aware に container へ通します（`/sys/class/gpio` は常時、`/dev/gpiomem*` / `/dev/gpiochip*` / `/dev/i2c-1` は存在時のみ）。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）と scan を管理できます。
+GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。推奨起動は `scripts/start.sh` で、host に存在する GPIO / I2C device だけを capability-aware に container へ通します（`/sys/class/gpio` と `/sys/devices` は常時、`/dev/gpiomem*` / `/dev/gpiochip*` / `/dev/i2c-1` は存在時のみ）。I2C domain（`libs/i2c`）と node-web-i2c adapter（`libs/node-runtime`）は追加済みで、`I2cSession` で device の open / close / closeAll（session lifecycle）と scan を管理できます。
 
 ### I2C read / write と node-web-i2c の対応
 
@@ -180,9 +180,9 @@ chmod +x scripts/doctor.sh
 
 ## Raspberry Pi 上での GPIO（Docker）
 
-`privileged: true` は使いません。`compose.yaml` は `/sys/class/gpio` を常時 mount し、任意 device は `scripts/start.sh` が host に存在するときだけ追加します。
+`privileged: true` は使いません。`compose.yaml` は `/sys/class/gpio` と `/sys/devices` を常時 mount し、任意 device は `scripts/start.sh` が host に存在するときだけ追加します。
 
-- `volumes`（常時）: `/sys/class/gpio`（`node-web-gpio` の主経路。現行 GPIO backend は sysfs）
+- `volumes`（常時）: `/sys/class/gpio`（export / unexport）と `/sys/devices`（gpioN の direction / value。class だけでは EROFS になる）
 - `devices`（存在時のみ）: `/dev/gpiomem*`（任意。Runtime の必須条件ではない）
 - `devices`（存在時のみ）: `/dev/gpiochip*`（将来 backend 用。現状は unsupported）
 

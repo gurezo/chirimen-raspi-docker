@@ -10,10 +10,14 @@ services:
     ports:
       - "33330:33330"
     # GPIO / I2C without privileged mode.
-    # Always mount sysfs GPIO (node-web-gpio primary path).
+    # Always mount sysfs GPIO paths for node-web-gpio.
+    # /sys/class/gpio alone is not enough: export creates gpioN as a symlink
+    # into /sys/devices/..., and container /sys is read-only by default
+    # (EROFS on direction/value). Mount both class and devices.
     # Optional host devices (/dev/gpiomem*, /dev/gpiochip*, /dev/i2c-1) are
     # added only when present by scripts/start.sh via a Compose override.
     # Do not list optional devices here: missing paths fail compose up on
     # hosts that lack them (e.g. Pi 5 without gpiomem, non-Pi).
     volumes:
       - /sys/class/gpio:/sys/class/gpio
+      - /sys/devices:/sys/devices
