@@ -6,6 +6,7 @@ import {
 import {
   isGpioDirection,
   type GpioAccess,
+  type GpioPort,
   type GpioPortDescriptor,
 } from 'gpio';
 import type { I2CAccess, I2CPortNumber } from 'i2c';
@@ -39,12 +40,29 @@ export interface NodeRuntimeContext {
   cleanup(): Promise<void>;
 }
 
+/**
+ * node-web-gpio は未 export の port で `.direction` 参照時に
+ * OperationError("Unknown direction.") を throw する。
+ * 起動時の port 一覧では direction を省略して続行する。
+ */
+function readOptionalGpioDirection(
+  port: GpioPort
+): GpioPortDescriptor['direction'] {
+  try {
+    const direction = port.direction;
+    return isGpioDirection(direction) ? direction : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function toGpioPortDescriptors(access: GpioAccess): GpioPortDescriptor[] {
   const descriptors: GpioPortDescriptor[] = [];
   for (const [portNumber, port] of access.ports) {
     const descriptor: GpioPortDescriptor = { portNumber };
-    if (isGpioDirection(port.direction)) {
-      descriptor.direction = port.direction;
+    const direction = readOptionalGpioDirection(port);
+    if (direction !== undefined) {
+      descriptor.direction = direction;
     }
     descriptors.push(descriptor);
   }
