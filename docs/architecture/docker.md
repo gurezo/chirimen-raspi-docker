@@ -96,6 +96,19 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 - **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
 - **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
 
+### Pi 5 実機検証（#99）
+
+Raspberry Pi 5 Model B Rev 1.0（`aarch64` / kernel `6.18.34+rpt-rpi-2712`）で次を確認済み。
+
+| 項目 | 結果 |
+| --- | --- |
+| capability | `gpio=sysfs` / `i2c=i2c-dev` |
+| GPIO | Case A。`node-web-gpio` の read (`in`) / write (`out`) 成功。gpiochip 専用 backend は不要 |
+| I2C | `requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可） |
+| WebSocket | 接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
+| volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
+
 host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
 
 ## 非 Pi 環境での制限

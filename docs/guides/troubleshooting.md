@@ -144,6 +144,10 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - sysfs が無く `/dev/gpiochip*` のみの場合、現状は backend 未実装のため GPIO は利用できない（doctor / server とも unsupported と表示）
 - `./scripts/start.sh` は存在する `gpiochip*` を container に渡す（detection 揃え用）。backend 実装は別 Issue
 
+### 実機メモ（#99）
+
+Pi 5 Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。
+
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
 ### 症状
