@@ -96,6 +96,20 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 - **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
 - **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
 
+### Pi 4 実機検証（#98）
+
+Raspberry Pi 4（64-bit OS / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。
+
+| 項目 | 結果 |
+| --- | --- |
+| host paths | `/sys/class/gpio`・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
+| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
+| capability | `gpio=sysfs` / `i2c=i2c-dev` |
+| GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
+| I2C | I2C 有効化後に `i2c-dev` backend を選択 |
+| WebSocket | 接続、および `gpio.export` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える |
+
 ### Pi 5 実機検証（#99）
 
 Raspberry Pi 5 Model B Rev 1.0（`aarch64` / kernel `6.18.34+rpt-rpi-2712`）で次を確認済み。
