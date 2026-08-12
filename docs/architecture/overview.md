@@ -78,11 +78,17 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 ## 対応対象
 
+OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix) を参照。
+
 ### 対応
 
-- Raspberry Pi 3
+- Raspberry Pi 3 B+
 - Raspberry Pi 4
 - Raspberry Pi 5
+
+### 未検証
+
+- Raspberry Pi 3 A+
 
 ### 非対応（現時点）
 
@@ -152,7 +158,7 @@ chirimen-raspi-docker/
 | ドキュメント | 内容 |
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations |
-| [docker.md](./docker.md) | Docker / Compose / device mount |
+| [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
