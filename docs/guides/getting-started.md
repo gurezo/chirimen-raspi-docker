@@ -11,7 +11,7 @@
 
 ## 前提
 
-- Raspberry Pi 3 / 4 / 5
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ は未検証。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
 - Raspberry Pi OS
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
