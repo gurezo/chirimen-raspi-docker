@@ -223,6 +223,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* 2>/dev/nu
 - **Pi 3 / 4 / 5**: いずれも `./scripts/start.sh` で同一手順。存在する device だけが渡るため、モデルごとに `compose.yaml` を編集する必要はありません
 - **`gpiomem`**: Pi 3 / 4 では一般的。Pi 5 では無いことがある（任意パス）
 - **`gpiochip*`**: 存在すれば container にも渡る。gpiochip backend は未実装のため、sysfs が無い場合は GPIO unavailable
+- **Pi 4（#98）**: 64-bit OS（`aarch64`）で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。詳細は [docker.md](docs/architecture/docker.md) の「Pi 4 実機検証」
 - **Pi 5（#99）**: sysfs が利用可能で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。Pi 5 専用 gpiochip backend は追加しない。詳細は [docker.md](docs/architecture/docker.md) の「Pi 5 実機検証」
 
 ### 非 Pi（macOS など）での注意
