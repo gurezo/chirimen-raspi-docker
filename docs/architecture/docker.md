@@ -89,6 +89,22 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
+## Compatibility matrix
+
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。未検証項目は `Supported` と書かない。
+
+| Model | OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Raspberry Pi 3 B+ | Raspberry Pi OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+| Raspberry Pi 3 A+ | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Not verified |
+| Raspberry Pi 4 | Raspberry Pi OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+| Raspberry Pi 5 Model B Rev 1.0 | Raspberry Pi OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
+
+- **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない
+- **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
+- **Pi 3 32-bit**（`armv7l` / `6.18.34+rpt-rpi-v7`）: host path 確認のみ。Runtime E2E は未検証のため `Supported` と書かない
+- 詳細は下記の Pi 3 B+（#97） / Pi 4（#98） / Pi 5（#99）実機検証
+
 ## Raspberry Pi 3 / 4 と 5
 
 - **同一手順**: Pi 3 / 4 / 5 とも `./scripts/start.sh`。モデルごとの `compose.yaml` 手編集は不要
@@ -96,7 +112,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 - **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
 - **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
 
-### Pi 3 実機検証（#97）
+### Pi 3 B+ 実機検証（#97）
 
 Raspberry Pi 3 Model B+（64-bit OS / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。
 
