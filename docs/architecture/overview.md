@@ -114,7 +114,8 @@ chirimen-raspi-docker/
 ├── scripts/
 │   ├── doctor.sh
 │   ├── start.sh
-│   └── enable-i2c.sh
+│   ├── enable-i2c.sh
+│   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
 ├── docs/
 │   ├── architecture/
 │   ├── guides/

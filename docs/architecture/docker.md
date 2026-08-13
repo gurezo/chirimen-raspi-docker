@@ -56,7 +56,7 @@ curl http://localhost:33330/health
 
 ## Dockerfile（multi-stage）
 
-stage 構成は 32-bit / 64-bit で共通。`FROM` だけが異なる。
+stage 構成は 32-bit / 64-bit でほぼ共通。`FROM` と 32-bit の build コマンドだけが異なる。
 
 | OS | ファイル | ベース | 理由 |
 | --- | --- | --- | --- |
@@ -69,7 +69,7 @@ stage 構成は 32-bit / 64-bit で共通。`FROM` だけが異なる。
 | --- | --- |
 | `base` | 上記の Node slim image、corepack で pnpm を有効化 |
 | `deps` | native addon 用に `python3` / `make` / `g++` を入れ、lockfile から依存を install |
-| `build` | `pnpm nx build server` |
+| `build` | 64-bit: `pnpm nx build server`。32-bit: `node scripts/build-server.mjs`（Nx native hasher が armv7 で失敗するため esbuild で同等の bundle をする） |
 | `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js`（build tools は含めない） |
 
 `deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
