@@ -1,5 +1,6 @@
 # 32-bit OS (linux/arm/v7). Node 24 has no arm/v7 image, so this file
-# uses Node 22. Keep stages in sync with Dockerfile except the FROM line.
+# uses Node 22. Keep stages in sync with Dockerfile except FROM and the
+# build command: Nx native hasher (hashArray) is unreliable on armv7.
 FROM node:22-bookworm-slim AS base
 
 WORKDIR /workspace
@@ -28,7 +29,10 @@ FROM deps AS build
 
 COPY . .
 
-RUN pnpm nx build server
+# Nx 23 native bindings / WASM fallback fail on linux/arm/v7
+# ("hashArray is not a function"). Bundle with esbuild instead.
+# Output path matches apps/server/project.json (apps/server/dist/main.js).
+RUN node scripts/build-server.mjs
 
 FROM base AS runtime
 
