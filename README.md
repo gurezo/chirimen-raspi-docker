@@ -12,7 +12,8 @@ Phase 1 では、以下の最小構成を提供します。
 - `libs/gpio`: GPIO domain の最小型
 - `libs/i2c`: I2C domain の最小型
 - `libs/node-runtime`: Node.js Runtime context の最小実装
-- `docker/server/Dockerfile`: server 用 Docker image
+- `docker/server/Dockerfile`: 64-bit 用 server image（Node 24）
+- `docker/server/Dockerfile.32bit`: 32-bit 用 server image（Node 22）
 - `compose.yaml`: server 起動用 Docker Compose 設定（sysfs GPIO 常時 mount）
 - `scripts/start.sh`: capability-aware な Docker 起動入口
 
@@ -145,7 +146,9 @@ npx nx mcp --help
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh
+./scripts/start.sh          # uname -m で 32-bit / 64-bit 用 Dockerfile を自動選択
+./scripts/start.sh --32bit  # 32-bit OS
+./scripts/start.sh --64bit  # 64-bit OS
 ```
 
 server は default で `33330` 番 port を使用します。

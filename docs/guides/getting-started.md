@@ -38,10 +38,12 @@ chmod +x scripts/doctor.sh
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh
+./scripts/start.sh          # uname -m で 32-bit / 64-bit 用 Dockerfile を自動選択
+./scripts/start.sh --32bit  # 32-bit OS（Node 22）
+./scripts/start.sh --64bit  # 64-bit OS（Node 24）
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。
 
 ## 4. health check で確認する
 

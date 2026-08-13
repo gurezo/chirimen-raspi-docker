@@ -151,6 +151,31 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - **Raspbian OS 32-bit（#135）**: host path 確認のみ。Runtime E2E は未検証
 - **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
 
+## Docker build が `no match for platform in manifest` で失敗する
+
+### 症状
+
+32-bit Raspberry Pi OS（`armv7l`）で `./scripts/start.sh` や `docker compose up --build` が次で失敗する。
+
+```text
+failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
+no match for platform in manifest: not found
+```
+
+### 原因
+
+Node 24 公式 image に `linux/arm/v7` が無い。32-bit では Node 22（[`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit)）を使う。
+
+### 対処
+
+`scripts/start.sh` を使う（`uname -m` で自動選択）。明示する場合:
+
+```sh
+./scripts/start.sh --32bit
+```
+
+`docker compose up --build` を直接使うと 64-bit 用 [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）になる。
+
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
 ### 症状
@@ -169,7 +194,7 @@ Could not find any Python installation to use
 
 ### 対処
 
-[`docker/server/Dockerfile`](../../docker/server/Dockerfile) の `deps` ステージに `python3` / `make` / `g++` が入っていること（現行 main）を確認し、再ビルドする。
+[`docker/server/Dockerfile`](../../docker/server/Dockerfile) および [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) の `deps` ステージに `python3` / `make` / `g++` が入っていること（現行 main）を確認し、再ビルドする。
 
 ```sh
 ./scripts/start.sh --build --force-recreate
