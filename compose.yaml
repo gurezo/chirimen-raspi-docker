@@ -2,6 +2,8 @@ services:
   chirimen-server:
     build:
       context: .
+      # Default is 64-bit (Node 24). scripts/start.sh overrides this for
+      # 32-bit OS (--32bit / auto-detect) to docker/server/Dockerfile.32bit.
       dockerfile: docker/server/Dockerfile
     image: chirimen-raspi-docker/server:phase1
     environment:
