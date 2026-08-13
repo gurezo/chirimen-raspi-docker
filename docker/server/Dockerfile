@@ -1,6 +1,7 @@
 # 64-bit OS (linux/arm64, linux/amd64).
 # Node 24 official images do not include linux/arm/v7; use Dockerfile.32bit
-# on 32-bit Raspberry Pi OS. Keep stages in sync except the FROM line.
+# on 32-bit Raspberry Pi OS. Keep stages in sync except FROM and the
+# 32-bit build command (esbuild; Nx hasher is unreliable on armv7).
 FROM node:24-bookworm-slim AS base
 
 WORKDIR /workspace

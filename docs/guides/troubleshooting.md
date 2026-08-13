@@ -176,6 +176,29 @@ Node 24 公式 image に `linux/arm/v7` が無い。32-bit では Node 22（[`do
 
 `docker compose up --build` を直接使うと 64-bit 用 [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）になる。
 
+## Docker build が `hashArray is not a function` で失敗する
+
+### 症状
+
+32-bit Raspberry Pi OS で `./scripts/start.sh --32bit` の image build が次で失敗する。
+
+```text
+NX   Nx Daemon was not able to compute the project graph.
+NX   hashArray is not a function
+```
+
+### 原因
+
+Nx 23 の native hasher は Linux の公式サポートが arm64 / x64 中心で、`linux/arm/v7` では WASM fallback に落ちて `hashArray` が欠ける。
+
+### 対処
+
+32-bit 用 [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) は `pnpm nx build server` ではなく [`scripts/build-server.mjs`](../../scripts/build-server.mjs)（esbuild）で server を bundle する。最新の Dockerfile.32bit を使って再ビルドする。
+
+```sh
+./scripts/start.sh --32bit
+```
+
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
 ### 症状
