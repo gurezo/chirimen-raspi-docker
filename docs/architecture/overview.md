@@ -109,7 +109,8 @@ chirimen-raspi-docker/
 │   └── browser-polyfill/       # navigator.request*Access polyfill
 ├── docker/
 │   └── server/
-│       └── Dockerfile
+│       ├── Dockerfile          # 64-bit（Node 24）
+│       └── Dockerfile.32bit    # 32-bit（Node 22）
 ├── scripts/
 │   ├── doctor.sh
 │   ├── start.sh
@@ -146,7 +147,7 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す）
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。`--32bit` / `--64bit` で Dockerfile を切り替え、未指定時は `uname -m` で自動選択）
 - ベース定義は root の `compose.yaml`（`/sys/class/gpio` と `/sys/devices` を常時 mount）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
