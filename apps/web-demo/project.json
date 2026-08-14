@@ -4,5 +4,61 @@
   "sourceRoot": "apps/web-demo/src",
   "projectType": "application",
   "tags": ["type:app", "scope:demo", "platform:browser"],
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "apps/web-demo/dist"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "web-demo:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "web-demo:build:development"
+        },
+        "production": {
+          "buildTarget": "web-demo:build:production"
+        }
+      }
+    },
+    "preview": {
+      "continuous": true,
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "web-demo:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "web-demo:build:development"
+        },
+        "production": {
+          "buildTarget": "web-demo:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "{workspaceRoot}/coverage/apps/web-demo"
+      }
+    }
+  }
 }
