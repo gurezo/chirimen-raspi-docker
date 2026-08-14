@@ -86,18 +86,21 @@ if (port) {
 
 ## Compatibility
 
-Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。検証済み行の OS は **Raspbian OS 64-bit** です。未検証項目は `Supported` と書きません。正本は [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) です。
+Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ / Pi 4 の **Raspbian OS 32-bit** です。未検証項目は `Supported` と書きません。正本は [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) です。
 
 | Model | OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Raspberry Pi 3 B+ | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+| Raspberry Pi 3 B+ | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v7` | `armv7l` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspberry Pi 3 A+ | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Not verified |
 | Raspberry Pi 4 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+| Raspberry Pi 4 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspberry Pi 5 Model B Rev 1.0 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
 
 - **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
-- **Raspbian OS 32-bit**（`armv7l` / `6.18.34+rpt-rpi-v7`）: host path 確認のみ。Runtime E2E は未検証。検証は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
+- **Raspberry Pi 3 A+**: ハードウェアスペック不足のため推奨環境外。`Supported` と書かない
+- **Raspbian OS 32-bit**: Pi 3 B+ / Pi 4 は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 3 B+ は `armv7l` + Node 22 / `Dockerfile.32bit`。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default
 
 ## ローカル開発
 
