@@ -11,8 +11,8 @@
 
 ## 前提
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ は未検証。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
-- Raspbian OS 64-bit（32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
+- Raspbian OS 64-bit、または Pi 3 B+ / Pi 4 の Raspbian OS 32-bit（32-bit は Node 22 / `Dockerfile.32bit`。Pi 4 の 32-bit OS は 64-bit kernel が default。詳細は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 

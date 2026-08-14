@@ -86,9 +86,11 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 - Raspberry Pi 4
 - Raspberry Pi 5
 
-### 未検証
+### 未検証 / 推奨環境外
 
-- Raspberry Pi 3 A+
+- Raspberry Pi 3 A+（ハードウェアスペック不足のため推奨環境外）
+
+32-bit OS は Raspberry Pi 3 B+（`armv7l`）と Raspberry Pi 4（64-bit kernel / `aarch64`）で Verified。詳細は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix)。
 
 ### 非対応（現時点）
 
