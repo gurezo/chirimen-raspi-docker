@@ -101,7 +101,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility matrix
 
-Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ の **Raspbian OS 32-bit** である。未検証項目は `Supported` と書かない。
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ / Pi 4 の **Raspbian OS 32-bit** である。未検証項目は `Supported` と書かない。
 
 | Model | OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,13 +109,14 @@ Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardw
 | Raspberry Pi 3 B+ | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v7` | `armv7l` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspberry Pi 3 A+ | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Not verified |
 | Raspberry Pi 4 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+| Raspberry Pi 4 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspberry Pi 5 Model B Rev 1.0 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
 
 - **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
 - **Raspberry Pi 3 A+**: ハードウェアスペック不足のため推奨環境外。`Supported` と書かない
-- **Raspbian OS 32-bit**: Pi 3 B+ は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み（Node 22 / `Dockerfile.32bit`）。Pi 4 の 32-bit は未記録
-- 詳細は下記の Pi 3 B+（#97 / #135） / Pi 4（#98） / Pi 5（#99）実機検証
+- **Raspbian OS 32-bit**: Pi 3 B+ / Pi 4 は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 3 B+ は `armv7l` + Node 22 / `Dockerfile.32bit`。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default
+- 詳細は下記の Pi 3 B+（#97 / #135） / Pi 4（#98 / #135） / Pi 5（#99）実機検証
 
 ## Raspberry Pi 3 / 4 と 5
 
@@ -168,6 +169,23 @@ Raspberry Pi 4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）
 | I2C | I2C 有効化後に `i2c-dev` backend を選択 |
 | WebSocket | 接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える |
+| known limitations | Raspbian OS 32-bit は下記「Pi 4 32-bit 実機検証（#135）」 |
+
+### Pi 4 32-bit 実機検証（#135）
+
+Raspberry Pi 4（Raspbian OS 32-bit / kernel `6.18.34+rpt-rpi-v8` / `aarch64`）で次を確認済み。Pi 4 向け 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる（Pi 3 B+ 32-bit の `armv7l` / `v7` とは異なる）。
+
+| 項目 | 結果 |
+| --- | --- |
+| host paths | `/sys/class/gpio`・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。`/dev/i2c-1` あり |
+| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
+| capability | `gpio=sysfs` / `i2c=i2c-dev` |
+| GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
+| I2C | `/dev/i2c-1` 存在時に `i2c-dev` backend を選択 |
+| WebSocket | 接続、および `gpio.export` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える |
+| known limitations | `uname -m` が `aarch64` のため `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びうる。armv7 用 image が必要な場合は `./scripts/start.sh --32bit` |
+| Status | Verified（`Supported` とは書かない） |
 
 ### Pi 5 実機検証（#99）
 
