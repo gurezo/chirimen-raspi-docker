@@ -19,6 +19,7 @@ export { CHIRIMEN_GPIO_PORTS } from './lib/gpio-ports.js';
 export { CHIRIMEN_I2C_PORTS } from './lib/i2c-ports.js';
 export {
   installBrowserPolyfill,
+  isBrowserPolyfillInstalled,
   requestGPIOAccess,
   requestI2CAccess,
 } from './lib/navigator-polyfill.js';
