@@ -6,6 +6,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 - [Getting Started](./getting-started.md)
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [GPIO LED Blink](./gpio-led-blink.md)
 - [Docker 構成](../architecture/docker.md)
 
 ## device が無く GPIO / I2C が unavailable になる
@@ -254,3 +255,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 4. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
 
 解消後に Getting Started へ戻る: [getting-started.md](./getting-started.md)
+
+## LED が点かない
+
+配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [gpio-led-blink.md](./gpio-led-blink.md) の Troubleshooting を参照する。

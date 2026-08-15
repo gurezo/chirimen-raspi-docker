@@ -122,7 +122,7 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
-│   ├── examples/               # GPIO LED Blink 回路仕様・Blink UI・cleanup（#105 / #106 / #107）
+│   ├── examples/               # GPIO LED Blink 回路仕様・HTML サンプル（#105 / #108）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── compose.yaml
 ├── package.json
@@ -132,7 +132,6 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO LED Blink の操作ガイド（#108）。回路仕様は [gpio-led-blink.md](../examples/gpio-led-blink.md)。Blink UI と cleanup は web-demo の GPIO Output（#106 / #107）
 - GPIO Input / I2C Scan の実 example（#51 / #52）
 - `docker/nginx`
 
@@ -169,7 +168,8 @@ chirimen-raspi-docker/
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
-| [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω。web-demo の Start / Stop で点滅 |
+| [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
+| [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 

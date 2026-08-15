@@ -8,7 +8,8 @@
 - 子 Issue: [#105 LED Blink の回路仕様を決定する](https://github.com/gurezo/chirimen-raspi-docker/issues/105)
 - Blink UI（Start / Stop）: web-demo の GPIO Output（`#/gpio-output`）。[#106](https://github.com/gurezo/chirimen-raspi-docker/issues/106)
 - Cleanup 検証: Stop / 画面離脱 / reload / WebSocket 切断。[#107](https://github.com/gurezo/chirimen-raspi-docker/issues/107)
-- 操作手順つきガイド: [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)
+- 操作手順つきガイド: [gpio-led-blink.md](../guides/gpio-led-blink.md)（#108）
+- HTML サンプル: [docs/examples/led-blink/](./led-blink/)
 - 参考: [chirimen.org hello-real-world（Lチカ）](https://github.com/chirimen-oh/chirimen.org/tree/master/pizero/src/esm-examples/hello-real-world)
 
 web-demo の GPIO port 定数は `apps/web-demo/src/gpio-led-blink.ts` の `LED_BLINK_GPIO_PORT`（`26`）。`navigator.requestGPIOAccess().ports.get(26)` で参照する。
@@ -17,7 +18,7 @@ web-demo の GPIO port 定数は `apps/web-demo/src/gpio-led-blink.ts` の `LED_
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全な LED + 抵抗回路を 1 つに決める。web-demo の Blink UI とガイド（#108）はこの文書を正本とする。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全な LED + 抵抗回路を 1 つに決める。web-demo の Blink UI と [操作ガイド](../guides/gpio-led-blink.md) はこの文書を正本とする。
 
 ## ピン対応
 
@@ -101,7 +102,7 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は次の前
 
 配線後、GPIO26 を output にして `write(1)` すると LED が点灯し、`write(0)` すると消灯する。
 
-web-demo の GPIO Output（`#/gpio-output`）で Start を押すと 1 秒間隔で点滅し、Stop で消灯して unexport する。終了後は同じ GPIO26 を再度 `export` できる。操作手順・Troubleshooting は [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)。
+HTML サンプル（[docs/examples/led-blink/](./led-blink/)）を開くと 1 秒間隔で点滅する。web-demo の GPIO Output（`#/gpio-output`）では Start で点滅し、Stop で消灯して unexport する。終了後は同じ GPIO26 を再度 `export` できる。操作手順・Troubleshooting は [gpio-led-blink.md](../guides/gpio-led-blink.md)。
 
 ## Cleanup
 
