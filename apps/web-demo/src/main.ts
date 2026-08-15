@@ -5,11 +5,12 @@ import {
   getConnectionStatusView,
   type ConnectionStatus,
 } from './app.js';
+import { shouldStopGpioInputOnRoute } from './gpio-input-cleanup.js';
+import { GpioInputSession } from './gpio-input.js';
 import {
   bindLedBlinkCleanup,
   shouldStopLedBlinkOnRoute,
 } from './gpio-led-blink-cleanup.js';
-import { GpioInputSession } from './gpio-input.js';
 import { LedBlinkSession } from './gpio-led-blink.js';
 import {
   DEMO_NAV_ITEMS,
@@ -195,12 +196,23 @@ if (root) {
     }
   };
 
+  const stopInput = (): Promise<void> => {
+    inputError.textContent = '';
+    return inputSession.stop().then(() => {
+      applyInputUi();
+    });
+  };
+
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
 
     if (shouldStopLedBlinkOnRoute(routeId)) {
       void stopBlink();
+    }
+
+    if (shouldStopGpioInputOnRoute(routeId)) {
+      void stopInput();
     }
 
     demoSection.dataset.route = routeId;
@@ -304,10 +316,7 @@ if (root) {
   });
 
   inputStopButton.addEventListener('click', () => {
-    inputError.textContent = '';
-    void inputSession.stop().then(() => {
-      applyInputUi();
-    });
+    void stopInput();
     applyInputUi();
   });
 
