@@ -27,6 +27,22 @@ export type ProtocolEventListener = (event: ProtocolEvent) => void;
 /** reconnect 成功時に呼ばれる listener */
 export type ReconnectListener = () => void;
 
+/**
+ * WebSocket の公開接続状態。
+ * 内部の socket 状態（connecting / open / closed）とは別に、UI 向けの 4 状態を表す。
+ */
+export type ConnectionStatus =
+  | 'disconnected'
+  | 'connecting'
+  | 'connected'
+  | 'error';
+
+/** 接続状態変化時に呼ばれる listener。`error` のときだけ第 2 引数に {@link ChirimenError} を渡す */
+export type ConnectionStatusListener = (
+  status: ConnectionStatus,
+  error?: ChirimenError
+) => void;
+
 /** WebSocket client transport の設定 */
 export interface WebSocketClientTransportOptions {
   /** 接続先 WebSocket URL */
@@ -46,6 +62,8 @@ export interface WebSocketClientTransportOptions {
   readonly onEvent?: ProtocolEventListener;
   /** reconnect 成功時の callback（`addReconnectListener` と併用可） */
   readonly onReconnect?: ReconnectListener;
+  /** 接続状態変化時の callback（`addStatusListener` と併用可） */
+  readonly onStatus?: ConnectionStatusListener;
   /** request に付与する任意の sessionId */
   readonly sessionId?: SessionId;
 }
@@ -74,13 +92,16 @@ export class WebSocketClientTransport {
   private readonly WebSocketImpl: WebSocketConstructor;
   private readonly onEvent?: ProtocolEventListener;
   private readonly onReconnectCallback?: ReconnectListener;
+  private readonly onStatusCallback?: ConnectionStatusListener;
   private readonly sessionId?: SessionId;
   private readonly eventListeners = new Set<ProtocolEventListener>();
   private readonly reconnectListeners = new Set<ReconnectListener>();
+  private readonly statusListeners = new Set<ConnectionStatusListener>();
 
   private socket: WebSocket | null = null;
   /** 0: init / closed, 1: connecting, 2: connected */
   private status: 0 | 1 | 2 = 0;
+  private connectionStatus: ConnectionStatus = 'disconnected';
   private nextRequestId: RequestId = 0;
   private readonly pending = new Map<RequestId, PendingEntry>();
   private waitQueue: WaitQueueEntry[] = [];
@@ -99,7 +120,23 @@ export class WebSocketClientTransport {
     this.WebSocketImpl = options.webSocketImpl ?? WebSocket;
     this.onEvent = options.onEvent;
     this.onReconnectCallback = options.onReconnect;
+    this.onStatusCallback = options.onStatus;
     this.sessionId = options.sessionId;
+  }
+
+  /** 現在の公開接続状態 */
+  getStatus(): ConnectionStatus {
+    return this.connectionStatus;
+  }
+
+  /** 接続状態 listener を追加する（重複登録は Set で無視） */
+  addStatusListener(listener: ConnectionStatusListener): void {
+    this.statusListeners.add(listener);
+  }
+
+  /** 接続状態 listener を解除する */
+  removeStatusListener(listener: ConnectionStatusListener): void {
+    this.statusListeners.delete(listener);
   }
 
   /** protocol event listener を追加する（重複登録は Set で無視） */
@@ -135,6 +172,7 @@ export class WebSocketClientTransport {
 
     this.clearReconnectTimer();
     this.status = 1;
+    this.setConnectionStatus('connecting');
     const socket = new this.WebSocketImpl(this.url);
     this.socket = socket;
 
@@ -145,6 +183,7 @@ export class WebSocketClientTransport {
         const isReconnect = this.hasConnectedOnce;
         this.hasConnectedOnce = true;
         this.status = 2;
+        this.setConnectionStatus('connected');
         this.reconnectAttempts = 0;
         this.reconnectInProgress = false;
         const queue = this.waitQueue;
@@ -178,6 +217,7 @@ export class WebSocketClientTransport {
           reject(error);
           return;
         }
+        this.setConnectionStatus('error', error);
         this.failWaitQueue(error);
       };
 
@@ -202,6 +242,7 @@ export class WebSocketClientTransport {
     this.handleDisconnect(
       new ChirimenError('DeviceUnavailable', 'WebSocket disconnected')
     );
+    this.setConnectionStatus('disconnected');
     // CONNECTING(0) / OPEN(1) のときだけ close する
     if (socket !== null && socket.readyState <= 1) {
       socket.close();
@@ -326,6 +367,7 @@ export class WebSocketClientTransport {
       );
     }
     if (shouldReconnect) {
+      this.setConnectionStatus('connecting');
       this.scheduleReconnect();
     }
   }
@@ -345,12 +387,12 @@ export class WebSocketClientTransport {
       return;
     }
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      this.failWaitQueue(
-        new ChirimenError(
-          'DeviceUnavailable',
-          'WebSocket reconnect failed'
-        )
+      const error = new ChirimenError(
+        'DeviceUnavailable',
+        'WebSocket reconnect failed'
       );
+      this.setConnectionStatus('error', error);
+      this.failWaitQueue(error);
       return;
     }
 
@@ -360,12 +402,12 @@ export class WebSocketClientTransport {
         return;
       }
       if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-        this.failWaitQueue(
-          new ChirimenError(
-            'DeviceUnavailable',
-            'WebSocket reconnect failed'
-          )
+        const error = new ChirimenError(
+          'DeviceUnavailable',
+          'WebSocket reconnect failed'
         );
+        this.setConnectionStatus('error', error);
+        this.failWaitQueue(error);
         return;
       }
 
@@ -381,14 +423,15 @@ export class WebSocketClientTransport {
             return;
           }
           if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            this.failWaitQueue(
-              new ChirimenError(
-                'DeviceUnavailable',
-                'WebSocket reconnect failed'
-              )
+            const error = new ChirimenError(
+              'DeviceUnavailable',
+              'WebSocket reconnect failed'
             );
+            this.setConnectionStatus('error', error);
+            this.failWaitQueue(error);
             return;
           }
+          this.setConnectionStatus('connecting');
           this.scheduleReconnect();
         }
       );
@@ -407,6 +450,20 @@ export class WebSocketClientTransport {
     this.onReconnectCallback?.();
     for (const listener of this.reconnectListeners) {
       listener();
+    }
+  }
+
+  private setConnectionStatus(
+    status: ConnectionStatus,
+    error?: ChirimenError
+  ): void {
+    if (this.connectionStatus === status && status !== 'error') {
+      return;
+    }
+    this.connectionStatus = status;
+    this.onStatusCallback?.(status, error);
+    for (const listener of this.statusListeners) {
+      listener(status, error);
     }
   }
 

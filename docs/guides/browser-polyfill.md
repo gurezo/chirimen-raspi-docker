@@ -7,6 +7,7 @@
 - 親 Issue: [#49 apps/web-demo を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/49)
 - 子 Issue: [#127 browser-polyfill を単一ファイル（IIFE/UMD）にバンドルする](https://github.com/gurezo/chirimen-raspi-docker/issues/127)
 - 子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
+- 子 Issue: [#103 Runtime 接続状態 UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/103)
 - [Getting Started](./getting-started.md)（Runtime の起動）
 - [Protocol](../architecture/protocol.md)
 
@@ -96,21 +97,42 @@ TypeScript / Vite アプリでは、IIFE ではなく ESM から import する�
 ```ts
 import { installBrowserPolyfill } from 'browser-polyfill';
 
-await installBrowserPolyfill({ url: 'ws://localhost:33330/' });
+await installBrowserPolyfill({
+  url: 'ws://localhost:33330/',
+  onStatus: (status) => {
+    console.log(status);
+  },
+});
 const access = await navigator.requestGPIOAccess();
 ```
 
-ESM では `installBrowserPolyfill` の**前**に `requestGPIOAccess` / `requestI2CAccess` を呼ぶと `ChirimenError(InvalidAccess)` になる。lazy 接続は IIFE / script tag 専用。
+`onStatus` / `addStatusListener` で次の 4 状態を購読できる。`getStatus()` でも現在値を取れる。
+
+```text
+disconnected
+connecting
+connected
+error
+```
+
+`error` のときは第 2 引数に `ChirimenError` が付く。ESM では `installBrowserPolyfill` の**前**に `requestGPIOAccess` / `requestI2CAccess` を呼ぶと `ChirimenError(InvalidAccess)` になる。lazy 接続は IIFE / script tag 専用。
 
 ### web-demo で確認する
-
-先に [Runtime を起動](./getting-started.md) してから:
 
 ```sh
 pnpm nx serve web-demo
 ```
 
-ブラウザで `http://localhost:4200/` を開き、接続成功後にコンソールで次が関数であることを確認できる。
+ブラウザで `http://localhost:4200/` を開く。画面上の接続状態が次のいずれかになる。
+
+```text
+Disconnected
+Connecting
+Connected
+Error
+```
+
+Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。接続成功後、コンソールで次が関数であることを確認できる。
 
 ```text
 navigator.requestGPIOAccess
