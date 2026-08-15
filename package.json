@@ -9,7 +9,7 @@
   },
   "scripts": {
     "nx": "nx",
-    "build": "nx run-many -t build --projects=server,web-demo",
+    "build": "nx run-many -t build --projects=server,web-demo && nx bundle browser-polyfill",
     "serve": "nx serve server",
     "lint": "nx run-many -t lint --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,web-demo",
     "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,web-demo",
