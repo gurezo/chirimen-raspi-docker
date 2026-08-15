@@ -1,4 +1,4 @@
-import { WEB_DEMO_TITLE } from './app.js';
+import { WEB_DEMO_TITLE, installWebDemoPolyfill } from './app.js';
 import './styles.css';
 
 const root = document.getElementById('root');
@@ -7,3 +7,7 @@ if (root) {
   heading.textContent = WEB_DEMO_TITLE;
   root.append(heading);
 }
+
+void installWebDemoPolyfill().catch((error: unknown) => {
+  console.error('Failed to install Browser Polyfill', error);
+});
