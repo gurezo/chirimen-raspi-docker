@@ -44,7 +44,7 @@ describe('web-demo navigation', () => {
       id: 'gpio-input',
       title: 'GPIO Input',
       description:
-        'GPIO5 を Start / Stop / Read で 0 / 1 表示する。回路仕様は docs/examples/gpio-input.md。',
+        'GPIO5 を Start 後に onchange で realtime 表示する。Read は再読込。回路仕様は docs/examples/gpio-input.md。',
       showHomeLink: true,
     });
     expect(getDemoView('i2c-scan')).toEqual({
