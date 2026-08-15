@@ -132,7 +132,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO Input の cleanup 検証 / 操作ガイド（#112 / #113）。回路仕様は [gpio-input.md](../examples/gpio-input.md)
+- GPIO Input の操作ガイド（#113）。回路仕様と cleanup は [gpio-input.md](../examples/gpio-input.md)
 - I2C Scan の実 example（#52）
 - `docker/nginx`
 
