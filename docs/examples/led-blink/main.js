@@ -1,66 +1,28 @@
-/** LED Blink が使う GPIO port（BCM 番号）。回路仕様は `../gpio-led-blink.md` */
-const LED_GPIO_PORT = 26;
-
-/** hello-real-world / 旧 LEDblink と同じ点滅間隔（ms） */
-const LED_BLINK_INTERVAL_MS = 1000;
-
-let running = true;
-
-/**
- * Browser Polyfill の `navigator.requestGPIOAccess` で GPIO26 を点滅させる。
- *
- * 旧 CHIRIMEN LEDblink と同じ API flow:
- * requestGPIOAccess → ports.get(26) → export('out') → write(1/0)
- *
- * 画面離脱時は pagehide で write(0) → unexport する。
- */
+// プログラムの本体となる関数です。await で扱えるよう全体を async 関数で宣言します。
 async function main() {
-  const gpioAccess = await navigator.requestGPIOAccess();
-  const port = gpioAccess.ports.get(LED_GPIO_PORT);
-  if (port === undefined) {
-    throw new Error(`GPIO port ${LED_GPIO_PORT} is not available`);
-  }
+  // 非同期関数は await を付けて呼び出します。
+  const gpioAccess = await navigator.requestGPIOAccess(); // GPIO を操作する
+  const port = gpioAccess.ports.get(26); // 26 番ポートを操作する
 
-  await port.export('out');
+  await port.export("out"); // ポートを出力モードに設定
 
-  const release = async () => {
-    running = false;
-    try {
-      await port.write(0);
-    } catch {
-      // 離脱時は write 失敗でも unexport を続ける
-    }
-    try {
-      await port.unexport();
-    } catch {
-      // 離脱時は best-effort
-    }
-  };
-
-  window.addEventListener('pagehide', () => {
-    void release();
-  });
-
-  while (running) {
-    await port.write(1);
-    await sleep(LED_BLINK_INTERVAL_MS);
-    if (!running) {
-      break;
-    }
-    await port.write(0);
-    await sleep(LED_BLINK_INTERVAL_MS);
+  // 無限ループ
+  while (true) {
+    // 1秒間隔で LED が点滅します。
+    await port.write(1); // LED を点灯
+    await sleep(1000); // 1000 ms (1秒) 待機
+    await port.write(0); // LED を消灯
+    await sleep(1000); // 1000 ms (1秒) 待機
   }
 }
 
+// await sleep(ms) と呼ぶと、指定 ms (ミリ秒) 待機
+// 同じものが polyfill.js でも定義されているため省略可能
 function sleep(ms) {
-  return new Promise((resolve) => {
+  return new Promise(function (resolve) {
     setTimeout(resolve, ms);
   });
 }
 
-void main().catch((error) => {
-  const message = document.createElement('p');
-  message.textContent =
-    error instanceof Error ? error.message : 'LED Blink を開始できませんでした。';
-  document.body.append(message);
-});
+// 宣言した関数を実行します。このプログラムのエントリーポイントです。
+main();
