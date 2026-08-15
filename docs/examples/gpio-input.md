@@ -10,6 +10,7 @@ GPIO input / onchange を確認する最小回路を固定する。配線情報�
 - onchange UI: web-demo の GPIO Input が Start 後に `onchange` で realtime 更新する。[#111](https://github.com/gurezo/chirimen-raspi-docker/issues/111)
 - Cleanup 検証: Stop / unsubscribe / 画面離脱 / reload / WebSocket 切断 / Runtime 再起動。[#112](https://github.com/gurezo/chirimen-raspi-docker/issues/112)
 - 操作手順つきガイド: [gpio-input.md](../guides/gpio-input.md)（#113）
+- HTML サンプル: [docs/examples/button/](./button/)
 - LED 回路（共存可）: [gpio-led-blink.md](./gpio-led-blink.md)（BCM 26）
 - 参考: [chirimen `gc/gpio/button`](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button)
 
@@ -111,7 +112,7 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は入力ピ
 
 配線後、GPIO5 を input にして `read()` すると、離したとき `1`、押したとき `0` になる。`onchange` は値が変わるたびに同じ `0` / `1` を通知する。
 
-web-demo の GPIO Input（`#/gpio-input`）では Start で `export('in')` と初回 `read()` をし、`onchange` で入力変化を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / 切断で `onchange` 解除と `unexport` をする。Cleanup の詳細は下記、操作手順は [gpio-input.md](../guides/gpio-input.md)。
+web-demo の GPIO Input（`#/gpio-input`）では Start で `export('in')` と初回 `read()` をし、`onchange` で入力変化を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / 切断で `onchange` 解除と `unexport` をする。HTML サンプル（[docs/examples/button/](./button/)）は旧 button と同じく GPIO26 の LED を `onchange` で点灯する。Cleanup の詳細は下記、操作手順は [gpio-input.md](../guides/gpio-input.md)。
 
 ## Cleanup
 

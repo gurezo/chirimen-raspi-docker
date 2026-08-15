@@ -263,4 +263,4 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 
 ## タクトスイッチを押しても値が変わらない
 
-配線・web-demo の Start / onchange の切り分けは [gpio-input.md](./gpio-input.md) の Troubleshooting を参照する。
+配線・web-demo の Start / onchange / HTML サンプルの切り分けは [gpio-input.md](./gpio-input.md) の Troubleshooting を参照する。
