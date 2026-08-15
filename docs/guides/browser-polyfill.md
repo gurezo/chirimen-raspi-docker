@@ -22,9 +22,10 @@ pnpm nx bundle browser-polyfill
 
 ```text
 libs/browser-polyfill/dist/polyfill.js
+docs/examples/led-blink/polyfill.js
 ```
 
-`pnpm build`（CI 含む）でも同じ bundle が走る。成果物は git 管理外（`dist`）。
+`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。LED Blink サンプル用の `docs/examples/led-blink/polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
 
 ## 旧 polyfill.js からの移行
 

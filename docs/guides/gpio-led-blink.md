@@ -88,19 +88,14 @@ curl http://localhost:33330/health
 
 ## Browser 起動
 
-サンプルは旧 LEDblink と同じく、生成した `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
-
-リポジトリのルートで:
+サンプルは旧 LEDblink と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
 
 ```sh
-pnpm install
-pnpm nx bundle browser-polyfill
-cp libs/browser-polyfill/dist/polyfill.js docs/examples/led-blink/
 cd docs/examples/led-blink
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。`polyfill.js` は生成物のため git 管理外である。コピーを忘れると 404 になる。
+ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
 `index.html` の読み込み順:
 
@@ -138,7 +133,7 @@ pnpm nx serve web-demo
 
 ### `polyfill.js` が 404 になる
 
-`pnpm nx bundle browser-polyfill` のあと、`libs/browser-polyfill/dist/polyfill.js` を `docs/examples/led-blink/` へコピーしたかを確認する。`python3 -m http.server` のカレントディレクトリが `docs/examples/led-blink` であること。
+`docs/examples/led-blink/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `docs/examples/led-blink` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### ページは開くが LED が点かない / エラーが出る
 
