@@ -7,6 +7,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 - [Getting Started](./getting-started.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
+- [setups/README.md](../../setups/README.md)（host の Node / nvm / Docker インストール）
 - `scripts/doctor.sh` / `scripts/start.sh` / `scripts/enable-i2c.sh`
 
 ## 前提 OS
@@ -16,7 +17,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 
 ## Docker / Docker Compose
 
-Runtime の推奨起動入口は `./scripts/start.sh` のため、host に Docker と Compose が必要。
+Runtime の推奨起動入口は `./scripts/start.sh` のため、host に Docker と Compose が必要。未導入なら [setups/README.md](../../setups/README.md) の手順（`setups/docker.sh` → reboot → `setups/docker-compose.sh`）を使う。
 
 インストール後の確認例:
 
