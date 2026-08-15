@@ -122,7 +122,7 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
-│   ├── examples/               # GPIO LED Blink 回路仕様と Blink UI（#105 / #106）
+│   ├── examples/               # GPIO LED Blink 回路仕様・Blink UI・cleanup（#105 / #106 / #107）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── compose.yaml
 ├── package.json
@@ -132,7 +132,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO LED Blink の cleanup 検証（#107）と操作ガイド（#108）。回路仕様は [gpio-led-blink.md](../examples/gpio-led-blink.md)。Blink UI は web-demo の GPIO Output（#106）
+- GPIO LED Blink の操作ガイド（#108）。回路仕様は [gpio-led-blink.md](../examples/gpio-led-blink.md)。Blink UI と cleanup は web-demo の GPIO Output（#106 / #107）
 - GPIO Input / I2C Scan の実 example（#51 / #52）
 - `docker/nginx`
 
