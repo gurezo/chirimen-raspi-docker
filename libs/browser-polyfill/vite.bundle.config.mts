@@ -5,16 +5,18 @@ import { defineConfig } from 'vite';
 
 const workspaceRoot = resolve(import.meta.dirname, '../..');
 const bundleOutFile = resolve(import.meta.dirname, 'dist/polyfill.js');
-const ledBlinkPolyfill = resolve(
-  workspaceRoot,
-  'docs/examples/led-blink/polyfill.js'
-);
+const samplePolyfills = [
+  resolve(workspaceRoot, 'docs/examples/led-blink/polyfill.js'),
+  resolve(workspaceRoot, 'docs/examples/button/polyfill.js'),
+];
 
-function copyLedBlinkPolyfill(): Plugin {
+function copySamplePolyfills(): Plugin {
   return {
-    name: 'copy-led-blink-polyfill',
+    name: 'copy-sample-polyfills',
     closeBundle() {
-      copyFileSync(bundleOutFile, ledBlinkPolyfill);
+      for (const dest of samplePolyfills) {
+        copyFileSync(bundleOutFile, dest);
+      }
     },
   };
 }
@@ -22,7 +24,7 @@ function copyLedBlinkPolyfill(): Plugin {
 export default defineConfig({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/libs/browser-polyfill-bundle',
-  plugins: [copyLedBlinkPolyfill()],
+  plugins: [copySamplePolyfills()],
   resolve: {
     alias: {
       core: resolve(workspaceRoot, 'libs/core/src/index.ts'),
