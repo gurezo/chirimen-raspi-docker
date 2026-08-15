@@ -5,6 +5,10 @@ import {
   getConnectionStatusView,
   type ConnectionStatus,
 } from './app.js';
+import {
+  bindLedBlinkCleanup,
+  shouldStopLedBlinkOnRoute,
+} from './gpio-led-blink-cleanup.js';
 import { LedBlinkSession } from './gpio-led-blink.js';
 import {
   DEMO_NAV_ITEMS,
@@ -104,6 +108,7 @@ if (root) {
       applyBlinkUi();
     },
   });
+  const statusListeners = new Set<(status: ConnectionStatus) => void>();
 
   const applyBlinkUi = (): void => {
     const onGpioOutput =
@@ -123,15 +128,19 @@ if (root) {
     }
   };
 
+  const stopBlink = (): Promise<void> => {
+    blinkError.textContent = '';
+    return blinkSession.stop().then(() => {
+      applyBlinkUi();
+    });
+  };
+
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
 
-    if (routeId !== 'gpio-output') {
-      blinkError.textContent = '';
-      void blinkSession.stop().then(() => {
-        applyBlinkUi();
-      });
+    if (shouldStopLedBlinkOnRoute(routeId)) {
+      void stopBlink();
     }
 
     demoSection.dataset.route = routeId;
@@ -163,6 +172,9 @@ if (root) {
     urlEl.textContent = `Runtime: ${view.url}`;
     helpEl.replaceChildren();
     applyBlinkUi();
+    for (const listener of statusListeners) {
+      listener(status);
+    }
     if (view.helpLines.length === 0) {
       return;
     }
@@ -194,15 +206,23 @@ if (root) {
   });
 
   stopButton.addEventListener('click', () => {
-    blinkError.textContent = '';
-    void blinkSession.stop().then(() => {
-      applyBlinkUi();
-    });
+    void stopBlink();
     applyBlinkUi();
   });
 
   applyRoute();
   window.addEventListener('hashchange', applyRoute);
+
+  bindLedBlinkCleanup({
+    stop: stopBlink,
+    getRoute: () => parseDemoRoute(window.location.hash),
+    addStatusListener: (listener) => {
+      statusListeners.add(listener);
+      return () => {
+        statusListeners.delete(listener);
+      };
+    },
+  });
 
   applyStatus('disconnected');
   void connectWebDemoRuntime({

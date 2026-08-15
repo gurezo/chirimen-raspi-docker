@@ -7,6 +7,7 @@
 - 親 Issue: [#50 GPIO LED Blink example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/50)
 - 子 Issue: [#105 LED Blink の回路仕様を決定する](https://github.com/gurezo/chirimen-raspi-docker/issues/105)
 - Blink UI（Start / Stop）: web-demo の GPIO Output（`#/gpio-output`）。[#106](https://github.com/gurezo/chirimen-raspi-docker/issues/106)
+- Cleanup 検証: Stop / 画面離脱 / reload / WebSocket 切断。[#107](https://github.com/gurezo/chirimen-raspi-docker/issues/107)
 - 操作手順つきガイド: [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)
 - 参考: [chirimen.org hello-real-world（Lチカ）](https://github.com/chirimen-oh/chirimen.org/tree/master/pizero/src/esm-examples/hello-real-world)
 
@@ -100,4 +101,19 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は次の前
 
 配線後、GPIO26 を output にして `write(1)` すると LED が点灯し、`write(0)` すると消灯する。
 
-web-demo の GPIO Output（`#/gpio-output`）で Start を押すと 1 秒間隔で点滅し、Stop で消灯して unexport する。操作手順・Troubleshooting は [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)。
+web-demo の GPIO Output（`#/gpio-output`）で Start を押すと 1 秒間隔で点滅し、Stop で消灯して unexport する。終了後は同じ GPIO26 を再度 `export` できる。操作手順・Troubleshooting は [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)。
+
+## Cleanup
+
+Demo 停止後に GPIO26 を残さない。次のタイミングで点滅を止め、`write(0)` のあと `unexport` する。
+
+| タイミング | クライアント | サーバ |
+| --- | --- | --- |
+| Stop button | `LedBlinkSession.stop()` | `gpio.unexport` |
+| page navigation | `#/gpio-output` 以外への `hashchange` で `stop()` | `gpio.unexport` |
+| browser reload | `pagehide` で `stop()`（await しない best-effort） | WebSocket `close` → `GpioSession.releaseAll()` |
+| WebSocket disconnect | Connected 以外の接続状態で `stop()`。再接続後は自動再開しない | WebSocket `close` → `GpioSession.releaseAll()` |
+
+切断中の `unexport` RPC が失敗しても、Browser Polyfill はローカルの `exported` を落とす。reconnect でピンを取り直さない。サーバ側は切断時に必ず `releaseAll()` する。
+
+完了条件: LED Blink 終了後に、同じ GPIO port（BCM 26）を再度 `export` できる。

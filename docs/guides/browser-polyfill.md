@@ -141,7 +141,7 @@ GPIO Input    → #/gpio-input（#51）
 I2C Scan      → #/i2c-scan（#52）
 ```
 
-GPIO Output の配線は [gpio-led-blink.md](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop で止めて GPIO を unexport する。操作手順の本ガイドは [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)。
+GPIO Output の配線は [gpio-led-blink.md](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop / 画面離脱 / reload / WebSocket 切断で止めて GPIO を unexport する。終了後は同じ GPIO26 を再度 Start できる。操作手順の本ガイドは [#108](https://github.com/gurezo/chirimen-raspi-docker/issues/108)。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 

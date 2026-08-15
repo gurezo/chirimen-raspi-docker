@@ -401,4 +401,74 @@ describe('navigator.requestGPIOAccess', () => {
 
     vi.useRealTimers();
   });
+
+  it('does not restore export after failed unexport', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    class TrackingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    onSend = (data, socket) => {
+      const request = decodeProtocolMessage(data);
+      if (!isProtocolRequest(request)) {
+        throw new Error('expected protocol request');
+      }
+      if (request.operation === 'gpio.unexport') {
+        sentOperations.push(request.operation);
+        const response: ProtocolResponse = {
+          kind: 'response',
+          requestId: request.requestId,
+          ok: false,
+          operation: request.operation,
+          error: {
+            code: 'DeviceUnavailable',
+            message: 'WebSocket disconnected',
+          },
+        };
+        socket.emitMessage(encodeProtocolMessage(response));
+        return;
+      }
+      replyWithSuccess(data, socket);
+    };
+
+    await installBrowserPolyfill({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 50,
+    });
+
+    const access = await navigator.requestGPIOAccess();
+    const port = access.ports.get(26);
+    expect(port).toBeDefined();
+    if (!port) {
+      throw new Error('expected port 26');
+    }
+
+    await port.export('out');
+    expect(port.exported).toBe(true);
+
+    await expect(port.unexport()).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'DeviceUnavailable',
+    });
+    expect(port.exported).toBe(false);
+
+    const operationsAfterUnexport = [...sentOperations];
+    sockets[0]?.close();
+
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.waitFor(() => {
+      expect(sockets).toHaveLength(2);
+    });
+
+    const restored = sentOperations.slice(operationsAfterUnexport.length);
+    expect(restored).not.toContain('gpio.export');
+    expect(port.exported).toBe(false);
+
+    vi.useRealTimers();
+  });
 });
