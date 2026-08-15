@@ -119,6 +119,11 @@ chirimen-raspi-docker/
 │   ├── start.sh
 │   ├── enable-i2c.sh
 │   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
+├── setups/                     # host の Node / nvm / Docker 環境構築
+│   ├── node.sh
+│   ├── docker.sh
+│   ├── docker-compose.sh
+│   └── README.md
 ├── docs/
 │   ├── architecture/
 │   ├── guides/

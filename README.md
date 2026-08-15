@@ -77,6 +77,7 @@ if (port) {
 | [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `./scripts/start.sh` → health check |
 | [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
+| [setups/README.md](setups/README.md) | host の Node / nvm / Docker インストール |
 | [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
 | [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md) | GPIO LED Blink 操作ガイド（HTML サンプルで点滅） |
 | [docs/guides/gpio-input.md](docs/guides/gpio-input.md) | GPIO Input 操作ガイド（HTML サンプルで onchange） |
