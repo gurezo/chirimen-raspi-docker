@@ -36,7 +36,8 @@ describe('web-demo navigation', () => {
     expect(getDemoView('gpio-output')).toEqual({
       id: 'gpio-output',
       title: 'GPIO Output',
-      description: 'GPIO LED Blink example（#50）を後続で実装する。',
+      description:
+        'GPIO26 の回路仕様は docs/examples/gpio-led-blink.md。Blink 実装は #106。',
       showHomeLink: true,
     });
     expect(getDemoView('gpio-input')).toEqual({

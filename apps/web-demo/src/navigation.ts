@@ -1,3 +1,5 @@
+import { LED_BLINK_GPIO_PORT } from './gpio-led-blink.js';
+
 /** Home の hash ルート */
 export const HOME_HREF = '#/' as const;
 
@@ -37,7 +39,7 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
   'gpio-output': {
     id: 'gpio-output',
     title: 'GPIO Output',
-    description: 'GPIO LED Blink example（#50）を後続で実装する。',
+    description: `GPIO${LED_BLINK_GPIO_PORT} の回路仕様は docs/examples/gpio-led-blink.md。Blink 実装は #106。`,
     showHomeLink: true,
   },
   'gpio-input': {
