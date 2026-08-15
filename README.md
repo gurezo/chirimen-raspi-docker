@@ -75,7 +75,7 @@ if (port) {
 | ドキュメント | 内容 |
 | --- | --- |
 | [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `./scripts/start.sh` → health check |
-| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle |
+| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
 | [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
@@ -109,7 +109,10 @@ Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capabi
 pnpm install
 npx nx show projects
 npx nx build server
+pnpm nx serve web-demo
 ```
+
+`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動する。`navigator.requestGPIOAccess` / `requestI2CAccess` を確認するには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動する。詳細は [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)。
 
 Nx graph は以下で確認できます。
 

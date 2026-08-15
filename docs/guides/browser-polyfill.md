@@ -6,6 +6,7 @@
 
 - 親 Issue: [#49 apps/web-demo を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/49)
 - 子 Issue: [#127 browser-polyfill を単一ファイル（IIFE/UMD）にバンドルする](https://github.com/gurezo/chirimen-raspi-docker/issues/127)
+- 子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
 - [Getting Started](./getting-started.md)（Runtime の起動）
 - [Protocol](../architecture/protocol.md)
 
@@ -90,7 +91,7 @@ libs/browser-polyfill/dist/polyfill.js
 
 ## ESM import との使い分け
 
-TypeScript / Vite アプリ（後続の `apps/web-demo` 組み込みを含む）では、IIFE ではなく ESM から import する。
+TypeScript / Vite アプリでは、IIFE ではなく ESM から import する。`apps/web-demo` はこの方法で Browser Polyfill を組み込んでいる。
 
 ```ts
 import { installBrowserPolyfill } from 'browser-polyfill';
@@ -100,5 +101,20 @@ const access = await navigator.requestGPIOAccess();
 ```
 
 ESM では `installBrowserPolyfill` の**前**に `requestGPIOAccess` / `requestI2CAccess` を呼ぶと `ChirimenError(InvalidAccess)` になる。lazy 接続は IIFE / script tag 専用。
+
+### web-demo で確認する
+
+先に [Runtime を起動](./getting-started.md) してから:
+
+```sh
+pnpm nx serve web-demo
+```
+
+ブラウザで `http://localhost:4200/` を開き、接続成功後にコンソールで次が関数であることを確認できる。
+
+```text
+navigator.requestGPIOAccess
+navigator.requestI2CAccess
+```
 
 公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照。
