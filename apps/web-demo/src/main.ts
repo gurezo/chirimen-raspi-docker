@@ -1,9 +1,11 @@
+import { isChirimenError } from 'core';
 import {
   WEB_DEMO_TITLE,
   connectWebDemoRuntime,
   getConnectionStatusView,
   type ConnectionStatus,
 } from './app.js';
+import { LedBlinkSession } from './gpio-led-blink.js';
 import {
   DEMO_NAV_ITEMS,
   HOME_HREF,
@@ -69,12 +71,68 @@ if (root) {
   homeLink.textContent = 'Home に戻る';
   homeLink.className = 'demo-view__home';
 
-  demoSection.append(demoTitle, demoDescription, homeLink);
+  const blinkControls = document.createElement('div');
+  blinkControls.className = 'led-blink';
+  blinkControls.hidden = true;
+
+  const blinkButtons = document.createElement('div');
+  blinkButtons.className = 'led-blink__controls';
+
+  const startButton = document.createElement('button');
+  startButton.type = 'button';
+  startButton.textContent = 'Start';
+
+  const stopButton = document.createElement('button');
+  stopButton.type = 'button';
+  stopButton.textContent = 'Stop';
+
+  blinkButtons.append(startButton, stopButton);
+
+  const blinkStatus = document.createElement('p');
+  blinkStatus.className = 'led-blink__status';
+
+  const blinkError = document.createElement('p');
+  blinkError.className = 'led-blink__error';
+
+  blinkControls.append(blinkButtons, blinkStatus, blinkError);
+  demoSection.append(demoTitle, demoDescription, blinkControls, homeLink);
   root.append(heading, nav, statusSection, demoSection);
+
+  let connectionStatus: ConnectionStatus = 'disconnected';
+  const blinkSession = new LedBlinkSession({
+    onValue: () => {
+      applyBlinkUi();
+    },
+  });
+
+  const applyBlinkUi = (): void => {
+    const onGpioOutput =
+      parseDemoRoute(window.location.hash) === 'gpio-output';
+    blinkControls.hidden = !onGpioOutput;
+    startButton.disabled =
+      !onGpioOutput ||
+      connectionStatus !== 'connected' ||
+      blinkSession.running ||
+      blinkSession.starting;
+    stopButton.disabled =
+      !onGpioOutput || (!blinkSession.running && !blinkSession.starting);
+    if (blinkSession.running) {
+      blinkStatus.textContent = blinkSession.value === 1 ? '点灯' : '消灯';
+    } else {
+      blinkStatus.textContent = '停止中';
+    }
+  };
 
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
+
+    if (routeId !== 'gpio-output') {
+      blinkError.textContent = '';
+      void blinkSession.stop().then(() => {
+        applyBlinkUi();
+      });
+    }
 
     demoSection.dataset.route = routeId;
     demoTitle.textContent = view.title;
@@ -93,14 +151,18 @@ if (root) {
         link.removeAttribute('aria-current');
       }
     }
+
+    applyBlinkUi();
   };
 
   const applyStatus = (status: ConnectionStatus): void => {
+    connectionStatus = status;
     const view = getConnectionStatusView(status);
     statusSection.dataset.status = status;
     labelEl.textContent = view.label;
     urlEl.textContent = `Runtime: ${view.url}`;
     helpEl.replaceChildren();
+    applyBlinkUi();
     if (view.helpLines.length === 0) {
       return;
     }
@@ -114,6 +176,30 @@ if (root) {
     }
     helpEl.append(intro, list);
   };
+
+  startButton.addEventListener('click', () => {
+    blinkError.textContent = '';
+    void blinkSession.start().then(
+      () => {
+        applyBlinkUi();
+      },
+      (error: unknown) => {
+        blinkError.textContent = isChirimenError(error)
+          ? error.message
+          : 'LED Blink を開始できませんでした。';
+        applyBlinkUi();
+      }
+    );
+    applyBlinkUi();
+  });
+
+  stopButton.addEventListener('click', () => {
+    blinkError.textContent = '';
+    void blinkSession.stop().then(() => {
+      applyBlinkUi();
+    });
+    applyBlinkUi();
+  });
 
   applyRoute();
   window.addEventListener('hashchange', applyRoute);

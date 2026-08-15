@@ -39,7 +39,7 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
   'gpio-output': {
     id: 'gpio-output',
     title: 'GPIO Output',
-    description: `GPIO${LED_BLINK_GPIO_PORT} の回路仕様は docs/examples/gpio-led-blink.md。Blink 実装は #106。`,
+    description: `GPIO${LED_BLINK_GPIO_PORT} を Start / Stop で点滅させる。回路仕様は docs/examples/gpio-led-blink.md。`,
     showHomeLink: true,
   },
   'gpio-input': {
