@@ -1,11 +1,28 @@
+import { copyFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 
 const workspaceRoot = resolve(import.meta.dirname, '../..');
+const bundleOutFile = resolve(import.meta.dirname, 'dist/polyfill.js');
+const ledBlinkPolyfill = resolve(
+  workspaceRoot,
+  'docs/examples/led-blink/polyfill.js'
+);
+
+function copyLedBlinkPolyfill(): Plugin {
+  return {
+    name: 'copy-led-blink-polyfill',
+    closeBundle() {
+      copyFileSync(bundleOutFile, ledBlinkPolyfill);
+    },
+  };
+}
 
 export default defineConfig({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/libs/browser-polyfill-bundle',
+  plugins: [copyLedBlinkPolyfill()],
   resolve: {
     alias: {
       core: resolve(workspaceRoot, 'libs/core/src/index.ts'),
