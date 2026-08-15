@@ -99,10 +99,11 @@ export class BrowserGpioPort implements GpioPort {
 
   async unexport(): Promise<void> {
     this.onchange = null;
+    // RPC 失敗（切断中の DeviceUnavailable など）でも reconnect 復元しない
+    this.#exported = false;
     await this.#transport.request('gpio.unexport', {
       portNumber: this.portNumber,
     });
-    this.#exported = false;
   }
 
   async read(): Promise<GpioValue> {
