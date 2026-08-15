@@ -71,3 +71,17 @@ body {
 .led-blink__error {
   color: crimson;
 }
+
+.gpio-input {
+  margin-top: 1rem;
+}
+
+.gpio-input__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.gpio-input__error {
+  color: crimson;
+}

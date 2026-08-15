@@ -46,7 +46,7 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
   'gpio-input': {
     id: 'gpio-input',
     title: 'GPIO Input',
-    description: `GPIO${GPIO_INPUT_PORT} の入力変化を表示する。回路仕様は docs/examples/gpio-input.md。UI は #110。`,
+    description: `GPIO${GPIO_INPUT_PORT} を Start / Stop / Read で 0 / 1 表示する。回路仕様は docs/examples/gpio-input.md。`,
     showHomeLink: true,
   },
   'i2c-scan': {
