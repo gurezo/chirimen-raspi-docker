@@ -5,7 +5,6 @@ Raspberry Pi host の Node.js / nvm / Docker 環境構築。
 ## Node.js
 
 ```sh
-chmod +x setups/node.sh
 ./setups/node.sh
 ```
 
@@ -37,7 +36,6 @@ nvm alias default 24
 ## Docker
 
 ```sh
-chmod +x setups/docker.sh setups/docker-compose.sh
 ./setups/docker.sh
 ```
 
