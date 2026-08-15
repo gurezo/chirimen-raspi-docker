@@ -1,6 +1,7 @@
 import { createServer, type Server as HttpServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import type { NodeRuntimeContext } from 'node-runtime';
+import type { GpioAccess, GpioPort } from 'gpio';
+import { createGpioSession, type NodeRuntimeContext } from 'node-runtime';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { WebSocket } from 'ws';
 import { attachWebSocketServer } from './websocket-server.js';
@@ -21,6 +22,34 @@ function createRuntimeContextMock(): NodeRuntimeContext {
       ports: [],
     },
     cleanup: vi.fn(async () => {
+      // no-op
+    }),
+  };
+}
+
+function createPortMock(portNumber: number): GpioPort {
+  let exported = false;
+  let direction: 'in' | 'out' = 'out';
+
+  return {
+    portNumber,
+    portName: `GPIO${portNumber}`,
+    pinName: `PIN${portNumber}`,
+    get exported() {
+      return exported;
+    },
+    get direction() {
+      return direction;
+    },
+    export: vi.fn(async (nextDirection: 'in' | 'out') => {
+      direction = nextDirection;
+      exported = true;
+    }),
+    unexport: vi.fn(async () => {
+      exported = false;
+    }),
+    read: vi.fn(async () => 0 as const),
+    write: vi.fn(async () => {
       // no-op
     }),
   };
@@ -121,6 +150,59 @@ describe('attachWebSocketServer', () => {
     for (const socket of sockets) {
       socket.close();
     }
+    await attached.close();
+  });
+
+  it('unexports opened GPIO when the WebSocket disconnects', async () => {
+    const port = createPortMock(26);
+    const access: GpioAccess = {
+      ports: new Map([[26, port]]),
+      unexportAll: vi.fn(async () => {
+        // no-op
+      }),
+    };
+    const runtime: NodeRuntimeContext = {
+      ...createRuntimeContextMock(),
+      capabilities: {
+        gpio: { backend: 'sysfs' },
+        i2c: { backend: 'unavailable' },
+      },
+      gpio: {
+        available: true,
+        ports: [],
+        access,
+      },
+    };
+
+    server = await listen();
+    const attached = attachWebSocketServer(server, runtime, {
+      registryOptions: {
+        createSessionId: () => 'ws-gpio-cleanup',
+        createGpioSession,
+      },
+    });
+
+    const socket = new WebSocket(serverUrl(server));
+    await new Promise<void>((resolve, reject) => {
+      socket.once('open', () => resolve());
+      socket.once('error', reject);
+    });
+
+    const session = attached.registry.get('ws-gpio-cleanup');
+    expect(session).toBeDefined();
+    await session?.gpio.open(26, 'out');
+    expect(port.export).toHaveBeenCalledOnce();
+
+    socket.close();
+    await new Promise<void>((resolve) => {
+      socket.once('close', () => resolve());
+    });
+
+    await vi.waitFor(() => {
+      expect(port.unexport).toHaveBeenCalledOnce();
+      expect(attached.registry.size).toBe(0);
+    });
+
     await attached.close();
   });
 });

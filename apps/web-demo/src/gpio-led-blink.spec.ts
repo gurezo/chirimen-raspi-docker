@@ -121,6 +121,28 @@ describe('LedBlinkSession', () => {
     expect(port.calls).toEqual(['export:out', 'write:1', 'write:0', 'unexport']);
   });
 
+  it('can start again on the same port after stop unexports', async () => {
+    const port = createFakePort();
+    installFakeGpioAccess(port);
+    const session = new LedBlinkSession();
+
+    await session.start();
+    await session.stop();
+    await session.start();
+
+    expect(port.calls).toEqual([
+      'export:out',
+      'write:1',
+      'write:0',
+      'unexport',
+      'export:out',
+      'write:1',
+    ]);
+    expect(session.running).toBe(true);
+
+    await session.stop();
+  });
+
   it('does not export twice when start is called while running', async () => {
     const port = createFakePort();
     const requestGPIOAccess = installFakeGpioAccess(port);
