@@ -9,6 +9,7 @@ import {
 
 import {
   WebSocketClientTransport,
+  type ConnectionStatus,
   type WebSocketConstructor,
 } from './websocket-client-transport.js';
 
@@ -67,6 +68,7 @@ function createTransport(
     maxReconnectAttempts?: number;
     onEvent?: (event: ProtocolEvent) => void;
     onReconnect?: () => void;
+    onStatus?: (status: ConnectionStatus, error?: ChirimenError) => void;
   } = {}
 ): WebSocketClientTransport {
   return new WebSocketClientTransport({
@@ -481,6 +483,180 @@ describe('WebSocketClientTransport', () => {
     expect(openCount).toBe(3);
 
     await expectation;
+
+    vi.useRealTimers();
+  });
+
+  it('starts disconnected and reports connecting then connected', async () => {
+    const statuses: ConnectionStatus[] = [];
+    const transport = createTransport({
+      onStatus: (status) => {
+        statuses.push(status);
+      },
+    });
+
+    expect(transport.getStatus()).toBe('disconnected');
+
+    const connecting = transport.connect();
+    expect(transport.getStatus()).toBe('connecting');
+    await connecting;
+
+    expect(transport.getStatus()).toBe('connected');
+    expect(statuses).toEqual(['connecting', 'connected']);
+  });
+
+  it('notifies addStatusListener and onStatus, and ignores removed listeners', async () => {
+    const onStatusEvents: ConnectionStatus[] = [];
+    const listenerAEvents: ConnectionStatus[] = [];
+    const listenerBEvents: ConnectionStatus[] = [];
+
+    const transport = createTransport({
+      onStatus: (status) => {
+        onStatusEvents.push(status);
+      },
+    });
+    const listenerA = (status: ConnectionStatus) => {
+      listenerAEvents.push(status);
+    };
+    const listenerB = (status: ConnectionStatus) => {
+      listenerBEvents.push(status);
+    };
+    transport.addStatusListener(listenerA);
+    transport.addStatusListener(listenerB);
+
+    await transport.connect();
+    transport.removeStatusListener(listenerA);
+    transport.disconnect();
+
+    expect(onStatusEvents).toEqual(['connecting', 'connected', 'disconnected']);
+    expect(listenerAEvents).toEqual(['connecting', 'connected']);
+    expect(listenerBEvents).toEqual(['connecting', 'connected', 'disconnected']);
+  });
+
+  it('reports error when the initial connection fails', async () => {
+    autoOpen = false;
+    const statuses: Array<{
+      status: ConnectionStatus;
+      error?: ChirimenError;
+    }> = [];
+
+    class FailingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        queueMicrotask(() => {
+          this.readyState = FakeWebSocket.CLOSED;
+          this.onerror?.({ type: 'error' });
+          this.onclose?.({ type: 'close' });
+        });
+      }
+    }
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FailingFakeWebSocket as unknown as WebSocketConstructor,
+      onStatus: (status, error) => {
+        statuses.push({ status, error });
+      },
+    });
+
+    await expect(transport.connect()).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'DeviceUnavailable',
+      message: 'WebSocket connection failed',
+    });
+
+    expect(transport.getStatus()).toBe('error');
+    expect(statuses.map((entry) => entry.status)).toEqual(['connecting', 'error']);
+    expect(statuses[1]?.error).toMatchObject({
+      name: 'ChirimenError',
+      code: 'DeviceUnavailable',
+      message: 'WebSocket connection failed',
+    });
+  });
+
+  it('reports connecting then connected after unexpected close and reconnect', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    const statuses: ConnectionStatus[] = [];
+    class TrackingFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: TrackingFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 100,
+      onStatus: (status) => {
+        statuses.push(status);
+      },
+    });
+
+    await transport.connect();
+    sockets[0]?.close();
+    expect(transport.getStatus()).toBe('connecting');
+
+    await vi.advanceTimersByTimeAsync(100);
+    await vi.waitFor(() => {
+      expect(transport.getStatus()).toBe('connected');
+    });
+
+    expect(statuses).toEqual([
+      'connecting',
+      'connected',
+      'connecting',
+      'connected',
+    ]);
+
+    vi.useRealTimers();
+  });
+
+  it('reports error after maxReconnectAttempts', async () => {
+    vi.useFakeTimers();
+    const sockets: FakeWebSocket[] = [];
+    let openCount = 0;
+    const statuses: ConnectionStatus[] = [];
+    class FlakyFakeWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+        queueMicrotask(() => {
+          openCount += 1;
+          if (openCount === 1) {
+            this.readyState = FakeWebSocket.OPEN;
+            this.onopen?.({ type: 'open' });
+            return;
+          }
+          this.readyState = FakeWebSocket.CLOSED;
+          this.onerror?.({ type: 'error' });
+          this.onclose?.({ type: 'close' });
+        });
+      }
+    }
+
+    autoOpen = false;
+
+    const transport = new WebSocketClientTransport({
+      url: 'ws://localhost:33330/',
+      webSocketImpl: FlakyFakeWebSocket as unknown as WebSocketConstructor,
+      reconnectIntervalMs: 20,
+      maxReconnectAttempts: 2,
+      onStatus: (status) => {
+        statuses.push(status);
+      },
+    });
+
+    await transport.connect();
+    sockets[0]?.close();
+
+    await vi.advanceTimersByTimeAsync(20);
+    await vi.advanceTimersByTimeAsync(20);
+    await vi.advanceTimersByTimeAsync(20);
+
+    expect(transport.getStatus()).toBe('error');
+    expect(statuses.at(-1)).toBe('error');
 
     vi.useRealTimers();
   });
