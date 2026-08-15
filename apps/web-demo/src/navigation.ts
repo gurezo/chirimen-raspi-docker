@@ -1,3 +1,4 @@
+import { GPIO_INPUT_PORT } from './gpio-input.js';
 import { LED_BLINK_GPIO_PORT } from './gpio-led-blink.js';
 
 /** Home の hash ルート */
@@ -45,7 +46,7 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
   'gpio-input': {
     id: 'gpio-input',
     title: 'GPIO Input',
-    description: 'GPIO Input example（#51）を後続で実装する。',
+    description: `GPIO${GPIO_INPUT_PORT} の入力変化を表示する。回路仕様は docs/examples/gpio-input.md。UI は #110。`,
     showHomeLink: true,
   },
   'i2c-scan': {
