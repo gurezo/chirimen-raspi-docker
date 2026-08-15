@@ -132,7 +132,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO Input の onchange / cleanup 検証 / 操作ガイド（#111〜#113）。回路仕様は [gpio-input.md](../examples/gpio-input.md)
+- GPIO Input の cleanup 検証 / 操作ガイド（#112 / #113）。回路仕様は [gpio-input.md](../examples/gpio-input.md)
 - I2C Scan の実 example（#52）
 - `docker/nginx`
 
@@ -141,7 +141,7 @@ chirimen-raspi-docker/
 | Path | 責務 |
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
-| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read、I2C Scan ナビあり） |
+| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan ナビあり） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |

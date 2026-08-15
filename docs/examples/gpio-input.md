@@ -7,7 +7,7 @@ GPIO input / onchange を確認する最小回路を固定する。配線情報�
 - 親 Issue: [#51 GPIO Input example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/51)
 - 子 Issue: [#109 GPIO Input 回路仕様を決定する](https://github.com/gurezo/chirimen-raspi-docker/issues/109)
 - Browser GPIO Input UI: web-demo の GPIO Input（`#/gpio-input`）。[#110](https://github.com/gurezo/chirimen-raspi-docker/issues/110)
-- onchange UI: [#111](https://github.com/gurezo/chirimen-raspi-docker/issues/111)
+- onchange UI: web-demo の GPIO Input が Start 後に `onchange` で realtime 更新する。[#111](https://github.com/gurezo/chirimen-raspi-docker/issues/111)
 - Cleanup 検証: [#112](https://github.com/gurezo/chirimen-raspi-docker/issues/112)
 - 操作手順つきガイド: [#113](https://github.com/gurezo/chirimen-raspi-docker/issues/113)
 - LED 回路（共存可）: [gpio-led-blink.md](./gpio-led-blink.md)（BCM 26）
@@ -19,7 +19,7 @@ web-demo の GPIO port 定数は `apps/web-demo/src/gpio-input.ts` の `GPIO_INP
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全なタクトスイッチ + プルアップ回路を 1 つに決める。web-demo の Input UI と後続の onchange UI（#111）はこの文書を正本とする。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全なタクトスイッチ + プルアップ回路を 1 つに決める。web-demo の Input UI と onchange UI はこの文書を正本とする。
 
 ## ピン対応
 
@@ -111,4 +111,4 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は入力ピ
 
 配線後、GPIO5 を input にして `read()` すると、離したとき `1`、押したとき `0` になる。`onchange` は値が変わるたびに同じ `0` / `1` を通知する。
 
-web-demo の GPIO Input（`#/gpio-input`）では Start で `export('in')` と初回 `read()` をし、Read で再読込、Stop / 画面離脱で `unexport` する。実行中は入力状態 `0` / `1` を表示する。realtime の `onchange` は #111、reload / 切断時の cleanup 検証は #112、操作手順は #113。
+web-demo の GPIO Input（`#/gpio-input`）では Start で `export('in')` と初回 `read()` をし、`onchange` で入力変化を realtime 表示する。Read で再読込、Stop / 画面離脱で `onchange` 解除と `unexport` をする。reload / 切断時の cleanup 検証は #112、操作手順は #113。
