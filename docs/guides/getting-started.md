@@ -75,7 +75,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 | やりたいこと | 参照 |
 | --- | --- |
 | Pi の I2C / GPIO / Docker を整える | [raspberry-pi-setup.md](./raspberry-pi-setup.md) |
-| Browser から Runtime を試す（web-demo） | Runtime 起動後に `pnpm nx serve web-demo`。[browser-polyfill.md](./browser-polyfill.md) |
+| Browser から Runtime を試す（web-demo） | `pnpm nx serve web-demo` で接続状態（Disconnected / Connecting / Connected / Error）を確認する。[browser-polyfill.md](./browser-polyfill.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
