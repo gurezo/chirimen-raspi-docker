@@ -30,6 +30,7 @@ function createRuntimeContextMock(): NodeRuntimeContext {
 function createPortMock(portNumber: number): GpioPort {
   let exported = false;
   let direction: 'in' | 'out' = 'out';
+  let onchange: GpioPort['onchange'] = null;
 
   return {
     portNumber,
@@ -41,12 +42,19 @@ function createPortMock(portNumber: number): GpioPort {
     get direction() {
       return direction;
     },
+    get onchange() {
+      return onchange;
+    },
+    set onchange(handler) {
+      onchange = handler;
+    },
     export: vi.fn(async (nextDirection: 'in' | 'out') => {
       direction = nextDirection;
       exported = true;
     }),
     unexport: vi.fn(async () => {
       exported = false;
+      onchange = null;
     }),
     read: vi.fn(async () => 0 as const),
     write: vi.fn(async () => {
@@ -199,6 +207,61 @@ describe('attachWebSocketServer', () => {
     });
 
     await vi.waitFor(() => {
+      expect(port.unexport).toHaveBeenCalledOnce();
+      expect(attached.registry.size).toBe(0);
+    });
+
+    await attached.close();
+  });
+
+  it('stops GPIO input watch when the WebSocket disconnects', async () => {
+    const port = createPortMock(5);
+    const access: GpioAccess = {
+      ports: new Map([[5, port]]),
+      unexportAll: vi.fn(async () => {
+        // no-op
+      }),
+    };
+    const runtime: NodeRuntimeContext = {
+      ...createRuntimeContextMock(),
+      capabilities: {
+        gpio: { backend: 'sysfs' },
+        i2c: { backend: 'unavailable' },
+      },
+      gpio: {
+        available: true,
+        ports: [],
+        access,
+      },
+    };
+
+    server = await listen();
+    const attached = attachWebSocketServer(server, runtime, {
+      registryOptions: {
+        createSessionId: () => 'ws-gpio-input-cleanup',
+        createGpioSession,
+      },
+    });
+
+    const socket = new WebSocket(serverUrl(server));
+    await new Promise<void>((resolve, reject) => {
+      socket.once('open', () => resolve());
+      socket.once('error', reject);
+    });
+
+    const session = attached.registry.get('ws-gpio-input-cleanup');
+    expect(session).toBeDefined();
+    await session?.gpio.open(5, 'in');
+    await session?.gpio.subscribe(5, vi.fn());
+    expect(port.onchange).toEqual(expect.any(Function));
+
+    socket.close();
+    await new Promise<void>((resolve) => {
+      socket.once('close', () => resolve());
+    });
+
+    await vi.waitFor(() => {
+      expect(port.onchange).toBeNull();
       expect(port.unexport).toHaveBeenCalledOnce();
       expect(attached.registry.size).toBe(0);
     });
