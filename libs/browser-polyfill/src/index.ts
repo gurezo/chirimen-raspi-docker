@@ -27,6 +27,8 @@ export {
   DEFAULT_RECONNECT_INTERVAL_MS,
   DEFAULT_REQUEST_TIMEOUT_MS,
   WebSocketClientTransport,
+  type ConnectionStatus,
+  type ConnectionStatusListener,
   type ProtocolEventListener,
   type ReconnectListener,
   type WebSocketClientTransportOptions,
