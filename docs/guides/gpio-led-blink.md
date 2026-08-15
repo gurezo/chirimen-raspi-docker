@@ -116,7 +116,7 @@ python3 -m http.server 4173
 1. 配線と Runtime 起動、Browser 起動を完了する
 2. `http://localhost:4173/` を Raspberry Pi 上のブラウザで開く
 3. ページ表示と同時に GPIO26 の点滅が始まる（Start ボタンは無い）
-4. タブを閉じるかページを離れると、`pagehide` で消灯して `unexport` する
+4. タブを閉じると点滅は止まる。サンプルは旧 LEDblink と同じ無限ループのためクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
 
 代替（web-demo の Start / Stop）:
 
@@ -156,4 +156,4 @@ GPIO device の mount と sysfs の書き込み経路の問題。[troubleshootin
 
 ### タブを閉じたあと、同じ GPIO26 を再度使えない
 
-HTML サンプルは `pagehide` で `write(0)` → `unexport` する。切断中に RPC が失敗しても、サーバは WebSocket `close` で GPIO を解放する。container を再作成してからページを開き直す。
+HTML サンプルは旧 LEDblink と同じ無限ループのため、クライアント側では `unexport` しない。タブを閉じると WebSocket が切れ、サーバが GPIO を解放する。それでも使えない場合は container を再作成してからページを開き直す。
