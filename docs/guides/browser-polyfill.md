@@ -138,11 +138,13 @@ Runtime が止まっていると `Error` と起動確認の案内が出る。[Ru
 
 ```text
 GPIO Output   → #/gpio-output（Start / Stop で LED Blink）
-GPIO Input    → #/gpio-input（#51）
+GPIO Input    → #/gpio-input（#51。回路仕様は BCM 5）
 I2C Scan      → #/i2c-scan（#52）
 ```
 
 GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop / 画面離脱 / reload / WebSocket 切断で止めて GPIO を unexport する。終了後は同じ GPIO26 を再度 Start できる。操作手順の本ガイドは [gpio-led-blink.md](./gpio-led-blink.md)（旧 LEDblink 相当の HTML サンプルを含む）。
+
+GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ。旧 [gc/gpio/button](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button) と同じピン）。UI は #110。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 
