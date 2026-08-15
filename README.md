@@ -75,6 +75,7 @@ if (port) {
 | ドキュメント | 内容 |
 | --- | --- |
 | [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `./scripts/start.sh` → health check |
+| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
 | [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
