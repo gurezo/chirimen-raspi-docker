@@ -1,5 +1,11 @@
 import { ChirimenError } from 'core';
-import type { GpioAccess, GpioPort, GpioPortNumber, GpioValue } from 'gpio';
+import type {
+  GpioAccess,
+  GpioChangeEventHandler,
+  GpioPort,
+  GpioPortNumber,
+  GpioValue,
+} from 'gpio';
 import { CHIRIMEN_GPIO_PORTS } from 'browser-polyfill';
 import { GPIO_INPUT_PORT, GpioInputSession } from './gpio-input.js';
 import { LED_BLINK_GPIO_PORT } from './gpio-led-blink.js';
@@ -8,20 +14,31 @@ type FakeGpioPort = GpioPort & {
   readonly calls: string[];
   readValue: GpioValue;
   readError: Error | null;
+  onchangeError: Error | null;
 };
 
 function createFakePort(): FakeGpioPort {
   const calls: string[] = [];
+  let onchange: GpioChangeEventHandler | null = null;
   const fake: FakeGpioPort = {
     portNumber: GPIO_INPUT_PORT,
     portName: `GPIO${GPIO_INPUT_PORT}`,
     pinName: `PIN${GPIO_INPUT_PORT}`,
     exported: true,
     direction: 'in',
-    onchange: null,
+    get onchange() {
+      return onchange;
+    },
+    set onchange(handler) {
+      if (handler !== null && fake.onchangeError !== null) {
+        throw fake.onchangeError;
+      }
+      onchange = handler;
+    },
     calls,
     readValue: 1,
     readError: null,
+    onchangeError: null,
     async export(direction) {
       calls.push(`export:${direction}`);
     },
@@ -211,5 +228,78 @@ describe('GpioInputSession', () => {
   it('throws when navigator.requestGPIOAccess is missing', async () => {
     const session = new GpioInputSession();
     await expect(session.start()).rejects.toBeInstanceOf(ChirimenError);
+  });
+
+  it('subscribes onchange after start and updates value from events', async () => {
+    const port = createFakePort();
+    port.readValue = 1;
+    installFakeGpioAccess(port);
+    const onValue = vi.fn();
+    const session = new GpioInputSession({ onValue });
+
+    await session.start();
+
+    expect(port.onchange).toEqual(expect.any(Function));
+    expect(session.value).toBe(1);
+
+    port.onchange?.({ value: 0, portNumber: GPIO_INPUT_PORT });
+
+    expect(session.value).toBe(0);
+    expect(onValue).toHaveBeenCalledWith(0);
+    expect(port.calls).toEqual(['export:in', 'read']);
+
+    await session.stop();
+  });
+
+  it('unsubscribes onchange on stop and ignores later events', async () => {
+    const port = createFakePort();
+    installFakeGpioAccess(port);
+    const onValue = vi.fn();
+    const session = new GpioInputSession({ onValue });
+
+    await session.start();
+    const handler = port.onchange;
+    await session.stop();
+
+    expect(port.onchange).toBeNull();
+    expect(port.calls).toEqual(['export:in', 'read', 'unexport']);
+
+    onValue.mockClear();
+    handler?.({ value: 1, portNumber: GPIO_INPUT_PORT });
+    expect(session.value).toBe(0);
+    expect(onValue).not.toHaveBeenCalled();
+  });
+
+  it('keeps the onchange handler while running after reconnect', async () => {
+    const port = createFakePort();
+    installFakeGpioAccess(port);
+    const session = new GpioInputSession();
+
+    await session.start();
+    const handler = port.onchange;
+    expect(handler).toEqual(expect.any(Function));
+    expect(port.onchange).toBe(handler);
+
+    port.onchange?.({ value: 0, portNumber: GPIO_INPUT_PORT });
+    expect(session.value).toBe(0);
+    expect(session.running).toBe(true);
+
+    await session.stop();
+  });
+
+  it('unexports and throws when onchange subscription fails', async () => {
+    const port = createFakePort();
+    port.onchangeError = new ChirimenError('InvalidAccess', 'not exported');
+    installFakeGpioAccess(port);
+    const session = new GpioInputSession();
+
+    await expect(session.start()).rejects.toMatchObject({
+      name: 'ChirimenError',
+      code: 'InvalidAccess',
+      message: 'not exported',
+    });
+    expect(port.calls).toEqual(['export:in', 'read', 'unexport']);
+    expect(port.onchange).toBeNull();
+    expect(session.running).toBe(false);
   });
 });
