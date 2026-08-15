@@ -14,4 +14,5 @@ coverage
 .nx/migrate-runs
 
 docs/api/
+docs/examples/led-blink/polyfill.js
 _site/
