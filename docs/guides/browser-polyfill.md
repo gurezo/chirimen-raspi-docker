@@ -133,13 +133,15 @@ Connected
 Error
 ```
 
-Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。画面上のナビから次の demo へ移動できる（実 example は後続 Issue）。
+Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。画面上のナビから次の demo へ移動できる。
 
 ```text
-GPIO Output   → #/gpio-output（#50）
+GPIO Output   → #/gpio-output（回路仕様 #105 / Blink #106）
 GPIO Input    → #/gpio-input（#51）
 I2C Scan      → #/i2c-scan（#52）
 ```
+
+GPIO Output の配線は [gpio-led-blink.md](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Blink UI は [#106](https://github.com/gurezo/chirimen-raspi-docker/issues/106)。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 

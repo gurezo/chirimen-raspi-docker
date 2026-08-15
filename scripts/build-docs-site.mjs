@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const siteRoot = path.join(root, '_site');
 const docsRoot = path.join(root, 'docs');
 
-const DOC_SECTIONS = ['guides', 'architecture'];
+const DOC_SECTIONS = ['guides', 'architecture', 'examples'];
 
 const sharedStyles = `
 :root {

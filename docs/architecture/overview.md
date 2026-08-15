@@ -122,6 +122,7 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
+│   ├── examples/               # GPIO LED Blink 回路仕様（#105）。Blink 実装は #106
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── compose.yaml
 ├── package.json
@@ -131,16 +132,16 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO LED Blink / GPIO Input / I2C Scan の実 example（#50 / #51 / #52）
+- GPIO LED Blink の Blink UI（#106）/ cleanup（#107）/ 操作ガイド（#108）。回路仕様は [gpio-led-blink.md](../examples/gpio-led-blink.md)（#105）
+- GPIO Input / I2C Scan の実 example（#51 / #52）
 - `docker/nginx`
-- `docs/examples`
 
 ## apps / libs の責務
 
 | Path | 責務 |
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
-| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI と GPIO Output / GPIO Input / I2C Scan ナビあり。実 example は #50 / #51 / #52） |
+| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI と GPIO Output / GPIO Input / I2C Scan ナビあり。LED Blink 回路仕様は #105。Blink 実装は #106） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |
@@ -168,6 +169,7 @@ chirimen-raspi-docker/
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
+| [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω（#105） |
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 
