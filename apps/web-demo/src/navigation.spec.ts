@@ -43,7 +43,8 @@ describe('web-demo navigation', () => {
     expect(getDemoView('gpio-input')).toEqual({
       id: 'gpio-input',
       title: 'GPIO Input',
-      description: 'GPIO Input example（#51）を後続で実装する。',
+      description:
+        'GPIO5 の入力変化を表示する。回路仕様は docs/examples/gpio-input.md。UI は #110。',
       showHomeLink: true,
     });
     expect(getDemoView('i2c-scan')).toEqual({
