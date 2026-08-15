@@ -101,7 +101,8 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 ```text
 chirimen-raspi-docker/
 ├── apps/
-│   └── server/                 # Express + WebSocket server
+│   ├── server/                 # Express + WebSocket server
+│   └── web-demo/               # Browser demo（Nx app 土台）
 ├── libs/
 │   ├── core/                   # 共通エラー / 型
 │   ├── gpio/                   # Web GPIO 風 domain（型・契約）
@@ -130,7 +131,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- `apps/web-demo`
+- `web-demo` への Browser Polyfill 組み込み / 接続 UI / GPIO・I2C 導線
 - `docker/nginx`
 - `docs/examples`
 
@@ -139,6 +140,7 @@ chirimen-raspi-docker/
 | Path | 責務 |
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
+| `apps/web-demo` | Browser から Runtime を試す demo UI の土台（Polyfill 組み込みは後続） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |

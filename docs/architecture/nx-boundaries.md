@@ -31,16 +31,9 @@ Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/
 | `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
 | `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:runtime`, `platform:node` |
 | `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
-
-tags は各 `project.json` の `tags` 配列に設定する。
-
-## 今後作成する project の予定 tags
-
-| Project | Path（予定） | tags |
-| --- | --- | --- |
 | `web-demo` | `apps/web-demo` | `type:app`, `scope:demo`, `platform:browser` |
 
-新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
+tags は各 `project.json` の `tags` 配列に設定する。新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
 
 ## 依存方向（Wiki）
 
@@ -102,7 +95,7 @@ platform:browser ↔ platform:node の直接依存
 | `scope:runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
 | `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
 | `scope:server` | `onlyDependOnLibsWithTags: ['scope:runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の server 許可依存 |
-| `scope:demo` | `onlyDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:shared', 'layer:domain', 'layer:core']` | 将来 `web-demo` 用 |
+| `scope:demo` | `onlyDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:shared', 'layer:domain', 'layer:core']` | `web-demo` の許可依存 |
 
 ## 確認方法
 
@@ -117,6 +110,7 @@ pnpm nx show project i2c --json
 pnpm nx show project protocol --json
 pnpm nx show project node-runtime --json
 pnpm nx show project browser-polyfill --json
+pnpm nx show project web-demo --json
 pnpm nx graph
 ```
 
