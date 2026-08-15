@@ -122,7 +122,7 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
-│   ├── examples/               # GPIO LED Blink 回路仕様・HTML サンプル（#105 / #108）
+│   ├── examples/               # GPIO LED Blink / GPIO Input 回路仕様・HTML サンプル（#105 / #108 / #109）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── compose.yaml
 ├── package.json
@@ -132,7 +132,8 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- GPIO Input / I2C Scan の実 example（#51 / #52）
+- GPIO Input の UI / onchange / cleanup / 操作ガイド（#110〜#113）。回路仕様は [gpio-input.md](../examples/gpio-input.md)
+- I2C Scan の実 example（#52）
 - `docker/nginx`
 
 ## apps / libs の責務
@@ -170,6 +171,7 @@ chirimen-raspi-docker/
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
+| [GPIO Input 回路仕様](../examples/gpio-input.md) | BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ |
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 
