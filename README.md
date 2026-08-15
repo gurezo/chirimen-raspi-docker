@@ -79,6 +79,7 @@ if (port) {
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
 | [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md) | GPIO LED Blink 操作ガイド（HTML サンプルで点滅） |
+| [docs/guides/gpio-input.md](docs/guides/gpio-input.md) | GPIO Input 操作ガイド（HTML サンプルで onchange） |
 | [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω） |
 | [docs/examples/gpio-input.md](docs/examples/gpio-input.md) | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ） |
 | [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
@@ -115,7 +116,7 @@ npx nx build server
 pnpm nx serve web-demo
 ```
 
-`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動する。画面上で Runtime 接続状態（Disconnected / Connecting / Connected / Error）と GPIO Output / GPIO Input / I2C Scan ナビを確認できる。GPIO Output（`#/gpio-output`）では BCM 26 の LED を Start / Stop で点滅できる。初めて LED を点滅させる手順は [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)（HTML サンプルは `docs/examples/led-blink/`）。回路仕様は [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md)。GPIO Input（`#/gpio-input`）では BCM 5 の入力を Start 後に `onchange` で realtime 表示できる（Read は再読込）。回路仕様は [docs/examples/gpio-input.md](docs/examples/gpio-input.md)（BCM 5 / タクトスイッチ + 10kΩ プルアップ）。I2C Scan の実 example は後続 Issue（#52）。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動する。詳細は [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)。
+`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動する。画面上で Runtime 接続状態（Disconnected / Connecting / Connected / Error）と GPIO Output / GPIO Input / I2C Scan ナビを確認できる。GPIO Output（`#/gpio-output`）では BCM 26 の LED を Start / Stop で点滅できる。初めて LED を点滅させる手順は [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)（HTML サンプルは `docs/examples/led-blink/`）。回路仕様は [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md)。GPIO Input（`#/gpio-input`）では BCM 5 の入力を Start 後に `onchange` で realtime 表示できる（Read は再読込）。初めて入力変化を確認する手順は [docs/guides/gpio-input.md](docs/guides/gpio-input.md)（HTML サンプルは `docs/examples/button/`）。回路仕様は [docs/examples/gpio-input.md](docs/examples/gpio-input.md)（BCM 5 / タクトスイッチ + 10kΩ プルアップ）。I2C Scan の実 example は後続 Issue（#52）。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動する。詳細は [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)。
 
 Nx graph は以下で確認できます。
 

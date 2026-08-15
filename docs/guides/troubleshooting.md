@@ -7,6 +7,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Getting Started](./getting-started.md)
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
 - [GPIO LED Blink](./gpio-led-blink.md)
+- [GPIO Input](./gpio-input.md)
 - [Docker 構成](../architecture/docker.md)
 
 ## device が無く GPIO / I2C が unavailable になる
@@ -259,3 +260,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 ## LED が点かない
 
 配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [gpio-led-blink.md](./gpio-led-blink.md) の Troubleshooting を参照する。
+
+## タクトスイッチを押しても値が変わらない
+
+配線・web-demo の Start / onchange / HTML サンプルの切り分けは [gpio-input.md](./gpio-input.md) の Troubleshooting を参照する。

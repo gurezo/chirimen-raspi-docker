@@ -23,9 +23,10 @@ pnpm nx bundle browser-polyfill
 ```text
 libs/browser-polyfill/dist/polyfill.js
 docs/examples/led-blink/polyfill.js
+docs/examples/button/polyfill.js
 ```
 
-`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。LED Blink サンプル用の `docs/examples/led-blink/polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
+`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。LED Blink / GPIO Input サンプル用の `polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
 
 ## 旧 polyfill.js からの移行
 
@@ -144,7 +145,7 @@ I2C Scan      → #/i2c-scan（#52）
 
 GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop / 画面離脱 / reload / WebSocket 切断で止めて GPIO を unexport する。終了後は同じ GPIO26 を再度 Start できる。操作手順の本ガイドは [gpio-led-blink.md](./gpio-led-blink.md)（旧 LEDblink 相当の HTML サンプルを含む）。
 
-GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ。旧 [gc/gpio/button](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button) と同じピン）。Runtime が `Connected` のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断 / Runtime 停止で unsubscribe と unexport をする。再接続後は自動再開せず、同じ GPIO5 を再度 Start できる。操作手順の本ガイドは #113。
+GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ。旧 [gc/gpio/button](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button) と同じピン）。Runtime が `Connected` のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断 / Runtime 停止で unsubscribe と unexport をする。再接続後は自動再開せず、同じ GPIO5 を再度 Start できる。操作手順の本ガイドは [gpio-input.md](./gpio-input.md)（旧 button 相当の HTML サンプルを含む）。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 
