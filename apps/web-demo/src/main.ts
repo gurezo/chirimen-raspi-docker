@@ -9,6 +9,7 @@ import {
   bindLedBlinkCleanup,
   shouldStopLedBlinkOnRoute,
 } from './gpio-led-blink-cleanup.js';
+import { GpioInputSession } from './gpio-input.js';
 import { LedBlinkSession } from './gpio-led-blink.js';
 import {
   DEMO_NAV_ITEMS,
@@ -99,13 +100,53 @@ if (root) {
   blinkError.className = 'led-blink__error';
 
   blinkControls.append(blinkButtons, blinkStatus, blinkError);
-  demoSection.append(demoTitle, demoDescription, blinkControls, homeLink);
+
+  const inputControls = document.createElement('div');
+  inputControls.className = 'gpio-input';
+  inputControls.hidden = true;
+
+  const inputButtons = document.createElement('div');
+  inputButtons.className = 'gpio-input__controls';
+
+  const inputStartButton = document.createElement('button');
+  inputStartButton.type = 'button';
+  inputStartButton.textContent = 'Start';
+
+  const inputReadButton = document.createElement('button');
+  inputReadButton.type = 'button';
+  inputReadButton.textContent = 'Read';
+
+  const inputStopButton = document.createElement('button');
+  inputStopButton.type = 'button';
+  inputStopButton.textContent = 'Stop';
+
+  inputButtons.append(inputStartButton, inputReadButton, inputStopButton);
+
+  const inputStatus = document.createElement('p');
+  inputStatus.className = 'gpio-input__status';
+
+  const inputError = document.createElement('p');
+  inputError.className = 'gpio-input__error';
+
+  inputControls.append(inputButtons, inputStatus, inputError);
+  demoSection.append(
+    demoTitle,
+    demoDescription,
+    blinkControls,
+    inputControls,
+    homeLink
+  );
   root.append(heading, nav, statusSection, demoSection);
 
   let connectionStatus: ConnectionStatus = 'disconnected';
   const blinkSession = new LedBlinkSession({
     onValue: () => {
       applyBlinkUi();
+    },
+  });
+  const inputSession = new GpioInputSession({
+    onValue: () => {
+      applyInputUi();
     },
   });
   const statusListeners = new Set<(status: ConnectionStatus) => void>();
@@ -135,6 +176,25 @@ if (root) {
     });
   };
 
+  const applyInputUi = (): void => {
+    const onGpioInput =
+      parseDemoRoute(window.location.hash) === 'gpio-input';
+    inputControls.hidden = !onGpioInput;
+    inputStartButton.disabled =
+      !onGpioInput ||
+      connectionStatus !== 'connected' ||
+      inputSession.running ||
+      inputSession.starting;
+    inputReadButton.disabled = !onGpioInput || !inputSession.running;
+    inputStopButton.disabled =
+      !onGpioInput || (!inputSession.running && !inputSession.starting);
+    if (inputSession.running) {
+      inputStatus.textContent = String(inputSession.value);
+    } else {
+      inputStatus.textContent = '停止中';
+    }
+  };
+
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
@@ -162,6 +222,7 @@ if (root) {
     }
 
     applyBlinkUi();
+    applyInputUi();
   };
 
   const applyStatus = (status: ConnectionStatus): void => {
@@ -172,6 +233,7 @@ if (root) {
     urlEl.textContent = `Runtime: ${view.url}`;
     helpEl.replaceChildren();
     applyBlinkUi();
+    applyInputUi();
     for (const listener of statusListeners) {
       listener(status);
     }
@@ -208,6 +270,45 @@ if (root) {
   stopButton.addEventListener('click', () => {
     void stopBlink();
     applyBlinkUi();
+  });
+
+  inputStartButton.addEventListener('click', () => {
+    inputError.textContent = '';
+    void inputSession.start().then(
+      () => {
+        applyInputUi();
+      },
+      (error: unknown) => {
+        inputError.textContent = isChirimenError(error)
+          ? error.message
+          : 'GPIO Input を開始できませんでした。';
+        applyInputUi();
+      }
+    );
+    applyInputUi();
+  });
+
+  inputReadButton.addEventListener('click', () => {
+    inputError.textContent = '';
+    void inputSession.readValue().then(
+      () => {
+        applyInputUi();
+      },
+      (error: unknown) => {
+        inputError.textContent = isChirimenError(error)
+          ? error.message
+          : 'GPIO Input を読み取れませんでした。';
+        applyInputUi();
+      }
+    );
+  });
+
+  inputStopButton.addEventListener('click', () => {
+    inputError.textContent = '';
+    void inputSession.stop().then(() => {
+      applyInputUi();
+    });
+    applyInputUi();
   });
 
   applyRoute();
