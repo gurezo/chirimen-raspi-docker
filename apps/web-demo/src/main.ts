@@ -5,7 +5,10 @@ import {
   getConnectionStatusView,
   type ConnectionStatus,
 } from './app.js';
-import { shouldStopGpioInputOnRoute } from './gpio-input-cleanup.js';
+import {
+  bindGpioInputCleanup,
+  shouldStopGpioInputOnRoute,
+} from './gpio-input-cleanup.js';
 import { GpioInputSession } from './gpio-input.js';
 import {
   bindLedBlinkCleanup,
@@ -325,6 +328,17 @@ if (root) {
 
   bindLedBlinkCleanup({
     stop: stopBlink,
+    getRoute: () => parseDemoRoute(window.location.hash),
+    addStatusListener: (listener) => {
+      statusListeners.add(listener);
+      return () => {
+        statusListeners.delete(listener);
+      };
+    },
+  });
+
+  bindGpioInputCleanup({
+    stop: stopInput,
     getRoute: () => parseDemoRoute(window.location.hash),
     addStatusListener: (listener) => {
       statusListeners.add(listener);
