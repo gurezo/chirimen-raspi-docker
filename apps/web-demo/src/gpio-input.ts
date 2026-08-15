@@ -16,11 +16,11 @@ export type GpioInputValueListener = (value: GpioValue) => void;
 /**
  * Browser Polyfill の `navigator.requestGPIOAccess` で GPIO input を読む session。
  *
- * Start: requestGPIOAccess → ports.get → export('in') → read()
+ * Start: requestGPIOAccess → ports.get → export('in') → read() → onchange
  * Read: read()
- * Stop: unexport
+ * Stop: onchange = null → unexport
  *
- * `onchange` は使わない（#111）。
+ * `onchange` 設定で `gpio.subscribe`、解除で `gpio.unsubscribe`。
  */
 export class GpioInputSession {
   #port: GpioPort | null = null;
@@ -118,6 +118,11 @@ export class GpioInputSession {
     try {
       const value = await port.read();
       this.#setValue(value);
+      port.onchange = (event) => {
+        if (this.#port === port) {
+          this.#setValue(event.value);
+        }
+      };
     } catch (error) {
       await this.#releasePort();
       throw error;
@@ -138,6 +143,8 @@ export class GpioInputSession {
     if (port === null) {
       return;
     }
+
+    port.onchange = null;
 
     try {
       await port.unexport();
