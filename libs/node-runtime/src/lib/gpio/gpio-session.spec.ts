@@ -218,6 +218,23 @@ describe('GpioSession', () => {
     expect(session.isOpen(17)).toBe(false);
   });
 
+  it('releaseAll stops watch on subscribed input ports', async () => {
+    const port = createPortMock(5);
+    const session = createGpioSession(
+      createAccessMock(new Map([[5, port]]))
+    );
+
+    await session.open(5, 'in');
+    await session.subscribe(5, vi.fn());
+    expect(port.onchange).toEqual(expect.any(Function));
+
+    await session.releaseAll();
+
+    expect(port.onchange).toBeNull();
+    expect(port.unexport).toHaveBeenCalledTimes(1);
+    expect(session.isOpen(5)).toBe(false);
+  });
+
   it('maps unexport failures to ChirimenError', async () => {
     const port = createPortMock(17);
     (port.unexport as ReturnType<typeof vi.fn>).mockRejectedValueOnce(

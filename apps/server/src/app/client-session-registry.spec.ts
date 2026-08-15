@@ -7,6 +7,7 @@ import { createClientSessionRegistry } from './client-session-registry.js';
 function createPortMock(portNumber: number): GpioPort {
   let exported = false;
   let direction: 'in' | 'out' = 'out';
+  let onchange: GpioPort['onchange'] = null;
 
   return {
     portNumber,
@@ -18,12 +19,19 @@ function createPortMock(portNumber: number): GpioPort {
     get direction() {
       return direction;
     },
+    get onchange() {
+      return onchange;
+    },
+    set onchange(handler) {
+      onchange = handler;
+    },
     export: vi.fn(async (nextDirection: 'in' | 'out') => {
       direction = nextDirection;
       exported = true;
     }),
     unexport: vi.fn(async () => {
       exported = false;
+      onchange = null;
     }),
     read: vi.fn(async () => 0 as const),
     write: vi.fn(async () => {
@@ -114,6 +122,36 @@ describe('ClientSessionRegistry', () => {
     expect(registry.size).toBe(0);
     expect(firstCleanup).toHaveBeenCalledOnce();
     expect(secondCleanup).toHaveBeenCalledOnce();
+  });
+
+  it('stops GPIO input watch on cleanupAll', async () => {
+    const port = createPortMock(5);
+    const access: GpioAccess = {
+      ports: new Map([[5, port]]),
+      unexportAll: vi.fn(async () => {
+        // no-op
+      }),
+    };
+    const registry = createClientSessionRegistry(
+      createRuntimeContextMock(access),
+      {
+        createSessionId: () => 'gpio-input-shutdown',
+        createGpioSession,
+        createI2cSession,
+      }
+    );
+
+    const session = registry.create();
+    await session.gpio.open(5, 'in');
+    await session.gpio.subscribe(5, vi.fn());
+    expect(port.onchange).toEqual(expect.any(Function));
+
+    await registry.cleanupAll();
+
+    expect(port.onchange).toBeNull();
+    expect(port.unexport).toHaveBeenCalledOnce();
+    expect(session.gpio.isOpen(5)).toBe(false);
+    expect(registry.size).toBe(0);
   });
 
   it('is idempotent when deleting an unknown session', async () => {
