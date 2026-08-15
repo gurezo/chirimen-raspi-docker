@@ -9,6 +9,8 @@
   "include": [
     "vite.config.mts",
     "vite.config.ts",
+    "vite.bundle.config.mts",
+    "vite.bundle.config.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.d.ts"

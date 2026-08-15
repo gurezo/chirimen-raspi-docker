@@ -18,6 +18,11 @@ declare global {
 
 let sharedTransport: WebSocketClientTransport | null = null;
 
+/** IIFE / テストから、共有 transport が既に install 済みかを判定する */
+export function isBrowserPolyfillInstalled(): boolean {
+  return sharedTransport !== null;
+}
+
 /**
  * WebSocket transport を接続し、`navigator.requestGPIOAccess` / `requestI2CAccess` を登録する。
  * 既存の API があっても上書きする（再 install を許容）。
@@ -82,7 +87,8 @@ function requireSharedTransport(): WebSocketClientTransport {
   return transport;
 }
 
-function getNavigator(): Navigator {
+/** navigator が無い環境（Node テスト）では stub を置く */
+export function getNavigator(): Navigator {
   if (typeof globalThis.navigator === 'undefined') {
     const stub = {} as Navigator;
     Object.defineProperty(globalThis, 'navigator', {

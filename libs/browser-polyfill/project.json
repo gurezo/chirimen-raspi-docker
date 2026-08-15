@@ -9,6 +9,17 @@
     "platform:browser"
   ],
   "targets": {
+    "bundle": {
+      "executor": "@nx/vite:build",
+      "outputs": [
+        "{workspaceRoot}/libs/browser-polyfill/dist/polyfill.js"
+      ],
+      "options": {
+        "outputPath": "libs/browser-polyfill/dist",
+        "configFile": "libs/browser-polyfill/vite.bundle.config.mts",
+        "skipTypeCheck": true
+      }
+    },
     "test": {
       "executor": "@nx/vitest:test",
       "outputs": [
