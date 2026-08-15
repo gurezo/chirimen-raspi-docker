@@ -8,6 +8,7 @@
 - 子 Issue: [#127 browser-polyfill を単一ファイル（IIFE/UMD）にバンドルする](https://github.com/gurezo/chirimen-raspi-docker/issues/127)
 - 子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
 - 子 Issue: [#103 Runtime 接続状態 UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/103)
+- 子 Issue: [#104 GPIO / I2C demo navigation を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/104)
 - [Getting Started](./getting-started.md)（Runtime の起動）
 - [Protocol](../architecture/protocol.md)
 
@@ -132,7 +133,15 @@ Connected
 Error
 ```
 
-Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。接続成功後、コンソールで次が関数であることを確認できる。
+Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。画面上のナビから次の demo へ移動できる（実 example は後続 Issue）。
+
+```text
+GPIO Output   → #/gpio-output（#50）
+GPIO Input    → #/gpio-input（#51）
+I2C Scan      → #/i2c-scan（#52）
+```
+
+接続成功後、コンソールで次が関数であることを確認できる。
 
 ```text
 navigator.requestGPIOAccess

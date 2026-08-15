@@ -30,3 +30,30 @@ body {
 .connection-status__help {
   max-width: 40rem;
 }
+
+.demo-nav {
+  margin-top: 1.5rem;
+}
+
+.demo-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.demo-nav__link[aria-current='page'] {
+  font-weight: 600;
+}
+
+.demo-view {
+  margin-top: 1.5rem;
+  max-width: 40rem;
+}
+
+.demo-view__home {
+  display: inline-block;
+  margin-top: 0.75rem;
+}

@@ -112,7 +112,7 @@ npx nx build server
 pnpm nx serve web-demo
 ```
 
-`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動する。画面上で Runtime 接続状態（Disconnected / Connecting / Connected / Error）を確認できる。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動する。詳細は [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)。
+`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動する。画面上で Runtime 接続状態（Disconnected / Connecting / Connected / Error）と GPIO Output / GPIO Input / I2C Scan ナビを確認できる。実 example は後続 Issue（#50 / #51 / #52）で実装する。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動する。詳細は [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)。
 
 Nx graph は以下で確認できます。
 
