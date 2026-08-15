@@ -2,3 +2,31 @@ body {
   font-family: system-ui, sans-serif;
   margin: 2rem;
 }
+
+.connection-status {
+  margin-top: 1.5rem;
+}
+
+.connection-status__label {
+  font-weight: 600;
+}
+
+.connection-status[data-status='disconnected'] .connection-status__label {
+  color: dimgray;
+}
+
+.connection-status[data-status='connecting'] .connection-status__label {
+  color: darkorange;
+}
+
+.connection-status[data-status='connected'] .connection-status__label {
+  color: seagreen;
+}
+
+.connection-status[data-status='error'] .connection-status__label {
+  color: crimson;
+}
+
+.connection-status__help {
+  max-width: 40rem;
+}
