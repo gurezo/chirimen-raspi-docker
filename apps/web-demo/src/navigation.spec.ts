@@ -37,7 +37,7 @@ describe('web-demo navigation', () => {
       id: 'gpio-output',
       title: 'GPIO Output',
       description:
-        'GPIO26 の回路仕様は docs/examples/gpio-led-blink.md。Blink 実装は #106。',
+        'GPIO26 を Start / Stop で点滅させる。回路仕様は docs/examples/gpio-led-blink.md。',
       showHomeLink: true,
     });
     expect(getDemoView('gpio-input')).toEqual({
