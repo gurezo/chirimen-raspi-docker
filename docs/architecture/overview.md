@@ -137,7 +137,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- I2C Scan の実 example（#52）
+- I2C Scan の実 example（#52）。API flow は [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定（[protocol.md](./protocol.md#i2c-scan-api-flow114)）。UI は #115
 - `docker/nginx`
 
 ## apps / libs の責務
@@ -168,7 +168,7 @@ chirimen-raspi-docker/
 
 | ドキュメント | 内容 |
 | --- | --- |
-| [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations |
+| [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |

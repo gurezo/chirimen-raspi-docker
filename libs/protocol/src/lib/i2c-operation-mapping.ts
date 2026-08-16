@@ -24,6 +24,7 @@ export interface I2cOperationRuntimeMapping {
 /**
  * I2C protocol ↔ Node Runtime の 1:1 対応表。
  * `I2cSession.closeAll()` / `scan()` は Browser 起点 request 外のため含めない。
+ * Scan は Demo-only（#114）。`i2c.scan` は追加しない。
  */
 export const I2C_OPERATION_RUNTIME_MAPPINGS: readonly I2cOperationRuntimeMapping[] =
   [

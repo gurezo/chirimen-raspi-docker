@@ -14,6 +14,8 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#36 WebSocket client transport を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/36)
 - 親 Issue: [#5 Phase 5: WebSocket and GPIO onchange](https://github.com/gurezo/chirimen-raspi-docker/issues/5)
 - 子 Issue: [#39 WebSocket server lifecycle を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/39)
+- 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
+- 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -124,7 +126,7 @@ Browser 起点の I2C `operation` は Node Runtime の `I2cSession` / `I2CSlaveD
 
 - `libs/protocol` は対応定数・型・type guard のみを提供し、`i2c` / `node-runtime` には依存しない
 - `I2cSession.closeAll()` は切断時 cleanup 用であり、Browser 起点の protocol operation には含めない
-- `I2cSession.scan()` は Scan example 向けの runtime API であり、本 protocol の Browser request には含めない
+- `I2cSession.scan()` は Scan example 向けの runtime API であり、本 protocol の Browser request には含めない（[#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定。本節「I2C Scan API flow」）
 - Legacy function id は 1:N（例: `0x20` → `i2c.open` / `i2c.close`）。参照用であり JSON wire には載せない（#34）
 - コード上の対応表: `libs/protocol/src/lib/i2c-operation-mapping.ts`
 
@@ -271,6 +273,69 @@ const port = access.ports.get(1);
 const device = await port?.open(0x48);
 ```
 
+## I2C Scan API flow（#114）
+
+Browser から I2C Scan を呼び出す経路を [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で確定する。親は [#52](https://github.com/gurezo/chirimen-raspi-docker/issues/52)。UI（#115）、実機検証（#116）、guide（#117）は後続。
+
+Scan は Web I2C 仕様外（chirimen-server 参照実装互換）。`readByte` / `writeByte` が Public なのは `I2CSlaveDevice` の CHIRIMEN polyfill 互換のためであり、scan を Public にする先例にはしない。
+
+### 配置
+
+| 面 | 決定 |
+| --- | --- |
+| Public API（`libs/i2c` / `libs/protocol` / `libs/browser-polyfill`） | **置かない**。`i2c.scan` operation も `I2CPort.scan()` も追加しない |
+| Demo-only（`apps/web-demo`） | Browser example は `navigator.requestI2CAccess()` のみを使い、`open` + `writeByte(0x00)` で走査を合成する（[#118](https://github.com/gurezo/chirimen-raspi-docker/issues/118)） |
+| Node Runtime（`libs/node-runtime`） | `I2cSession.scan` / `scanI2cPort` は host / server 用の既存 Public API。Browser / web-demo からは呼ばない |
+
+### 呼び出し経路
+
+```text
+web-demo helper（Demo-only）
+  → navigator.requestI2CAccess()
+  → libs/browser-polyfill
+  → Protocol: i2c.open / i2c.writeByte（既存 operation。i2c.scan は無い）
+  → apps/server
+  → I2cSession.open + I2CSlaveDevice.writeByte
+  → I2C bus
+```
+
+Browser 側（#115 が実装する Demo helper）の合成:
+
+```ts
+const access = await navigator.requestI2CAccess();
+const port = access.ports.get(1);
+if (!port) {
+  throw new Error('I2C port 1 is not available');
+}
+
+const found: number[] = [];
+for (let addr = 0x03; addr <= 0x77; addr++) {
+  try {
+    const device = await port.open(addr);
+    await device.writeByte(0x00);
+    found.push(addr);
+  } catch {
+    // 応答なし → 無視
+  }
+}
+```
+
+走査範囲と probe（`open` + `writeByte(0x00)`、address 単位の失敗は無視）は Node Runtime の `scanI2cPort` と同じ。payload は既存の `i2c.open` `{ portNumber, slaveAddress }` と `i2c.writeByte` `{ portNumber, slaveAddress, value }` を使う。
+
+### Runtime scan との差分
+
+| 項目 | Node Runtime `I2cSession.scan` / `scanI2cPort` | Browser 合成 scan（Demo-only） |
+| --- | --- | --- |
+| 入口 | `session.scan(1)` / `scanI2cPort(port)` | `navigator.requestI2CAccess()` → `port.open` + `writeByte` |
+| protocol | 使わない（server 内） | `i2c.open` / `i2c.writeByte` を最大 117 往復 |
+| session 追跡 | probe の open は opened map に載せない | 成功した `open` は server `I2cSession` に残る。polyfill は `i2c.close` を公開しないため、切断時 `closeAll()` で掃除。#115 は GPIO demo と同様に離脱時 cleanup を設計する |
+
+demo 用途では往復数は許容する。
+
+### 前提: server の I2C routing は未実装
+
+本節の Browser 経路は既存の `i2c.open` / `i2c.writeByte` に依存する。現状 `apps/server` は GPIO request のみ routing し、`i2c.*` は `Unsupported protocol operation` になる（本ドキュメント「WebSocket server lifecycle」）。#115 が動く前提条件であり、#114 では routing を実装しない。
+
 ## 後続 Issue
 
 | Issue | 内容 |
@@ -286,3 +351,7 @@ const device = await port?.open(0x48);
 | #40 | GPIO event subscribe / unsubscribe（本節・server routing で完了） |
 | #41 | Browser GPIO onchange（本節「Browser GPIO polyfill 入口」で完了） |
 | #42 | WebSocket reconnect（reconnect 後の GPIO export / subscription 復元を含む。本節で完了） |
+| #114 | Browser から I2C Scan を呼び出す API flow（本節「I2C Scan API flow」で完了） |
+| #115 | I2C Scan UI（web-demo Demo helper。server I2C routing が前提） |
+| #116 | I2C Scan の実機検証 |
+| #117 | I2C Scan guide |
