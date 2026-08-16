@@ -7,7 +7,7 @@ import {
   isBrowserPolyfillInstalled,
   requestGPIOAccess,
   requestI2CAccess,
-} from './navigator-polyfill.js';
+} from './navigator.js';
 
 /** IIFE / script tag 読み込み時の default WebSocket URL（旧 polyfill の `wss://` ではなく `ws://`） */
 export const DEFAULT_BROWSER_POLYFILL_WS_URL = 'ws://localhost:33330/';

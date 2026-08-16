@@ -10,7 +10,7 @@ import {
   installBrowserPolyfill,
   requestI2CAccess,
   resetBrowserPolyfillForTests,
-} from '../../navigator-polyfill.js';
+} from '../../polyfill/navigator.js';
 import type { WebSocketConstructor } from '../../websocket/client/transport.js';
 
 let autoOpen = true;

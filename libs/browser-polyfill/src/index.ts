@@ -22,7 +22,7 @@ export {
   isBrowserPolyfillInstalled,
   requestGPIOAccess,
   requestI2CAccess,
-} from './lib/navigator-polyfill.js';
+} from './lib/polyfill/navigator.js';
 export {
   DEFAULT_RECONNECT_INTERVAL_MS,
   DEFAULT_REQUEST_TIMEOUT_MS,
