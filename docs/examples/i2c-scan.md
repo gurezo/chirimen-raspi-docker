@@ -138,3 +138,19 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 6. `docker compose exec chirimen-server ls -l /dev/i2c-1`
 7. `pnpm nx serve web-demo` → `http://localhost:4200/#/i2c-scan`
 8. 接続状態が Connected になったら Scan を押し、一覧に `0x48` が出ることを確認する
+
+## 実機検証（#116）
+
+I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i2c-dev` は既存の Compatibility matrix で確認済み。Browser Scan の probe は Runtime `scanI2cPort` と同じ。
+
+| 項目 | 結果 |
+| --- | --- |
+| 検証 device | ADT7410。expected `0x48`（A0 / A1 = GND） |
+| 一次環境 | Raspberry Pi 5 Model B Rev 1.0 / Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)） |
+| host `/dev/i2c-1` | 有効化後に存在。Pi 3 B+（#97 / #135）/ Pi 4（#98 / #135）でも同様 |
+| Runtime scan | Pi 5 で port `1` scan 成功。slave 未接続時は空配列（#99） |
+| Browser Scan | `#/i2c-scan` の Scan。`open` + `writeByte(0x00)` を `0x03`–`0x77`（#114 / #115） |
+| 完了条件 | 配線後の hex 一覧に `0x48`。空配列は失敗 |
+| 対象外 | ADT7410 の温度読み取りなどセンサ機能 Example |
+
+詳細は [docker.md の I2C Scan 実機検証](../architecture/docker.md) を参照。

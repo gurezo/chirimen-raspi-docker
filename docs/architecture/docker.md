@@ -7,8 +7,10 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 親 Issue: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue: [#45 Architecture / Guide docs を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/45)
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
+- 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
 - [Getting Started](../guides/getting-started.md)
+- [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
 ## 方針
 
@@ -112,8 +114,8 @@ Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardw
 | Raspberry Pi 4 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspberry Pi 5 Model B Rev 1.0 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
 
-- **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない
-- **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
+- **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。web-demo の I2C Scan は下記「I2C Scan 実機検証（#116）」
+- **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - **Raspberry Pi 3 A+**: ハードウェアスペック不足のため推奨環境外。`Supported` と書かない
 - **Raspbian OS 32-bit**: Pi 3 B+ / Pi 4 は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 3 B+ は `armv7l` + Node 22 / `Dockerfile.32bit`。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default
 - 詳細は下記の Pi 3 B+（#97 / #135） / Pi 4（#98 / #135） / Pi 5（#99）実機検証
@@ -195,12 +197,28 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | --- | --- |
 | capability | `gpio=sysfs` / `i2c=i2c-dev` |
 | GPIO | Case A。`node-web-gpio` の read (`in`) / write (`out`) 成功。gpiochip 専用 backend は不要 |
-| I2C | `requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可） |
+| I2C | `requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可）。既知 slave の Browser Scan は下記「I2C Scan 実機検証（#116）」 |
 | WebSocket | 接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
 
 host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
+
+### I2C Scan 実機検証（#116）
+
+検証用 slave は **ADT7410**（expected `0x48`）。配線の正本は [i2c-scan.md](../examples/i2c-scan.md)。センサ機能 Example は対象外。
+
+| 項目 | 結果 |
+| --- | --- |
+| device | ADT7410。A0 / A1 = GND → address `0x48` |
+| I2C1 pins | Pi 3 / 4 / 5 で物理 pin 3 = SDA（BCM 2）、pin 5 = SCL（BCM 3）。モデルごとに配線を変えない |
+| host `/dev/i2c-1` | Pi 3 B+（#97 / #135）/ Pi 4（#98 / #135）/ Pi 5（#99）で確認済み。初期状態で無い場合は `scripts/enable-i2c.sh` |
+| Runtime scan | Pi 5（#99、Raspbian OS 64-bit / `aarch64` / `6.18.34+rpt-rpi-2712`）で `requestI2CAccess` + port `1` scan 成功。slave 未接続時は空配列 |
+| Browser Scan | web-demo `#/i2c-scan`。probe は Runtime `scanI2cPort` と同じ `open` + `writeByte(0x00)`（範囲 `0x03`–`0x77`）。[#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) / [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) |
+| expected | 配線後 Scan で hex 一覧に `0x48`。空配列は本検証では失敗 |
+| Browser E2E 列 | Compatibility matrix の Browser E2E は protocol E2E のまま。実ブラウザ Scan は本節 |
+
+GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 
 ## 非 Pi 環境での制限
 
