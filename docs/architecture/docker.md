@@ -148,7 +148,7 @@ Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/is
 ## Raspberry Pi 3 / 4 と 5
 
 - **同一手順**: Pi 3 / 4 / 5 とも `./scripts/start.sh`。モデルごとの `compose.yaml` 手編集は不要
-- **`gpiomem`**: Pi 3 / 4 では一般的。Pi 5 では無いことがある（任意）
+- **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（Runtime の必須条件ではない）
 - **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
 - **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
 
