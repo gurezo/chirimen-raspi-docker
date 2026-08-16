@@ -1,5 +1,11 @@
 import type { GpioAccess, GpioPort } from 'gpio';
-import { createGpioSession, type GpioSession } from 'node-runtime';
+import type { I2CAccess, I2CPort, I2CSlaveDevice } from 'i2c';
+import {
+  createGpioSession,
+  createI2cSession,
+  type GpioSession,
+  type I2cSession,
+} from 'node-runtime';
 import {
   decodeProtocolMessage,
   encodeProtocolMessage,
@@ -92,6 +98,79 @@ function createRegistryWithPort(port: GpioPort): {
         throw new Error('gpio session not created');
       }
       return gpioSession;
+    },
+  };
+}
+
+function createI2cSlaveDeviceMock(slaveAddress: number): I2CSlaveDevice {
+  return {
+    slaveAddress,
+    read8: vi.fn(async () => 0),
+    read16: vi.fn(async () => 0),
+    write8: vi.fn(async () => {
+      // no-op for unit tests
+    }),
+    write16: vi.fn(async () => {
+      // no-op for unit tests
+    }),
+    readByte: vi.fn(async () => 0),
+    writeByte: vi.fn(async () => {
+      // no-op for unit tests
+    }),
+    readBytes: vi.fn(async () => new Uint8Array()),
+    writeBytes: vi.fn(async (bytes) => new Uint8Array(bytes)),
+  };
+}
+
+function createI2cPortMock(portNumber: number): I2CPort {
+  return {
+    portNumber,
+    portName: `I2C${portNumber}`,
+    pinName: `PIN${portNumber}`,
+    open: vi.fn(async (slaveAddress: number) =>
+      createI2cSlaveDeviceMock(slaveAddress)
+    ),
+  };
+}
+
+function createRegistryWithI2cPort(port: I2CPort): {
+  registry: ClientSessionRegistry;
+  getSessionI2c: () => I2cSession;
+} {
+  let i2cSession: I2cSession | undefined;
+  const access: I2CAccess = {
+    ports: new Map([[port.portNumber, port]]),
+  };
+
+  const registry = createClientSessionRegistry(
+    {
+      health: { name: 'test', status: 'ok', version: '0.0.1' },
+      capabilities: {
+        gpio: { backend: 'unavailable' },
+        i2c: { backend: 'i2c-dev' },
+      },
+      gpio: { available: false, ports: [] },
+      i2c: { available: true, ports: [port.portNumber], access },
+      cleanup: vi.fn(async () => {
+        // no-op
+      }),
+    },
+    {
+      createSessionId: () => 'session-1',
+      createI2cSession: (i2cAccess) => {
+        i2cSession = createI2cSession(i2cAccess);
+        return i2cSession;
+      },
+    }
+  );
+
+  return {
+    registry,
+    getSessionI2c: () => {
+      if (!i2cSession) {
+        throw new Error('i2c session not created');
+      }
+      return i2cSession;
     },
   };
 }
@@ -285,5 +364,159 @@ describe('createGpioProtocolMessageHandler', () => {
         message: 'GPIO port 26 is not open in this session',
       },
     });
+  });
+});
+
+describe('I2C scan protocol routing', () => {
+  it('routes i2c.open then i2c.writeByte', async () => {
+    const port = createI2cPortMock(1);
+    const { registry, getSessionI2c } = createRegistryWithI2cPort(port);
+    registry.create();
+    const handler = createGpioProtocolMessageHandler(registry);
+    const { socket, messages } = createSocketMock();
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 1,
+        operation: 'i2c.open',
+        payload: { portNumber: 1, slaveAddress: 0x48 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(1));
+    expect(decodeProtocolMessage(messages[0]!)).toMatchObject({
+      kind: 'response',
+      requestId: 1,
+      ok: true,
+      operation: 'i2c.open',
+    });
+    expect(port.open).toHaveBeenCalledWith(0x48);
+    expect(getSessionI2c().isOpen(1, 0x48)).toBe(true);
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 2,
+        operation: 'i2c.writeByte',
+        payload: { portNumber: 1, slaveAddress: 0x48, value: 0x00 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(2));
+    expect(decodeProtocolMessage(messages[1]!)).toMatchObject({
+      kind: 'response',
+      requestId: 2,
+      ok: true,
+      operation: 'i2c.writeByte',
+    });
+    expect(getSessionI2c().getOpenedDevice(1, 0x48).writeByte).toHaveBeenCalledWith(
+      0x00
+    );
+  });
+
+  it('treats a second i2c.open of the same address as success', async () => {
+    const port = createI2cPortMock(1);
+    const { registry } = createRegistryWithI2cPort(port);
+    registry.create();
+    const handler = createGpioProtocolMessageHandler(registry);
+    const { socket, messages } = createSocketMock();
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 1,
+        operation: 'i2c.open',
+        payload: { portNumber: 1, slaveAddress: 0x48 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(1));
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 2,
+        operation: 'i2c.open',
+        payload: { portNumber: 1, slaveAddress: 0x48 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(2));
+    expect(decodeProtocolMessage(messages[1]!)).toMatchObject({
+      kind: 'response',
+      requestId: 2,
+      ok: true,
+      operation: 'i2c.open',
+    });
+    expect(port.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns error when writeByte target is not open', async () => {
+    const port = createI2cPortMock(1);
+    const { registry } = createRegistryWithI2cPort(port);
+    registry.create();
+    const handler = createGpioProtocolMessageHandler(registry);
+    const { socket, messages } = createSocketMock();
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 1,
+        operation: 'i2c.writeByte',
+        payload: { portNumber: 1, slaveAddress: 0x48, value: 0x00 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(1));
+
+    expect(decodeProtocolMessage(messages[0]!)).toMatchObject({
+      kind: 'response',
+      requestId: 1,
+      ok: false,
+      operation: 'i2c.writeByte',
+      error: {
+        code: 'InvalidAccess',
+        message:
+          'I2C device 72 on port 1 is not open in this session',
+      },
+    });
+  });
+
+  it('rejects I2C operations other than open and writeByte', async () => {
+    const port = createI2cPortMock(1);
+    const { registry } = createRegistryWithI2cPort(port);
+    registry.create();
+    const handler = createGpioProtocolMessageHandler(registry);
+    const { socket, messages } = createSocketMock();
+
+    handler(
+      socket,
+      encodeProtocolMessage({
+        kind: 'request',
+        requestId: 1,
+        operation: 'i2c.readByte',
+        payload: { portNumber: 1, slaveAddress: 0x48 },
+      }),
+      'session-1'
+    );
+    await vi.waitFor(() => expect(messages.length).toBe(1));
+
+    expect(decodeProtocolMessage(messages[0]!)).toMatchObject({
+      kind: 'response',
+      requestId: 1,
+      ok: false,
+      operation: 'i2c.readByte',
+      error: {
+        code: 'InvalidArgument',
+        message: 'Unsupported protocol operation: i2c.readByte',
+      },
+    });
+    expect(port.open).not.toHaveBeenCalled();
   });
 });
