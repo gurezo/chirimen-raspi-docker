@@ -78,7 +78,7 @@ getent group gpio
 ### Pi 3 / 4 と 5
 
 - **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
-- **`gpiomem`**: Pi 3 / 4 では一般的。Pi 5 では無いことがある
+- **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
 - **Pi 3 B+（#97 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（`armv7l`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。32-bit は Node 22 / `Dockerfile.32bit`。詳細は [docker.md](../architecture/docker.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
 - **Pi 4（#98 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（Model B Rev 1.4 / 64-bit kernel / `aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [docker.md](../architecture/docker.md) の「Pi 4 実機検証」
