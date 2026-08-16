@@ -1,6 +1,7 @@
 import { ChirimenError, toChirimenErrorPayload } from 'core';
 import type { GpioChangeEventHandler } from 'gpio';
-import type { GpioSession } from 'node-runtime';
+import { isI2CPortNumber, isI2CSlaveAddress } from 'i2c';
+import type { GpioSession, I2cSession } from 'node-runtime';
 import {
   decodeProtocolMessage,
   encodeProtocolMessage,
@@ -75,9 +76,15 @@ function getSubscriptions(
   return map;
 }
 
+function isI2cScanProtocolOperation(
+  operation: ProtocolOperation
+): operation is 'i2c.open' | 'i2c.writeByte' {
+  return operation === 'i2c.open' || operation === 'i2c.writeByte';
+}
+
 /**
- * ClientSessionRegistry を用いた GPIO protocol request ハンドラを生成する。
- * I2C routing は対象外。
+ * ClientSessionRegistry を用いた GPIO / I2C Scan protocol request ハンドラを生成する。
+ * I2C は Scan に必要な `i2c.open` / `i2c.writeByte` のみ routing する。
  */
 export function createGpioProtocolMessageHandler(
   registry: ClientSessionRegistry
@@ -117,7 +124,10 @@ async function handleProtocolMessage(
     }
     request = message;
 
-    if (!isGpioProtocolOperation(request.operation)) {
+    if (
+      !isGpioProtocolOperation(request.operation) &&
+      !isI2cScanProtocolOperation(request.operation)
+    ) {
       sendJson(
         socket,
         encodeProtocolMessage(
@@ -150,12 +160,14 @@ async function handleProtocolMessage(
       return;
     }
 
-    const response = await dispatchGpioRequest(
-      session.gpio,
-      request,
-      socket,
-      getSubscriptions(subscriptionsBySession, session)
-    );
+    const response = isGpioProtocolOperation(request.operation)
+      ? await dispatchGpioRequest(
+          session.gpio,
+          request,
+          socket,
+          getSubscriptions(subscriptionsBySession, session)
+        )
+      : await dispatchI2cRequest(session.i2c, request);
     sendJson(socket, encodeProtocolMessage(response));
   } catch (error: unknown) {
     if (request) {
@@ -259,6 +271,55 @@ async function dispatchGpioRequest(
           new ChirimenError(
             'InvalidArgument',
             `Unsupported GPIO operation: ${String(request.operation)}`
+          )
+        );
+    }
+  } catch (error: unknown) {
+    return errorResponse(request, error);
+  }
+}
+
+async function dispatchI2cRequest(
+  i2c: I2cSession,
+  request: ProtocolRequest
+): Promise<ProtocolSuccessResponse | ProtocolErrorResponse> {
+  try {
+    switch (request.operation) {
+      case 'i2c.open': {
+        const { portNumber, slaveAddress } = request.payload as {
+          portNumber: number;
+          slaveAddress: number;
+        };
+        if (
+          isI2CPortNumber(portNumber) &&
+          isI2CSlaveAddress(slaveAddress) &&
+          i2c.isOpen(portNumber, slaveAddress)
+        ) {
+          return successResponse(request as ProtocolRequest<'i2c.open'>, {});
+        }
+        await i2c.open(portNumber, slaveAddress);
+        return successResponse(request as ProtocolRequest<'i2c.open'>, {});
+      }
+      case 'i2c.writeByte': {
+        const { portNumber, slaveAddress, value } = request.payload as {
+          portNumber: number;
+          slaveAddress: number;
+          value: number;
+        };
+        await i2c
+          .getOpenedDevice(portNumber, slaveAddress)
+          .writeByte(value);
+        return successResponse(
+          request as ProtocolRequest<'i2c.writeByte'>,
+          {}
+        );
+      }
+      default:
+        return errorResponse(
+          request,
+          new ChirimenError(
+            'InvalidArgument',
+            `Unsupported I2C operation: ${String(request.operation)}`
           )
         );
     }
