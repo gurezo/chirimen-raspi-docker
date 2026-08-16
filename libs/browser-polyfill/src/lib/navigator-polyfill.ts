@@ -7,7 +7,7 @@ import { BrowserI2CAccess } from './browser-i2c-access.js';
 import {
   WebSocketClientTransport,
   type WebSocketClientTransportOptions,
-} from './websocket-client-transport.js';
+} from './websocket/client/transport.js';
 
 declare global {
   interface Navigator {

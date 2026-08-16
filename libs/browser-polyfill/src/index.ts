@@ -33,4 +33,4 @@ export {
   type ReconnectListener,
   type WebSocketClientTransportOptions,
   type WebSocketConstructor,
-} from './lib/websocket-client-transport.js';
+} from './lib/websocket/client/transport.js';

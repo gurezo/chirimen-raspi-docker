@@ -11,7 +11,7 @@ import {
   requestI2CAccess,
   resetBrowserPolyfillForTests,
 } from './navigator-polyfill.js';
-import type { WebSocketConstructor } from './websocket-client-transport.js';
+import type { WebSocketConstructor } from './websocket/client/transport.js';
 
 let autoOpen = true;
 let onSend: ((data: string, socket: FakeWebSocket) => void) | null = null;

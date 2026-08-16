@@ -11,7 +11,7 @@ import {
   WebSocketClientTransport,
   type ConnectionStatus,
   type WebSocketConstructor,
-} from './websocket-client-transport.js';
+} from './transport.js';
 
 let autoOpen = true;
 let onSend: ((data: string, socket: FakeWebSocket) => void) | null = null;

@@ -11,7 +11,7 @@ import {
   DEFAULT_BROWSER_POLYFILL_WS_URL,
   resolveBrowserPolyfillWsUrl,
 } from './script-polyfill.js';
-import type { WebSocketConstructor } from './websocket-client-transport.js';
+import type { WebSocketConstructor } from './websocket/client/transport.js';
 
 let autoOpen = true;
 const constructedUrls: string[] = [];
