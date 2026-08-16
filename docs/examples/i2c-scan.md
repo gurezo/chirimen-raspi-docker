@@ -147,7 +147,7 @@ I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i
 | --- | --- |
 | 検証 device | ADT7410。expected `0x48`（A0 / A1 = GND） |
 | 一次環境 | Raspberry Pi 5 Model B Rev 1.0 / Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)） |
-| host `/dev/i2c-1` | 有効化後に存在。Pi 3 B+（#97 / #135）/ Pi 4（#98 / #135）でも同様 |
+| host `/dev/i2c-1` | 有効化後に存在。Pi 3 B+（#97 / #135）/ Pi 4（#98 / #135）/ Pi 5（#99 / #135）でも同様 |
 | Runtime scan | Pi 5 で port `1` scan 成功。slave 未接続時は空配列（#99） |
 | Browser Scan | `#/i2c-scan` の Scan。`open` + `writeByte(0x00)` を `0x03`–`0x77`（#114 / #115） |
 | 完了条件 | 配線後の hex 一覧に `0x48`。空配列は失敗 |
