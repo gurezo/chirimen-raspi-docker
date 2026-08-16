@@ -8,6 +8,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
+- [I2C Scan 検証仕様](../examples/i2c-scan.md)
 - [Docker 構成](../architecture/docker.md)
 
 ## device が無く GPIO / I2C が unavailable になる
@@ -53,7 +54,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 2. `sudo ./scripts/enable-i2c.sh --check`
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
-slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。
+slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。配線は [i2c-scan.md](../examples/i2c-scan.md)。
 
 ## Permission denied（GPIO / I2C）
 
