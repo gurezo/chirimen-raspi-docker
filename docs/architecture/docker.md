@@ -71,11 +71,11 @@ stage 構成は 32-bit / 64-bit でほぼ共通。`FROM` と 32-bit の build �
 | Stage | 役割 |
 | --- | --- |
 | `base` | 上記の Node slim image、corepack で pnpm を有効化 |
-| `deps` | native addon 用に `python3` / `make` / `g++` を入れ、lockfile から依存を install |
+| `deps` | native addon 用に `python3` / `make` / `g++` を入れ、`npm_config_nodedir=/usr/local` で lockfile から依存を install |
 | `build` | 64-bit: `pnpm nx build server`。32-bit: `node scripts/build-server.mjs`（Nx native hasher が armv7 で失敗するため esbuild で同等の bundle をする） |
 | `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js`（build tools は含めない） |
 
-`deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
+`deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。pnpm は `nodedir` を渡さないため、未設定だと node-gyp が `nodejs.org` から Node headers を取得する。公式 Node image の `/usr/local` を `npm_config_nodedir` に指定し、その通信を避ける（Pi 上の Docker DNS で `EAI_AGAIN` になりやすい）。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
 
 本番 image も現状は workspace 一式をコピーする構成である（将来の slim 化は別 Issue）。
 
