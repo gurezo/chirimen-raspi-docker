@@ -16,6 +16,10 @@ import {
 } from './gpio-led-blink-cleanup.js';
 import { LedBlinkSession } from './gpio-led-blink.js';
 import {
+  bindI2cScanCleanup,
+  shouldStopI2cScanOnRoute,
+} from './i2c-scan-cleanup.js';
+import {
   I2cScanSession,
   formatI2cSlaveAddress,
 } from './i2c-scan.js';
@@ -263,6 +267,13 @@ if (root) {
     }
   };
 
+  const stopScan = (): Promise<void> => {
+    scanError.textContent = '';
+    return scanSession.stop().then(() => {
+      applyScanUi();
+    });
+  };
+
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
@@ -273,6 +284,10 @@ if (root) {
 
     if (shouldStopGpioInputOnRoute(routeId)) {
       void stopInput();
+    }
+
+    if (shouldStopI2cScanOnRoute(routeId)) {
+      void stopScan();
     }
 
     demoSection.dataset.route = routeId;
@@ -414,6 +429,17 @@ if (root) {
 
   bindGpioInputCleanup({
     stop: stopInput,
+    getRoute: () => parseDemoRoute(window.location.hash),
+    addStatusListener: (listener) => {
+      statusListeners.add(listener);
+      return () => {
+        statusListeners.delete(listener);
+      };
+    },
+  });
+
+  bindI2cScanCleanup({
+    stop: stopScan,
     getRoute: () => parseDemoRoute(window.location.hash),
     addStatusListener: (listener) => {
       statusListeners.add(listener);
