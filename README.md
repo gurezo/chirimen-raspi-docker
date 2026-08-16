@@ -45,17 +45,17 @@ curl http://localhost:33330/health
 | ドキュメント                                                             | 内容                                                                                                |
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
 | [docs/architecture/overview.md](docs/architecture/overview.md)           | アーキテクチャ概要 / Nx MCP                                                                         |
-| [docs/architecture/docker.md](docs/architecture/docker.md)               | Docker / Compose / device mount                                                                     |
+| [docs/architecture/docker.md](docs/architecture/docker.md)               | Docker / Compose / device mount / [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) |
 | [docs/architecture/protocol.md](docs/architecture/protocol.md)           | Protocol メッセージモデル / [I2C Scan API flow](docs/architecture/protocol.md#i2c-scan-api-flow114) |
 | [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries                                                                         |
 
-### 検証環境
+### Compatibility（検証環境）
 
 Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。未検証項目は `Supported` と書きません。正本は [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) です。
 
-| ドキュメント                                                       | 内容                                                                                                             |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) | Compatibility matrix（Pi 3 B+ / 4 / 5、64-bit / 32-bit）                                             |
+| ドキュメント | 内容 |
+| --- | --- |
+| [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) | Pi 3 B+ / 4 / 5、64-bit / 32-bit の実機検証結果 |
 | [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω）                                                     |
 | [docs/examples/gpio-input.md](docs/examples/gpio-input.md)         | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）                                    |
 | [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md)             | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
