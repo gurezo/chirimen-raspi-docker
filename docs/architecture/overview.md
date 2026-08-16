@@ -163,6 +163,18 @@ chirimen-raspi-docker/
 
 詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
 
+## Nx MCP (Cursor)
+
+Cursor で Nx workspace の context を AI agent に提供するため、`.cursor/mcp.json` に Nx MCP 設定を含めている。
+
+1. Cursor Settings → MCP で `nx-mcp` が有効になっていることを確認する
+2. 反映されない場合は Cursor を再起動する
+3. 以下で MCP コマンドが利用可能か確認できる
+
+```sh
+npx nx mcp --help
+```
+
 ## 関連ドキュメント
 
 | ドキュメント | 内容 |
