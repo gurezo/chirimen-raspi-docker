@@ -1,4 +1,5 @@
 # chirimen-raspi-docker
+
 Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Docker Runtime
 
 ## Phase 1: Nx workspace / server / Docker 最小構成
@@ -23,16 +24,16 @@ GPIO domain / node-web-gpio adapter（Phase 2A）は実装済みです。推奨�
 
 domain `I2CSlaveDevice`（CHIRIMEN polyfill 互換）の各操作は、同名の `node-web-i2c` API へ委譲します。
 
-| domain / polyfill | node-web-i2c | 備考 |
-| --- | --- | --- |
-| `read8(reg)` | `read8(reg)` | レジスタ 8-bit 読み取り |
-| `read16(reg)` | `read16(reg)` | レジスタ 16-bit 読み取り |
-| `write8(reg, value)` | `write8(reg, value)` | native の戻り値 `number` は破棄し `void` |
-| `write16(reg, value)` | `write16(reg, value)` | 同上 |
-| `readByte()` | `readByte()` | レジスタ無し raw 1 byte（Web I2C 仕様外） |
-| `writeByte(byte)` | `writeByte(byte)` | 同上。domain は `void` |
-| `readBytes(length)` | `readBytes(length)` | `length` は 1–127。戻り値 `Uint8Array` |
-| `writeBytes(bytes)` | `writeBytes(bytes)` | 各要素を byte として検証。戻り値 `Uint8Array` |
+| domain / polyfill     | node-web-i2c          | 備考                                          |
+| --------------------- | --------------------- | --------------------------------------------- |
+| `read8(reg)`          | `read8(reg)`          | レジスタ 8-bit 読み取り                       |
+| `read16(reg)`         | `read16(reg)`         | レジスタ 16-bit 読み取り                      |
+| `write8(reg, value)`  | `write8(reg, value)`  | native の戻り値 `number` は破棄し `void`      |
+| `write16(reg, value)` | `write16(reg, value)` | 同上                                          |
+| `readByte()`          | `readByte()`          | レジスタ無し raw 1 byte（Web I2C 仕様外）     |
+| `writeByte(byte)`     | `writeByte(byte)`     | 同上。domain は `void`                        |
+| `readBytes(length)`   | `readBytes(length)`   | `length` は 1–127。戻り値 `Uint8Array`        |
+| `writeBytes(bytes)`   | `writeBytes(bytes)`   | 各要素を byte として検証。戻り値 `Uint8Array` |
 
 ### I2C Scan
 
@@ -44,7 +45,11 @@ Node Runtime（`libs/node-runtime`）に I2C bus 上の応答 slave address を�
 - scan 中の open は `I2cSession` の opened map に載せない
 
 ```ts
-import { createI2cSession, requestNodeI2CAccess, scanI2cPort } from 'node-runtime';
+import {
+  createI2cSession,
+  requestNodeI2CAccess,
+  scanI2cPort,
+} from 'node-runtime';
 
 const access = await requestNodeI2CAccess();
 const session = createI2cSession(access);
@@ -74,23 +79,23 @@ Browser からはこの Runtime API を呼びません。Scan は Public polyfil
 
 初めての利用者はガイドから始めてください。
 
-| ドキュメント | 内容 |
-| --- | --- |
-| [docs/guides/getting-started.md](docs/guides/getting-started.md) | clone → doctor → `./scripts/start.sh` → health check |
-| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo |
-| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ |
-| [setups/README.md](setups/README.md) | host の Node / nvm / Docker インストール |
-| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md) | よくある起動・device 障害 |
-| [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md) | GPIO LED Blink 操作ガイド（HTML サンプルで点滅） |
-| [docs/guides/gpio-input.md](docs/guides/gpio-input.md) | GPIO Input 操作ガイド（HTML サンプルで onchange） |
-| [docs/guides/i2c-scan.md](docs/guides/i2c-scan.md) | I2C Scan 操作ガイド（web-demo で address scan） |
-| [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω） |
-| [docs/examples/gpio-input.md](docs/examples/gpio-input.md) | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ） |
-| [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md) | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
-| [docs/architecture/overview.md](docs/architecture/overview.md) | アーキテクチャ概要 |
-| [docs/architecture/docker.md](docs/architecture/docker.md) | Docker / Compose / device mount / [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) |
-| [docs/architecture/protocol.md](docs/architecture/protocol.md) | Protocol メッセージモデル / [I2C Scan API flow](docs/architecture/protocol.md#i2c-scan-api-flow114) |
-| [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries |
+| ドキュメント                                                             | 内容                                                                                                             |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| [docs/guides/getting-started.md](docs/guides/getting-started.md)         | clone → doctor → `./scripts/start.sh` → health check                                                             |
+| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md)       | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo                                                 |
+| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md)   | Pi 上の Docker / GPIO / I2C セットアップ                                                                         |
+| [setups/README.md](setups/README.md)                                     | host の Node / nvm / Docker インストール                                                                         |
+| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md)         | よくある起動・device 障害                                                                                        |
+| [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)           | GPIO LED Blink 操作ガイド（HTML サンプルで点滅）                                                                 |
+| [docs/guides/gpio-input.md](docs/guides/gpio-input.md)                   | GPIO Input 操作ガイド（HTML サンプルで onchange）                                                                |
+| [docs/guides/i2c-scan.md](docs/guides/i2c-scan.md)                       | I2C Scan 操作ガイド（web-demo で address scan）                                                                  |
+| [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md)       | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω）                                                     |
+| [docs/examples/gpio-input.md](docs/examples/gpio-input.md)               | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）                                    |
+| [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md)                   | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
+| [docs/architecture/overview.md](docs/architecture/overview.md)           | アーキテクチャ概要                                                                                               |
+| [docs/architecture/docker.md](docs/architecture/docker.md)               | Docker / Compose / device mount / [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix)       |
+| [docs/architecture/protocol.md](docs/architecture/protocol.md)           | Protocol メッセージモデル / [I2C Scan API flow](docs/architecture/protocol.md#i2c-scan-api-flow114)              |
+| [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries                                                                                      |
 
 公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照してください。ローカル生成手順は下記「API ドキュメント（Typedoc）」を参照してください。
 
@@ -98,19 +103,44 @@ Browser からはこの Runtime API を呼びません。Scan は Public polyfil
 
 Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ / Pi 4 の **Raspbian OS 32-bit** です。未検証項目は `Supported` と書きません。正本は [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) です。
 
-| Model | OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Raspberry Pi 3 B+ | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
-| Raspberry Pi 3 B+ | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v7` | `armv7l` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
-| Raspberry Pi 3 A+ | TBD | TBD | TBD | TBD | TBD | TBD | TBD | Not verified |
-| Raspberry Pi 4 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
-| Raspberry Pi 4 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
-| Raspberry Pi 5 Model B Rev 1.0 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
-
 - **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
-- **Raspberry Pi 3 A+**: ハードウェアスペック不足のため推奨環境外。`Supported` と書かない
-- **Raspbian OS 32-bit**: Pi 3 B+ / Pi 4 は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 3 B+ は `armv7l` + Node 22 / `Dockerfile.32bit`。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default
+
+### Raspberry Pi 3 A+
+
+| OS  | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status       |
+| --- | ------ | ---- | --------------- | ------------ | ----------- | ----------- | ------------ |
+| TBD | TBD    | TBD  | TBD             | TBD          | TBD         | TBD         | Not verified |
+
+**`ハードウェアスペック不足のため推奨環境外。`**
+
+### Raspberry Pi 3 B+
+
+| OS                 | Kernel               | Arch      | GPIO Capability            | GPIO Backend | I2C Backend | Browser E2E                  | Status   |
+| ------------------ | -------------------- | --------- | -------------------------- | ------------ | ----------- | ---------------------------- | -------- |
+| Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功 | Verified |
+| Raspbian OS 32-bit | `6.18.34+rpt-rpi-v7` | `armv7l`  | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功 | Verified |
+
+Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。
+32-bit は `armv7l` + Node 22 / `Dockerfile.32bit`。
+
+### Raspberry Pi 4
+
+| OS                 | Kernel               | Arch      | GPIO Capability            | GPIO Backend | I2C Backend | Browser E2E                  | Status   |
+| ------------------ | -------------------- | --------- | -------------------------- | ------------ | ----------- | ---------------------------- | -------- |
+| Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功 | Verified |
+| Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功 | Verified |
+
+Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。
+Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default。
+
+### Raspberry Pi 5
+
+| OS                 | Kernel                 | Arch      | GPIO Capability            | GPIO Backend | I2C Backend | Browser E2E                                         | Status   |
+| ------------------ | ---------------------- | --------- | -------------------------- | ------------ | ----------- | --------------------------------------------------- | -------- |
+| Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
+
+検証済み機種は Model B Rev 1.0。
 
 ## ローカル開発
 
