@@ -215,16 +215,29 @@ gyp ERR! find Python
 Could not find any Python installation to use
 ```
 
+または headers 取得時の DNS 失敗:
+
+```text
+gyp http GET https://nodejs.org/download/release/v22.23.2/node-v22.23.2-headers.tar.gz
+gyp ERR! stack Error: getaddrinfo EAI_AGAIN nodejs.org
+```
+
 ### 原因
 
-`node-web-i2c` が依存する `i2c-bus` は install 時に native rebuild する。`node:bookworm-slim` だけでは Python / コンパイラが無い。
+`node-web-i2c` が依存する `i2c-bus` は install 時に native rebuild する。`node:bookworm-slim` だけでは Python / コンパイラが無い。加えて pnpm は `nodedir` を渡さないため、node-gyp が `nodejs.org` から Node headers をダウンロードしようとする。Pi 上の Docker DNS ではこの lookup が `EAI_AGAIN` で失敗しやすい。
 
 ### 対処
 
-[`docker/server/Dockerfile`](../../docker/server/Dockerfile) および [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) の `deps` ステージに `python3` / `make` / `g++` が入っていること（現行 main）を確認し、再ビルドする。
+[`docker/server/Dockerfile`](../../docker/server/Dockerfile) および [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) の `deps` ステージに `python3` / `make` / `g++` と `npm_config_nodedir=/usr/local` が入っていること（現行 main）を確認し、再ビルドする。
 
 ```sh
 ./scripts/start.sh --build --force-recreate
+```
+
+32-bit の場合:
+
+```sh
+./scripts/start.sh --32bit
 ```
 
 `runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。

@@ -21,6 +21,11 @@ RUN apt-get update \
     g++ \
   && rm -rf /var/lib/apt/lists/*
 
+# pnpm does not set nodedir, so node-gyp would download headers from nodejs.org.
+# Official Node images already ship them under /usr/local; skip that fetch
+# (Pi Docker DNS can fail with getaddrinfo EAI_AGAIN nodejs.org).
+ENV npm_config_nodedir=/usr/local
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json tsconfig.json ./
 
 RUN pnpm install --frozen-lockfile
