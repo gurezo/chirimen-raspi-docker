@@ -137,7 +137,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- I2C Scan の実 example（#52）。API flow は [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定（[protocol.md](./protocol.md#i2c-scan-api-flow114)）。UI は #115
+- I2C Scan の実機検証（#116）と操作ガイド（#117）。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。API flow は [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定（[protocol.md](./protocol.md#i2c-scan-api-flow114)）
 - `docker/nginx`
 
 ## apps / libs の責務
@@ -145,7 +145,7 @@ chirimen-raspi-docker/
 | Path | 責務 |
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
-| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan ナビあり） |
+| `apps/web-demo` | Browser から Runtime を試す demo UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan の Scan / hex 一覧） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |

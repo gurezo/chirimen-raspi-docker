@@ -34,7 +34,7 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
     id: 'home',
     title: '',
     description:
-      'GPIO Output / GPIO Input / I2C Scan から demo を選んでください。実 example は #50 / #51 / #52 で実装します。',
+      'GPIO Output / GPIO Input / I2C Scan から demo を選んでください。',
     showHomeLink: false,
   },
   'gpio-output': {
@@ -52,7 +52,8 @@ const DEMO_VIEWS: Record<DemoRouteId, DemoView> = {
   'i2c-scan': {
     id: 'i2c-scan',
     title: 'I2C Scan',
-    description: 'I2C Scan example（#52）を後続で実装する。',
+    description:
+      'I2C bus 1 を Scan で走査し、応答 address を hex で表示する。I2C 有効化は docs/guides/raspberry-pi-setup.md。',
     showHomeLink: true,
   },
 };

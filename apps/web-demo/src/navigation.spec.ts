@@ -25,12 +25,12 @@ describe('web-demo navigation', () => {
     expect(parseDemoRoute('#/gpio-output/extra')).toBe('home');
   });
 
-  it('returns placeholder titles and follow-up issue descriptions', () => {
+  it('returns titles and descriptions for each demo', () => {
     expect(getDemoView('home')).toEqual({
       id: 'home',
       title: '',
       description:
-        'GPIO Output / GPIO Input / I2C Scan から demo を選んでください。実 example は #50 / #51 / #52 で実装します。',
+        'GPIO Output / GPIO Input / I2C Scan から demo を選んでください。',
       showHomeLink: false,
     });
     expect(getDemoView('gpio-output')).toEqual({
@@ -50,7 +50,8 @@ describe('web-demo navigation', () => {
     expect(getDemoView('i2c-scan')).toEqual({
       id: 'i2c-scan',
       title: 'I2C Scan',
-      description: 'I2C Scan example（#52）を後続で実装する。',
+      description:
+        'I2C bus 1 を Scan で走査し、応答 address を hex で表示する。I2C 有効化は docs/guides/raspberry-pi-setup.md。',
       showHomeLink: true,
     });
   });

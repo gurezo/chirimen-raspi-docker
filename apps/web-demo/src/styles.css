@@ -85,3 +85,17 @@ body {
 .gpio-input__error {
   color: crimson;
 }
+
+.i2c-scan {
+  margin-top: 1rem;
+}
+
+.i2c-scan__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.i2c-scan__error {
+  color: crimson;
+}

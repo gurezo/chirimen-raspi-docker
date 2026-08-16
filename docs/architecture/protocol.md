@@ -16,6 +16,7 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#39 WebSocket server lifecycle を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/39)
 - 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
 - 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
+- 子 Issue: [#115 I2C Scan UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -212,7 +213,7 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO 
 | session | 接続ごとに `sessionId`（UUID）と `GpioSession` / `I2cSession` を作成 |
 | disconnect | `close` / `error` で `GpioSession.releaseAll()` と `I2cSession.closeAll()` を実行 |
 | shutdown | 全 session を cleanup → WebSocket server close → process 全体の GPIO `unexportAll` |
-| メッセージ処理 | GPIO request（`export` / `read` / `write` / `unexport` / `subscribe` / `unsubscribe`）を routing。subscribe 中のみ `gpio.onchange` event を送る。I2C routing は未実装 |
+| メッセージ処理 | GPIO request（`export` / `read` / `write` / `unexport` / `subscribe` / `unsubscribe`）を routing。subscribe 中のみ `gpio.onchange` event を送る。I2C は Scan 用の `i2c.open` / `i2c.writeByte` のみ routing（他の `i2c.*` は未実装） |
 
 実装:
 
@@ -275,7 +276,7 @@ const device = await port?.open(0x48);
 
 ## I2C Scan API flow（#114）
 
-Browser から I2C Scan を呼び出す経路を [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で確定する。親は [#52](https://github.com/gurezo/chirimen-raspi-docker/issues/52)。UI（#115）、実機検証（#116）、guide（#117）は後続。
+Browser から I2C Scan を呼び出す経路を [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で確定する。親は [#52](https://github.com/gurezo/chirimen-raspi-docker/issues/52)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証（#116）、guide（#117）は後続。
 
 Scan は Web I2C 仕様外（chirimen-server 参照実装互換）。`readByte` / `writeByte` が Public なのは `I2CSlaveDevice` の CHIRIMEN polyfill 互換のためであり、scan を Public にする先例にはしない。
 
@@ -299,7 +300,7 @@ web-demo helper（Demo-only）
   → I2C bus
 ```
 
-Browser 側（#115 が実装する Demo helper）の合成:
+Browser 側（#115 が実装した Demo helper）の合成:
 
 ```ts
 const access = await navigator.requestI2CAccess();
@@ -328,13 +329,13 @@ for (let addr = 0x03; addr <= 0x77; addr++) {
 | --- | --- | --- |
 | 入口 | `session.scan(1)` / `scanI2cPort(port)` | `navigator.requestI2CAccess()` → `port.open` + `writeByte` |
 | protocol | 使わない（server 内） | `i2c.open` / `i2c.writeByte` を最大 117 往復 |
-| session 追跡 | probe の open は opened map に載せない | 成功した `open` は server `I2cSession` に残る。polyfill は `i2c.close` を公開しないため、切断時 `closeAll()` で掃除。#115 は GPIO demo と同様に離脱時 cleanup を設計する |
+| session 追跡 | probe の open は opened map に載せない | 成功した `open` は server `I2cSession` に残る。polyfill は `i2c.close` を公開しないため、切断時 `closeAll()` で掃除。web-demo は画面離脱 / reload / 切断で走査を中断する。再 Scan のため server の `i2c.open` は既 open なら success |
 
 demo 用途では往復数は許容する。
 
-### 前提: server の I2C routing は未実装
+### server の I2C routing（Scan 最小）
 
-本節の Browser 経路は既存の `i2c.open` / `i2c.writeByte` に依存する。現状 `apps/server` は GPIO request のみ routing し、`i2c.*` は `Unsupported protocol operation` になる（本ドキュメント「WebSocket server lifecycle」）。#115 が動く前提条件であり、#114 では routing を実装しない。
+本節の Browser 経路は既存の `i2c.open` / `i2c.writeByte` に依存する。`apps/server` は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) でこの 2 operation だけ routing する。既に open 済みの `(port, address)` への `i2c.open` は success（再 Scan 用）。他の `i2c.*` は `Unsupported protocol operation` のまま。
 
 ## 後続 Issue
 
@@ -352,6 +353,6 @@ demo 用途では往復数は許容する。
 | #41 | Browser GPIO onchange（本節「Browser GPIO polyfill 入口」で完了） |
 | #42 | WebSocket reconnect（reconnect 後の GPIO export / subscription 復元を含む。本節で完了） |
 | #114 | Browser から I2C Scan を呼び出す API flow（本節「I2C Scan API flow」で完了） |
-| #115 | I2C Scan UI（web-demo Demo helper。server I2C routing が前提） |
+| #115 | I2C Scan UI（web-demo Demo helper と `i2c.open` / `i2c.writeByte` routing。完了） |
 | #116 | I2C Scan の実機検証 |
 | #117 | I2C Scan guide |

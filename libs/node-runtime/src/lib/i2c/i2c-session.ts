@@ -37,6 +37,41 @@ export class I2cSession {
   }
 
   /**
+   * この session で open 済みの slave device を返す。
+   * 未 open の場合は InvalidAccess。
+   */
+  getOpenedDevice(
+    portNumber: unknown,
+    slaveAddress: unknown
+  ): I2CSlaveDevice {
+    if (!isI2CPortNumber(portNumber)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C port number: ${String(portNumber)}`
+      );
+    }
+
+    if (!isI2CSlaveAddress(slaveAddress)) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `Invalid I2C slave address: ${String(slaveAddress)}`
+      );
+    }
+
+    const device = this.#opened.get(
+      toOpenedDeviceKey(portNumber, slaveAddress)
+    );
+    if (!device) {
+      throw new ChirimenError(
+        'InvalidAccess',
+        `I2C device ${slaveAddress} on port ${portNumber} is not open in this session`
+      );
+    }
+
+    return device;
+  }
+
+  /**
    * 指定 I2C port 上の slave device を open する。
    * 同一 session で既に open 済みの (port, address) は拒否する。
    */

@@ -224,6 +224,40 @@ describe('I2cSession', () => {
     expect(session.isOpen(1, 0x48)).toBe(false);
   });
 
+  it('returns opened device via getOpenedDevice', async () => {
+    const port = createPortMock(1);
+    const session = createI2cSession(createAccessMock(new Map([[1, port]])));
+
+    expect(() => session.getOpenedDevice(1, 0x48)).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+        message:
+          'I2C device 72 on port 1 is not open in this session',
+      })
+    );
+
+    const device = await session.open(1, 0x48);
+    expect(session.getOpenedDevice(1, 0x48)).toBe(device);
+  });
+
+  it('rejects invalid port or address on getOpenedDevice', () => {
+    const session = createI2cSession(createAccessMock(new Map()));
+
+    expect(() => session.getOpenedDevice(-1, 0x48)).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+      })
+    );
+    expect(() => session.getOpenedDevice(1, 0x80)).toThrow(
+      expect.objectContaining({
+        name: 'ChirimenError',
+        code: 'InvalidAccess',
+      })
+    );
+  });
+
   it('scan rejects invalid or missing port', async () => {
     const session = createI2cSession(
       createAccessMock(new Map([[1, createPortMock(1)]]))
