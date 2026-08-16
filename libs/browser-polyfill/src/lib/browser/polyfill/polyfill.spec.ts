@@ -1,7 +1,7 @@
 import {
   BROWSER_POLYFILL_PACKAGE_NAME,
   BROWSER_POLYFILL_PROTOCOL_PACKAGE,
-} from './browser-polyfill.js';
+} from './polyfill.js';
 
 describe('browser-polyfill', () => {
   it('exposes the package identity', () => {

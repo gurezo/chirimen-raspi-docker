@@ -9,7 +9,7 @@
 export {
   BROWSER_POLYFILL_PACKAGE_NAME,
   BROWSER_POLYFILL_PROTOCOL_PACKAGE,
-} from './lib/browser-polyfill.js';
+} from './lib/browser/polyfill/polyfill.js';
 export { BrowserGpioAccess } from './lib/browser/gpio/gpio-access.js';
 export { BrowserGpioPort } from './lib/browser/gpio/gpio-port.js';
 export { BrowserI2CAccess } from './lib/browser/i2c/i2c-access.js';
