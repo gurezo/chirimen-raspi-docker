@@ -125,6 +125,21 @@ Browser 起点の I2C `operation` は Node Runtime の `I2cSession` / `I2CSlaveD
 | `i2c.read8` | `0x23` | open 済み `I2CSlaveDevice.read8(...)` | `read8` |
 | `i2c.read16` | `0x23` | open 済み `I2CSlaveDevice.read16(...)` | `read16` |
 
+### domain / polyfill ↔ node-web-i2c
+
+domain `I2CSlaveDevice`（CHIRIMEN polyfill 互換）の各操作は、同名の `node-web-i2c` API へ委譲する。
+
+| domain / polyfill | node-web-i2c | 備考 |
+| --- | --- | --- |
+| `read8(reg)` | `read8(reg)` | レジスタ 8-bit 読み取り |
+| `read16(reg)` | `read16(reg)` | レジスタ 16-bit 読み取り |
+| `write8(reg, value)` | `write8(reg, value)` | native の戻り値 `number` は破棄し `void` |
+| `write16(reg, value)` | `write16(reg, value)` | 同上 |
+| `readByte()` | `readByte()` | レジスタ無し raw 1 byte（Web I2C 仕様外） |
+| `writeByte(byte)` | `writeByte(byte)` | 同上。domain は `void` |
+| `readBytes(length)` | `readBytes(length)` | `length` は 1–127。戻り値 `Uint8Array` |
+| `writeBytes(bytes)` | `writeBytes(bytes)` | 各要素を byte として検証。戻り値 `Uint8Array` |
+
 ### 責務分界
 
 - `libs/protocol` は対応定数・型・type guard のみを提供し、`i2c` / `node-runtime` には依存しない
@@ -289,6 +304,33 @@ Scan は Web I2C 仕様外（chirimen-server 参照実装互換）。`readByte` 
 | Public API（`libs/i2c` / `libs/protocol` / `libs/browser-polyfill`） | **置かない**。`i2c.scan` operation も `I2CPort.scan()` も追加しない |
 | Demo-only（`apps/web-demo`） | Browser example は `navigator.requestI2CAccess()` のみを使い、`open` + `writeByte(0x00)` で走査を合成する（[#118](https://github.com/gurezo/chirimen-raspi-docker/issues/118)） |
 | Node Runtime（`libs/node-runtime`） | `I2cSession.scan` / `scanI2cPort` は host / server 用の既存 Public API。Browser / web-demo からは呼ばない |
+
+### Node Runtime scan
+
+Node Runtime（`libs/node-runtime`）は I2C bus 上の応答 slave address を走査する API を持つ（Web I2C 仕様外 / chirimen-server 参照実装互換）。Browser からはこの Runtime API を呼ばない。
+
+- 走査範囲: `0x03`–`0x77`（`I2C_SCAN_ADDRESS_MIN` / `I2C_SCAN_ADDRESS_MAX`）
+- probe: 各 address で `open` + `writeByte(0x00)`。両方成功した address を返す
+- address 単位の失敗は無視（応答なし）。不正 / 未存在 port は `ChirimenError(InvalidAccess)`
+- scan 中の open は `I2cSession` の opened map に載せない
+
+```ts
+import {
+  createI2cSession,
+  requestNodeI2CAccess,
+  scanI2cPort,
+} from 'node-runtime';
+
+const access = await requestNodeI2CAccess();
+const session = createI2cSession(access);
+const addresses = await session.scan(1); // I2CSlaveAddress[]
+
+// または port を直接渡す
+const port = access.ports.get(1);
+if (port) {
+  const found = await scanI2cPort(port);
+}
+```
 
 ### 呼び出し経路
 
