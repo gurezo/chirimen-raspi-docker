@@ -1,8 +1,8 @@
 import type { I2CAccess, I2CPort, I2CPortMap, I2CPortNumber } from 'i2c';
 
-import { BrowserI2CPort } from './browser-i2c-port.js';
-import { CHIRIMEN_I2C_PORTS } from './i2c-ports.js';
-import type { WebSocketClientTransport } from './websocket/client/transport.js';
+import { BrowserI2CPort } from './i2c-port.js';
+import { CHIRIMEN_I2C_PORTS } from '../../i2c-ports.js';
+import type { WebSocketClientTransport } from '../../websocket/client/transport.js';
 
 /**
  * protocol transport 経由で {@link I2CAccess} 契約を満たす Browser 実装。

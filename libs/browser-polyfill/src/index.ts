@@ -12,9 +12,9 @@ export {
 } from './lib/browser-polyfill.js';
 export { BrowserGpioAccess } from './lib/browser/gpio/gpio-access.js';
 export { BrowserGpioPort } from './lib/browser/gpio/gpio-port.js';
-export { BrowserI2CAccess } from './lib/browser-i2c-access.js';
-export { BrowserI2CPort } from './lib/browser-i2c-port.js';
-export { BrowserI2CSlaveDevice } from './lib/browser-i2c-slave-device.js';
+export { BrowserI2CAccess } from './lib/browser/i2c/i2c-access.js';
+export { BrowserI2CPort } from './lib/browser/i2c/i2c-port.js';
+export { BrowserI2CSlaveDevice } from './lib/browser/i2c/i2c-slave-device.js';
 export { CHIRIMEN_GPIO_PORTS } from './lib/gpio-ports.js';
 export { CHIRIMEN_I2C_PORTS } from './lib/i2c-ports.js';
 export {

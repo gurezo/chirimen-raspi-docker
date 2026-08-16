@@ -13,7 +13,7 @@ import {
   type I2CWord,
 } from 'i2c';
 
-import type { WebSocketClientTransport } from './websocket/client/transport.js';
+import type { WebSocketClientTransport } from '../../websocket/client/transport.js';
 
 /**
  * protocol transport 経由で {@link I2CSlaveDevice} 契約を満たす Browser 実装。

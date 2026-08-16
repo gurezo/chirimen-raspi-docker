@@ -3,7 +3,7 @@ import type { GpioAccess } from 'gpio';
 import type { I2CAccess } from 'i2c';
 
 import { BrowserGpioAccess } from './browser/gpio/gpio-access.js';
-import { BrowserI2CAccess } from './browser-i2c-access.js';
+import { BrowserI2CAccess } from './browser/i2c/i2c-access.js';
 import {
   WebSocketClientTransport,
   type WebSocketClientTransportOptions,
