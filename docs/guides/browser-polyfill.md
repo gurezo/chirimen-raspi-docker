@@ -13,7 +13,9 @@
 - 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
 - 子 Issue: [#115 I2C Scan UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
+- 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
 - [Getting Started](./getting-started.md)（Runtime の起動）
+- [I2C Scan](./i2c-scan.md)
 - [Protocol](../architecture/protocol.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
@@ -152,7 +154,7 @@ GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 
 
 GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ。旧 [gc/gpio/button](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button) と同じピン）。Runtime が `Connected` のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断 / Runtime 停止で unsubscribe と unexport をする。再接続後は自動再開せず、同じ GPIO5 を再度 Start できる。操作手順の本ガイドは [gpio-input.md](./gpio-input.md)（旧 button 相当の HTML サンプルを含む）。
 
-I2C Scan は Runtime が `Connected` のとき `#/i2c-scan` の Scan で I2C bus 1 を `0x03`–`0x77` 走査する。応答 address を hex 一覧で表示する。画面離脱 / reload / WebSocket 切断で走査を中断する。検証用 slave は ADT7410（expected `0x48`）。配線は [検証仕様](../examples/i2c-scan.md)（#116）。I2C 有効化は [raspberry-pi-setup.md](./raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）。操作ガイドは後続（#117）。
+I2C Scan は Runtime が `Connected` のとき `#/i2c-scan` の Scan で I2C bus 1 を `0x03`–`0x77` 走査する。応答 address を hex 一覧で表示する。画面離脱 / reload / WebSocket 切断で走査を中断する。検証用 slave は ADT7410（expected `0x48`）。配線は [検証仕様](../examples/i2c-scan.md)（#116）。I2C 有効化は [raspberry-pi-setup.md](./raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）。操作手順の本ガイドは [i2c-scan.md](./i2c-scan.md)。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 
@@ -165,6 +167,6 @@ navigator.requestI2CAccess
 
 `navigator.requestI2CAccess()` が公開する API は `I2CPort.open` と slave の read/write のみである。`I2CPort.scan()` は追加しない（Web I2C 仕様外のため Public polyfill には置かない）。
 
-I2C Scan example は Demo-only として、web-demo が `requestI2CAccess` → `port.open(addr)` → `writeByte(0x00)` を `0x03`–`0x77` で合成する。呼び出し経路の正本は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（[検証仕様](../examples/i2c-scan.md)）。
+I2C Scan example は Demo-only として、web-demo が `requestI2CAccess` → `port.open(addr)` → `writeByte(0x00)` を `0x03`–`0x77` で合成する。呼び出し経路の正本は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（[検証仕様](../examples/i2c-scan.md)）。操作手順は [i2c-scan.md](./i2c-scan.md)。
 
 公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照。
