@@ -9,6 +9,8 @@
 - 子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
 - 子 Issue: [#103 Runtime 接続状態 UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/103)
 - 子 Issue: [#104 GPIO / I2C demo navigation を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/104)
+- 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
+- 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
 - [Getting Started](./getting-started.md)（Runtime の起動）
 - [Protocol](../architecture/protocol.md)
 
@@ -140,7 +142,7 @@ Runtime が止まっていると `Error` と起動確認の案内が出る。[Ru
 ```text
 GPIO Output   → #/gpio-output（Start / Stop で LED Blink）
 GPIO Input    → #/gpio-input（Start 後 onchange で realtime。Read は再読込。回路仕様は BCM 5）
-I2C Scan      → #/i2c-scan（#52）
+I2C Scan      → #/i2c-scan（API flow は #114 で確定。UI は #115）
 ```
 
 GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop / 画面離脱 / reload / WebSocket 切断で止めて GPIO を unexport する。終了後は同じ GPIO26 を再度 Start できる。操作手順の本ガイドは [gpio-led-blink.md](./gpio-led-blink.md)（旧 LEDblink 相当の HTML サンプルを含む）。
@@ -153,5 +155,11 @@ GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物�
 navigator.requestGPIOAccess
 navigator.requestI2CAccess
 ```
+
+### I2C Scan は polyfill に無い
+
+`navigator.requestI2CAccess()` が公開する API は `I2CPort.open` と slave の read/write のみである。`I2CPort.scan()` は追加しない（Web I2C 仕様外のため Public polyfill には置かない）。
+
+I2C Scan example は Demo-only として、web-demo が `requestI2CAccess` → `port.open(addr)` → `writeByte(0x00)` を `0x03`–`0x77` で合成する。呼び出し経路の正本は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)。
 
 公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照。
