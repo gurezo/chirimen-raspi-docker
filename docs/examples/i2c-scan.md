@@ -8,7 +8,7 @@
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - API flow（Demo-only）: [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)（#114）
 - Scan UI: web-demo の I2C Scan（`#/i2c-scan`）。[#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
-- 操作手順つきガイド: 後続（#117）
+- 操作手順つきガイド: [i2c-scan.md](../guides/i2c-scan.md)（#117）
 - I2C 有効化: [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本仕様では scan のみ）
 
@@ -18,7 +18,7 @@ web-demo の I2C port 定数は `apps/web-demo/src/i2c-scan.ts` の `I2C_SCAN_PO
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V I2C1 に接続する検証用 slave を 1 つに決める。web-demo の Scan UI はこの文書を正本とする。操作ガイドは #117。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V I2C1 に接続する検証用 slave を 1 つに決める。web-demo の Scan UI と [操作ガイド](../guides/i2c-scan.md) はこの文書を正本とする。
 
 ## 検証デバイス
 
@@ -126,7 +126,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 
 配線後、host で `/dev/i2c-1` があり、`i2cdetect -y 1`（`i2c-tools` がある場合）に `48` が出る。web-demo の I2C Scan（`#/i2c-scan`）で Scan すると、hex 一覧に **`0x48`** が含まれる。
 
-slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）では正常だが、本 Issue の完了条件ではない。空配列は失敗として、配線と I2C 有効化を見直す。操作手順・Troubleshooting の本ガイドは #117。切り分けは [troubleshooting.md](../guides/troubleshooting.md) の「I2C が使えない / scan が空」。
+slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）では正常だが、本 Issue の完了条件ではない。空配列は失敗として、配線と I2C 有効化を見直す。操作手順・Troubleshooting は [i2c-scan.md](../guides/i2c-scan.md)。切り分けは [troubleshooting.md](../guides/troubleshooting.md) の「I2C が使えない / scan が空」。
 
 ## 確認手順
 

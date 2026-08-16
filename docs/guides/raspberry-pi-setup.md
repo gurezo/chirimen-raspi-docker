@@ -5,6 +5,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 関連:
 
 - [Getting Started](./getting-started.md)
+- [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
 - [setups/README.md](../../setups/README.md)（host の Node / nvm / Docker インストール）

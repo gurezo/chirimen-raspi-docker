@@ -7,6 +7,7 @@
 - [Raspberry Pi setup](./raspberry-pi-setup.md)（host の事前準備がまだの場合）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
+- [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Architecture overview](../architecture/overview.md)
 - [Docker 構成](../architecture/docker.md)
@@ -79,7 +80,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 | Pi の I2C / GPIO / Docker を整える | [raspberry-pi-setup.md](./raspberry-pi-setup.md) |
 | LED を点滅させる | [gpio-led-blink.md](./gpio-led-blink.md)。HTML サンプル（`docs/examples/led-blink/`）または web-demo の GPIO Output。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | タクトスイッチの入力を確認する | [gpio-input.md](./gpio-input.md)。HTML サンプル（`docs/examples/button/`）または web-demo の GPIO Input。配線は [回路仕様](../examples/gpio-input.md) |
-| I2C bus の address を scan する | web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
+| I2C bus の address を scan する | [i2c-scan.md](./i2c-scan.md)。web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Browser から Runtime を試す（web-demo） | `pnpm nx serve web-demo` で接続状態と GPIO Output / GPIO Input / I2C Scan を確認する。[browser-polyfill.md](./browser-polyfill.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |

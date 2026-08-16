@@ -18,6 +18,7 @@ Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `li
 - 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
 - 子 Issue: [#115 I2C Scan UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
+- 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
 - Wiki: [00.Current-situation-analysis](https://github.com/gurezo/chirimen-raspi-docker/wiki/00.Current-situation-analysis)
 - 上流: [polyfill.js](https://github.com/chirimen-oh/chirimen/blob/master/gc/polyfill/polyfill.js)、[srv.js](https://github.com/chirimen-oh/chirimen/blob/master/_gc/srv/srv.js)
 
@@ -277,7 +278,7 @@ const device = await port?.open(0x48);
 
 ## I2C Scan API flow（#114）
 
-Browser から I2C Scan を呼び出す経路を [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で確定する。親は [#52](https://github.com/gurezo/chirimen-raspi-docker/issues/52)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（検証仕様は [i2c-scan.md](../examples/i2c-scan.md)、ADT7410 / `0x48`）。guide（#117）は後続。
+Browser から I2C Scan を呼び出す経路を [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で確定する。親は [#52](https://github.com/gurezo/chirimen-raspi-docker/issues/52)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（検証仕様は [i2c-scan.md](../examples/i2c-scan.md)、ADT7410 / `0x48`）。操作ガイドは [#117](https://github.com/gurezo/chirimen-raspi-docker/issues/117) で完了（[i2c-scan.md](../guides/i2c-scan.md)）。
 
 Scan は Web I2C 仕様外（chirimen-server 参照実装互換）。`readByte` / `writeByte` が Public なのは `I2CSlaveDevice` の CHIRIMEN polyfill 互換のためであり、scan を Public にする先例にはしない。
 
@@ -356,4 +357,4 @@ demo 用途では往復数は許容する。
 | #114 | Browser から I2C Scan を呼び出す API flow（本節「I2C Scan API flow」で完了） |
 | #115 | I2C Scan UI（web-demo Demo helper と `i2c.open` / `i2c.writeByte` routing。完了） |
 | #116 | I2C Scan の実機検証（ADT7410 / `0x48`。[i2c-scan.md](../examples/i2c-scan.md)。完了） |
-| #117 | I2C Scan guide |
+| #117 | I2C Scan guide（[i2c-scan.md](../guides/i2c-scan.md)。完了） |
