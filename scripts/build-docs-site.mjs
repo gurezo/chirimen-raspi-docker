@@ -156,6 +156,25 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;');
 }
 
+function githubSlug(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\p{Mark} -]/gu, '')
+    .trim()
+    .replace(/ +/g, '-');
+}
+
+marked.use({
+  renderer: {
+    heading({ tokens, depth }) {
+      const html = this.parser.parseInline(tokens);
+      const plain = html.replace(/<[^>]+>/g, '');
+      const id = githubSlug(plain);
+      return `<h${depth} id="${escapeHtml(id)}">${html}</h${depth}>\n`;
+    },
+  },
+});
+
 async function pathExists(target) {
   try {
     await access(target);
