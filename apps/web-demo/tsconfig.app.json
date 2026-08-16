@@ -16,5 +16,19 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/i2c/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/gpio/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/browser-polyfill/tsconfig.lib.json"
+    }
   ]
 }
