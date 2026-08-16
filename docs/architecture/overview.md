@@ -127,7 +127,7 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
-│   ├── examples/               # GPIO LED Blink / GPIO Input 回路仕様・HTML サンプル（#105 / #108 / #109 / #113）
+│   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様・HTML サンプル（#105 / #108 / #109 / #113 / #116）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── compose.yaml
 ├── package.json
@@ -137,7 +137,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- I2C Scan の実機検証（#116）と操作ガイド（#117）。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。API flow は [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定（[protocol.md](./protocol.md#i2c-scan-api-flow114)）
+- I2C Scan の操作ガイド（#117）。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（検証仕様は [i2c-scan.md](../examples/i2c-scan.md)）。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。API flow は [#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) で Demo-only として確定（[protocol.md](./protocol.md#i2c-scan-api-flow114)）
 - `docker/nginx`
 
 ## apps / libs の責務
@@ -177,6 +177,7 @@ chirimen-raspi-docker/
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
 | [GPIO Input](../guides/gpio-input.md) | 必要部品・配線・HTML サンプルでの入力確認手順 |
 | [GPIO Input 回路仕様](../examples/gpio-input.md) | BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ |
+| [I2C Scan 検証仕様](../examples/i2c-scan.md) | ADT7410 / `0x48` / I2C1（物理 pin 3 / 5）。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) |
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | Pi 上のセットアップ |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 
