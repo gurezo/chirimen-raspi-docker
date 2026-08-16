@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check TypeScript project references
+        run: pnpm nx sync:check
+
       - name: Run lint
         run: pnpm lint
 
