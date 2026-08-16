@@ -203,7 +203,7 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 | event | 相関対象外。constructor の `onEvent` と `addEventListener` / `removeEventListener` へ fan-out。server 側 `gpio.onchange` 配信は [#40](https://github.com/gurezo/chirimen-raspi-docker/issues/40)、Browser `onchange` 配線は [#41](https://github.com/gurezo/chirimen-raspi-docker/issues/41) で完了 |
 | 依存 | `protocol` / `core` のみ。`node-runtime` には依存しない |
 
-実装: `libs/browser-polyfill/src/lib/websocket-client-transport.ts`（reconnect は [#42](https://github.com/gurezo/chirimen-raspi-docker/issues/42)）
+実装: `libs/browser-polyfill/src/lib/websocket/client/transport.ts`（reconnect は [#42](https://github.com/gurezo/chirimen-raspi-docker/issues/42)）
 
 ## WebSocket server lifecycle
 

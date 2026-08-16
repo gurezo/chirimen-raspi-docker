@@ -5,13 +5,13 @@ import {
   requestGPIOAccess,
   requestI2CAccess,
   resetBrowserPolyfillForTests,
-} from './navigator-polyfill.js';
+} from './navigator.js';
 import {
   attachScriptPolyfill,
   DEFAULT_BROWSER_POLYFILL_WS_URL,
   resolveBrowserPolyfillWsUrl,
-} from './script-polyfill.js';
-import type { WebSocketConstructor } from './websocket-client-transport.js';
+} from './script.js';
+import type { WebSocketConstructor } from '../websocket/client/transport.js';
 
 let autoOpen = true;
 const constructedUrls: string[] = [];

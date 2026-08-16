@@ -10,8 +10,8 @@ import {
   installBrowserPolyfill,
   requestGPIOAccess,
   resetBrowserPolyfillForTests,
-} from './navigator-polyfill.js';
-import type { WebSocketConstructor } from './websocket-client-transport.js';
+} from '../../polyfill/navigator.js';
+import type { WebSocketConstructor } from '../../websocket/client/transport.js';
 
 let autoOpen = true;
 let onSend: ((data: string, socket: FakeWebSocket) => void) | null = null;

@@ -13,7 +13,7 @@ import type {
   ProtocolEventListener,
   ReconnectListener,
   WebSocketClientTransport,
-} from './websocket-client-transport.js';
+} from '../../websocket/client/transport.js';
 
 /**
  * protocol transport 経由で {@link GpioPort} 契約を満たす Browser 実装。
