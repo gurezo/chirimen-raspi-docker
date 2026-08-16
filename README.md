@@ -101,7 +101,7 @@ Browser からはこの Runtime API を呼びません。Scan は Public polyfil
 
 ## Compatibility
 
-Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ / Pi 4 の **Raspbian OS 32-bit** です。未検証項目は `Supported` と書きません。正本は [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) です。
+Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。検証済み行の OS は **Raspbian OS 64-bit**、および Raspberry Pi 3 B+ / Pi 4 / Pi 5 の **Raspbian OS 32-bit** です。未検証項目は `Supported` と書きません。正本は [docs/architecture/docker.md](docs/architecture/docker.md#compatibility-matrix) です。
 
 - **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`
@@ -132,15 +132,17 @@ Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/is
 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功 | Verified |
 
 Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。
-Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default。32-bit の検証済み機種は Model B Rev 1.4。
+Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default。検証済み機種は Model B Rev 1.4。
 
 ### Raspberry Pi 5
 
 | OS                 | Kernel                 | Arch      | GPIO Capability            | GPIO Backend | I2C Backend | Browser E2E                                         | Status   |
 | ------------------ | ---------------------- | --------- | -------------------------- | ------------ | ----------- | --------------------------------------------------- | -------- |
 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
+| Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8`   | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs        | i2c-dev     | WebSocket `gpio.export` 成功                        | Verified |
 
-検証済み機種は Model B Rev 1.0。
+Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。
+Pi 5 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default（64-bit OS の `2712` とは異なる）。検証済み機種は Model B Rev 1.0。
 
 ## ローカル開発
 
@@ -289,7 +291,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* 2>/dev/nu
 - **`gpiochip*`**: 存在すれば container にも渡る。gpiochip backend は未実装のため、sysfs が無い場合は GPIO unavailable
 - **Pi 3 B+（#97 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（`armv7l`）で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。詳細は [docker.md](docs/architecture/docker.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
 - **Pi 4（#98 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（Model B Rev 1.4 / 64-bit kernel / `aarch64`）で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。詳細は [docker.md](docs/architecture/docker.md) の「Pi 4 実機検証」
-- **Pi 5（#99）**: sysfs が利用可能で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。Pi 5 専用 gpiochip backend は追加しない。詳細は [docker.md](docs/architecture/docker.md) の「Pi 5 実機検証」
+- **Pi 5（#99 / #135）**: Raspbian OS 64-bit（`aarch64` / `2712`）および 32-bit（Model B Rev 1.0 / 64-bit kernel / `aarch64` / `v8`）で `gpio=sysfs` / `i2c=i2c-dev` を実機確認済み。Pi 5 専用 gpiochip backend は追加しない。詳細は [docker.md](docs/architecture/docker.md) の「Pi 5 実機検証」
 
 ### 非 Pi（macOS など）での注意
 

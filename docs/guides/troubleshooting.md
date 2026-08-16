@@ -151,9 +151,9 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 ### 実機メモ（#97 / #98 / #99 / #135）
 
 - **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
-- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
-- **Raspbian OS 32-bit（#135）**: Pi 3 B+（`armv7l` / `6.18.34+rpt-rpi-v7`、Node 22 / `Dockerfile.32bit`）と Pi 4 Model B Rev 1.4（64-bit kernel / `aarch64` / `v8`）で `gpio=sysfs` / `i2c=i2c-dev` と WebSocket `gpio.export` を確認済み。Pi 4 は `docker compose down` 後の gpioN 残留なしも確認済み
-- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
+- **Pi 4（#98 / #135）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）および 32-bit（Model B Rev 1.4 / 64-bit kernel / `aarch64` / `v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
+- **Raspbian OS 32-bit（#135）**: Pi 3 B+（`armv7l` / `6.18.34+rpt-rpi-v7`、Node 22 / `Dockerfile.32bit`）、Pi 4 Model B Rev 1.4（64-bit kernel / `aarch64` / `v8`）、Pi 5 Model B Rev 1.0（64-bit kernel / `aarch64` / `v8`）で `gpio=sysfs` / `i2c=i2c-dev` と WebSocket `gpio.export` を確認済み。Pi 4 / Pi 5 は `docker compose down` 後の gpioN 残留なしも確認済み。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため `--32bit` を明示する
+- **Pi 5（#99 / #135）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（64-bit は kernel `2712`、32-bit は `v8`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
 
 ## Docker build が `no match for platform in manifest` で失敗する
 
