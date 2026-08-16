@@ -134,7 +134,7 @@ Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/is
 | Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
 
-Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default。
+Raspbian OS 32-bit は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) で Runtime E2E を確認済み。Pi 4 の 32-bit OS は 64-bit kernel（`aarch64` / `v8`）が default。32-bit の検証済み機種は Model B Rev 1.4。
 
 ### Raspberry Pi 5
 
@@ -199,17 +199,18 @@ Raspberry Pi 4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）
 
 ### Pi 4 32-bit 実機検証（#135）
 
-Raspberry Pi 4（Raspbian OS 32-bit / kernel `6.18.34+rpt-rpi-v8` / `aarch64`）で次を確認済み。Pi 4 向け 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる（Pi 3 B+ 32-bit の `armv7l` / `v7` とは異なる）。
+Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 32-bit / kernel `6.18.34+rpt-rpi-v8` / `aarch64`）で次を確認済み。Pi 4 向け 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる（Pi 3 B+ 32-bit の `armv7l` / `v7` とは異なる）。
 
 | 項目 | 結果 |
 | --- | --- |
-| host paths | `/sys/class/gpio`・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。`/dev/i2c-1` あり |
+| doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
+| host paths | `/sys/class/gpio`（chip0 / chip1、gpiochip512 / gpiochip570）・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。`/dev/i2c-1` あり |
 | start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
 | capability | `gpio=sysfs` / `i2c=i2c-dev` |
 | GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
 | I2C | `/dev/i2c-1` 存在時に `i2c-dev` backend を選択 |
 | WebSocket | 接続、および `gpio.export` の request/response 成功 |
-| cleanup | 切断時の session cleanup で未 unexport pin が消える |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | known limitations | `uname -m` が `aarch64` のため `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びうる。armv7 用 image が必要な場合は `./scripts/start.sh --32bit` |
 | Status | Verified（`Supported` とは書かない） |
 
