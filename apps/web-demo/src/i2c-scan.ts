@@ -41,6 +41,7 @@ export class I2cScanSession {
   #scanPromise: Promise<void> | null = null;
   #scanId = 0;
   #addresses: number[] = [];
+  #completed = false;
   readonly #onAddresses: I2cScanAddressesListener | undefined;
 
   constructor(
@@ -57,6 +58,11 @@ export class I2cScanSession {
     return this.#addresses;
   }
 
+  /** 直近の scan が中断されずに完了したか */
+  get completed(): boolean {
+    return this.#completed;
+  }
+
   /**
    * I2C bus 1 を走査する。実行中なら no-op。
    */
@@ -66,12 +72,16 @@ export class I2cScanSession {
     }
 
     const scanId = ++this.#scanId;
+    this.#completed = false;
     this.#setAddresses([]);
     const scanPromise = this.#doScan(scanId);
     this.#scanning = true;
     this.#scanPromise = scanPromise;
     try {
       await scanPromise;
+      if (scanId === this.#scanId) {
+        this.#completed = true;
+      }
     } finally {
       if (this.#scanPromise === scanPromise) {
         this.#scanPromise = null;
@@ -95,6 +105,7 @@ export class I2cScanSession {
     }
 
     this.#scanning = false;
+    this.#completed = false;
     this.#setAddresses([]);
   }
 

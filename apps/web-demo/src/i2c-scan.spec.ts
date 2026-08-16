@@ -123,6 +123,7 @@ describe('I2cScanSession', () => {
 
     expect(session.addresses).toEqual([0x03, 0x48, 0x77]);
     expect(session.scanning).toBe(false);
+    expect(session.completed).toBe(true);
     expect(port.opened[0]).toBe(I2C_SCAN_ADDRESS_MIN);
     expect(port.opened.at(-1)).toBe(I2C_SCAN_ADDRESS_MAX);
     expect(port.opened).toHaveLength(
@@ -203,6 +204,7 @@ describe('I2cScanSession', () => {
 
     expect(session.scanning).toBe(false);
     expect(session.addresses).toEqual([]);
+    expect(session.completed).toBe(false);
   });
 
   it('is a no-op when stop is called before scan', async () => {
@@ -210,5 +212,6 @@ describe('I2cScanSession', () => {
     await expect(session.stop()).resolves.toBeUndefined();
     expect(session.scanning).toBe(false);
     expect(session.addresses).toEqual([]);
+    expect(session.completed).toBe(false);
   });
 });

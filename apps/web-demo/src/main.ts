@@ -16,6 +16,10 @@ import {
 } from './gpio-led-blink-cleanup.js';
 import { LedBlinkSession } from './gpio-led-blink.js';
 import {
+  I2cScanSession,
+  formatI2cSlaveAddress,
+} from './i2c-scan.js';
+import {
   DEMO_NAV_ITEMS,
   HOME_HREF,
   getDemoView,
@@ -133,11 +137,37 @@ if (root) {
   inputError.className = 'gpio-input__error';
 
   inputControls.append(inputButtons, inputStatus, inputError);
+
+  const scanControls = document.createElement('div');
+  scanControls.className = 'i2c-scan';
+  scanControls.hidden = true;
+
+  const scanButtons = document.createElement('div');
+  scanButtons.className = 'i2c-scan__controls';
+
+  const scanButton = document.createElement('button');
+  scanButton.type = 'button';
+  scanButton.textContent = 'Scan';
+
+  scanButtons.append(scanButton);
+
+  const scanStatus = document.createElement('p');
+  scanStatus.className = 'i2c-scan__status';
+
+  const scanAddressList = document.createElement('ul');
+  scanAddressList.className = 'i2c-scan__addresses';
+  scanAddressList.setAttribute('aria-label', 'Detected I2C addresses');
+
+  const scanError = document.createElement('p');
+  scanError.className = 'i2c-scan__error';
+
+  scanControls.append(scanButtons, scanStatus, scanAddressList, scanError);
   demoSection.append(
     demoTitle,
     demoDescription,
     blinkControls,
     inputControls,
+    scanControls,
     homeLink
   );
   root.append(heading, nav, statusSection, demoSection);
@@ -151,6 +181,11 @@ if (root) {
   const inputSession = new GpioInputSession({
     onValue: () => {
       applyInputUi();
+    },
+  });
+  const scanSession = new I2cScanSession({
+    onAddresses: () => {
+      applyScanUi();
     },
   });
   const statusListeners = new Set<(status: ConnectionStatus) => void>();
@@ -206,6 +241,28 @@ if (root) {
     });
   };
 
+  const applyScanUi = (): void => {
+    const onI2cScan = parseDemoRoute(window.location.hash) === 'i2c-scan';
+    scanControls.hidden = !onI2cScan;
+    scanButton.disabled =
+      !onI2cScan ||
+      connectionStatus !== 'connected' ||
+      scanSession.scanning;
+    if (scanSession.scanning) {
+      scanStatus.textContent = '走査中';
+    } else if (scanSession.completed) {
+      scanStatus.textContent = `${scanSession.addresses.length} 件`;
+    } else {
+      scanStatus.textContent = '停止中';
+    }
+    scanAddressList.replaceChildren();
+    for (const addr of scanSession.addresses) {
+      const item = document.createElement('li');
+      item.textContent = formatI2cSlaveAddress(addr);
+      scanAddressList.append(item);
+    }
+  };
+
   const applyRoute = (): void => {
     const routeId = parseDemoRoute(window.location.hash);
     const view = getDemoView(routeId);
@@ -238,6 +295,7 @@ if (root) {
 
     applyBlinkUi();
     applyInputUi();
+    applyScanUi();
   };
 
   const applyStatus = (status: ConnectionStatus): void => {
@@ -249,6 +307,7 @@ if (root) {
     helpEl.replaceChildren();
     applyBlinkUi();
     applyInputUi();
+    applyScanUi();
     for (const listener of statusListeners) {
       listener(status);
     }
@@ -321,6 +380,22 @@ if (root) {
   inputStopButton.addEventListener('click', () => {
     void stopInput();
     applyInputUi();
+  });
+
+  scanButton.addEventListener('click', () => {
+    scanError.textContent = '';
+    void scanSession.scan().then(
+      () => {
+        applyScanUi();
+      },
+      (error: unknown) => {
+        scanError.textContent = isChirimenError(error)
+          ? error.message
+          : 'I2C Scan を実行できませんでした。';
+        applyScanUi();
+      }
+    );
+    applyScanUi();
   });
 
   applyRoute();
