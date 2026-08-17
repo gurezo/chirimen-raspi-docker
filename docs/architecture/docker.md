@@ -9,7 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
-- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176）
+- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176。optional profile は #177）
 - [Getting Started](../guides/getting-started.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
@@ -24,16 +24,24 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh          # uname -m で自動選択
-./scripts/start.sh --32bit  # 32-bit OS
-./scripts/start.sh --64bit  # 64-bit OS
+./scripts/start.sh            # Runtime only（uname -m で自動選択）
+./scripts/start.sh --editor   # Runtime + Browser Editor（64-bit のみ）
+./scripts/start.sh --32bit    # 32-bit OS
+./scripts/start.sh --64bit    # 64-bit OS
 ```
 
 ## Compose サービス
 
 [`compose.yaml`](../../compose.yaml) は `chirimen-server` と `chirimen-editor` を定義する（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。`depends_on` は付けない。どちらか一方だけ `docker compose restart` できる。Editor に GPIO / I2C device は渡さない。
 
-64-bit では `docker compose up` / `./scripts/start.sh` が両方を起動する。32-bit では `start.sh` が Editor をスキップする（公式 image に `linux/arm/v7` が無い）。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。
+既定は Runtime only である（[#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)）。
+
+| 利用方法 | Compose | 推奨入口 |
+| --- | --- | --- |
+| Runtime only（既定） | `docker compose up` | `./scripts/start.sh` |
+| Runtime + Editor | `docker compose --profile editor up` | `./scripts/start.sh --editor` |
+
+`COMPOSE_PROFILES=editor` も Compose 標準として同じ profile を有効にする。32-bit では `start.sh --editor` が Editor をスキップする（公式 image に `linux/arm/v7` が無い）。
 
 ### chirimen-server
 
@@ -52,14 +60,15 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | 項目 | 値 |
 | --- | --- |
 | Service | `chirimen-editor` |
+| Profile | `editor`（[#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。既定の `docker compose up` では起動しない） |
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | `127.0.0.1:8080:8080`（LAN 公開は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | Workspace | bind `./docs/examples` → `/home/coder/project`（git 管理。container 削除後も残る） |
 | Extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` |
 | Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む） |
-| User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
-| Architecture | `linux/amd64`, `linux/arm64`。32-bit では `start.sh` が起動しない |
+| User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh --editor` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
+| Architecture | `linux/amd64`, `linux/arm64`。32-bit では `start.sh --editor` が起動しない |
 | Network | Compose default。`depends_on` なし |
 | GPIO / I2C | 渡さない |
 
@@ -67,13 +76,22 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 
 ### 起動と health check
 
+Runtime only:
+
 ```sh
 ./scripts/start.sh
+curl http://localhost:33330/health
+```
+
+Runtime + Editor（64-bit）:
+
+```sh
+./scripts/start.sh --editor
 curl http://localhost:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 ```
 
-64-bit では Editor も起動する。`/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
+`/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
 
 ```json
 {
@@ -83,10 +101,10 @@ curl -fsS http://127.0.0.1:8080/healthz
 }
 ```
 
-独立 restart の確認例:
+独立 restart の確認例（Editor を profile 付きで起動したあと）:
 
 ```sh
-docker compose restart chirimen-editor
+docker compose --profile editor restart chirimen-editor
 curl -fsS http://127.0.0.1:33330/health
 docker compose restart chirimen-server
 curl -fsS http://127.0.0.1:8080/healthz
@@ -404,4 +422,4 @@ Wiki で想定している次は、現状未実装。
 | `docker/nginx` | reverse proxy / static hosting |
 | `apps/web-demo`（compose 連携） | Browser Polyfill の example |
 
-Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。
+Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)（`docker compose --profile editor up` / `./scripts/start.sh --editor`）。
