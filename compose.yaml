@@ -23,3 +23,24 @@ services:
     volumes:
       - /sys/class/gpio:/sys/class/gpio
       - /sys/devices:/sys/devices
+
+  # Browser Editor (code-server). Independent of Runtime: no depends_on.
+  # This is not a Hardware Runtime. Do not add devices, privileged, or
+  # /sys/class/gpio / /sys/devices. GPIO / I2C stay on chirimen-server.
+  # Bind 127.0.0.1 for now; LAN publish and auth are #181.
+  # Optional Compose profile is #177. Persistence uid/gid is #176.
+  chirimen-editor:
+    build:
+      context: docker/editor
+      dockerfile: Dockerfile
+    image: chirimen-raspi-docker/editor:4.132.0
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./docs/examples:/home/coder/project
+      - chirimen-editor-local:/home/coder/.local
+      - chirimen-editor-config:/home/coder/.config
+
+volumes:
+  chirimen-editor-local:
+  chirimen-editor-config:
