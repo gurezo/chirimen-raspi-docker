@@ -12,7 +12,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 ## Status
 
-Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175））
+Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176）
 
 ## Context
 
@@ -148,7 +148,7 @@ code-server --install-extension downloaded-ms-python.python.vsix
 | `code-server --install-extension <id>` | image ビルド時や初期化スクリプトでの一括導入 |
 | `.vsix` ファイル | gallery に無い、または Microsoft Marketplace 専用の拡張を手動導入 |
 
-設定と extension 本体は workspace とは別 volume に置く（公式 Docker 例の `~/.local` / `~/.config`）。永続化の実装は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。
+設定と extension 本体は workspace とは別 volume に置く（公式 Docker 例の `~/.local` / `~/.config`）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)（下記 [Workspace volume](#workspace-volume)）。
 
 ## Marketplace 制約
 
@@ -187,7 +187,29 @@ CHIRIMEN Example の編集・Browser 実行に Microsoft 独占拡張は必須�
 | `$HOME/.local` | `/home/coder/.local` | extension、user-data、heartbeat |
 | `$HOME/.config` | `/home/coder/.config` | `code-server/config.yaml`（認証など） |
 
-本リポジトリでもこの分離を採用する。container image / 一時ファイル / build cache は永続化しない。volume か bind mount か、uid / gid の扱いは [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176) で決める。
+本リポジトリでもこの分離を採用する。実装は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。container image / `/tmp` / build cache は永続化しない。
+
+| 対象 | 方法 | 理由 |
+| --- | --- | --- |
+| workspace（Phase 7 Example） | bind mount `./docs/examples` → `/home/coder/project` | git 管理のソース。host から差分が見え、container 削除後も残る |
+| editor settings / password | named volume `chirimen-editor-config` → `/home/coder/.config` | `config.yaml` は git に置かない。`compose down`（`-v` なし）後も password が残る |
+| extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` | 公式と同じ分離。host `$HOME` を汚さない |
+| container image / `/tmp` / build cache | 永続化しない | image 再 build と container 再作成で捨てる |
+
+workspace を named volume にはしない。Example が git から切り離され、host で編集確認できなくなるため。
+
+`docker compose down`（`-v` なし）は named volume を残す。`docker compose down -v` は設定・拡張・password を消す。workspace の bind mount はどちらでも消えない。
+
+### uid / gid
+
+公式 image の `fixuid` と `DOCKER_USER` を使う。root では起動しない。GPIO / I2C device は渡さない。
+
+| 入口 | uid |
+| --- | --- |
+| `./scripts/start.sh`（64-bit） | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
+| `docker compose up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
+
+bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。ユーザー固有の `.vscode` は bind mount に出うるが git には含めない（推奨設定は [#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178)）。
 
 Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の Web Demo / HTML サンプル → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
 
@@ -244,7 +266,7 @@ reverse proxy の具体的な Compose 追加は本 Issue の範囲外。Security
 | --- | --- |
 | 追跡方法 | `codercom/code-server:<semver>` を明示 pin。`latest` は使わない |
 | アップグレード | Dockerfile / Compose の tag を更新する PR。自動追従しない |
-| 設定・workspace | volume に残す。image 再作成後も `config.yaml` / extension / 編集中の Example を維持する（#176） |
+| 設定・workspace | named volume と bind mount に残す。image / container 再作成後も `config.yaml` / extension / 編集中の Example を維持する（[#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)） |
 | 互換性 | 新 tag の architecture が引き続き `amd64` / `arm64` のみであることを release 資産で確認する |
 | 実機確認 | Raspberry Pi 3 / 4 / 5 での Editor 検証は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182) |
 
@@ -301,8 +323,9 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | HTTPS | 初期は HTTP + password。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま |
 | Marketplace | Open VSX。Microsoft Marketplace は使わない |
 | GPIO / I2C | Editor に device を渡さない |
+| 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
