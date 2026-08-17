@@ -199,6 +199,9 @@ write_compose_override() {
   local dockerfile="$1"
   local image="$2"
   local device
+  local editor_uid
+  local editor_gid
+  local editor_user
 
   OVERRIDE_FILE="$(mktemp "${TMPDIR:-/tmp}/chirimen-compose-devices.XXXXXX.yaml")"
 
@@ -223,6 +226,18 @@ write_compose_override() {
       if [ "$I2C_DEV" -eq 1 ]; then
         printf '      - %s:%s\n' "$I2C_DEVICE" "$I2C_DEVICE"
       fi
+    fi
+
+    # Editor is 64-bit only. Pass host uid so bind-mounted examples are
+    # writable (code-server fixuid). Do not add GPIO / I2C devices.
+    if [ "$OS_BITS" -eq 64 ]; then
+      editor_uid="$(id -u)"
+      editor_gid="$(id -g)"
+      editor_user="$(id -un)"
+      printf '%s\n' '  chirimen-editor:'
+      printf '%s\n' "    user: \"${editor_uid}:${editor_gid}\""
+      printf '%s\n' '    environment:'
+      printf '%s\n' "      DOCKER_USER: \"${editor_user}\""
     fi
   } >"$OVERRIDE_FILE"
 }
@@ -262,7 +277,7 @@ log_mapping_summary() {
   if [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
   else
-    log "editor: chirimen-editor (no GPIO/I2C devices)"
+    log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
   fi
 }
 
