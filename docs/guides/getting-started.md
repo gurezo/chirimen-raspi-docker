@@ -57,7 +57,11 @@ curl http://localhost:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 ```
 
-64-bit では Editor も起動する。Browser で `http://127.0.0.1:8080` を開く。初回 password は Editor の `config.yaml` にある。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。
+64-bit では Editor も起動する。Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Workspace volume](../architecture/browser-editor.md#workspace-volume)。
+
+```sh
+docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+```
 
 server の期待する応答例:
 
@@ -87,6 +91,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 | Browser から Runtime を試す（web-demo） | `pnpm nx serve web-demo` で接続状態と GPIO Output / GPIO Input / I2C Scan を確認する。[browser-polyfill.md](./browser-polyfill.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
+| Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |

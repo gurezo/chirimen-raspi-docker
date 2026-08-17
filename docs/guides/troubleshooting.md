@@ -11,6 +11,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [I2C Scan](./i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 - [Docker 構成](../architecture/docker.md)
+- [Browser Editor](../architecture/browser-editor.md)
 
 ## device が無く GPIO / I2C が unavailable になる
 
@@ -241,6 +242,53 @@ gyp ERR! stack Error: getaddrinfo EAI_AGAIN nodejs.org
 ```
 
 `runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。
+
+## Editor で Example が保存できない（Permission denied）
+
+### 症状
+
+Browser Editor から `docs/examples` 配下を保存すると Permission denied になる。または host 側のファイル所有者が `coder` / UID 1000 になり、host ユーザーで書けない。
+
+### 確認
+
+```sh
+ls -ld docs/examples
+id -u
+id -g
+docker compose exec chirimen-editor id
+```
+
+起動ログの `editor uid=` が host の `id -u`:`id -g` と一致するか見る。
+
+### 対処
+
+- 推奨入口は `./scripts/start.sh`（64-bit で host uid を Editor に渡す）
+- `docker compose up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
+- root では起動しない
+- GPIO / I2C の Permission denied はこの節ではなく上記「Permission denied（GPIO / I2C）」
+
+方針は [browser-editor.md の uid / gid](../architecture/browser-editor.md#uid--gid)。
+
+## Editor の password / 設定が消えた
+
+### 症状
+
+container 再作成後に Editor の password が変わり、入れていた extension も無い。Example の編集内容は残っている。
+
+### 原因
+
+`docker compose down -v` または `docker volume rm` が named volume `chirimen-editor-config` / `chirimen-editor-local` を消した。workspace は bind mount のため残る。
+
+### 確認
+
+```sh
+docker volume ls | grep chirimen-editor
+docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+```
+
+### 対処
+
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。Example の中身は host の `docs/examples` を見る。
 
 ## 非 Pi 環境（macOS など）
 
