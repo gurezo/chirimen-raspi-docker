@@ -233,3 +233,33 @@ Web view は [secure context](https://coder.com/docs/code-server/FAQ) を要求�
 - Internet 公開、HTTPS 必須、Web view を IP 直打ちで使いたい場合に reverse proxy が必要になる
 
 reverse proxy の具体的な Compose 追加は本 Issue の範囲外。Security 方針の実装は #181。
+
+## Upgrade
+
+公式 image は Docker Hub の tag で配る。FAQ は更新通知を code-server の差分の一つとして挙げる。
+
+本リポジトリの方針:
+
+| 項目 | 内容 |
+| --- | --- |
+| 追跡方法 | `codercom/code-server:<semver>` を明示 pin。`latest` は使わない |
+| アップグレード | Dockerfile / Compose の tag を更新する PR。自動追従しない |
+| 設定・workspace | volume に残す。image 再作成後も `config.yaml` / extension / 編集中の Example を維持する（#176） |
+| 互換性 | 新 tag の architecture が引き続き `amd64` / `arm64` のみであることを release 資産で確認する |
+| 実機確認 | Raspberry Pi 3 / 4 / 5 での Editor 検証は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182) |
+
+host への npm / install.sh による上書きは採用しない。Editor は Docker service としてだけ上げる。
+
+## License
+
+[code-server の LICENSE](https://github.com/coder/code-server/blob/main/LICENSE) は MIT（Copyright 2019 Coder Technologies Inc.）。再配布・改変・商用利用は、著作権表示と許諾文の保持を条件に許可される。
+
+VS Code 本体の OSS 版も MIT である。code-server は submodule の VS Code に patch を当てて Browser 向けにしている（[FAQ: code-server と OpenVSCode-Server の違い](https://coder.com/docs/code-server/FAQ)）。
+
+注意:
+
+- Microsoft Marketplace 上の拡張は各拡張のライセンスに従う。Open VSX 上の拡張も同様に個別ライセンス
+- GitHub Copilot など Marketplace 専用拡張は、ライセンス上も技術上も本構成の対象外
+- Desktop GUI 版 VS Code を container で動かす製品ライセンスは、親 Issue の Out of Scope のため評価しない
+
+本リポジトリのドキュメントと Docker 設定から公式 image を参照するだけであれば、MIT の再配布条件を追加で満たす必要は生じない。image を再配布する場合は LICENSE の表示を残す。
