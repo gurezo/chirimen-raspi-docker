@@ -5,6 +5,7 @@
 関連:
 
 - [Raspberry Pi setup](./raspberry-pi-setup.md)（host の事前準備がまだの場合）
+- [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)
@@ -108,7 +109,7 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
 
-ローカルで TypeScript を触る場合（Docker 以外）:
+ローカルで TypeScript を触る場合（Docker 以外）は [Development Guide](./development.md) を参照してください。
 
 ```sh
 pnpm install

@@ -38,6 +38,7 @@ curl http://localhost:33330/health
 | ドキュメント                                                           | 内容                                             |
 | ---------------------------------------------------------------------- | ------------------------------------------------ |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ         |
+| [docs/guides/development.md](docs/guides/development.md)               | リポジトリ開発向けの Node.js / pnpm / Nx         |
 | [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose インストール     |
 
 ### アーキテクチャ
@@ -71,7 +72,7 @@ Node.js / npm / pnpm はホスト OS には不要です。Runtime は Docker コ
 
 ## Development 必要環境
 
-リポジトリ自体をホスト上で開発する場合:
+リポジトリ自体をホスト上で開発する場合（手順は [Development Guide](docs/guides/development.md)）:
 
 - Node.js
 - pnpm v11.x
