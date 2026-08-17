@@ -299,7 +299,7 @@ host に `/dev/gpiomem` や `/dev/i2c-1` が無い。GPIO / I2C は使えない�
 ### 対処（開発継続）
 
 - `./scripts/start.sh` で任意 device なし起動を試みる（GPIO / I2C 検証は不可）
-- またはローカルで TypeScript / server 開発する:
+- またはローカルで TypeScript / server 開発する（手順は [Development Guide](./development.md)）:
 
 ```sh
 pnpm install

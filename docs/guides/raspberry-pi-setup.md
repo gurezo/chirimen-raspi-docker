@@ -5,10 +5,11 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 関連:
 
 - [Getting Started](./getting-started.md)
+- [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
-- [setups/README.md](../../setups/README.md)（host の Node / nvm / Docker インストール）
+- [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose インストール）
 - `scripts/doctor.sh` / `scripts/start.sh` / `scripts/enable-i2c.sh`
 
 ## 前提 OS
