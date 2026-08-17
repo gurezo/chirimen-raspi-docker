@@ -12,7 +12,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 ## Status
 
-Proposed（調査中。採用決定は後続節）
+Accepted（#173。実装は #174 以降）
 
 ## Context
 
@@ -111,7 +111,7 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
   codercom/code-server:latest
 ```
 
-本リポジトリでは `latest` を使わず、semver タグで pin する方針を後続節で決める。image 作成は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。
+本リポジトリでは `latest` を使わず、semver タグで pin する（[Decision](#decision)）。image 作成は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。
 
 | 項目 | 内容 |
 | --- | --- |
@@ -263,3 +263,50 @@ VS Code 本体の OSS 版も MIT である。code-server は submodule の VS Co
 - Desktop GUI 版 VS Code を container で動かす製品ライセンスは、親 Issue の Out of Scope のため評価しない
 
 本リポジトリのドキュメントと Docker 設定から公式 image を参照するだけであれば、MIT の再配布条件を追加で満たす必要は生じない。image を再配布する場合は LICENSE の表示を残す。
+
+## 候補比較
+
+Desktop GUI 版 VS Code の container 起動は親 Issue の Out of Scope のため比較しない。
+
+| 項目 | code-server（Coder） | OpenVSCode Server（Gitpod） | Theia |
+| --- | --- | --- | --- |
+| ライセンス | MIT | MIT | EPL-2.0 / GPL-2.0 等 |
+| Docker 公式 image | `codercom/code-server`（amd64 / arm64） | `gitpod/openvscode-server` | 製品ごとに分散 |
+| 認証 | 組み込み password / hashed-password | connection token。password UI は無い | 製品依存 |
+| Marketplace | Open VSX / Coder gallery | 公式に近い Microsoft Marketplace | Open VSX |
+| 設定 | `config.yaml` | 主に CLI フラグ | 製品依存 |
+| self-host 向け差分 | sub-path、内蔵 proxy、更新通知、disk 上の settings | upstream VS Code を Browser で出すことに特化 | VS Code そのものではない |
+| VS Code 設定の再利用 | 可能 | 近い | 不可（FAQ） |
+
+OpenVSCode Server は Marketplace 互換で有利だが、password 認証・`config.yaml`・内蔵 proxy が薄い。Phase 8 は LAN の Raspberry Pi 上で optional な Editor service を出すことが主目的なので、self-host 向けの差分がある code-server を採る。
+
+Theia は Monaco / extension API を借りた別 Editor であり、親 Issue が求める VS Code 系体験ではない。
+
+## Decision
+
+Phase 8 の Browser Editor は **Coder `code-server`** とする。
+
+### 決定事項
+
+| 項目 | 内容 |
+| --- | --- |
+| 製品 | Coder `code-server` |
+| 配布 | 公式 Docker image `codercom/code-server` |
+| Version policy | semver タグで pin。初期ピンは `4.132.0`（調査時点の最新安定版。[v4.132.0](https://github.com/coder/code-server/releases/tag/v4.132.0)）。`latest` 禁止 |
+| 対応 architecture | `linux/arm64`（Raspberry Pi 上の Editor）、`linux/amd64`（開発確認） |
+| 非対応 architecture | `arm32` / `armv7` / `armhf`。公式 image も現行 release 資産も無い。linuxserver の armhf は廃止済み |
+| 32-bit OS の Runtime | 現状どおり `Dockerfile.32bit` で継続。Editor は出さない |
+| Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
+| 認証 | 既定は password。詳細は #181 |
+| HTTPS | 初期は HTTP + password。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま |
+| Marketplace | Open VSX。Microsoft Marketplace は使わない |
+| GPIO / I2C | Editor に device を渡さない |
+
+#174 は `codercom/code-server:4.132.0` をベースに Editor image を作る。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+
+### Consequences
+
+- 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
+- Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Runtime / Web Demo は従来どおり使える。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional にする前提
+- Microsoft 独占拡張は使えない。CHIRIMEN Example の編集・Browser 実行には必須ではない
+- 実機での Editor 起動確認は #174 / #182。本 Issue は選定のみで `Supported` とは書かない
