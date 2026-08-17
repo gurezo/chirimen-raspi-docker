@@ -131,7 +131,7 @@ chirimen-raspi-docker/
 │   ├── guides/
 │   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様・HTML サンプル（#105 / #108 / #109 / #113 / #116 / #117）
 │   └── api/                    # Typedoc 生成物（git 管理外）
-├── compose.yaml
+├── compose.yaml                # chirimen-server + chirimen-editor（#175）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -140,7 +140,6 @@ chirimen-raspi-docker/
 未実装（予定）:
 
 - `docker/nginx`
-- Editor Compose service（image は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）
 
 ## apps / libs の責務
 
@@ -159,9 +158,9 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。`--32bit` / `--64bit` で Dockerfile を切り替え、未指定時は `uname -m` で自動選択）
-- ベース定義は root の `compose.yaml`（`/sys/class/gpio` と `/sys/devices` を常時 mount）
-- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。`--32bit` / `--64bit` で Dockerfile を切り替え、未指定時は `uname -m` で自動選択。64-bit では `chirimen-editor` も起動し、32-bit では Editor をスキップする）
+- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` に GPIO / I2C は渡さない）
+- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 
 詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
@@ -184,7 +183,7 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
-| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174） |
+| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |

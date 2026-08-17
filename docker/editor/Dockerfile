@@ -15,7 +15,7 @@ ENV USER=coder
 WORKDIR /home/coder/project
 
 # Separate source, extensions/user-data, and code-server config.
-# Compose wiring is #175; persistence policy is #176.
+# Compose service is chirimen-editor (#175); persistence uid/gid is #176.
 VOLUME ["/home/coder/project", "/home/coder/.local", "/home/coder/.config"]
 
 EXPOSE 8080

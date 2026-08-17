@@ -50,10 +50,13 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [docker compose up options...]
 
   Probe host hardware paths and start chirimen-server with only the
   devices that exist on this host (capability-aware mapping).
+  On 64-bit, also starts chirimen-editor (code-server on 127.0.0.1:8080).
+  Editor is skipped on 32-bit: the official image has no armv7 build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
+    - Editor without GPIO / I2C devices (not a Hardware Runtime)
 
   Dockerfile (Node base image differs by OS bitness):
     --32bit          docker/server/Dockerfile.32bit (Node 22, linux/arm/v7)
@@ -61,7 +64,7 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [docker compose up options...]
     --arch 32|64     same as --32bit / --64bit
     (default)        auto-detect from uname -m
 
-  Optionally maps when present:
+  Optionally maps when present (chirimen-server only):
     - /dev/gpiomem*
     - /dev/gpiochip*
     - /dev/i2c-1
@@ -256,6 +259,11 @@ log_mapping_summary() {
   log "image: ${image}"
   log "mapping: sysfs=${sysfs_status} gpiomem=${gpiomem_list} gpiochip=${gpiochip_list} i2c-1=${i2c_status}"
   log "privileged: false"
+  if [ "$OS_BITS" -eq 32 ]; then
+    log "editor: skipped (32-bit / armv7; see browser-editor.md)"
+  else
+    log "editor: chirimen-editor (no GPIO/I2C devices)"
+  fi
 }
 
 require_docker_compose() {
@@ -343,10 +351,20 @@ main() {
   write_compose_override "$dockerfile" "$image"
   require_docker_compose
 
-  log "starting: docker compose -f compose.yaml -f ${OVERRIDE_FILE} up ${up_args[*]}"
-  log ""
+  local -a compose_services=()
+  if [ "$OS_BITS" -eq 32 ]; then
+    compose_services=(chirimen-server)
+  fi
 
-  docker compose -f compose.yaml -f "$OVERRIDE_FILE" up "${up_args[@]}"
+  if [ "${#compose_services[@]}" -gt 0 ]; then
+    log "starting: docker compose -f compose.yaml -f ${OVERRIDE_FILE} up ${up_args[*]} ${compose_services[*]}"
+    log ""
+    docker compose -f compose.yaml -f "$OVERRIDE_FILE" up "${up_args[@]}" "${compose_services[@]}"
+  else
+    log "starting: docker compose -f compose.yaml -f ${OVERRIDE_FILE} up ${up_args[*]}"
+    log ""
+    docker compose -f compose.yaml -f "$OVERRIDE_FILE" up "${up_args[@]}"
+  fi
 }
 
 main "$@"

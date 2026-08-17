@@ -46,7 +46,7 @@ chmod +x scripts/start.sh
 ./scripts/start.sh --64bit  # 64-bit OS（Node 24）
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため自動選択は 64-bit 用 Dockerfile になりうる。32-bit userland 向け image が必要な場合は `./scripts/start.sh --32bit` を明示する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。64-bit では Browser Editor（`chirimen-editor`）も `127.0.0.1:8080` で起動する。32-bit では Editor を起動しない（公式 image に `linux/arm/v7` が無い）。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため自動選択は 64-bit 用 Dockerfile になりうる。32-bit userland 向け image が必要な場合は `./scripts/start.sh --32bit` を明示する。
 
 ## 4. health check で確認する
 
@@ -54,9 +54,12 @@ chmod +x scripts/start.sh
 
 ```sh
 curl http://localhost:33330/health
+curl -fsS http://127.0.0.1:8080/healthz
 ```
 
-期待する応答例:
+64-bit では Editor も起動する。Browser で `http://127.0.0.1:8080` を開く。初回 password は Editor の `config.yaml` にある。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。
+
+server の期待する応答例:
 
 ```json
 {
