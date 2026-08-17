@@ -41,12 +41,13 @@ chmod +x scripts/doctor.sh
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh          # uname -m で 32-bit / 64-bit 用 Dockerfile を自動選択
-./scripts/start.sh --32bit  # 32-bit OS（Node 22）
-./scripts/start.sh --64bit  # 64-bit OS（Node 24）
+./scripts/start.sh            # Runtime only（uname -m で 32-bit / 64-bit 用 Dockerfile を自動選択）
+./scripts/start.sh --32bit    # 32-bit OS（Node 22）
+./scripts/start.sh --64bit    # 64-bit OS（Node 24）
+./scripts/start.sh --editor   # Runtime + Browser Editor（64-bit のみ）
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。64-bit では Browser Editor（`chirimen-editor`）も `127.0.0.1:8080` で起動する。32-bit では Editor を起動しない（公式 image に `linux/arm/v7` が無い）。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため自動選択は 64-bit 用 Dockerfile になりうる。32-bit userland 向け image が必要な場合は `./scripts/start.sh --32bit` を明示する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。32-bit では `--editor` を付けても Editor を起動しない（公式 image に `linux/arm/v7` が無い）。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため自動選択は 64-bit 用 Dockerfile になりうる。32-bit userland 向け image が必要な場合は `./scripts/start.sh --32bit` を明示する。
 
 ## 4. health check で確認する
 
@@ -54,13 +55,6 @@ chmod +x scripts/start.sh
 
 ```sh
 curl http://localhost:33330/health
-curl -fsS http://127.0.0.1:8080/healthz
-```
-
-64-bit では Editor も起動する。Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Workspace volume](../architecture/browser-editor.md#workspace-volume)。
-
-```sh
-docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
 ```
 
 server の期待する応答例:
@@ -80,6 +74,23 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
+## 5. （任意）Browser Editor を起動する
+
+64-bit で Editor も使う場合:
+
+```sh
+./scripts/start.sh --editor
+curl -fsS http://127.0.0.1:8080/healthz
+```
+
+Compose を直接使う場合は `docker compose --profile editor up`（`COMPOSE_PROFILES=editor` でも可）。
+
+Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Workspace volume](../architecture/browser-editor.md#workspace-volume)。
+
+```sh
+docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+```
+
 ## 次のステップ
 
 | やりたいこと | 参照 |
@@ -91,6 +102,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 | Browser から Runtime を試す（web-demo） | `pnpm nx serve web-demo` で接続状態と GPIO Output / GPIO Input / I2C Scan を確認する。[browser-polyfill.md](./browser-polyfill.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
+| Browser Editor を追加起動する | 上記「5. （任意）Browser Editor を起動する」。`./scripts/start.sh --editor` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |

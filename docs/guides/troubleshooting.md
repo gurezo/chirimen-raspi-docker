@@ -255,15 +255,15 @@ Browser Editor から `docs/examples` 配下を保存すると Permission denied
 ls -ld docs/examples
 id -u
 id -g
-docker compose exec chirimen-editor id
+docker compose --profile editor exec chirimen-editor id
 ```
 
 起動ログの `editor uid=` が host の `id -u`:`id -g` と一致するか見る。
 
 ### 対処
 
-- 推奨入口は `./scripts/start.sh`（64-bit で host uid を Editor に渡す）
-- `docker compose up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
+- 推奨入口は `./scripts/start.sh --editor`（64-bit で host uid を Editor に渡す）
+- `docker compose --profile editor up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
 - root では起動しない
 - GPIO / I2C の Permission denied はこの節ではなく上記「Permission denied（GPIO / I2C）」
 
@@ -283,7 +283,7 @@ container 再作成後に Editor の password が変わり、入れていた ext
 
 ```sh
 docker volume ls | grep chirimen-editor
-docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
 ```
 
 ### 対処
