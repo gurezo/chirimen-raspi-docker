@@ -15,7 +15,8 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 ## 前提 OS
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
-- Raspbian OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）、または Pi 3 B+ / Pi 4 / Pi 5 の Raspbian OS 32-bit（Pi 4 は Model B Rev 1.4、Pi 5 は Model B Rev 1.0。いずれも 64-bit kernel。[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
+- Raspbian OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
+- 32-bit OS はサポート対象外
 
 ## Docker / Docker Compose
 
@@ -43,7 +44,7 @@ chmod +x scripts/doctor.sh
 `scripts/doctor.sh` は sudo 不要で、次を確認する。
 
 - Raspberry Pi model
-- architecture（`aarch64` / `armv7l`）
+- architecture（推奨は `aarch64`。`armv7l` は 32-bit OS のためサポート対象外）
 - Docker（インストールと daemon 稼働）
 - Docker Compose
 - hardware capabilities（Server / Node Runtime と同じ判定基準）
@@ -81,9 +82,9 @@ getent group gpio
 - **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
 - **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
-- **Pi 3 B+（#97 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（`armv7l`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。32-bit は Node 22 / `Dockerfile.32bit`。詳細は [docker.md](../architecture/docker.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
-- **Pi 4（#98 / #135）**: Raspbian OS 64-bit（`aarch64`）および 32-bit（Model B Rev 1.4 / 64-bit kernel / `aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [docker.md](../architecture/docker.md) の「Pi 4 実機検証」
-- **Pi 5（#99 / #135）**: Raspbian OS 64-bit（`aarch64` / `2712`）および 32-bit（Model B Rev 1.0 / 64-bit kernel / `aarch64` / `v8`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
+- **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [docker.md](../architecture/docker.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
+- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [docker.md](../architecture/docker.md) の「Pi 4 実機検証」
+- **Pi 5（#99）**: Raspbian OS 64-bit（`aarch64` / `2712`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 

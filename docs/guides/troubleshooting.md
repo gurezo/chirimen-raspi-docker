@@ -149,60 +149,29 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - sysfs が無く `/dev/gpiochip*` のみの場合、現状は backend 未実装のため GPIO は利用できない（doctor / server とも unsupported と表示）
 - `./scripts/start.sh` は存在する `gpiochip*` を container に渡す（detection 揃え用）。backend 実装は別 Issue
 
-### 実機メモ（#97 / #98 / #99 / #135）
+### 実機メモ（#97 / #98 / #99）
 
 - **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
-- **Pi 4（#98 / #135）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）および 32-bit（Model B Rev 1.4 / 64-bit kernel / `aarch64` / `v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
-- **Raspbian OS 32-bit（#135）**: Pi 3 B+（`armv7l` / `6.18.34+rpt-rpi-v7`、Node 22 / `Dockerfile.32bit`）、Pi 4 Model B Rev 1.4（64-bit kernel / `aarch64` / `v8`）、Pi 5 Model B Rev 1.0（64-bit kernel / `aarch64` / `v8`）で `gpio=sysfs` / `i2c=i2c-dev` と WebSocket `gpio.export` を確認済み。Pi 4 / Pi 5 は `docker compose down` 後の gpioN 残留なしも確認済み。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため `--32bit` を明示する
-- **Pi 5（#99 / #135）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（64-bit は kernel `2712`、32-bit は `v8`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
+- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
+- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
 
-## Docker build が `no match for platform in manifest` で失敗する
+## 32-bit OS はサポート対象外
 
-### 症状
+32-bit Raspberry Pi OS（`armv7l`）はサポート対象外である。Runtime と Browser Editor を同じ手順で使う推奨環境は **Raspbian OS 64-bit** のみ。host を 64-bit OS に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
 
-32-bit Raspberry Pi OS（`armv7l`）で `./scripts/start.sh` や `docker compose up --build` が次で失敗する。
+次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。
 
 ```text
 failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
 no match for platform in manifest: not found
 ```
 
-### 原因
-
-Node 24 公式 image に `linux/arm/v7` が無い。32-bit では Node 22（[`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit)）を使う。
-
-### 対処
-
-`scripts/start.sh` を使う（`uname -m` で自動選択）。明示する場合:
-
-```sh
-./scripts/start.sh --32bit
-```
-
-`docker compose up --build` を直接使うと 64-bit 用 [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）になる。
-
-## Docker build が `hashArray is not a function` で失敗する
-
-### 症状
-
-32-bit Raspberry Pi OS で `./scripts/start.sh --32bit` の image build が次で失敗する。
-
 ```text
 NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
 
-### 原因
-
-Nx 23 の native hasher は Linux の公式サポートが arm64 / x64 中心で、`linux/arm/v7` では WASM fallback に落ちて `hashArray` が欠ける。
-
-### 対処
-
-32-bit 用 [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) は `pnpm nx build server` ではなく [`scripts/build-server.mjs`](../../scripts/build-server.mjs)（esbuild）で server を bundle する。最新の Dockerfile.32bit を使って再ビルドする。
-
-```sh
-./scripts/start.sh --32bit
-```
+過去の Runtime 実機結果は [Compatibility matrix](../architecture/docker.md#compatibility-matrix) を参照。`Supported` とは書かない。
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
@@ -229,16 +198,10 @@ gyp ERR! stack Error: getaddrinfo EAI_AGAIN nodejs.org
 
 ### 対処
 
-[`docker/server/Dockerfile`](../../docker/server/Dockerfile) および [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) の `deps` ステージに `python3` / `make` / `g++` と `npm_config_nodedir=/usr/local` が入っていること（現行 main）を確認し、再ビルドする。
+[`docker/server/Dockerfile`](../../docker/server/Dockerfile) の `deps` ステージに `python3` / `make` / `g++` と `npm_config_nodedir=/usr/local` が入っていること（現行 main）を確認し、再ビルドする。
 
 ```sh
 ./scripts/start.sh --build --force-recreate
-```
-
-32-bit の場合:
-
-```sh
-./scripts/start.sh --32bit
 ```
 
 `runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。
@@ -262,7 +225,7 @@ docker compose --profile editor exec chirimen-editor id
 
 ### 対処
 
-- 推奨入口は `./scripts/start.sh --editor`（64-bit で host uid を Editor に渡す）
+- 推奨入口は `./scripts/start.sh --editor`（host uid を Editor に渡す）
 - `docker compose --profile editor up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
 - root では起動しない
 - GPIO / I2C の Permission denied はこの節ではなく上記「Permission denied（GPIO / I2C）」
