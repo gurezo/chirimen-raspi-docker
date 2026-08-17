@@ -176,3 +176,60 @@ Phase 8 では既定の Open VSX を使う。独自 marketplace は導入しな�
 | 独自 `EXTENSIONS_GALLERY` | 採用しない |
 
 CHIRIMEN Example の編集・Browser 実行に Microsoft 独占拡張は必須ではない。GPIO / I2C 操作は Editor 内ではなく Browser Polyfill 経路で行う。
+
+## Workspace volume
+
+公式 Docker 例は次の3つを分離する。
+
+| Host | Container | 内容 |
+| --- | --- | --- |
+| `$PWD` | `/home/coder/project` | 編集対象の source / workspace |
+| `$HOME/.local` | `/home/coder/.local` | extension、user-data、heartbeat |
+| `$HOME/.config` | `/home/coder/.config` | `code-server/config.yaml`（認証など） |
+
+本リポジトリでもこの分離を採用する。container image / 一時ファイル / build cache は永続化しない。volume か bind mount か、uid / gid の扱いは [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176) で決める。
+
+Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の Web Demo / HTML サンプル → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
+
+## Authentication
+
+既定は password 認証。設定は `~/.config/code-server/config.yaml`。
+
+[FAQ](https://coder.com/docs/code-server/FAQ) の例:
+
+```yaml
+bind-addr: 127.0.0.1:8080
+auth: password
+password: mew...22 # Randomly generated for each config.yaml
+cert: false
+```
+
+| 項目 | 内容 |
+| --- | --- |
+| 既定 | `auth: password`。初回起動時に password を生成して `config.yaml` へ書く |
+| ハッシュ | `hashed-password`（Argon2）を `password` より優先できる |
+| 無効化 | `auth: none`。SSH port forward 時の公式案内。LAN 公開の既定にはしない |
+| レート制限 | 1分あたり2回、加えて1時間あたり12回 |
+| 外部 IdP | Pomerium / oauth2-proxy / Cloudflare Access 等の reverse proxy。[Guide](https://coder.com/docs/code-server/guide) |
+
+Phase 8 の初期値は **LAN 向け password 認証** とする。Internet 公開や外部 IdP は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。`auth: none` を既定にしない。
+
+## HTTPS / reverse proxy
+
+code-server は WebSocket で Browser と通信する。公式 [Guide](https://coder.com/docs/code-server/guide) の公開方法:
+
+| 方法 | いつ使うか |
+| --- | --- |
+| SSH port forward | 開発マシンに SSH があるとき。公式が最も推奨。Tablet では使えない |
+| reverse proxy + Let's Encrypt（Caddy / NGINX） | ドメインがあり Internet から HTTPS で開きたいとき。WebSocket の `Upgrade` ヘッダが必要 |
+| self-signed cert（`--cert`） | 最終手段。iPad では動かないことがある |
+
+Web view は [secure context](https://coder.com/docs/code-server/FAQ) を要求する。`localhost` は常に secure。IP アドレスの HTTP では Service Worker 登録に失敗しうる。
+
+本リポジトリの初期構成:
+
+- LAN / 同一ホストの Browser から HTTP + password で開く
+- TLS 終端用の `docker/nginx` は [overview.md](./overview.md) どおり未実装のまま残す
+- Internet 公開、HTTPS 必須、Web view を IP 直打ちで使いたい場合に reverse proxy が必要になる
+
+reverse proxy の具体的な Compose 追加は本 Issue の範囲外。Security 方針の実装は #181。
