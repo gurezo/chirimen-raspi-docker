@@ -14,7 +14,7 @@ cd chirimen-raspi-docker
 curl http://localhost:33330/health
 ```
 
-手順の説明、32-bit / 64-bit の切り替え、container 内の device 確認は [Getting Started](docs/guides/getting-started.md) を参照してください。
+手順の説明と container 内の device 確認は [Getting Started](docs/guides/getting-started.md) を参照してください。
 
 ## ドキュメント
 
@@ -53,20 +53,23 @@ curl http://localhost:33330/health
 
 ### Compatibility（検証環境）
 
-Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。未検証項目は `Supported` と書きません。正本は [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) です。
+Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。推奨環境は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** です。32-bit OS はサポート対象外です。未検証項目は `Supported` と書きません。正本は [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) です。
 
 | ドキュメント | 内容 |
 | --- | --- |
-| [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) | Pi 3 B+ / 4 / 5、64-bit / 32-bit の実機検証結果 |
+| [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) | Pi 3 B+ / 4 / 5 の 64-bit 実機検証結果。32-bit OS はサポート対象外 |
 | [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω）                                                     |
 | [docs/examples/gpio-input.md](docs/examples/gpio-input.md)         | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）                                    |
 | [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md)             | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
 
 ## Runtime 必要環境
 
-- Raspberry Pi OS
+- Raspberry Pi 3 B+ / 4 / 5
+- Raspbian OS 64-bit
 - Docker
 - Docker Compose
+
+32-bit OS はサポート対象外です。
 
 Node.js / npm / pnpm はホスト OS には不要です。Runtime は Docker コンテナ内の Node.js を使います。
 
@@ -74,7 +77,7 @@ Node.js / npm / pnpm はホスト OS には不要です。Runtime は Docker コ
 
 リポジトリ自体をホスト上で開発する場合（手順は [Development Guide](docs/guides/development.md)）:
 
-- Node.js
+- Node.js 24（64-bit）
 - pnpm v11.x
 - Nx
 - Docker
