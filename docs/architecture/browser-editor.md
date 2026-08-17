@@ -12,7 +12,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 ## Status
 
-Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176）
+Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。optional profile は #177）
 
 ## Context
 
@@ -206,8 +206,8 @@ workspace を named volume にはしない。Example が git から切り離さ�
 
 | 入口 | uid |
 | --- | --- |
-| `./scripts/start.sh`（64-bit） | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
-| `docker compose up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
+| `./scripts/start.sh --editor`（64-bit） | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
+| `docker compose --profile editor up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
 
 bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。ユーザー固有の `.vscode` は bind mount に出うるが git には含めない（推奨設定は [#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178)）。
 
@@ -323,13 +323,14 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | HTTPS | 初期は HTTP + password。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま |
 | Marketplace | Open VSX。Microsoft Marketplace は使わない |
 | GPIO / I2C | Editor に device を渡さない |
-| 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
+| 起動 | 既定は Runtime only。Editor は Compose profile `editor` / `./scripts/start.sh --editor`（#177） |
+| 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh --editor`）または `1000`（Compose 直接）。root 禁止（#176） |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
-- Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Runtime / Web Demo は従来どおり使える。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional にする前提
+- Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Runtime / Web Demo は従来どおり使える。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
 - Microsoft 独占拡張は使えない。CHIRIMEN Example の編集・Browser 実行には必須ではない
 - 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。本 Issue は選定のみで `Supported` とは書かない
