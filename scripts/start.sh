@@ -7,6 +7,7 @@
 #
 # Usage:
 #   ./scripts/start.sh
+#   ./scripts/start.sh --editor
 #   ./scripts/start.sh --32bit
 #   ./scripts/start.sh --64bit
 #   ./scripts/start.sh --build
@@ -34,6 +35,9 @@ I2C_DEV=0
 OS_BITS=""
 OS_BITS_SOURCE=""
 
+# 1 when --editor is passed. Editor still requires 64-bit (Compose profile).
+WANT_EDITOR=0
+
 OVERRIDE_FILE=""
 
 log() {
@@ -46,12 +50,14 @@ err() {
 
 usage() {
   cat <<'EOF'
-Usage: start.sh [--32bit|--64bit|--arch 32|64] [docker compose up options...]
+Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [docker compose up options...]
 
   Probe host hardware paths and start chirimen-server with only the
   devices that exist on this host (capability-aware mapping).
-  On 64-bit, also starts chirimen-editor (code-server on 127.0.0.1:8080).
-  Editor is skipped on 32-bit: the official image has no armv7 build.
+  Default is Runtime only. Pass --editor on 64-bit to also start
+  chirimen-editor (code-server on 127.0.0.1:8080; Compose profile
+  `editor`). Editor is skipped on 32-bit: the official image has no
+  armv7 build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
@@ -64,6 +70,9 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [docker compose up options...]
     --arch 32|64     same as --32bit / --64bit
     (default)        auto-detect from uname -m
 
+  Optional services:
+    --editor         start chirimen-editor (64-bit only; Compose profile editor)
+
   Optionally maps when present (chirimen-server only):
     - /dev/gpiomem*
     - /dev/gpiochip*
@@ -75,8 +84,9 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [docker compose up options...]
 Examples:
   chmod +x scripts/start.sh
   ./scripts/start.sh
+  ./scripts/start.sh --editor
   ./scripts/start.sh --32bit
-  ./scripts/start.sh --64bit -d
+  ./scripts/start.sh --64bit --editor -d
   ./scripts/start.sh --build --force-recreate
 
 Same procedure on Raspberry Pi 3 / 4 / 5; no per-model compose edits.
@@ -228,9 +238,10 @@ write_compose_override() {
       fi
     fi
 
-    # Editor is 64-bit only. Pass host uid so bind-mounted examples are
-    # writable (code-server fixuid). Do not add GPIO / I2C devices.
-    if [ "$OS_BITS" -eq 64 ]; then
+    # Editor is opt-in (--editor) and 64-bit only. Pass host uid so
+    # bind-mounted examples are writable (code-server fixuid). Do not
+    # add GPIO / I2C devices.
+    if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
       editor_uid="$(id -u)"
       editor_gid="$(id -g)"
       editor_user="$(id -un)"
@@ -274,7 +285,9 @@ log_mapping_summary() {
   log "image: ${image}"
   log "mapping: sysfs=${sysfs_status} gpiomem=${gpiomem_list} gpiochip=${gpiochip_list} i2c-1=${i2c_status}"
   log "privileged: false"
-  if [ "$OS_BITS" -eq 32 ]; then
+  if [ "$WANT_EDITOR" -eq 0 ]; then
+    log "editor: off (pass --editor to start chirimen-editor)"
+  elif [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
   else
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
@@ -322,6 +335,10 @@ main() {
         parse_arch_value "${1#--arch=}" "$1"
         shift
         ;;
+      --editor)
+        WANT_EDITOR=1
+        shift
+        ;;
       *)
         up_args+=("$1")
         shift
@@ -366,20 +383,15 @@ main() {
   write_compose_override "$dockerfile" "$image"
   require_docker_compose
 
-  local -a compose_services=()
-  if [ "$OS_BITS" -eq 32 ]; then
-    compose_services=(chirimen-server)
+  local -a compose_cmd=(docker compose)
+  if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
+    compose_cmd+=(--profile editor)
   fi
+  compose_cmd+=(-f compose.yaml -f "$OVERRIDE_FILE" up)
 
-  if [ "${#compose_services[@]}" -gt 0 ]; then
-    log "starting: docker compose -f compose.yaml -f ${OVERRIDE_FILE} up ${up_args[*]} ${compose_services[*]}"
-    log ""
-    docker compose -f compose.yaml -f "$OVERRIDE_FILE" up "${up_args[@]}" "${compose_services[@]}"
-  else
-    log "starting: docker compose -f compose.yaml -f ${OVERRIDE_FILE} up ${up_args[*]}"
-    log ""
-    docker compose -f compose.yaml -f "$OVERRIDE_FILE" up "${up_args[@]}"
-  fi
+  log "starting: ${compose_cmd[*]} ${up_args[*]}"
+  log ""
+  "${compose_cmd[@]}" "${up_args[@]}"
 }
 
 main "$@"
