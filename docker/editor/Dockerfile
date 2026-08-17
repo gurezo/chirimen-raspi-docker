@@ -20,6 +20,12 @@ VOLUME ["/home/coder/project", "/home/coder/.local", "/home/coder/.config"]
 
 EXPOSE 8080
 
+# /healthz is unauthenticated. HTTP 200 means the process is up even when
+# the JSON status is "expired" (no recent Browser session). Do not grep
+# for "alive". curl is already in the official image.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:8080/healthz || exit 1
+
 # Keep the upstream entrypoint (fixuid / optional DOCKER_USER). Open the
 # workspace directory instead of the default home folder.
 ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "/home/coder/project"]
