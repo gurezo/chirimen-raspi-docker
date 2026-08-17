@@ -46,6 +46,7 @@ curl http://localhost:33330/health
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
 | [docs/architecture/overview.md](docs/architecture/overview.md)           | アーキテクチャ概要 / Nx MCP                                                                         |
 | [docs/architecture/docker.md](docs/architecture/docker.md)               | Docker / Compose / device mount / [Compatibility matrix](docs/architecture/docker.md#compatibility-matrix) |
+| [docs/architecture/browser-editor.md](docs/architecture/browser-editor.md) | Phase 8 Browser Editor 選定（code-server）                                                        |
 | [docs/architecture/protocol.md](docs/architecture/protocol.md)           | Protocol メッセージモデル / [I2C Scan API flow](docs/architecture/protocol.md#i2c-scan-api-flow114) |
 | [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries                                                                         |
 

@@ -9,6 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
+- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。Compose 追加は #174 / #175）
 - [Getting Started](../guides/getting-started.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
@@ -30,7 +31,7 @@ chmod +x scripts/start.sh
 
 ## Compose サービス
 
-現行のサービスは `chirimen-server` のみ。
+現行のサービスは `chirimen-server` のみ。Editor は [browser-editor.md](./browser-editor.md) で `code-server` を選定済みだが、image / Compose は未実装（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。Editor に GPIO / I2C device は渡さない。
 
 | 項目 | 値 |
 | --- | --- |
@@ -288,6 +289,7 @@ Wiki で想定している次は、現状未実装。
 | 要素 | 予定役割 |
 | --- | --- |
 | `docker/nginx` | reverse proxy / static hosting |
+| Editor service | Browser 向け VS Code 系 Editor（選定: [browser-editor.md](./browser-editor.md)。#174 以降） |
 | `apps/web-demo`（compose 連携） | Browser Polyfill の example |
 
 初期実装では `chirimen-server` を優先する。
