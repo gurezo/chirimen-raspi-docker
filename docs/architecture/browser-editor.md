@@ -12,7 +12,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 ## Status
 
-Accepted（#173。実装は #174 以降）
+Accepted（#173。image は #174。Compose は #175）
 
 ## Context
 
@@ -54,7 +54,7 @@ Browser
 - Raspberry Pi 3 / 4 / 5 の差異を Editor 側へ持ち込まない
 - Phase 8 の目的は特定製品への固定ではなく、Browser から VS Code 系の開発体験を提供すること
 
-本 Issue では Docker image / Compose を追加しない。実装は #174 以降。
+#173 では Docker image / Compose を追加しない。image は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)、Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。
 
 ## 第一候補: code-server
 
@@ -111,7 +111,7 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
   codercom/code-server:latest
 ```
 
-本リポジトリでは `latest` を使わず、semver タグで pin する（[Decision](#decision)）。image 作成は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。
+本リポジトリでは `latest` を使わず、semver タグで pin する（[Decision](#decision)）。image は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile)（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)）。Compose 追加は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。
 
 | 項目 | 内容 |
 | --- | --- |
@@ -302,11 +302,11 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Marketplace | Open VSX。Microsoft Marketplace は使わない |
 | GPIO / I2C | Editor に device を渡さない |
 
-#174 は `codercom/code-server:4.132.0` をベースに Editor image を作る。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
 - Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Runtime / Web Demo は従来どおり使える。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional にする前提
 - Microsoft 独占拡張は使えない。CHIRIMEN Example の編集・Browser 実行には必須ではない
-- 実機での Editor 起動確認は #174 / #182。本 Issue は選定のみで `Supported` とは書かない
+- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。本 Issue は選定のみで `Supported` とは書かない

@@ -9,7 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
-- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。Compose 追加は #174 / #175）
+- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose 追加は #175）
 - [Getting Started](../guides/getting-started.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
@@ -31,7 +31,7 @@ chmod +x scripts/start.sh
 
 ## Compose サービス
 
-現行のサービスは `chirimen-server` のみ。Editor は [browser-editor.md](./browser-editor.md) で `code-server` を選定済みだが、image / Compose は未実装（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。Editor に GPIO / I2C device は渡さない。
+現行の Compose サービスは `chirimen-server` のみ。Editor image は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile)（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)）。Compose への service 追加は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。Editor に GPIO / I2C device は渡さない。
 
 | 項目 | 値 |
 | --- | --- |
@@ -56,6 +56,83 @@ curl http://localhost:33330/health
   "status": "ok",
   "version": "0.0.1"
 }
+```
+
+## Editor image（単独起動）
+
+Compose への service 追加は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。本節は image 単独の build / start（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)）。選定の正本は [browser-editor.md](./browser-editor.md)。
+
+Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/class/gpio` は渡さない。
+
+| 項目 | 値 |
+| --- | --- |
+| Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
+| Base | `codercom/code-server:4.132.0`（`latest` 禁止） |
+| Image | `chirimen-raspi-docker/editor:4.132.0` |
+| Port | `8080` |
+| User | `coder`（UID 1000。root ではない） |
+| Architecture | `linux/amd64`, `linux/arm64`。`arm32` / `armv7` は非対応（`Dockerfile.32bit` は作らない） |
+| Workspace | `/home/coder/project` |
+| Extensions / user-data | `/home/coder/.local` |
+| Config | `/home/coder/.config` |
+| Health | `GET /healthz`（認証不要。HTTP 200 なら healthy。JSON の `expired` もプロセス生存） |
+| Extra packages | なし。公式 image の `git` / `curl` / `nano` 等を必要最小限とする |
+
+### build
+
+build context は `docker/editor`（リポジトリ全体は COPY しない）。
+
+```sh
+docker build -f docker/editor/Dockerfile -t chirimen-raspi-docker/editor:4.132.0 docker/editor
+```
+
+Raspberry Pi 3 / 4 / 5 の 64-bit OS と同じ `linux/arm64` を明示する場合:
+
+```sh
+docker buildx build --platform linux/arm64 \
+  -f docker/editor/Dockerfile -t chirimen-raspi-docker/editor:4.132.0 --load docker/editor
+```
+
+実機起動を `Supported` とは書かない。Pi 3 / 4 / 5 での Editor 検証は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。
+
+### start（`docker run`。Compose は使わない）
+
+検証時の bind は `127.0.0.1`。LAN 公開と認証方針は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。volume の uid / gid は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。
+
+```sh
+docker run --rm --name chirimen-editor -p 127.0.0.1:8080:8080 \
+  -v "$PWD/docs/examples:/home/coder/project" \
+  -v chirimen-editor-local:/home/coder/.local \
+  -v chirimen-editor-config:/home/coder/.config \
+  chirimen-raspi-docker/editor:4.132.0
+```
+
+`--device` や `/sys/class/gpio` は付けない。
+
+Browser で `http://127.0.0.1:8080` を開く。初回 password は `config.yaml` に生成される。
+
+```sh
+docker exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+curl -fsS http://127.0.0.1:8080/healthz
+```
+
+`/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。`grep alive` は使わない。
+
+### image size
+
+追加の apt パッケージは入れない。size は upstream `codercom/code-server:4.132.0` とほぼ同じ。
+
+Docker Hub の compressed size（tag `4.132.0`、2026-08-10）:
+
+| Architecture | compressed |
+| --- | --- |
+| `linux/arm64` | 約 361 MiB（377877276 bytes） |
+| `linux/amd64` | 約 364 MiB（381680763 bytes） |
+
+build 後は次で確認する。
+
+```sh
+docker image ls chirimen-raspi-docker/editor:4.132.0
 ```
 
 ## Dockerfile（multi-stage）
@@ -289,7 +366,7 @@ Wiki で想定している次は、現状未実装。
 | 要素 | 予定役割 |
 | --- | --- |
 | `docker/nginx` | reverse proxy / static hosting |
-| Editor service | Browser 向け VS Code 系 Editor（選定: [browser-editor.md](./browser-editor.md)。#174 以降） |
+| Editor Compose service | Browser 向け VS Code 系 Editor（image: [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)） |
 | `apps/web-demo`（compose 連携） | Browser Polyfill の example |
 
 初期実装では `chirimen-server` を優先する。

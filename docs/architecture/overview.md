@@ -111,6 +111,8 @@ chirimen-raspi-docker/
 │   ├── node-runtime/           # node-web-gpio / node-web-i2c adapter
 │   └── browser-polyfill/       # navigator.request*Access polyfill
 ├── docker/
+│   ├── editor/
+│   │   └── Dockerfile          # code-server 4.132.0（amd64 / arm64）
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）
@@ -138,7 +140,7 @@ chirimen-raspi-docker/
 未実装（予定）:
 
 - `docker/nginx`
-- Editor service（選定済み: [browser-editor.md](./browser-editor.md)。image / Compose は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）
+- Editor Compose service（image は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）
 
 ## apps / libs の責務
 
@@ -182,7 +184,7 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
-| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。実装は #174 以降） |
+| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
