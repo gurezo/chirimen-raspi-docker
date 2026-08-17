@@ -1,37 +1,6 @@
 # setups
 
-Raspberry Pi host の Node.js / nvm / Docker 環境構築。
-
-## Node.js
-
-```sh
-./setups/node.sh
-```
-
-## nvm
-
-### 共通
-
-```sh
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-source ~/.bashrc
-```
-
-### 32-bit
-
-```sh
-nvm install 22
-nvm use 22
-nvm alias default 22
-```
-
-### 64-bit
-
-```sh
-nvm install 24
-nvm use 24
-nvm alias default 24
-```
+Raspberry Pi host の Docker / Docker Compose 環境構築。
 
 ## Docker
 
