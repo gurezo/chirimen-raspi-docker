@@ -124,3 +124,55 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
 | コミュニティ image | 採用しない（armhf 廃止、公式 image で arm64 を賄える） |
 
 公式 Install は Raspberry Pi への npm インストールも案内するが、親 Issue は独立した Docker service を要求するため、host への npm インストールは採用しない。
+
+## Extension
+
+code-server の extension は Desktop VS Code と同じく、UI の Extensions ビューまたは CLI で入れる。[FAQ](https://coder.com/docs/code-server/FAQ) の例:
+
+```console
+code-server --install-extension <extension id>
+# example: code-server --install-extension wesbos.theme-cobalt2
+
+# From the Coder extension marketplace
+code-server --install-extension ms-python.python
+
+# From a downloaded VSIX on the file system
+code-server --install-extension downloaded-ms-python.python.vsix
+```
+
+初期に入れる extension の選定・プリインストール方針は [#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178)。本節は「どう入れるか」だけを固定する。
+
+| 方法 | 用途 |
+| --- | --- |
+| Extensions ビュー | 利用者が Open VSX 相当の gallery から検索・インストール |
+| `code-server --install-extension <id>` | image ビルド時や初期化スクリプトでの一括導入 |
+| `.vsix` ファイル | gallery に無い、または Microsoft Marketplace 専用の拡張を手動導入 |
+
+設定と extension 本体は workspace とは別 volume に置く（公式 Docker 例の `~/.local` / `~/.config`）。永続化の実装は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。
+
+## Marketplace 制約
+
+code-server は Microsoft 公式 Marketplace には接続しない。既定は Open VSX / Coder extension marketplace である。
+
+[FAQ](https://coder.com/docs/code-server/FAQ) の対比:
+
+- GitHub Codespaces / VS Code web（`code serve-web`）は Microsoft Marketplace を使える
+- code-server は self-contained な web view と独自 marketplace を持ち、Microsoft のサーバーへ呼び出さない
+- Microsoft Marketplace が必要な場合は VS Code web の方が適する、と公式は案内している
+
+独自 gallery に切り替える場合は `EXTENSIONS_GALLERY` を設定できる。
+
+```sh
+export EXTENSIONS_GALLERY='{"serviceUrl": "https://my-extensions/api"}'
+```
+
+Phase 8 では既定の Open VSX を使う。独自 marketplace は導入しない。
+
+| 項目 | 方針 |
+| --- | --- |
+| 既定 gallery | Open VSX / Coder extension marketplace |
+| Microsoft Marketplace | 使わない |
+| Microsoft 独占拡張（GitHub Copilot など） | 期待しない。必要なら `.vsix` の可否を個別に判断する（#178） |
+| 独自 `EXTENSIONS_GALLERY` | 採用しない |
+
+CHIRIMEN Example の編集・Browser 実行に Microsoft 独占拡張は必須ではない。GPIO / I2C 操作は Editor 内ではなく Browser Polyfill 経路で行う。
