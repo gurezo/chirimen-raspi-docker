@@ -9,7 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
-- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175）
+- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176）
 - [Getting Started](../guides/getting-started.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
@@ -55,14 +55,15 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | `127.0.0.1:8080:8080`（LAN 公開は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
-| Workspace | bind `./docs/examples` → `/home/coder/project` |
+| Workspace | bind `./docs/examples` → `/home/coder/project`（git 管理。container 削除後も残る） |
 | Extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` |
-| Config | named volume `chirimen-editor-config` → `/home/coder/.config` |
+| Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む） |
+| User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
 | Architecture | `linux/amd64`, `linux/arm64`。32-bit では `start.sh` が起動しない |
 | Network | Compose default。`depends_on` なし |
 | GPIO / I2C | 渡さない |
 
-volume の uid / gid は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。
+永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。`docker compose down`（`-v` なし）は named volume を残す。`docker compose down -v` は設定・拡張・password を消す。workspace の bind mount は消えない。正本は [browser-editor.md の Workspace volume](./browser-editor.md#workspace-volume)。
 
 ### 起動と health check
 
@@ -103,7 +104,7 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 | Base | `codercom/code-server:4.132.0`（`latest` 禁止） |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | `8080` |
-| User | `coder`（UID 1000。root ではない） |
+| User | `coder`（UID 1000。root ではない）。実行時は `-u "$(id -u):$(id -g)"` と `DOCKER_USER`（`fixuid`） |
 | Architecture | `linux/amd64`, `linux/arm64`。`arm32` / `armv7` は非対応（`Dockerfile.32bit` は作らない） |
 | Workspace | `/home/coder/project` |
 | Extensions / user-data | `/home/coder/.local` |
@@ -130,10 +131,12 @@ docker buildx build --platform linux/arm64 \
 
 ### start（`docker run`。Compose を使わない場合）
 
-検証時の bind は `127.0.0.1`。LAN 公開と認証方針は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。volume の uid / gid は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。
+検証時の bind は `127.0.0.1`。LAN 公開と認証方針は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。uid は公式どおり host の `id -u` / `id -g` と `DOCKER_USER`（[#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)）。
 
 ```sh
 docker run --rm --name chirimen-editor -p 127.0.0.1:8080:8080 \
+  -u "$(id -u):$(id -g)" \
+  -e "DOCKER_USER=$(id -un)" \
   -v "$PWD/docs/examples:/home/coder/project" \
   -v chirimen-editor-local:/home/coder/.local \
   -v chirimen-editor-config:/home/coder/.config \
@@ -401,4 +404,4 @@ Wiki で想定している次は、現状未実装。
 | `docker/nginx` | reverse proxy / static hosting |
 | `apps/web-demo`（compose 連携） | Browser Polyfill の example |
 
-Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。
+Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。
