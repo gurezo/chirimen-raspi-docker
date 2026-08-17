@@ -28,12 +28,19 @@ services:
   # This is not a Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. GPIO / I2C stay on chirimen-server.
   # Bind 127.0.0.1 for now; LAN publish and auth are #181.
-  # Optional Compose profile is #177. Persistence uid/gid is #176.
+  # Optional Compose profile is #177.
+  # Persistence (#176): bind docs/examples for workspace; named volumes
+  # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
+  # Do not run as root. docker compose down -v deletes named volumes,
+  # not the workspace bind mount.
   chirimen-editor:
     build:
       context: docker/editor
       dockerfile: Dockerfile
     image: chirimen-raspi-docker/editor:4.132.0
+    user: "${CHIRIMEN_EDITOR_UID:-1000}:${CHIRIMEN_EDITOR_GID:-1000}"
+    environment:
+      DOCKER_USER: "${CHIRIMEN_EDITOR_USER:-coder}"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:

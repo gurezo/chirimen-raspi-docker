@@ -15,7 +15,8 @@ ENV USER=coder
 WORKDIR /home/coder/project
 
 # Separate source, extensions/user-data, and code-server config.
-# Compose service is chirimen-editor (#175); persistence uid/gid is #176.
+# Compose (#175 / #176): bind /home/coder/project; named volumes for
+# .local / .config. Host uid via user / DOCKER_USER (fixuid). Not root.
 VOLUME ["/home/coder/project", "/home/coder/.local", "/home/coder/.config"]
 
 EXPOSE 8080

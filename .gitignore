@@ -15,3 +15,7 @@ coverage
 
 docs/api/
 _site/
+
+# Editor user settings in the Example bind mount (#176).
+# Recommended committed .vscode is #178.
+docs/examples/.vscode/
