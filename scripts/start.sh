@@ -35,7 +35,8 @@ I2C_DEV=0
 OS_BITS=""
 OS_BITS_SOURCE=""
 
-# 1 when --editor is passed. Editor still requires 64-bit (Compose profile).
+# 1 when --editor is passed. Editor + Web Demo still require 64-bit
+# (Compose profile `editor`).
 WANT_EDITOR=0
 
 OVERRIDE_FILE=""
@@ -55,14 +56,14 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [docker compose up opt
   Probe host hardware paths and start chirimen-server with only the
   devices that exist on this host (capability-aware mapping).
   Default is Runtime only. Pass --editor on 64-bit to also start
-  chirimen-editor (code-server on 127.0.0.1:8080; Compose profile
-  `editor`). Editor is skipped on 32-bit: the official image has no
-  armv7 build.
+  chirimen-editor (code-server on 127.0.0.1:8080) and chirimen-web-demo
+  (http://127.0.0.1:4200/; Compose profile `editor`). Both are skipped
+  on 32-bit: the official Editor image has no armv7 build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
-    - Editor without GPIO / I2C devices (not a Hardware Runtime)
+    - Editor and Web Demo without GPIO / I2C devices (not a Hardware Runtime)
 
   Dockerfile (Node base image differs by OS bitness):
     --32bit          docker/server/Dockerfile.32bit (Node 22, linux/arm/v7)
@@ -71,7 +72,8 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [docker compose up opt
     (default)        auto-detect from uname -m
 
   Optional services:
-    --editor         start chirimen-editor (64-bit only; Compose profile editor)
+    --editor         start chirimen-editor and chirimen-web-demo
+                     (64-bit only; Compose profile editor)
 
   Optionally maps when present (chirimen-server only):
     - /dev/gpiomem*
@@ -238,9 +240,9 @@ write_compose_override() {
       fi
     fi
 
-    # Editor is opt-in (--editor) and 64-bit only. Pass host uid so
-    # bind-mounted examples are writable (code-server fixuid). Do not
-    # add GPIO / I2C devices.
+    # Editor + Web Demo are opt-in (--editor) and 64-bit only. Pass host
+    # uid so bind-mounted examples are writable (code-server fixuid). Do
+    # not add GPIO / I2C devices to either service.
     if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
       editor_uid="$(id -u)"
       editor_gid="$(id -g)"
@@ -286,11 +288,14 @@ log_mapping_summary() {
   log "mapping: sysfs=${sysfs_status} gpiomem=${gpiomem_list} gpiochip=${gpiochip_list} i2c-1=${i2c_status}"
   log "privileged: false"
   if [ "$WANT_EDITOR" -eq 0 ]; then
-    log "editor: off (pass --editor to start chirimen-editor)"
+    log "editor: off (pass --editor to start chirimen-editor and chirimen-web-demo)"
+    log "web-demo: off"
   elif [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
+    log "web-demo: skipped (32-bit / armv7; see browser-editor.md)"
   else
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
+    log "web-demo: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
   fi
 }
 
