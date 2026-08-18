@@ -285,7 +285,41 @@ Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が�
 
 - Example 編集では Prettier（保存時フォーマット）を使う
 - monorepo の TypeScript lint は host で `pnpm lint`（[Development Guide](./development.md)）
-- Editor から Nx を使う流れは [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)
+- Editor から Nx を使う流れは [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)
+
+## Example の静的サーバ（4173）が開かない
+
+### 症状
+
+`http://127.0.0.1:4173/led-blink/` などが接続できない。または Editor terminal に `python3: command not found` と出る。
+
+### 原因
+
+Editor image に `python3-minimal` が入っていない古い image を使っている。または Run Task **Serve examples** をまだ起動していない。port `4173` は Editor 起動だけでは開かない。
+
+### 対処
+
+- `./scripts/start.sh --editor` のあと、Editor で Run Task **Serve examples**
+- `docker compose --profile editor exec chirimen-editor python3 --version` で python3 があることを確認する。無いときは Editor image を再 build する
+- host から配信する場合は `cd docs/examples/led-blink && python3 -m http.server 4173`（従来手順）
+
+方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
+
+## Example を保存しても Browser に反映されない
+
+### 症状
+
+Editor で `main.js` を保存したあと、Example の見た目や LED の動きが変わらない。
+
+### 原因
+
+HTML サンプルは静的ファイルである。hot reload は無い。
+
+### 対処
+
+- Example を開いている Browser タブを reload する
+- 開いている URL が `http://127.0.0.1:4173/led-blink/` など、編集中のディレクトリと一致しているか確認する
+- `polyfill.js` を変えた場合は host で `pnpm nx bundle browser-polyfill` したあと reload する
 
 ## 日本語パックを入れても UI が英語のまま
 

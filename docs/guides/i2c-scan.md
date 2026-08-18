@@ -1,11 +1,12 @@
 # I2C Scan
 
-初めての利用者が、web-demo の I2C Scan で bus 上の address を確認する手順。
+初めての利用者が、HTML サンプルまたは web-demo の I2C Scan で bus 上の address を確認する手順。
 
 関連:
 
 - 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
+- HTML サンプル: [docs/examples/i2c-scan/](../examples/i2c-scan/)
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
 - [Getting Started](./getting-started.md)
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
@@ -15,7 +16,7 @@
 
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の I2C1 を走査し、検証用 slave（ADT7410）の address `0x48` を Browser で確認できる。ADT7410 の温度読み取りなど、特定センサの機能 Example は対象外。
 
-Scan は Public polyfill に無い Demo-only である。入口は web-demo の `#/i2c-scan`。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
+Scan は Public polyfill に無い Demo-only である。入口は HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の `#/i2c-scan`。どちらも `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
 
 ## I2C 有効化
 
@@ -142,7 +143,20 @@ docker compose exec chirimen-server ls -l /dev/i2c-1
 
 ## Scan 操作
 
-Scan は web-demo の I2C Scan 画面で行う。`file://` ではなく `pnpm nx serve web-demo` で開く（WebSocket 先は `ws://localhost:33330/`）。
+サンプルは同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
+
+```sh
+cd docs/examples/i2c-scan
+python3 -m http.server 4173
+```
+
+ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
+
+Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+
+走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+
+代替（web-demo の Scan / Stop）:
 
 ```sh
 pnpm nx serve web-demo
@@ -154,15 +168,15 @@ pnpm nx serve web-demo
 4. **Scan** を押す。走査中はボタンが無効になり、ステータスが「走査中」になる
 5. 完了すると検出 address が hex 一覧で出る。画面離脱 / reload / WebSocket 切断で走査は中断する
 
-走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
-
 ## 結果の読み方
+
+HTML サンプルはページ表示で走査し、ステータスが「走査中」から「N 件」になる。web-demo は Scan ボタンを使う。
 
 | UI | 意味 |
 | --- | --- |
-| 走査中 | `0x03`–`0x77` を順に probe している。Scan ボタンは無効 |
+| 走査中 | `0x03`–`0x77` を順に probe している。web-demo では Scan ボタンが無効 |
 | N 件 | 走査が完了した。一覧の件数が N |
-| 停止中 | 未実行、または画面離脱 / 切断で中断した |
+| 停止中 | web-demo のみ。未実行、または画面離脱 / 切断で中断した |
 
 一覧の各行は `0x48` 形式（2 桁 hex）。本 example の成功条件は、一覧に **`0x48`** が含まれること。他の address が出ても `0x48` があれば可。
 
@@ -173,6 +187,10 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 ## Troubleshooting
 
 汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは I2C Scan 固有の切り分けだけを書く。
+
+### `polyfill.js` が 404 になる
+
+`docs/examples/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Editor から配信しているときは `http://127.0.0.1:4173/i2c-scan/` を開いているかも見る。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### Scan を押しても address が出ない / 空一覧になる
 

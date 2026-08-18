@@ -97,6 +97,8 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
+Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+
 `index.html` の読み込み順:
 
 ```html
