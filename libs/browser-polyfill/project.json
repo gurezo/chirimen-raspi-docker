@@ -14,7 +14,8 @@
       "outputs": [
         "{workspaceRoot}/libs/browser-polyfill/dist/polyfill.js",
         "{workspaceRoot}/docs/examples/led-blink/polyfill.js",
-        "{workspaceRoot}/docs/examples/button/polyfill.js"
+        "{workspaceRoot}/docs/examples/button/polyfill.js",
+        "{workspaceRoot}/docs/examples/i2c-scan/polyfill.js"
       ],
       "options": {
         "outputPath": "libs/browser-polyfill/dist",
