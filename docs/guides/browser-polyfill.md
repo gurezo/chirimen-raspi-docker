@@ -77,6 +77,8 @@ docs/examples/i2c-scan/polyfill.js
 2. script 読み込み**前**に `globalThis.CHIRIMEN_WS_URL` を設定
 3. 省略時は `ws://localhost:33330/`
 
+LAN の別マシンから HTML Example を開くときは、Browser の `localhost` は Pi ではない。`--lan` で 4173 を公開したうえで、script 前に `CHIRIMEN_WS_URL` を Pi の IP（`ws://192.168.1.10:33330/` など）へ向ける。Web Demo（`apps/web-demo`）はページの hostname が localhost でなければ `ws://<hostname>:33330/` に接続する。
+
 ### 明示初期化（installBrowserPolyfill）
 
 ```html

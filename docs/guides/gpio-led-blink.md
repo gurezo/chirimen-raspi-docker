@@ -145,7 +145,7 @@ Browser Editor から編集する場合は `./scripts/start.sh --editor` のあ�
 | LED の極性 | アノード（長い足）が抵抗側、カソードが GND |
 | ピン取り違え | 物理 pin 37（BCM 26）と pin 39（GND）。5V ピン（2 / 4）は使わない |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | 既定の接続先は `ws://localhost:33330/`。Pi 上で開くか、script の前に `CHIRIMEN_WS_URL` を設定する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --editor --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `export` が Permission denied / EROFS になる
 

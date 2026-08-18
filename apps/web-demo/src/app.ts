@@ -12,6 +12,30 @@ export const WEB_DEMO_TITLE = 'CHIRIMEN web-demo' as const;
 /** Runtime の default WebSocket URL（IIFE と同じ `ws://localhost:33330/`） */
 export const WEB_DEMO_RUNTIME_WS_URL = 'ws://localhost:33330/' as const;
 
+/**
+ * Browser から接続する Runtime WebSocket URL を決める。
+ * localhost / 127.0.0.1（および hostname なし）は既定 URL。
+ * LAN 公開時はページの hostname へつなぐ（#181）。
+ */
+export function resolveWebDemoRuntimeWsUrl(
+  hostname = globalThis.location?.hostname
+): string {
+  if (!hostname || hostname === 'localhost' || hostname === '127.0.0.1') {
+    return WEB_DEMO_RUNTIME_WS_URL;
+  }
+  return `ws://${hostname}:33330/`;
+}
+
+function connectionErrorHelpLinesFor(url: string): string[] {
+  return [
+    'Runtime が起動しているか確認してください。',
+    './scripts/start.sh で Runtime を起動する',
+    'curl http://localhost:33330/health で応答を確認する',
+    `接続先は ${url}`,
+    '詳細は docs/guides/getting-started.md と docs/guides/troubleshooting.md を参照',
+  ];
+}
+
 /** Issue #103 で指定された UI ラベル */
 export const CONNECTION_STATUS_LABELS = {
   disconnected: 'Disconnected',
@@ -21,18 +45,14 @@ export const CONNECTION_STATUS_LABELS = {
 } as const;
 
 /** 接続失敗時に Runtime 起動を確認するための案内 */
-export const CONNECTION_ERROR_HELP_LINES = [
-  'Runtime が起動しているか確認してください。',
-  './scripts/start.sh で Runtime を起動する',
-  'curl http://localhost:33330/health で応答を確認する',
-  `接続先は ${WEB_DEMO_RUNTIME_WS_URL}`,
-  '詳細は docs/guides/getting-started.md と docs/guides/troubleshooting.md を参照',
-] as const;
+export const CONNECTION_ERROR_HELP_LINES = connectionErrorHelpLinesFor(
+  WEB_DEMO_RUNTIME_WS_URL
+);
 
 /** 接続状態 UI の表示内容 */
 export interface ConnectionStatusView {
   readonly label: (typeof CONNECTION_STATUS_LABELS)[ConnectionStatus];
-  readonly url: typeof WEB_DEMO_RUNTIME_WS_URL;
+  readonly url: string;
   readonly helpLines: readonly string[];
 }
 
@@ -49,7 +69,7 @@ export async function installWebDemoPolyfill(
 ): Promise<WebSocketClientTransport> {
   return installBrowserPolyfill({
     ...options,
-    url: WEB_DEMO_RUNTIME_WS_URL,
+    url: resolveWebDemoRuntimeWsUrl(),
   });
 }
 
@@ -59,10 +79,11 @@ export async function installWebDemoPolyfill(
 export function getConnectionStatusView(
   status: ConnectionStatus
 ): ConnectionStatusView {
+  const url = resolveWebDemoRuntimeWsUrl();
   return {
     label: CONNECTION_STATUS_LABELS[status],
-    url: WEB_DEMO_RUNTIME_WS_URL,
-    helpLines: status === 'error' ? [...CONNECTION_ERROR_HELP_LINES] : [],
+    url,
+    helpLines: status === 'error' ? connectionErrorHelpLinesFor(url) : [],
   };
 }
 

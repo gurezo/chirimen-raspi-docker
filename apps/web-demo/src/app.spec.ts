@@ -5,6 +5,7 @@ import {
   connectWebDemoRuntime,
   getConnectionStatusView,
   installWebDemoPolyfill,
+  resolveWebDemoRuntimeWsUrl,
 } from './app.js';
 import type { WebSocketConstructor } from 'browser-polyfill';
 
@@ -54,8 +55,35 @@ describe('web-demo', () => {
     constructedUrls.length = 0;
   });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('exposes the application title', () => {
     expect(WEB_DEMO_TITLE).toBe('CHIRIMEN web-demo');
+  });
+
+  it('resolves Runtime WebSocket URL for localhost and LAN hosts', () => {
+    expect(resolveWebDemoRuntimeWsUrl()).toBe(WEB_DEMO_RUNTIME_WS_URL);
+    expect(resolveWebDemoRuntimeWsUrl('')).toBe(WEB_DEMO_RUNTIME_WS_URL);
+    expect(resolveWebDemoRuntimeWsUrl('localhost')).toBe(WEB_DEMO_RUNTIME_WS_URL);
+    expect(resolveWebDemoRuntimeWsUrl('127.0.0.1')).toBe(WEB_DEMO_RUNTIME_WS_URL);
+    expect(resolveWebDemoRuntimeWsUrl('192.168.1.10')).toBe(
+      'ws://192.168.1.10:33330/'
+    );
+  });
+
+  it('connects to the page hostname when the demo is not on localhost', async () => {
+    vi.stubGlobal('location', { hostname: '192.168.1.10' });
+
+    await installWebDemoPolyfill({
+      webSocketImpl: FakeWebSocket as unknown as WebSocketConstructor,
+    });
+
+    expect(constructedUrls).toEqual(['ws://192.168.1.10:33330/']);
+    expect(getConnectionStatusView('error').url).toBe(
+      'ws://192.168.1.10:33330/'
+    );
   });
 
   it('registers navigator.requestGPIOAccess and requestI2CAccess after install', async () => {

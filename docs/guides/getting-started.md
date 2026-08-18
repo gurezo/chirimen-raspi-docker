@@ -86,7 +86,9 @@ curl -fsS http://127.0.0.1:4200/
 
 Compose を直接使う場合は `docker compose --profile editor up`（`COMPOSE_PROFILES=editor` でも可）。
 
-Browser で Editor を `http://127.0.0.1:8080`、Web Demo を `http://127.0.0.1:4200/` で別タブで開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
+Browser で Editor を `http://127.0.0.1:8080`、Web Demo を `http://127.0.0.1:4200/` で別タブで開く。Editor は password 認証である。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。任意で host の `.env`（gitignored。[`.env.example`](../../.env.example)）に `CHIRIMEN_EDITOR_PASSWORD` を置くと `./scripts/start.sh --editor` が渡す。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
+
+既定の host bind は `127.0.0.1`（同一ホスト / SSH port forward）。LAN の別マシンから Editor / Example / Web Demo を開くときは `./scripts/start.sh --editor --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）。Internet へは出さない。HTTPS / reverse proxy は本リポジトリでは提供しない。方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
 workspace は `led-blink/` / `button/` / `i2c-scan/` である。編集は Editor、実行は別タブ。
 
@@ -126,6 +128,7 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | Browser Editor を追加起動する | 上記「5. （任意）Browser Editor と Web Demo を起動する」。`./scripts/start.sh --editor` |
 | Browser Editor から Example / Web Demo を実行する | 上記「5. （任意）Browser Editor と Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
+| Browser Editor を LAN から開く | `./scripts/start.sh --editor --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
 | Browser Editor の推奨 extension | [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。Prettier / ESLint / 日本語パック |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |

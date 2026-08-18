@@ -36,4 +36,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
 
 # Keep the upstream entrypoint (fixuid / optional DOCKER_USER). Open the
 # workspace directory instead of the default home folder.
-ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "/home/coder/project"]
+# --bind-addr 0.0.0.0 is inside the container (Docker NAT). Host publish
+# is Compose CHIRIMEN_PUBLISH_BIND (default 127.0.0.1, #181).
+# --auth password is required. Do not pass --auth none.
+ENTRYPOINT ["/usr/bin/entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "/home/coder/project"]

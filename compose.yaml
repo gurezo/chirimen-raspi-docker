@@ -27,7 +27,12 @@ services:
   # Browser Editor (code-server). Independent of Runtime: no depends_on.
   # This is not a Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. GPIO / I2C stay on chirimen-server.
-  # Bind 127.0.0.1 for now; LAN publish and auth are #181.
+  # Default host bind is 127.0.0.1 (#181). LAN is opt-in via
+  # CHIRIMEN_PUBLISH_BIND=0.0.0.0 or ./scripts/start.sh --editor --lan.
+  # Do not publish to the Internet from this file. Auth is password
+  # (Dockerfile --auth password). Do not set auth: none. Do not commit
+  # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
+  # injected by start.sh when set; empty PASSWORD= is never written here.
   # Optional via Compose profile `editor` (#177).
   # `docker compose up` starts Runtime only.
   # `docker compose --profile editor up` starts Runtime + Editor + Web Demo.
@@ -35,11 +40,10 @@ services:
   # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
   # Do not run as root. docker compose down -v deletes named volumes,
   # not the workspace bind mount.
-  # Example static server (#179): 127.0.0.1:4173. Serve from
-  # /home/coder/project (docs/examples) so led-blink / button / i2c-scan
-  # are reachable together. LAN publish is #181. Web Demo is a separate
-  # service (chirimen-web-demo, #180). Node / pnpm / Nx stay out of this
-  # image.
+  # Example static server (#179): ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173.
+  # Serve from /home/coder/project (docs/examples) so led-blink / button /
+  # i2c-scan are reachable together. Web Demo is a separate service
+  # (chirimen-web-demo, #180). Node / pnpm / Nx stay out of this image.
   chirimen-editor:
     profiles:
       - editor
@@ -51,8 +55,10 @@ services:
     environment:
       DOCKER_USER: "${CHIRIMEN_EDITOR_USER:-coder}"
     ports:
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:4173:4173"
+      - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080"
+      - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173"
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ./docs/examples:/home/coder/project
       - chirimen-editor-local:/home/coder/.local
@@ -61,9 +67,10 @@ services:
   # Browser Web Demo (nginx static of apps/web-demo). Independent of
   # Runtime and Editor: no depends_on. This is not a Hardware Runtime.
   # Do not add devices, privileged, or /sys/class/gpio / /sys/devices.
-  # Browser JS connects to ws://localhost:33330/ on the host; this
-  # container only serves static files. Bind 127.0.0.1 for now; LAN
-  # publish is #181. Optional via Compose profile `editor` (#180).
+  # Browser JS connects to the Runtime WebSocket on the host; this
+  # container only serves static files. Default host bind is 127.0.0.1
+  # (#181). LAN is the same CHIRIMEN_PUBLISH_BIND / --lan as Editor.
+  # Optional via Compose profile `editor` (#180).
   # `docker compose --profile editor up` starts Runtime + Editor + Web Demo.
   # Host `pnpm nx serve web-demo` (Vite HMR) also uses port 4200; stop this
   # service first. GPIO / I2C stay on chirimen-server.
@@ -75,7 +82,9 @@ services:
       dockerfile: docker/web-demo/Dockerfile
     image: chirimen-raspi-docker/web-demo:phase8
     ports:
-      - "127.0.0.1:4200:4200"
+      - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200"
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   chirimen-editor-local:
