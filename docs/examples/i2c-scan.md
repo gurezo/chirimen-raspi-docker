@@ -121,7 +121,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 | LED Blink | BCM 26（物理 37）。本配線の 2 / 3 とは重ならない |
 | GPIO Input | BCM 5（物理 29）。本配線の 2 / 3 とは重ならない |
 
-モデルごとに配線を変える必要はない。Compatibility matrix は [docker.md](../architecture/docker.md#compatibility-matrix) を参照。
+モデルごとに配線を変える必要はない。Compatibility matrix は [compatibility.md](../architecture/compatibility.md) を参照。
 
 ## 期待結果
 
@@ -154,4 +154,4 @@ I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i
 | 完了条件 | 配線後の hex 一覧に `0x48`。空配列は失敗 |
 | 対象外 | ADT7410 の温度読み取りなどセンサ機能 Example |
 
-詳細は [docker.md の I2C Scan 実機検証](../architecture/docker.md) を参照。
+詳細は [compatibility.md の I2C Scan 実機検証](../architecture/compatibility.md) を参照。

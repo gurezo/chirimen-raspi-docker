@@ -171,7 +171,7 @@ NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
 
-過去の Runtime 実機結果は [Compatibility matrix](../architecture/docker.md#compatibility-matrix) を参照。`Supported` とは書かない。
+過去の Runtime 実機結果は [Compatibility matrix](../architecture/compatibility.md) を参照。`Supported` とは書かない。
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 

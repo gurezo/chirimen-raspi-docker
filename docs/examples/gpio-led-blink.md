@@ -96,7 +96,7 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は次の前
 | default UART | BCM 14 / 15。本回路の 26 とは重ならない |
 | Browser Polyfill | `CHIRIMEN_GPIO_PORTS` に `26` が含まれる |
 
-モデルごとに配線を変える必要はない。Compatibility matrix は [docker.md](../architecture/docker.md#compatibility-matrix) を参照。
+モデルごとに配線を変える必要はない。Compatibility matrix は [compatibility.md](../architecture/compatibility.md) を参照。
 
 ## 期待結果
 
