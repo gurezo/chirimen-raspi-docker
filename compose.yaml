@@ -35,6 +35,10 @@ services:
   # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
   # Do not run as root. docker compose down -v deletes named volumes,
   # not the workspace bind mount.
+  # Example static server (#179): 127.0.0.1:4173. Serve from
+  # /home/coder/project (docs/examples) so led-blink / button / i2c-scan
+  # are reachable together. LAN publish is #181. Node / Nx stay on host
+  # (#180).
   chirimen-editor:
     profiles:
       - editor
@@ -47,6 +51,7 @@ services:
       DOCKER_USER: "${CHIRIMEN_EDITOR_USER:-coder}"
     ports:
       - "127.0.0.1:8080:8080"
+      - "127.0.0.1:4173:4173"
     volumes:
       - ./docs/examples:/home/coder/project
       - chirimen-editor-local:/home/coder/.local

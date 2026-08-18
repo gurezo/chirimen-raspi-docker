@@ -6,8 +6,13 @@ FROM codercom/code-server:4.132.0
 
 # Official image already runs as UID 1000 (coder) and ships git / curl / nano.
 # Create the three mount points as coder so bind mounts and named volumes work.
+# python3 is the #179 exception to "no extra packages": Editor terminal
+# serves docs/examples over HTTP. Do not add GPIO / I2C tools or Node.
 USER root
-RUN mkdir -p /home/coder/project /home/coder/.local /home/coder/.config \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3-minimal \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /home/coder/project /home/coder/.local /home/coder/.config \
   && chown -R coder:coder /home/coder/project /home/coder/.local /home/coder/.config
 
 USER 1000
@@ -19,7 +24,9 @@ WORKDIR /home/coder/project
 # .local / .config. Host uid via user / DOCKER_USER (fixuid). Not root.
 VOLUME ["/home/coder/project", "/home/coder/.local", "/home/coder/.config"]
 
-EXPOSE 8080
+EXPOSE 8080 4173
+# 4173 is the Example static server (#179). python3 -m http.server in
+# the Editor terminal binds here. GPIO / I2C stay on chirimen-server.
 
 # /healthz is unauthenticated. HTTP 200 means the process is up even when
 # the JSON status is "expired" (no recent Browser session). Do not grep
