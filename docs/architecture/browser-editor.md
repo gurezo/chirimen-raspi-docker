@@ -6,13 +6,13 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#173 Browser Editor の技術選定を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/173)
-- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
+- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 
 ## Status
 
-Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。optional profile は #177。初期設定 / extension は #178）
+Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。optional profile は #177。初期設定 / extension は #178。Example 編集 / 静的 serve は #179。Nx / web-demo は #180）
 
 ## Context
 
@@ -171,7 +171,7 @@ code-server --install-extension downloaded-ms-python.python.vsix
 | 項目 | 方針 |
 | --- | --- |
 | TypeScript | 内蔵の JavaScript / TypeScript Language Features で足りる。Editor workspace の Example は JS。monorepo の TS は host（[development.md](../guides/development.md)） |
-| ESLint | 必須として推奨する。`docs/examples` には `eslint` / `node_modules` が無いため、Example 上では lint が動かない。monorepo の `pnpm lint` は host。[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179) の Nx 導入後に再評価する |
+| ESLint | 必須として推奨する。`docs/examples` には `eslint` / `node_modules` が無いため、Example 上では lint が動かない。monorepo の `pnpm lint` は host。[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) の Nx 導入後に再評価する |
 | Prettier | Editor では採用する。repo 全体の format script / CI には入れない。`eslint-config-prettier` は Nx 既定のまま残す。Example 用設定は [`docs/examples/.prettierrc.json`](../examples/.prettierrc.json)（2 space、double quote、semicolon、LF） |
 
 workspace 設定は [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json)（`formatOnSave`、default formatter は Prettier）。ユーザー固有のテーマ / キーバインドは git に含めない。
@@ -247,9 +247,38 @@ workspace を named volume にはしない。Example が git から切り離さ�
 | `./scripts/start.sh --editor` | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
 | `docker compose --profile editor up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
 
-bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。推奨設定は git 管理の [`docs/examples/.vscode/extensions.json`](../examples/.vscode/extensions.json) / [`settings.json`](../examples/.vscode/settings.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178）。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
+bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。推奨設定は git 管理の [`docs/examples/.vscode/extensions.json`](../examples/.vscode/extensions.json) / [`settings.json`](../examples/.vscode/settings.json) / [`tasks.json`](../examples/.vscode/tasks.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178 / #179）。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
 
-Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の Web Demo / HTML サンプル → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
+Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル / Web Demo → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
+
+### Example 編集 / 静的 serve（#179）
+
+配置は [`docs/examples/README.md`](../examples/README.md) を正とする。monorepo 全体は mount しない。`package.json` / `node_modules` は置かない。
+
+| ディレクトリ | Example |
+| --- | --- |
+| `led-blink/` | GPIO LED Blink |
+| `button/` | GPIO Input / onchange |
+| `i2c-scan/` | I2C Scan（Public polyfill の `open` + `writeByte(0x00)` で合成） |
+
+依存:
+
+| 作業 | 場所 |
+| --- | --- |
+| HTML / JS の編集 | Editor workspace（`docs/examples`） |
+| `pnpm install` | しない（Example に依存は無い） |
+| `pnpm nx bundle browser-polyfill` | **host**。`polyfill.js` を各 HTML ディレクトリへコピーする |
+| `pnpm nx serve web-demo` / その他 Nx | **host**。[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) |
+
+serve は Editor terminal の `python3 -m http.server 4173 --bind 0.0.0.0`（cwd は `/home/coder/project`）。Run Task の **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）でも同じ。Compose は `127.0.0.1:4173:4173` を出す（LAN は #181）。
+
+```text
+http://127.0.0.1:4173/led-blink/
+http://127.0.0.1:4173/button/
+http://127.0.0.1:4173/i2c-scan/
+```
+
+静的ファイルのため hot reload は無い。Editor で保存したあと Example タブを reload する。WebSocket 先は `ws://localhost:33330/`。host で各ディレクトリから `python3 -m http.server 4173` する手順も残す。
 
 ## Authentication
 
@@ -364,13 +393,15 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | GPIO / I2C | Editor に device を渡さない |
 | 起動 | 既定は Runtime only。Editor は Compose profile `editor` / `./scripts/start.sh --editor`（#177） |
 | 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh --editor`）または `1000`（Compose 直接）。root 禁止（#176） |
+| Example 編集 / serve | HTML は `docs/examples`。Editor terminal の `python3` が `127.0.0.1:4173` で静的配信（#179）。Node / pnpm / Nx は host（#180） |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は必須 extension と Example `.vscode` を固定し、image へのプリインストールはしない。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は必須 extension と Example `.vscode` を固定し、image へのプリインストールはしない。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
 - 32-bit OS はサポート対象外。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
 - Microsoft 独占拡張は使えない。必須セット（HTML / CSS / Prettier / ESLint / 日本語パック）には含まれない
-- Example workspace では ESLint が動かない（`eslint` / `node_modules` が無い）。Prettier は Editor のみ採用し、repo の format CI には入れない
-- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。初期設定の再現は Example `.vscode`（#178）。`Supported` とは書かない
+- Example workspace では ESLint が動かない（`eslint` / `node_modules` が無い）。Prettier は Editor のみ採用し、repo の format CI には入れない。Nx 導入後の再評価は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)
+- Editor image の extra package 例外は `python3-minimal` のみ（#179）。Node は入れない
+- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。初期設定の再現は Example `.vscode`（#178）。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。`Supported` とは書かない
