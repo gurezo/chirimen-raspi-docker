@@ -1,10 +1,16 @@
 # Raspberry Pi setup
 
-CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。
+CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。`setups/*.sh` と `scripts/*` はリポジトリ内にあるため、**先に clone する**。
+
+推奨順:
+
+```text
+clone → このページ（Docker / GPIO / I2C / doctor） → [Getting Started](./getting-started.md)（起動）
+```
 
 関連:
 
-- [Getting Started](./getting-started.md)
+- [Getting Started](./getting-started.md)（このページのあと。Runtime の起動）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
@@ -18,6 +24,15 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
 - Raspbian OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
 - 32-bit OS はサポート対象外
+
+## リポジトリを clone する
+
+```sh
+git clone https://github.com/gurezo/chirimen-raspi-docker.git
+cd chirimen-raspi-docker
+```
+
+以降の `setups/docker.sh` と `scripts/doctor.sh` / `scripts/enable-i2c.sh` は、clone したディレクトリで実行する。
 
 ## Docker / Docker Compose
 
@@ -126,11 +141,10 @@ sudo ./scripts/enable-i2c.sh --check
 
 ## セットアップ後
 
-再び doctor を通し、Getting Started の起動手順へ進む。
+再び doctor を通し、`[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。
 
 ```sh
 ./scripts/doctor.sh
-./scripts/start.sh
 ```
 
 → [Getting Started](./getting-started.md)
