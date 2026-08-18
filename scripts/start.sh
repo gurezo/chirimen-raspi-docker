@@ -8,6 +8,7 @@
 # Usage:
 #   ./scripts/start.sh
 #   ./scripts/start.sh --editor
+#   ./scripts/start.sh --editor --lan
 #   ./scripts/start.sh --32bit
 #   ./scripts/start.sh --64bit
 #   ./scripts/start.sh --build
@@ -39,6 +40,10 @@ OS_BITS_SOURCE=""
 # (Compose profile `editor`).
 WANT_EDITOR=0
 
+# 1 when --lan is passed. Publishes Editor / Example / Web Demo on
+# 0.0.0.0. No-op without --editor (does not change Runtime 33330).
+WANT_LAN=0
+
 OVERRIDE_FILE=""
 
 log() {
@@ -51,19 +56,21 @@ err() {
 
 usage() {
   cat <<'EOF'
-Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [docker compose up options...]
+Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [--lan] [docker compose up options...]
 
   Probe host hardware paths and start chirimen-server with only the
   devices that exist on this host (capability-aware mapping).
   Default is Runtime only. Pass --editor on 64-bit to also start
-  chirimen-editor (code-server on 127.0.0.1:8080) and chirimen-web-demo
-  (http://127.0.0.1:4200/; Compose profile `editor`). Both are skipped
-  on 32-bit: the official Editor image has no armv7 build.
+  chirimen-editor (code-server on 127.0.0.1:8080, password auth) and
+  chirimen-web-demo (http://127.0.0.1:4200/; Compose profile `editor`).
+  Both are skipped on 32-bit: the official Editor image has no armv7
+  build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
     - Editor and Web Demo without GPIO / I2C devices (not a Hardware Runtime)
+    - Editor host bind 127.0.0.1 unless --lan (does not publish to the Internet)
 
   Dockerfile (Node base image differs by OS bitness):
     --32bit          docker/server/Dockerfile.32bit (Node 22, linux/arm/v7)
@@ -74,6 +81,10 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [docker compose up opt
   Optional services:
     --editor         start chirimen-editor and chirimen-web-demo
                      (64-bit only; Compose profile editor)
+    --lan            publish Editor 8080 / Example 4173 / Web Demo 4200
+                     on 0.0.0.0 (LAN). Combine with --editor. Does not
+                     change Runtime 33330. Password auth stays required.
+                     Do not use this to publish on the Internet.
 
   Optionally maps when present (chirimen-server only):
     - /dev/gpiomem*
@@ -87,6 +98,7 @@ Examples:
   chmod +x scripts/start.sh
   ./scripts/start.sh
   ./scripts/start.sh --editor
+  ./scripts/start.sh --editor --lan
   ./scripts/start.sh --32bit
   ./scripts/start.sh --64bit --editor -d
   ./scripts/start.sh --build --force-recreate
@@ -207,6 +219,29 @@ probe_hardware_paths() {
   fi
 }
 
+# Load repo-root .env into the process environment when present.
+# Compose also reads .env for interpolation; this lets start.sh see
+# CHIRIMEN_EDITOR_PASSWORD without requiring the caller to export it.
+load_repo_env() {
+  local env_file="${REPO_ROOT}/.env"
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    . "$env_file"
+    set +a
+  fi
+}
+
+# Quote a value for a Compose YAML double-quoted string. $ becomes $$
+# so Compose interpolation does not eat password / argon2 hashes.
+compose_yaml_string() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  value="${value//\$/\$\$}"
+  printf '"%s"' "$value"
+}
+
 write_compose_override() {
   local dockerfile="$1"
   local image="$2"
@@ -214,6 +249,8 @@ write_compose_override() {
   local editor_uid
   local editor_gid
   local editor_user
+  local editor_password
+  local editor_hashed
 
   OVERRIDE_FILE="$(mktemp "${TMPDIR:-/tmp}/chirimen-compose-devices.XXXXXX.yaml")"
 
@@ -242,15 +279,24 @@ write_compose_override() {
 
     # Editor + Web Demo are opt-in (--editor) and 64-bit only. Pass host
     # uid so bind-mounted examples are writable (code-server fixuid). Do
-    # not add GPIO / I2C devices to either service.
+    # not add GPIO / I2C devices to either service. Inject password env
+    # only when non-empty (empty PASSWORD= can break auth).
     if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
       editor_uid="$(id -u)"
       editor_gid="$(id -g)"
       editor_user="$(id -un)"
+      editor_password="${CHIRIMEN_EDITOR_PASSWORD:-}"
+      editor_hashed="${CHIRIMEN_EDITOR_HASHED_PASSWORD:-}"
       printf '%s\n' '  chirimen-editor:'
       printf '%s\n' "    user: \"${editor_uid}:${editor_gid}\""
       printf '%s\n' '    environment:'
       printf '%s\n' "      DOCKER_USER: \"${editor_user}\""
+      if [ -n "$editor_password" ]; then
+        printf '      PASSWORD: %s\n' "$(compose_yaml_string "$editor_password")"
+      fi
+      if [ -n "$editor_hashed" ]; then
+        printf '      HASHED_PASSWORD: %s\n' "$(compose_yaml_string "$editor_hashed")"
+      fi
     fi
   } >"$OVERRIDE_FILE"
 }
@@ -290,12 +336,22 @@ log_mapping_summary() {
   if [ "$WANT_EDITOR" -eq 0 ]; then
     log "editor: off (pass --editor to start chirimen-editor and chirimen-web-demo)"
     log "web-demo: off"
+    if [ "$WANT_LAN" -eq 1 ]; then
+      log "publish: --lan ignored without --editor (Runtime 33330 unchanged)"
+    fi
   elif [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
     log "web-demo: skipped (32-bit / armv7; see browser-editor.md)"
   else
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
-    log "web-demo: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
+    log "auth: password"
+    if [ "$WANT_LAN" -eq 1 ]; then
+      log "publish: 0.0.0.0 (LAN) 8080/4173/4200"
+      log "web-demo: http://0.0.0.0:4200/ (no GPIO/I2C devices)"
+    else
+      log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 8080/4173/4200"
+      log "web-demo: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
+    fi
   fi
 }
 
@@ -344,6 +400,10 @@ main() {
         WANT_EDITOR=1
         shift
         ;;
+      --lan)
+        WANT_LAN=1
+        shift
+        ;;
       *)
         up_args+=("$1")
         shift
@@ -370,6 +430,11 @@ main() {
   trap cleanup EXIT
 
   cd "$REPO_ROOT"
+
+  load_repo_env
+  if [ "$WANT_LAN" -eq 1 ] && [ "$WANT_EDITOR" -eq 1 ]; then
+    export CHIRIMEN_PUBLISH_BIND=0.0.0.0
+  fi
 
   log "chirimen-raspi-docker start (capability-aware)"
   log ""
