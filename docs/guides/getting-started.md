@@ -85,7 +85,9 @@ curl -fsS http://127.0.0.1:8080/healthz
 
 Compose を直接使う場合は `docker compose --profile editor up`（`COMPOSE_PROFILES=editor` でも可）。
 
-Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Workspace volume](../architecture/browser-editor.md#workspace-volume)。
+Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
+
+HTML / CSS は code-server 内蔵のため追加インストールは不要。Prettier / ESLint / Japanese Language Pack は Extensions ビューの推奨から Open VSX で入れる（image へはプリインストールしない）。日本語 UI にする場合は、Language Pack 導入後に Command Palette の Display Language で `ja` へ切り替える。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。
 
 ```sh
 docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
@@ -104,6 +106,7 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
 | Browser Editor を追加起動する | 上記「5. （任意）Browser Editor を起動する」。`./scripts/start.sh --editor` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
+| Browser Editor の推奨 extension | [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。Prettier / ESLint / 日本語パック |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
