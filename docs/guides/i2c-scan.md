@@ -8,8 +8,8 @@
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
 - HTML サンプル: [docs/examples/i2c-scan/](../examples/i2c-scan/)
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
-- [Getting Started](./getting-started.md)
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [Getting Started](./getting-started.md)
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本ガイドでは scan のみ）
@@ -107,11 +107,9 @@ Pi 3 / 4 / 5 で配線を変える必要はない。GPIO LED Blink（BCM 26 / �
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。host の事前準備がまだなら [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
 
 ```sh
-git clone https://github.com/gurezo/chirimen-raspi-docker.git
-cd chirimen-raspi-docker
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
 ./scripts/start.sh

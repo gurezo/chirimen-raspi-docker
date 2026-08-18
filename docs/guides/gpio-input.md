@@ -65,11 +65,9 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠と電�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。host の事前準備がまだなら [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
 
 ```sh
-git clone https://github.com/gurezo/chirimen-raspi-docker.git
-cd chirimen-raspi-docker
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
 ./scripts/start.sh
