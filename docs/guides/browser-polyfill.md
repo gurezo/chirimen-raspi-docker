@@ -31,9 +31,10 @@ pnpm nx bundle browser-polyfill
 libs/browser-polyfill/dist/polyfill.js
 docs/examples/led-blink/polyfill.js
 docs/examples/button/polyfill.js
+docs/examples/i2c-scan/polyfill.js
 ```
 
-`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。LED Blink / GPIO Input サンプル用の `polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
+`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。LED Blink / GPIO Input / I2C Scan サンプル用の `polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
 
 ## 旧 polyfill.js からの移行
 

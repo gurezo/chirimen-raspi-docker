@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>I2C Scan</title>
+    <style>
+      p {
+        color: blue;
+        text-align: center;
+        font-size: 24px;
+      }
+      #status,
+      #addresses {
+        color: black;
+        text-align: center;
+        font-size: 20px;
+      }
+      #addresses {
+        list-style: none;
+        padding: 0;
+      }
+    </style>
+    <script src="./polyfill.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <p>I2C Scan → bus 1（ADT7410 expected 0x48）</p>
+    <p id="status">走査中</p>
+    <ul id="addresses"></ul>
+  </body>
+</html>

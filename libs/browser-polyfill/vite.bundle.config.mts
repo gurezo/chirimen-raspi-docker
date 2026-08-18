@@ -8,6 +8,7 @@ const bundleOutFile = resolve(import.meta.dirname, 'dist/polyfill.js');
 const samplePolyfills = [
   resolve(workspaceRoot, 'docs/examples/led-blink/polyfill.js'),
   resolve(workspaceRoot, 'docs/examples/button/polyfill.js'),
+  resolve(workspaceRoot, 'docs/examples/i2c-scan/polyfill.js'),
 ];
 
 function copySamplePolyfills(): Plugin {

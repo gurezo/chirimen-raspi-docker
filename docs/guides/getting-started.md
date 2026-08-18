@@ -87,6 +87,16 @@ Compose を直接使う場合は `docker compose --profile editor up`（`COMPOSE
 
 Browser で `http://127.0.0.1:8080` を開く。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
 
+workspace は `led-blink/` / `button/` / `i2c-scan/` である。Terminal → Run Task → **Serve examples** で静的サーバを起動し、別タブで次を開く。
+
+```text
+http://127.0.0.1:4173/led-blink/
+http://127.0.0.1:4173/button/
+http://127.0.0.1:4173/i2c-scan/
+```
+
+保存後は Example タブを reload する（hot reload は無い）。`pnpm` / `nx` は Editor では使わない。配置の正本は [docs/examples/README.md](../examples/README.md)。方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
+
 HTML / CSS は code-server 内蔵のため追加インストールは不要。Prettier / ESLint / Japanese Language Pack は Extensions ビューの推奨から Open VSX で入れる（image へはプリインストールしない）。日本語 UI にする場合は、Language Pack 導入後に Command Palette の Display Language で `ja` へ切り替える。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。
 
 ```sh
@@ -100,11 +110,12 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | Pi の I2C / GPIO / Docker を整える | [raspberry-pi-setup.md](./raspberry-pi-setup.md) |
 | LED を点滅させる | [gpio-led-blink.md](./gpio-led-blink.md)。HTML サンプル（`docs/examples/led-blink/`）または web-demo の GPIO Output。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | タクトスイッチの入力を確認する | [gpio-input.md](./gpio-input.md)。HTML サンプル（`docs/examples/button/`）または web-demo の GPIO Input。配線は [回路仕様](../examples/gpio-input.md) |
-| I2C bus の address を scan する | [i2c-scan.md](./i2c-scan.md)。web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
+| I2C bus の address を scan する | [i2c-scan.md](./i2c-scan.md)。HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Browser から Runtime を試す（web-demo） | `pnpm nx serve web-demo` で接続状態と GPIO Output / GPIO Input / I2C Scan を確認する。[browser-polyfill.md](./browser-polyfill.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
 | Browser Editor を追加起動する | 上記「5. （任意）Browser Editor を起動する」。`./scripts/start.sh --editor` |
+| Browser Editor から Example を編集・実行する | 上記「5. （任意）Browser Editor を起動する」。Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor の推奨 extension | [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。Prettier / ESLint / 日本語パック |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |

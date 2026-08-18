@@ -8,6 +8,7 @@
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - API flow（Demo-only）: [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)（#114）
 - Scan UI: web-demo の I2C Scan（`#/i2c-scan`）。[#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
+- HTML サンプル: [docs/examples/i2c-scan/](./i2c-scan/)（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)）
 - 操作手順つきガイド: [i2c-scan.md](../guides/i2c-scan.md)（#117）
 - I2C 有効化: [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本仕様では scan のみ）
@@ -124,7 +125,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 
 ## 期待結果
 
-配線後、host で `/dev/i2c-1` があり、`i2cdetect -y 1`（`i2c-tools` がある場合）に `48` が出る。web-demo の I2C Scan（`#/i2c-scan`）で Scan すると、hex 一覧に **`0x48`** が含まれる。
+配線後、host で `/dev/i2c-1` があり、`i2cdetect -y 1`（`i2c-tools` がある場合）に `48` が出る。HTML サンプル（[docs/examples/i2c-scan/](./i2c-scan/)）または web-demo の I2C Scan（`#/i2c-scan`）で走査すると、hex 一覧に **`0x48`** が含まれる。
 
 slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）では正常だが、本 Issue の完了条件ではない。空配列は失敗として、配線と I2C 有効化を見直す。操作手順・Troubleshooting は [i2c-scan.md](../guides/i2c-scan.md)。切り分けは [troubleshooting.md](../guides/troubleshooting.md) の「I2C が使えない / scan が空」。
 
@@ -136,8 +137,8 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）
 5. `./scripts/doctor.sh` → `./scripts/start.sh`
 6. `docker compose exec chirimen-server ls -l /dev/i2c-1`
-7. `pnpm nx serve web-demo` → `http://localhost:4200/#/i2c-scan`
-8. 接続状態が Connected になったら Scan を押し、一覧に `0x48` が出ることを確認する
+7. HTML サンプル（`docs/examples/i2c-scan/`）または `pnpm nx serve web-demo` → `http://localhost:4200/#/i2c-scan`
+8. 走査結果の hex 一覧に `0x48` が出ることを確認する
 
 ## 実機検証（#116）
 
