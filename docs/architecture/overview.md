@@ -183,7 +183,7 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
-| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。optional profile は #177） |
+| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。optional profile は #177。初期設定 / extension は #178） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
