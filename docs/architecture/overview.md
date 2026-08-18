@@ -114,6 +114,8 @@ chirimen-raspi-docker/
 ├── docker/
 │   ├── editor/
 │   │   └── Dockerfile          # code-server 4.132.0（amd64 / arm64）
+│   ├── web-demo/
+│   │   └── Dockerfile          # Vite production build + nginx（port 4200、#180）
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
@@ -131,7 +133,7 @@ chirimen-raspi-docker/
 │   ├── guides/
 │   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様・HTML サンプル（#105 / #108 / #109 / #113 / #116 / #117）
 │   └── api/                    # Typedoc 生成物（git 管理外）
-├── compose.yaml                # chirimen-server（既定）+ chirimen-editor（profile `editor`、#177）
+├── compose.yaml                # chirimen-server（既定）+ chirimen-editor / chirimen-web-demo（profile `editor`、#177 / #180）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -158,9 +160,9 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は Runtime only。`--editor` で `chirimen-editor` も起動する。サポート対象は 64-bit OS）
-- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` は Compose profile `editor`。GPIO / I2C は渡さない）
-- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor には付けない）
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は Runtime only。`--editor` で `chirimen-editor` と `chirimen-web-demo` も起動する。サポート対象は 64-bit OS）
+- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` と `chirimen-web-demo` は Compose profile `editor`。GPIO / I2C は渡さない）
+- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Web Demo には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 
 詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
