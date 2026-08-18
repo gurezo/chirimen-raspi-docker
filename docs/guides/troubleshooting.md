@@ -251,7 +251,69 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 
 ### 対処
 
-設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。Example の中身は host の `docs/examples` を見る。推奨 extension（Prettier / ESLint / 日本語パック）は named volume が消えると再インストールが必要。workspace の `.vscode` 推奨は bind mount に残る。
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh --editor` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。推奨 extension（Prettier / ESLint / 日本語パック）は named volume が消えると再インストールが必要。workspace の `.vscode` 推奨は bind mount に残る。
+
+## LAN から Editor / Web Demo に届かない
+
+### 症状
+
+別マシンの Browser で `http://<Pi の IP>:8080` や `:4200` に接続できない。Pi 上の `http://127.0.0.1:8080` は開く。
+
+### 原因
+
+既定の host bind は `127.0.0.1` である。Internet にも LAN にも出さない。`--lan` なし、または `CHIRIMEN_PUBLISH_BIND` が `127.0.0.1` のまま。
+
+### 確認
+
+```sh
+./scripts/start.sh --help
+docker compose --profile editor port chirimen-editor 8080
+```
+
+起動ログの `publish:` が `127.0.0.1` か `0.0.0.0 (LAN)` かを見る。
+
+### 対処
+
+- LAN が必要なら `./scripts/start.sh --editor --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）
+- `--lan` だけで `--editor` が無いときは Runtime `33330` も含め bind は変わらない
+- Internet へは出さない。reverse proxy は本リポジトリでは提供しない
+
+方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
+
+## LAN から Web Demo / Example は開くが GPIO / I2C が動かない
+
+### 症状
+
+別マシンで `http://<Pi の IP>:4200/` や `:4173/led-blink/` は表示されるが、接続状態が Error のまま。または GPIO / I2C 操作が失敗する。
+
+### 原因
+
+HTML Example の既定 WebSocket 先は `ws://localhost:33330/` で、別マシンの localhost を指す。Web Demo はページの hostname が localhost でなければ `ws://<hostname>:33330/` に接続する。Runtime は `--lan` しても bind を変えない（もともと全 interface）。
+
+### 対処
+
+- Web Demo は Pi の IP でページを開く（hostname 解決）。`http://127.0.0.1:4200/` を別マシンから開いても届かない
+- HTML Example は script の前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）
+- `curl http://<Pi の IP>:33330/health` で Runtime を確認する
+- Editor / web-demo container に GPIO / I2C device は渡していない
+
+## Editor を IP 直打ち HTTP で開くと webview が壊れる
+
+### 症状
+
+LAN の `http://192.168.x.x:8080` で Editor は開くが、webview / Service Worker が失敗する。Browser コンソールに secure context のエラーが出る。
+
+### 原因
+
+code-server の webview は secure context を要求する。`localhost` は常に secure。IP アドレスの HTTP は insecure になりうる。
+
+### 対処
+
+- 既定どおり Pi 上または SSH port forward の `http://127.0.0.1:8080` を使う
+- Internet 公開が必要ならドメイン + HTTPS の reverse proxy を別途用意する。`docker/nginx` は未実装
+- 本リポジトリの既定は HTTP + password + `127.0.0.1`
+
+方針は [browser-editor.md の HTTPS](../architecture/browser-editor.md#https--reverse-proxy)。
 
 ## Editor で Microsoft Marketplace の拡張が入れられない
 

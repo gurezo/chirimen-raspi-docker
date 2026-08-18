@@ -206,7 +206,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 | A0 / A1 が GND でない | A0 / A1 を GND へ。上げると address が `0x48` 以外になる |
 | 5V 接続 | VDD / SDA / SCL を 5V ピン（2 / 4）へつながない |
 | 非 Pi 環境 | macOS などでは実 I2C が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | 既定の接続先は `ws://localhost:33330/`。Pi 上で開くか、script の前に `CHIRIMEN_WS_URL` を設定する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --editor --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `open` が Permission denied になる
 
