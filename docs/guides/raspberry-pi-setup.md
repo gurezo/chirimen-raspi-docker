@@ -5,7 +5,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 推奨順:
 
 ```text
-clone → このページ（Docker / GPIO / I2C / doctor） → [Getting Started](./getting-started.md)（起動）
+clone → このページ（Docker / GPIO / I2C / doctor） → Getting Started（起動）
 ```
 
 関連:
