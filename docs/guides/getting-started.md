@@ -15,7 +15,7 @@
 
 ## 前提
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
 - Raspbian OS 64-bit
 - 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること

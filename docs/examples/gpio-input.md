@@ -106,7 +106,7 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は入力ピ
 | LED Blink | BCM 26（物理 37）。本回路の 5 とは重ならないため同時配線できる |
 | Browser Polyfill | `CHIRIMEN_GPIO_PORTS` に `5` が含まれる |
 
-モデルごとに配線を変える必要はない。内部プルアップに依存しない。Compatibility matrix は [docker.md](../architecture/docker.md#compatibility-matrix) を参照。
+モデルごとに配線を変える必要はない。内部プルアップに依存しない。Compatibility matrix は [compatibility.md](../architecture/compatibility.md) を参照。
 
 ## 期待結果
 
