@@ -6,6 +6,10 @@ Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Docker Runtime
 
 ## 最短の使い方
 
+初回の host 準備（Docker / GPIO / I2C）は [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) を先に完了する。clone もそのページで行う。
+
+準備済みなら:
+
 ```sh
 git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
@@ -20,26 +24,26 @@ curl http://localhost:33330/health
 
 公開 Documentation: https://gurezo.github.io/chirimen-raspi-docker/
 
-初めての利用者はガイドから始めてください。公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照してください。
-
-### 使い方
-
-| ドキュメント                                                       | 内容                                                                     |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| [docs/guides/getting-started.md](docs/guides/getting-started.md)   | clone → doctor → `./scripts/start.sh` → health check                     |
-| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo         |
-| [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)     | GPIO LED Blink 操作ガイド（HTML サンプルで点滅）                         |
-| [docs/guides/gpio-input.md](docs/guides/gpio-input.md)             | GPIO Input 操作ガイド（HTML サンプルで onchange）                        |
-| [docs/guides/i2c-scan.md](docs/guides/i2c-scan.md)                 | I2C Scan 操作ガイド（web-demo で address scan）                          |
-| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md)   | よくある起動・device 障害                                                |
+初めての利用者は、clone と host 準備の [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) から始めてください。公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照してください。
 
 ### セットアップ
 
 | ドキュメント                                                           | 内容                                             |
 | ---------------------------------------------------------------------- | ------------------------------------------------ |
-| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | Pi 上の Docker / GPIO / I2C セットアップ         |
+| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | clone → Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/development.md](docs/guides/development.md)               | リポジトリ開発向けの Node.js / pnpm / Nx         |
 | [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose インストール     |
+
+### 使い方
+
+| ドキュメント                                                       | 内容                                                                     |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| [docs/guides/getting-started.md](docs/guides/getting-started.md)   | doctor → `./scripts/start.sh` → health check                             |
+| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo         |
+| [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)     | GPIO LED Blink 操作ガイド（HTML サンプルで点滅）                         |
+| [docs/guides/gpio-input.md](docs/guides/gpio-input.md)             | GPIO Input 操作ガイド（HTML サンプルで onchange）                        |
+| [docs/guides/i2c-scan.md](docs/guides/i2c-scan.md)                 | I2C Scan 操作ガイド（web-demo で address scan）                          |
+| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md)   | よくある起動・device 障害                                                |
 
 ### アーキテクチャ
 

@@ -1,10 +1,16 @@
 # Getting Started
 
-初めての利用者が、Raspberry Pi 上で CHIRIMEN Runtime を起動するまでの最短手順。
+clone と [Raspberry Pi setup](./raspberry-pi-setup.md) を終えた利用者が、Raspberry Pi 上で CHIRIMEN Runtime を起動するまでの最短手順。
+
+推奨順:
+
+```text
+Raspberry Pi setup（clone / Docker / GPIO / I2C / doctor） → このページ（起動）
+```
 
 関連:
 
-- [Raspberry Pi setup](./raspberry-pi-setup.md)（host の事前準備がまだの場合）
+- [Raspberry Pi setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
@@ -15,22 +21,20 @@
 
 ## 前提
 
+- リポジトリを clone 済みであること
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
 - Raspbian OS 64-bit
 - 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること
-- GPIO / I2C 用 device が host に存在すること（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+- GPIO / I2C 用 device が host に存在すること
+
+clone や Docker / GPIO / I2C の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
 
 開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
 
-## 1. リポジトリを clone する
+## 1. host を診断する
 
-```sh
-git clone https://github.com/gurezo/chirimen-raspi-docker.git
-cd chirimen-raspi-docker
-```
-
-## 2. host を診断する
+clone したディレクトリで:
 
 ```sh
 chmod +x scripts/doctor.sh
@@ -39,7 +43,7 @@ chmod +x scripts/doctor.sh
 
 `[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
 
-## 3. Runtime を起動する
+## 2. Runtime を起動する
 
 ```sh
 chmod +x scripts/start.sh
@@ -49,7 +53,7 @@ chmod +x scripts/start.sh
 
 `start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor と Web Demo は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。
 
-## 4. health check で確認する
+## 3. health check で確認する
 
 別ターミナルで:
 
@@ -74,7 +78,7 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
-## 5. （任意）Browser Editor と Web Demo を起動する
+## 4. （任意）Browser Editor と Web Demo を起動する
 
 Editor と Web Demo も使う場合:
 
@@ -118,15 +122,14 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 
 | やりたいこと | 参照 |
 | --- | --- |
-| Pi の I2C / GPIO / Docker を整える | [raspberry-pi-setup.md](./raspberry-pi-setup.md) |
 | LED を点滅させる | [gpio-led-blink.md](./gpio-led-blink.md)。HTML サンプル（`docs/examples/led-blink/`）または web-demo の GPIO Output。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | タクトスイッチの入力を確認する | [gpio-input.md](./gpio-input.md)。HTML サンプル（`docs/examples/button/`）または web-demo の GPIO Input。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [i2c-scan.md](./i2c-scan.md)。HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Browser から Runtime を試す（web-demo） | `./scripts/start.sh --editor` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
-| Browser Editor を追加起動する | 上記「5. （任意）Browser Editor と Web Demo を起動する」。`./scripts/start.sh --editor` |
-| Browser Editor から Example / Web Demo を実行する | 上記「5. （任意）Browser Editor と Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
+| Browser Editor を追加起動する | 上記「4. （任意）Browser Editor と Web Demo を起動する」。`./scripts/start.sh --editor` |
+| Browser Editor から Example / Web Demo を実行する | 上記「4. （任意）Browser Editor と Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --editor --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
 | Browser Editor の推奨 extension | [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。Prettier / ESLint / 日本語パック |
