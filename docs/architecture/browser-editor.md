@@ -71,7 +71,7 @@ Browser
 
 ## Architecture
 
-Raspberry Pi で利用する architecture は次の2系統である。サポート対象は 64-bit OS のみ。Runtime の Compatibility 正本は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix)。
+Raspberry Pi で利用する architecture は次の2系統である。サポート対象は 64-bit OS のみ。Runtime の Compatibility 正本は [Compatibility matrix](./compatibility.md)。
 
 | Architecture | 典型環境 | Runtime | Editor 調査結果 |
 | --- | --- | --- | --- |

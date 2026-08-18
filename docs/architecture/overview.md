@@ -78,7 +78,7 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 ## 対応対象
 
-OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix) を参照。
+OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility matrix](./compatibility.md) を参照。
 
 サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** である。
 
@@ -184,7 +184,8 @@ npx nx mcp --help
 | ドキュメント | 内容 |
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
-| [docker.md](./docker.md) | Docker / Compose / device mount / [Compatibility matrix](./docker.md#compatibility-matrix) |
+| [docker.md](./docker.md) | Docker / Compose / device mount |
+| [compatibility.md](./compatibility.md) | Compatibility matrix（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。optional profile は #177。初期設定 / extension は #178。Example 編集は #179） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
