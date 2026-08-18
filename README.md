@@ -95,4 +95,4 @@ pnpm nx serve web-demo
 npx nx graph
 ```
 
-`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動します。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started](docs/guides/getting-started.md) と [browser-polyfill.md](docs/guides/browser-polyfill.md) を参照してください。
+`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動します（Vite HMR。Compose の web-demo と port が衝突します）。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。Browser だけの経路は `./scripts/start.sh --editor` のあと `http://127.0.0.1:4200/` です。操作手順は [Getting Started](docs/guides/getting-started.md) と [browser-polyfill.md](docs/guides/browser-polyfill.md) を参照してください。

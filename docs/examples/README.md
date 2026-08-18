@@ -2,7 +2,7 @@
 
 Browser Editor（code-server）の workspace です。Phase 7 の HTML サンプルを編集します。
 
-GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。
+GPIO / I2C 操作は Editor ではなく、Browser の Example ページ / Web Demo → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。
 
 ## 配置
 
@@ -16,9 +16,12 @@ GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Pol
 
 ## 起動
 
-1. Runtime を起動する（host で `./scripts/start.sh --editor`）
-2. Terminal → Run Task → **Serve examples**
-3. 別 Browser タブで開く
+1. Runtime + Editor + Web Demo を起動する（host で `./scripts/start.sh --editor`）
+2. HTML サンプル: Terminal → Run Task → **Serve examples**
+3. Web Demo: Compose が起動済み。Terminal → Run Task → **Open Web Demo**
+4. 別 Browser タブで開く
+
+HTML サンプル:
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -26,7 +29,16 @@ http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
 ```
 
-Terminal から直接起動する場合:
+Web Demo（Start / Stop UI）:
+
+```text
+http://127.0.0.1:4200/
+http://127.0.0.1:4200/#/gpio-output
+http://127.0.0.1:4200/#/gpio-input
+http://127.0.0.1:4200/#/i2c-scan
+```
+
+HTML サンプルを Terminal から直接起動する場合:
 
 ```sh
 python3 -m http.server 4173 --bind 0.0.0.0
@@ -34,6 +46,6 @@ python3 -m http.server 4173 --bind 0.0.0.0
 
 ## 変更の反映
 
-静的ファイルのため hot reload はありません。Editor で保存したあと、Example のタブを reload します。WebSocket 先は `ws://localhost:33330/` です。
+静的ファイルのため hot reload はありません。Editor で保存したあと、Example のタブを reload します。Web Demo の Compose 経路も production build のため HMR はありません。WebSocket 先は `ws://localhost:33330/` です。
 
-`polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。
+`polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。host で Vite HMR を使う場合は `pnpm nx serve web-demo`（port 4200 が衝突するので Compose の `chirimen-web-demo` を止める）。

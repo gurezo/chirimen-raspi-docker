@@ -24,6 +24,16 @@
         "reveal": "always",
         "panel": "dedicated"
       }
+    },
+    {
+      "label": "Open Web Demo",
+      "type": "shell",
+      "command": "printf '%s\\n' 'Web Demo is started by Compose (./scripts/start.sh --editor).' 'Open a Browser tab:' 'http://127.0.0.1:4200/' 'http://127.0.0.1:4200/#/gpio-output' 'http://127.0.0.1:4200/#/gpio-input' 'http://127.0.0.1:4200/#/i2c-scan'",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      }
     }
   ]
 }
