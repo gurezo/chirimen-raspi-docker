@@ -22,3 +22,7 @@ docs/examples/.vscode/*
 !docs/examples/.vscode/extensions.json
 !docs/examples/.vscode/settings.json
 !docs/examples/.vscode/tasks.json
+
+# Editor / Compose secrets (#181). Commit .env.example only.
+.env
+.env.local
