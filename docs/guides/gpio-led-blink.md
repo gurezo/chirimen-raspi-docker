@@ -97,7 +97,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo**）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 
@@ -118,10 +118,10 @@ Browser Editor から編集する場合は `./scripts/start.sh --editor` のあ�
 代替（web-demo の Start / Stop）:
 
 ```sh
-pnpm nx serve web-demo
+./scripts/start.sh --editor
 ```
 
-`http://localhost:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+`http://127.0.0.1:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
 ## 期待結果
 

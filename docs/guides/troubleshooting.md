@@ -285,7 +285,7 @@ Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が�
 
 - Example 編集では Prettier（保存時フォーマット）を使う
 - monorepo の TypeScript lint は host で `pnpm lint`（[Development Guide](./development.md)）
-- Editor から Nx を使う流れは [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)
+- Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) で再評価済み）
 
 ## Example の静的サーバ（4173）が開かない
 
@@ -304,6 +304,41 @@ Editor image に `python3-minimal` が入っていない古い image を使っ�
 - host から配信する場合は `cd docs/examples/led-blink && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
+
+## Web Demo（4200）が開かない
+
+### 症状
+
+`http://127.0.0.1:4200/` に接続できない。または host の `pnpm nx serve web-demo` が port 使用中で失敗する。
+
+### 原因
+
+`--editor` / Compose profile `editor` なしで Runtime only 起動している。または Web Demo image がまだ build されていない。host の Vite（`pnpm nx serve web-demo`）と Compose `chirimen-web-demo` が同じ port `4200` を使っている。
+
+### 対処
+
+- `./scripts/start.sh --editor` で Runtime + Editor + Web Demo を起動する
+- `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
+- `docker compose --profile editor ps` で `chirimen-web-demo` が running か見る
+- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose --profile editor stop chirimen-web-demo`
+
+方針は [browser-editor.md の Web Demo 起動](../architecture/browser-editor.md#web-demo-起動180)。
+
+## Web Demo は開くが GPIO / I2C が動かない
+
+### 症状
+
+`http://127.0.0.1:4200/` は表示されるが、接続状態が Error のまま。または GPIO / I2C 操作が失敗する。
+
+### 原因
+
+WebSocket 先は Browser から `ws://localhost:33330/` である。web-demo container は静的ファイルだけを配信し、GPIO / I2C には触れない。Runtime が止まっていると Polyfill は接続できない。
+
+### 対処
+
+- `curl http://localhost:33330/health` で Runtime を確認する
+- 接続先は `ws://localhost:33330/`（[browser-polyfill.md](./browser-polyfill.md)）
+- Editor / web-demo container に GPIO / I2C device は渡していない
 
 ## Example を保存しても Browser に反映されない
 

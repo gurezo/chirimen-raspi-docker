@@ -130,11 +130,15 @@ error
 
 ### web-demo で確認する
 
+Browser だけの経路（推奨）:
+
 ```sh
-pnpm nx serve web-demo
+./scripts/start.sh --editor
 ```
 
-ブラウザで `http://localhost:4200/` を開く。画面上の接続状態が次のいずれかになる。
+ブラウザで `http://127.0.0.1:4200/` を開く。Editor からは Run Task **Open Web Demo**。host で Vite HMR を使う場合は Compose の `chirimen-web-demo` を止めてから `pnpm nx serve web-demo`（`http://localhost:4200/`）。
+
+画面上の接続状態が次のいずれかになる。
 
 ```text
 Disconnected

@@ -152,21 +152,23 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo**）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
 代替（web-demo の Scan / Stop）:
 
 ```sh
-pnpm nx serve web-demo
+./scripts/start.sh --editor
 ```
 
 1. I2C 有効化、`/dev/i2c-1` 確認、device 接続、Runtime 起動を完了する
-2. ブラウザで `http://localhost:4200/#/i2c-scan` を Raspberry Pi 上で開く
+2. ブラウザで `http://127.0.0.1:4200/#/i2c-scan` を Raspberry Pi 上で開く
 3. 接続状態が **Connected** になるまで待つ（Runtime が止まっていると `Error`）
 4. **Scan** を押す。走査中はボタンが無効になり、ステータスが「走査中」になる
 5. 完了すると検出 address が hex 一覧で出る。画面離脱 / reload / WebSocket 切断で走査は中断する
+
+host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`（`http://localhost:4200/#/i2c-scan`）。
 
 ## 結果の読み方
 
