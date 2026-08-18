@@ -16,7 +16,8 @@
 ## 前提
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/docker.md#compatibility-matrix)）
-- Raspbian OS 64-bit、または Pi 3 B+ / Pi 4 / Pi 5 の Raspbian OS 32-bit（32-bit は Node 22 / `Dockerfile.32bit`。Pi 4 / Pi 5 の 32-bit OS は 64-bit kernel が default のため `uname -m` は `aarch64`。32-bit の検証済み機種は Pi 4 Model B Rev 1.4 と Pi 5 Model B Rev 1.0。詳細は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
+- Raspbian OS 64-bit
+- 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 
@@ -42,13 +43,11 @@ chmod +x scripts/doctor.sh
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh            # Runtime only（uname -m で 32-bit / 64-bit 用 Dockerfile を自動選択）
-./scripts/start.sh --32bit    # 32-bit OS（Node 22）
-./scripts/start.sh --64bit    # 64-bit OS（Node 24）
-./scripts/start.sh --editor   # Runtime + Browser Editor（64-bit のみ）
+./scripts/start.sh            # Runtime only
+./scripts/start.sh --editor   # Runtime + Browser Editor
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。32-bit では `--editor` を付けても Editor を起動しない（公式 image に `linux/arm/v7` が無い）。32-bit OS では Node 24 image に `linux/arm/v7` が無いため、`--32bit`（または自動選択）で `docker/server/Dockerfile.32bit` を使う。Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため自動選択は 64-bit 用 Dockerfile になりうる。32-bit userland 向け image が必要な場合は `./scripts/start.sh --32bit` を明示する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。
 
 ## 4. health check で確認する
 
@@ -77,7 +76,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## 5. （任意）Browser Editor を起動する
 
-64-bit で Editor も使う場合:
+Editor も使う場合:
 
 ```sh
 ./scripts/start.sh --editor

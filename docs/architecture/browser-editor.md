@@ -71,12 +71,12 @@ Browser
 
 ## Architecture
 
-Raspberry Pi で利用する architecture は次の2系統である。Runtime の Compatibility 正本は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix)。
+Raspberry Pi で利用する architecture は次の2系統である。サポート対象は 64-bit OS のみ。Runtime の Compatibility 正本は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix)。
 
 | Architecture | 典型環境 | Runtime | Editor 調査結果 |
 | --- | --- | --- | --- |
-| `arm64`（`aarch64`） | Pi 3 / 4 / 5 の 64-bit OS。Pi 4 / 5 の 32-bit OS でも kernel は 64-bit のため `uname -m` は `aarch64` | 64-bit Dockerfile（Node 24） | 公式 Docker image / GitHub release が対応 |
-| `arm32` / `armv7`（`armv7l`） | Pi 3 B+ の 32-bit OS など | `Dockerfile.32bit`（Node 22） | 公式 Docker image / 現行 GitHub release に資産が無い |
+| `arm64`（`aarch64`） | Pi 3 / 4 / 5 の 64-bit OS | 64-bit Dockerfile（Node 24） | 公式 Docker image / GitHub release が対応 |
+| `arm32` / `armv7`（`armv7l`） | 32-bit OS（サポート対象外） | `Dockerfile.32bit`（Node 22）。サポート対象外 | 公式 Docker image / 現行 GitHub release に資産が無い |
 
 開発マシン（macOS の Docker Desktop など）は `amd64` で確認する想定。公式 image は `amd64` と `arm64` を出す。
 
@@ -206,7 +206,7 @@ workspace を named volume にはしない。Example が git から切り離さ�
 
 | 入口 | uid |
 | --- | --- |
-| `./scripts/start.sh --editor`（64-bit） | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
+| `./scripts/start.sh --editor` | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
 | `docker compose --profile editor up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
 
 bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。ユーザー固有の `.vscode` は bind mount に出うるが git には含めない（推奨設定は [#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178)）。
@@ -317,7 +317,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Version policy | semver タグで pin。初期ピンは `4.132.0`（調査時点の最新安定版。[v4.132.0](https://github.com/coder/code-server/releases/tag/v4.132.0)）。`latest` 禁止 |
 | 対応 architecture | `linux/arm64`（Raspberry Pi 上の Editor）、`linux/amd64`（開発確認） |
 | 非対応 architecture | `arm32` / `armv7` / `armhf`。公式 image も現行 release 資産も無い。linuxserver の armhf は廃止済み |
-| 32-bit OS の Runtime | 現状どおり `Dockerfile.32bit` で継続。Editor は出さない |
+| 32-bit OS | サポート対象外。`Dockerfile.32bit` は削除しないが、Editor は出さない |
 | Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
 | 認証 | 既定は password。詳細は #181 |
 | HTTPS | 初期は HTTP + password。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま |
@@ -331,6 +331,6 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
-- Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Runtime / Web Demo は従来どおり使える。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
+- 32-bit OS はサポート対象外。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
 - Microsoft 独占拡張は使えない。CHIRIMEN Example の編集・Browser 実行には必須ではない
 - 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。本 Issue は選定のみで `Supported` とは書かない

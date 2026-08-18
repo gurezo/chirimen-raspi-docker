@@ -27,33 +27,21 @@ Node.js / pnpm / Nx
 
 ## 必要環境
 
-- Node.js（64-bit は 24、32-bit は 22。Docker image と同じ系統）
+- Node.js 24（64-bit。Docker image と同じ系統）
 - pnpm v11.x（root `package.json` の `packageManager`）
 - Nx
 - Docker / Docker Compose（Runtime 起動や image build をする場合）
+- 32-bit OS はサポート対象外
 
 ## Node.js のインストール
 
-host への `apt install nodejs npm` は使いません。version manager（nvm）で、開発対象の OS bit 数に合わせた Node.js を入れてください。
+host への `apt install nodejs npm` は使いません。version manager（nvm）で Node.js 24 を入れてください。
 
-### nvm（共通）
+### nvm
 
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 source ~/.bashrc
-```
-
-### 32-bit
-
-```sh
-nvm install 22
-nvm use 22
-nvm alias default 22
-```
-
-### 64-bit
-
-```sh
 nvm install 24
 nvm use 24
 nvm alias default 24

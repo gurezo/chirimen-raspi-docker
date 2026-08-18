@@ -80,17 +80,18 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix) を参照。
 
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** である。
+
 ### 対応
 
-- Raspberry Pi 3 B+
-- Raspberry Pi 4
-- Raspberry Pi 5
+- Raspberry Pi 3 B+（Raspbian OS 64-bit）
+- Raspberry Pi 4（Raspbian OS 64-bit）
+- Raspberry Pi 5（Raspbian OS 64-bit）
 
-### 未検証 / 推奨環境外
+### 未検証 / サポート対象外
 
-- Raspberry Pi 3 A+（ハードウェアスペック不足のため推奨環境外）
-
-32-bit OS は Raspberry Pi 3 B+（`armv7l`）、Raspberry Pi 4 Model B Rev 1.4（64-bit kernel / `aarch64`）、Raspberry Pi 5 Model B Rev 1.0（64-bit kernel / `aarch64` / `v8`）で Verified。詳細は [docker.md の Compatibility matrix](./docker.md#compatibility-matrix)。
+- Raspberry Pi 3 A+（ハードウェアスペック不足のためサポート対象外）
+- 32-bit OS（サポート対象外。Runtime と Editor を同じ手順では保証しない）
 
 ### 非対応（現時点）
 
@@ -115,7 +116,7 @@ chirimen-raspi-docker/
 │   │   └── Dockerfile          # code-server 4.132.0（amd64 / arm64）
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
-│       └── Dockerfile.32bit    # 32-bit（Node 22）
+│       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
 ├── scripts/
 │   ├── doctor.sh
 │   ├── start.sh
@@ -157,7 +158,7 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。`--32bit` / `--64bit` で Dockerfile を切り替え、未指定時は `uname -m` で自動選択。既定は Runtime only。`--editor` で `chirimen-editor` も起動し、32-bit では Editor をスキップする）
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は Runtime only。`--editor` で `chirimen-editor` も起動する。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` は Compose profile `editor`。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
