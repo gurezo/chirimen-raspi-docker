@@ -10,7 +10,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
 - [Compatibility matrix](./compatibility.md)
-- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176。optional profile は #177。初期設定 / extension は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181）
+- [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176。optional profile は #177。初期設定は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181。Extension は #201）
 - [Getting Started](../guides/getting-started.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
@@ -161,7 +161,7 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 | Extensions / user-data | `/home/coder/.local` |
 | Config | `/home/coder/.config` |
 | Health | `GET /healthz`（認証不要。HTTP 200 なら healthy。JSON の `expired` もプロセス生存） |
-| Extra packages | `python3-minimal` のみ（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。HTML Example の静的配信）。GPIO / I2C ツールと Node は入れない。必須 extension のプリインストールもしない（[#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178)。推奨は [`docs/examples/.vscode`](../examples/.vscode/)） |
+| Extra packages | `python3-minimal` のみ（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。HTML Example の静的配信）。GPIO / I2C ツールと Node は入れない。Extension のプリインストール・推奨もしない（[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)） |
 
 ### build
 

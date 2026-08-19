@@ -6,13 +6,13 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#173 Browser Editor の技術選定を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/173)
-- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
+- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183) / [#201 プリインストール Extension 削除](https://github.com/gurezo/chirimen-raspi-docker/issues/201)
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 
 ## Status
 
-Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。optional profile は #177。初期設定 / extension は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181）
+Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。optional profile は #177。初期設定は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181。Extension はプリインストール・推奨しない（#201））
 
 ## Context
 
@@ -125,71 +125,37 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
 
 公式 Install は Raspberry Pi への npm インストールも案内するが、親 Issue は独立した Docker service を要求するため、host への npm インストールは採用しない。
 
-## Extension
+## Extensions
 
-code-server の extension は Desktop VS Code と同じく、UI の Extensions ビューまたは CLI で入れる。[FAQ](https://coder.com/docs/code-server/FAQ) の例:
+chirimen-raspi-docker does not preinstall, distribute, recommend,
+or require any code-server / VS Code extensions.
 
-```console
-code-server --install-extension <extension id>
-# example: code-server --install-extension wesbos.theme-cobalt2
+Extensions are entirely optional.
 
-# From the Coder extension marketplace
-code-server --install-extension ms-python.python
+Users may choose, install, update, and remove extensions at their own discretion.
 
-# From a downloaded VSIX on the file system
-code-server --install-extension downloaded-ms-python.python.vsix
-```
+The CHIRIMEN Runtime and bundled examples do not require editor extensions.
 
-[#178](https://github.com/gurezo/chirimen-raspi-docker/issues/178) の必須セットと入れ方を本節で固定する。Dockerfile に `code-server --install-extension` は足さない。新規環境では [`docs/examples/.vscode/extensions.json`](../examples/.vscode/extensions.json) の推奨から、利用者が Extensions ビューで入れる。
+[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201) でこの方針を固定する。Dockerfile に `code-server --install-extension` は書かない。`.vsix` はリポジトリに置かない。workspace の `extensions.json` による recommendation も提供しない。
 
-| 方法 | 用途 |
+code-server 内蔵の HTML / CSS / JavaScript / TypeScript Language Features は Editor 本体の一部であり、プリインストール Extension ではない。
+
+ユーザーが任意に導入した Extension は Docker image に含めない。永続化は named volume `chirimen-editor-local`（`/home/coder/.local`）に任せる（[#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。下記 [Workspace volume](#workspace-volume)）。
+
+| 置き場 | Extension |
 | --- | --- |
-| Extensions ビュー | 必須の Open VSX 拡張を入れる既定経路 |
-| `code-server --install-extension <id>` | 利用者が任意に CLI で入れる場合。image ビルドでは使わない |
-| `.vsix` ファイル | Open VSX に無い場合の最終手段。本リポジトリには置かない |
+| Docker image | 含めない |
+| User volume `chirimen-editor-local` | ユーザー自身が導入したものだけ |
 
-設定と extension 本体は workspace とは別 volume に置く（公式 Docker 例の `~/.local` / `~/.config`）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)（下記 [Workspace volume](#workspace-volume)）。
+`docker compose down`（`-v` なし）ではユーザー導入 Extension は残る。`docker compose down -v` では消える。再インストールはユーザー判断である。
 
-### 必須 extension（#178）
+lint / format / TypeScript のプロジェクト作業は host の `pnpm lint` / `pnpm test` / `pnpm build`（[development.md](../guides/development.md)）。Editor workspace（`docs/examples`）に `eslint` / `node_modules` は無い。Editor workspace へ Nx は入れない。[`docs/examples/.prettierrc.json`](../examples/.prettierrc.json) は Extension ではなく任意のフォーマット設定である。workspace 設定は [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json)（tab / eol / encoding）。ユーザー固有のテーマ / キーバインド / Extension は git に含めない。
 
-| 必須 | ID | 入手 |
-| --- | --- | --- |
-| HTML | `vscode.html-language-features` | code-server 内蔵。追加インストール不要 |
-| CSS | `vscode.css-language-features` | code-server 内蔵。追加インストール不要 |
-| Prettier | `esbenp.prettier-vscode` | Open VSX。[`extensions.json`](../examples/.vscode/extensions.json) で推奨 |
-| ESLint | `dbaeumer.vscode-eslint` | Open VSX。同上 |
-| Japanese Language Pack | `MS-CEINTL.vscode-language-pack-ja` | Open VSX。同上 |
-
-`extensions.json` の `recommendations` には Open VSX から入れる3つだけを書く。内蔵 HTML / CSS は Marketplace から入れない。上記以外は必須にしない。
-
-推奨 extension の semver は pin しない（ID のみ）。言語機能は image タグ `codercom/code-server:4.132.0` に追従する。利用者が入れる版は Open VSX のその時点の最新である。
-
-日本語 UI にする場合は、Language Pack 導入後に Command Palette の Display Language で `ja` へ切り替える。Dockerfile の `--locale ja` は付けない。
-
-### TypeScript / ESLint / Prettier
-
-| 項目 | 方針 |
-| --- | --- |
-| TypeScript | 内蔵の JavaScript / TypeScript Language Features で足りる。Editor workspace の Example は JS。monorepo の TS は host（[development.md](../guides/development.md)） |
-| ESLint | 必須として推奨する。`docs/examples` には `eslint` / `node_modules` が無いため、Example 上では lint が動かない。monorepo の `pnpm lint` は host。[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) で再評価し、Editor workspace へ Nx は入れない |
-| Prettier | Editor では採用する。repo 全体の format script / CI には入れない。`eslint-config-prettier` は Nx 既定のまま残す。Example 用設定は [`docs/examples/.prettierrc.json`](../examples/.prettierrc.json)（2 space、double quote、semicolon、LF） |
-
-workspace 設定は [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json)（`formatOnSave`、default formatter は Prettier）。ユーザー固有のテーマ / キーバインドは git に含めない。
-
-### architecture により使えない extension
-
-| 制約 | 内容 |
-| --- | --- |
-| Editor 自体 | `arm32` / `armv7` / `armhf` では Editor を提供しない（#173） |
-| Microsoft Marketplace 独占 | GitHub Copilot、一部 Remote 系など。Open VSX に無い。期待しない |
-| native extension | `linux-arm64`（または universal）資産が無いものは Pi 上で動かない |
-| GPIO / I2C 操作用 | 使わない。Hardware は Browser Polyfill → WebSocket → Runtime |
-
-`.vsix` の再配布や Microsoft 独占拡張のライセンス確認は、必要になった個別 Issue で行う。本 Issue では必須セットに含めない。
+GPIO / I2C 操作用の Extension は使わない。Hardware は Browser Polyfill → WebSocket → Runtime。
 
 ## Marketplace 制約
 
-code-server は Microsoft 公式 Marketplace には接続しない。既定は Open VSX / Coder extension marketplace である。
+code-server は Microsoft 公式 Marketplace には接続しない。既定は Open VSX / Coder extension marketplace である。本リポジトリは Marketplace の切り替え設定を追加しない。
 
 [FAQ](https://coder.com/docs/code-server/FAQ) の対比:
 
@@ -197,23 +163,15 @@ code-server は Microsoft 公式 Marketplace には接続しない。既定は O
 - code-server は self-contained な web view と独自 marketplace を持ち、Microsoft のサーバーへ呼び出さない
 - Microsoft Marketplace が必要な場合は VS Code web の方が適する、と公式は案内している
 
-独自 gallery に切り替える場合は `EXTENSIONS_GALLERY` を設定できる。
-
-```sh
-export EXTENSIONS_GALLERY='{"serviceUrl": "https://my-extensions/api"}'
-```
-
-Phase 8 では既定の Open VSX を使う。独自 marketplace は導入しない。
-
 | 項目 | 方針 |
 | --- | --- |
-| 既定 gallery | Open VSX / Coder extension marketplace |
-| Microsoft Marketplace | 使わない |
-| Microsoft 独占拡張（GitHub Copilot など） | 期待しない。必須セットに含めない（#178） |
-| `.vsix` | Open VSX に無い場合の最終手段。本リポジトリには置かない |
+| 既定 gallery | code-server 既定（Open VSX / Coder extension marketplace） |
+| Microsoft Marketplace | 接続設定を追加しない |
+| Microsoft 独占拡張（GitHub Copilot など） | 期待しない。プロジェクトは特定 Extension を必須・推奨しない（#201） |
+| `.vsix` | リポジトリに置かない |
 | 独自 `EXTENSIONS_GALLERY` | 採用しない |
 
-CHIRIMEN Example の編集・Browser 実行に Microsoft 独占拡張は必須ではない。GPIO / I2C 操作は Editor 内ではなく Browser Polyfill 経路で行う。
+CHIRIMEN Example の編集・Browser 実行に Editor Extension は必須ではない。GPIO / I2C 操作は Editor 内ではなく Browser Polyfill 経路で行う。
 
 ## Workspace volume
 
@@ -247,7 +205,7 @@ workspace を named volume にはしない。Example が git から切り離さ�
 | `./scripts/start.sh --editor` | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
 | `docker compose --profile editor up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
 
-bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。推奨設定は git 管理の [`docs/examples/.vscode/extensions.json`](../examples/.vscode/extensions.json) / [`settings.json`](../examples/.vscode/settings.json) / [`tasks.json`](../examples/.vscode/tasks.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178 / #179）。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
+bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。workspace 設定は git 管理の [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json) / [`tasks.json`](../examples/.vscode/tasks.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178 / #179 / #201）。`extensions.json` による recommendation は置かない。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
 
 Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル / Web Demo → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
 
@@ -405,7 +363,9 @@ VS Code 本体の OSS 版も MIT である。code-server は submodule の VS Co
 
 注意:
 
-- Microsoft Marketplace 上の拡張は各拡張のライセンスに従う。Open VSX 上の拡張も同様に個別ライセンス
+- 本リポジトリは code-server / VS Code Extension を同梱・配布・推奨しない（#201）
+- ユーザーが任意に導入する Extension のライセンス・利用条件は、それぞれの Extension の条件に従う
+- プロジェクト自身が配布していないユーザー導入 Extension は、`chirimen-raspi-docker` の Third Party License 管理対象には含めない
 - GitHub Copilot など Marketplace 専用拡張は、ライセンス上も技術上も本構成の対象外
 - Desktop GUI 版 VS Code を container で動かす製品ライセンスは、親 Issue の Out of Scope のため評価しない
 
@@ -446,21 +406,21 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
 | 認証 | 既定は password（`--auth password`）。`auth: none` は使わない。詳細は [Authentication](#authentication)（#181） |
 | HTTPS | 既定は HTTP + password + `127.0.0.1`。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま（#181） |
-| Marketplace | Open VSX。Microsoft Marketplace は使わない |
-| 初期設定 / extension | 必須は HTML / CSS（内蔵）と Prettier / ESLint / Japanese Language Pack（Open VSX 推奨）。Dockerfile へはプリインストールしない（#178） |
+| Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
+| 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |
 | 起動 | 既定は Runtime only。Editor と Web Demo は Compose profile `editor` / `./scripts/start.sh --editor`（#177 / #180）。LAN は `--lan`（#181） |
 | 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh --editor`）または `1000`（Compose 直接）。root 禁止（#176） |
 | Example 編集 / serve | HTML は `docs/examples`。Editor terminal の `python3` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信（#180）。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo` |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は必須 extension と Example `.vscode` を固定し、image へのプリインストールはしない。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
 - 32-bit OS はサポート対象外。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
-- Microsoft 独占拡張は使えない。必須セット（HTML / CSS / Prettier / ESLint / 日本語パック）には含まれない
-- Example workspace では ESLint が動かない（`eslint` / `node_modules` が無い）。Prettier は Editor のみ採用し、repo の format CI には入れない。[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) で再評価し、Editor へ Nx は入れない
+- プロジェクトは特定 Extension をプリインストール・推奨・必須にしない（#201）。Microsoft 独占拡張も期待しない
+- lint / test / build は host の `pnpm` / Nx。Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）
 - Editor image の extra package 例外は `python3-minimal` のみ（#179）。Node は入れない。Web Demo は別 image（`docker/web-demo`）
-- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。初期設定の再現は Example `.vscode`（#178）。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Web Demo 起動は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)。Security は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。`Supported` とは書かない
+- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。Example `.vscode` の初期設定は #178。Extension 方針は [#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Web Demo 起動は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)。Security は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。`Supported` とは書かない
