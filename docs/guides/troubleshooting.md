@@ -350,6 +350,33 @@ Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が�
 
 方針は [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。
 
+## Editor（8080）が開かない
+
+### 症状
+
+`./scripts/start.sh --editor` のあと `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect になる。`http://127.0.0.1:4200/` と `http://localhost:33330/health` は応答する。
+
+### 原因
+
+`chirimen-editor` が code-server を起動せずに終了している。公式 entrypoint は先頭で `fixuid`（setuid）を実行する。`security_opt: no-new-privileges:true` があると setuid が効かず、8080 は listen しない。Web Demo と Runtime は `fixuid` を使わないため生き残る。メモリ不足で kill された場合も同じ症状になる。
+
+### 確認
+
+```sh
+docker compose --profile editor ps -a
+docker compose --profile editor logs chirimen-editor
+```
+
+`fixuid` / `NoNewPrivileges` のエラー、または container が `Exited` ならこの原因。`dmesg` に OOM があればメモリ不足。
+
+### 対処
+
+- `compose.yaml` の `chirimen-editor` に `no-new-privileges` が無いことを確認する
+- container を再作成する: `./scripts/start.sh --editor --force-recreate`
+- 再確認: `curl -fsS http://127.0.0.1:8080/healthz`（HTTP 200。JSON の `expired` もプロセス生存）
+
+方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
+
 ## Example の静的サーバ（4173）が開かない
 
 ### 症状
