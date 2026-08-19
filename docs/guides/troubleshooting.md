@@ -251,7 +251,7 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 
 ### 対処
 
-設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh --editor` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。推奨 extension（Prettier / ESLint / 日本語パック）は named volume が消えると再インストールが必要。workspace の `.vscode` 推奨は bind mount に残る。
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh --editor` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
 
 ## LAN から Editor / Web Demo に届かない
 
@@ -323,31 +323,32 @@ GitHub Copilot など、Desktop VS Code で使っていた拡張が gallery に�
 
 ### 原因
 
-code-server は Microsoft Marketplace に接続しない。既定は Open VSX である。Microsoft 独占拡張は必須セットに含めない。
+code-server は Microsoft Marketplace に接続しない。既定は Open VSX である。プロジェクトは特定 Extension を必須・推奨しない。
 
 ### 対処
 
-- 必須の Prettier / ESLint / Japanese Language Pack は Open VSX の推奨から入れる
+- プロジェクトは特定 Extension を必須・推奨しない。入れたい Extension はユーザーが任意に選ぶ
 - Copilot 等は使えない前提にする。GPIO / I2C 操作は Editor 拡張ではなく Browser Polyfill 経路
-- `.vsix` は最終手段。本リポジトリには置かない
+- `.vsix` はリポジトリに置かない
 
 方針は [browser-editor.md の Marketplace 制約](../architecture/browser-editor.md#marketplace-制約)。
 
-## Example で ESLint が動かない
+## Example の lint は Editor では動かない
 
 ### 症状
 
-ESLint 拡張を入れても、`docs/examples` の JS に lint が出ない。または eslint が見つからないと出る。
+Editor workspace の `docs/examples` で lint が出ない。または eslint が見つからないと出る。
 
 ### 原因
 
-Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が無い。monorepo の `pnpm lint` は host 向けである。
+Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が無い。monorepo の `pnpm lint` は host 向けである。プロジェクトは ESLint Extension を必須・推奨しない。
 
 ### 対処
 
-- Example 編集では Prettier（保存時フォーマット）を使う
 - monorepo の TypeScript lint は host で `pnpm lint`（[Development Guide](./development.md)）
 - Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180) で再評価済み）
+
+方針は [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。
 
 ## Example の静的サーバ（4173）が開かない
 
@@ -417,22 +418,6 @@ HTML サンプルは静的ファイルである。hot reload は無い。
 - Example を開いている Browser タブを reload する
 - 開いている URL が `http://127.0.0.1:4173/led-blink/` など、編集中のディレクトリと一致しているか確認する
 - `polyfill.js` を変えた場合は host で `pnpm nx bundle browser-polyfill` したあと reload する
-
-## 日本語パックを入れても UI が英語のまま
-
-### 症状
-
-`MS-CEINTL.vscode-language-pack-ja` を入れたあとでもメニューが英語。
-
-### 原因
-
-Language Pack のインストールだけでは locale は切り替わらない。Dockerfile に `--locale ja` は付けていない。
-
-### 対処
-
-Command Palette から Display Language（または「表示言語の構成」）を開き、`ja` を選んで再読み込みする。
-
-方針は [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。
 
 ## 非 Pi 環境（macOS など）
 

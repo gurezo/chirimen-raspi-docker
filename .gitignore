@@ -17,9 +17,9 @@ docs/api/
 _site/
 
 # Editor user settings in the Example bind mount (#176).
-# Recommended committed .vscode is #178 / #179.
+# Committed .vscode is settings / tasks only (#178 / #179 / #201).
+# Do not commit extensions.json recommendations.
 docs/examples/.vscode/*
-!docs/examples/.vscode/extensions.json
 !docs/examples/.vscode/settings.json
 !docs/examples/.vscode/tasks.json
 
