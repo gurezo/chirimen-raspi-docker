@@ -40,6 +40,9 @@ services:
   # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
   # Do not run as root. docker compose down -v deletes named volumes,
   # not the workspace bind mount.
+  # Do not set no-new-privileges or cap_drop ALL here: the official
+  # entrypoint runs fixuid (setuid). Either flag exits the container
+  # before code-server binds 8080.
   # Example static server (#179): ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173.
   # Serve from /home/coder/project (docs/examples) so led-blink / button /
   # i2c-scan are reachable together. Web Demo is a separate service
@@ -57,8 +60,6 @@ services:
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080"
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173"
-    security_opt:
-      - no-new-privileges:true
     volumes:
       - ./docs/examples:/home/coder/project
       - chirimen-editor-local:/home/coder/.local
