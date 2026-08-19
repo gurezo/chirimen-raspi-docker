@@ -112,7 +112,7 @@ http://127.0.0.1:4200/#/i2c-scan
 
 保存後は Example / Web Demo のタブを reload する（Compose 経路に hot reload は無い）。`pnpm` / `nx` は Editor では使わない。配置の正本は [docs/examples/README.md](../examples/README.md)。方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](../architecture/browser-editor.md#web-demo-起動180)。
 
-HTML / CSS は code-server 内蔵のため追加インストールは不要。Prettier / ESLint / Japanese Language Pack は Extensions ビューの推奨から Open VSX で入れる（image へはプリインストールしない）。日本語 UI にする場合は、Language Pack 導入後に Command Palette の Display Language で `ja` へ切り替える。利用ガイドは [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183)。方針は [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。
+Editor は code-server 本体のみ提供する。Extension のプリインストール・推奨はしない。CHIRIMEN Runtime と bundled examples は Editor Extension を必要としない。利用者が任意に入れる Extension は named volume に残る。方針は [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。
 
 ```sh
 docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
@@ -132,7 +132,7 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | Browser Editor から Example / Web Demo を実行する | 上記「4. （任意）Browser Editor と Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --editor --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
-| Browser Editor の推奨 extension | [browser-editor.md の Extension](../architecture/browser-editor.md#extension)。Prettier / ESLint / 日本語パック |
+| Browser Editor の Extension | [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。プリインストール・推奨しない。任意導入はユーザー管理 |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
