@@ -319,7 +319,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 
 対象 port は Editor `8080` / Example `4173` / Web Demo `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。`--lan` 単体（`--editor` なし）は何もしない。
 
-GPIO / I2C は Editor / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Editor / Web Demo は `security_opt: no-new-privileges:true`。`cap_drop: ALL` は `fixuid` を壊す恐れがあるため付けない。
+GPIO / I2C は Editor / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Web Demo は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
 ## HTTPS / reverse proxy
 
@@ -414,7 +414,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Example 編集 / serve | HTML は `docs/examples`。Editor terminal の `python3` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信（#180）。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo` |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 

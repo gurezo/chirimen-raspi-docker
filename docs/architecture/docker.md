@@ -73,7 +73,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Auth | Dockerfile `--auth password`。任意ピンは `CHIRIMEN_EDITOR_PASSWORD` / `CHIRIMEN_EDITOR_HASHED_PASSWORD`（start.sh が非空のときだけ渡す）。`auth: none` は使わない |
 | User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh --editor` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
 | Architecture | `linux/amd64`, `linux/arm64`。32-bit OS はサポート対象外 |
-| Network | Compose default。`depends_on` なし。`security_opt: no-new-privileges:true` |
+| Network | Compose default。`depends_on` なし。`no-new-privileges` / `cap_drop: ALL` は付けない（公式 entrypoint の `fixuid` が setuid を必要とする） |
 | GPIO / I2C | 渡さない |
 
 永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。`docker compose down`（`-v` なし）は named volume を残す。`docker compose down -v` は設定・拡張・password を消す。workspace の bind mount は消えない。正本は [browser-editor.md の Workspace volume](./browser-editor.md#workspace-volume)。
