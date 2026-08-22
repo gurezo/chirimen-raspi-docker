@@ -4,25 +4,11 @@
     {
       "label": "Serve examples",
       "type": "shell",
-      "command": "python3 -m http.server 4173 --bind 0.0.0.0",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "examples-http",
-        "pattern": {
-          "regexp": "^$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Serving HTTP"
-        }
-      },
+      "command": "printf '%s\\n' 'HTML Examples are started by Compose (./scripts/start.sh --editor).' 'Open a Browser tab:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/'",
       "presentation": {
         "reveal": "always",
-        "panel": "dedicated"
+        "panel": "dedicated",
+        "focus": true
       }
     },
     {

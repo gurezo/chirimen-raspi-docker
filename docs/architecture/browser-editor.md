@@ -228,7 +228,17 @@ Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO I
 | `pnpm nx bundle browser-polyfill` | **host**。`polyfill.js` を各 HTML ディレクトリへコピーする |
 | `pnpm nx serve web-demo`（Vite HMR） | **host**。Compose の `chirimen-web-demo`（port 4200）と衝突するため、使うときはその service を止める |
 
-serve は Editor terminal の `python3 -m http.server 4173 --bind 0.0.0.0`（cwd は `/home/coder/project`）。Run Task の **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）でも同じ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --editor --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
+serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `docs/examples`）。`--editor` で Editor / Web Demo と一緒に起動する。Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --editor --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
+
+| 項目 | 方針 |
+| --- | --- |
+| Service | [`compose.yaml`](../../compose.yaml) の `chirimen-examples`。profile `editor` |
+| Image | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile)。nginx（`nginx:1.30.4-alpine`）が bind `docs/examples` を静的配信 |
+| Port | 既定 `127.0.0.1:4173:4173`。Editor `8080` / Web Demo `4200` / Runtime `33330` と分離する。LAN は同じ `CHIRIMEN_PUBLISH_BIND` / `--lan`（#181） |
+| URL | `http://127.0.0.1:4173/led-blink/` など |
+| Editor terminal | サーバは起動しない。Run Task **Serve examples** が URL を出す |
+| GPIO / I2C | 渡さない。Browser 内の Polyfill が Runtime の WebSocket へ接続する |
+| `depends_on` | 付けない。Runtime / Editor / Web Demo と独立 |
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -236,7 +246,7 @@ http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
 ```
 
-静的ファイルのため hot reload は無い。Editor で保存したあと Example タブを reload する。WebSocket 先は同一ホストなら `ws://localhost:33330/`。LAN の別マシンから開くときは script 前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける。host で各ディレクトリから `python3 -m http.server 4173` する手順も残す。
+静的ファイルのため hot reload は無い。Editor で保存したあと Example タブを reload する。WebSocket 先は同一ホストなら `ws://localhost:33330/`。LAN の別マシンから開くときは script 前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける。Compose を使わず host で `python3 -m http.server 4173` する手順も残す。
 
 ### Web Demo 起動（#180）
 
@@ -245,6 +255,7 @@ http://127.0.0.1:4173/i2c-scan/
 ```text
 ./scripts/start.sh --editor
   → Editor     http://127.0.0.1:8080
+  → Examples   http://127.0.0.1:4173/led-blink/  （Compose が起動済み）
   → Web Demo   http://127.0.0.1:4200/   （Compose が起動済み）
   → Runtime    ws://localhost:33330/
 ```
@@ -264,7 +275,7 @@ hot reload:
 | 経路 | HMR |
 | --- | --- |
 | Compose `chirimen-web-demo` | 無し。静的 production build。再 build は image 再 build。タブは reload |
-| HTML Example（4173） | 無し。保存後に Example タブを reload（#179） |
+| Compose `chirimen-examples`（4173） | 無し。bind `docs/examples`。保存後に Example タブを reload（#179） |
 | host `pnpm nx serve web-demo` | 有り（Vite）。開発者向け。port 4200 が衝突するので Compose web-demo を先に止める |
 
 WebSocket:
@@ -319,7 +330,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 
 対象 port は Editor `8080` / Example `4173` / Web Demo `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。`--lan` 単体（`--editor` なし）は何もしない。
 
-GPIO / I2C は Editor / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Web Demo は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
+GPIO / I2C は Editor / Examples / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Web Demo と Examples は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
 ## HTTPS / reverse proxy
 
@@ -409,12 +420,12 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |
-| 起動 | 既定は Runtime only。Editor と Web Demo は Compose profile `editor` / `./scripts/start.sh --editor`（#177 / #180）。LAN は `--lan`（#181） |
+| 起動 | 既定は Runtime only。Editor / Examples / Web Demo は Compose profile `editor` / `./scripts/start.sh --editor`（#177 / #179 / #180）。LAN は `--lan`（#181） |
 | 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh --editor`）または `1000`（Compose 直接）。root 禁止（#176） |
-| Example 編集 / serve | HTML は `docs/examples`。Editor terminal の `python3` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
+| Example 編集 / serve | HTML は `docs/examples`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信（#180）。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo` |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、`python3` 静的サーバ、port `4173`、I2C Scan HTML を固定した。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `docs/examples` を静的配信する。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 
@@ -422,5 +433,5 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 - 32-bit OS はサポート対象外。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。Editor は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177) で optional（Compose profile `editor`）にした
 - プロジェクトは特定 Extension をプリインストール・推奨・必須にしない（#201）。Microsoft 独占拡張も期待しない
 - lint / test / build は host の `pnpm` / Nx。Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）
-- Editor image の extra package 例外は `python3-minimal` のみ（#179）。Node は入れない。Web Demo は別 image（`docker/web-demo`）
+- Editor image の extra package 例外は `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `docker/examples`）。Node は入れない。Web Demo は別 image（`docker/web-demo`）
 - 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。Example `.vscode` の初期設定は #178。Extension 方針は [#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Web Demo 起動は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)。Security は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。`Supported` とは書かない

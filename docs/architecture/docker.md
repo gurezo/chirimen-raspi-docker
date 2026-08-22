@@ -27,20 +27,20 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 ```sh
 chmod +x scripts/start.sh
 ./scripts/start.sh                    # Runtime only
-./scripts/start.sh --editor           # Runtime + Browser Editor + Web Demo（127.0.0.1）
+./scripts/start.sh --editor           # Runtime + Browser Editor + Examples + Web Demo（127.0.0.1）
 ./scripts/start.sh --editor --lan     # 同上。Editor / Example / Web Demo を LAN 公開
 ```
 
 ## Compose サービス
 
-[`compose.yaml`](../../compose.yaml) は `chirimen-server`、`chirimen-editor`、`chirimen-web-demo` を定義する（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）。`depends_on` は付けない。どれか一方だけ `docker compose restart` できる。Editor と Web Demo に GPIO / I2C device は渡さない。
+[`compose.yaml`](../../compose.yaml) は `chirimen-server`、`chirimen-editor`、`chirimen-examples`、`chirimen-web-demo` を定義する（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）。`depends_on` は付けない。どれか一方だけ `docker compose restart` できる。Editor / Examples / Web Demo に GPIO / I2C device は渡さない。
 
 既定は Runtime only である（[#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)）。
 
 | 利用方法 | Compose | 推奨入口 |
 | --- | --- | --- |
 | Runtime only（既定） | `docker compose up` | `./scripts/start.sh` |
-| Runtime + Editor + Web Demo | `docker compose --profile editor up` | `./scripts/start.sh --editor` |
+| Runtime + Editor + Examples + Web Demo | `docker compose --profile editor up` | `./scripts/start.sh --editor` |
 | 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose --profile editor up` | `./scripts/start.sh --editor --lan` |
 
 `COMPOSE_PROFILES=editor` も Compose 標準として同じ profile を有効にする。
@@ -65,9 +65,9 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Profile | `editor`（[#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)。既定の `docker compose up` では起動しない） |
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
-| Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）と `:4173:4173`（Example 静的サーバ。[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
+| Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
 | Workspace | bind `./docs/examples` → `/home/coder/project`（git 管理。container 削除後も残る） |
-| Extra packages | `python3-minimal` のみ（#179。Editor terminal から HTML を静的配信する）。Node / GPIO / I2C ツールは入れない |
+| Extra packages | `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `chirimen-examples`）。Node / GPIO / I2C ツールは入れない |
 | Extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` |
 | Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む。Git に置かない） |
 | Auth | Dockerfile `--auth password`。任意ピンは `CHIRIMEN_EDITOR_PASSWORD` / `CHIRIMEN_EDITOR_HASHED_PASSWORD`（start.sh が非空のときだけ渡す）。`auth: none` は使わない |
@@ -77,6 +77,24 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | GPIO / I2C | 渡さない |
 
 永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。`docker compose down`（`-v` なし）は named volume を残す。`docker compose down -v` は設定・拡張・password を消す。workspace の bind mount は消えない。正本は [browser-editor.md の Workspace volume](./browser-editor.md#workspace-volume)。
+
+### chirimen-examples
+
+HTML Examples は Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。Browser 内の Polyfill が Runtime の WebSocket へ接続する。正本は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179)。
+
+| 項目 | 値 |
+| --- | --- |
+| Service | `chirimen-examples` |
+| Profile | `editor`（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。既定の `docker compose up` では起動しない） |
+| Dockerfile | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile) |
+| Image | `chirimen-raspi-docker/examples:phase8` |
+| Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
+| 配信 | nginx（`nginx:1.30.4-alpine`）が bind `./docs/examples` を静的配信。Editor で保存したファイルは reload で見える |
+| Health | `GET /led-blink/`（HTTP 200） |
+| Network | Compose default。`depends_on` なし。`security_opt: no-new-privileges:true` |
+| GPIO / I2C | 渡さない |
+
+host で `python3 -m http.server 4173` する従来手順も port `4173` を使う。同時には使わない。Compose examples を止めてから host で serve する。
 
 ### chirimen-web-demo
 
@@ -105,12 +123,13 @@ Runtime only:
 curl http://localhost:33330/health
 ```
 
-Runtime + Editor + Web Demo:
+Runtime + Editor + Examples + Web Demo:
 
 ```sh
 ./scripts/start.sh --editor
 curl http://localhost:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
+curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
@@ -120,7 +139,7 @@ LAN 公開（Editor / Example / Web Demo のみ。Runtime `33330` は変えな�
 ./scripts/start.sh --editor --lan
 ```
 
-Example を Editor から配信する場合、Editor terminal で `python3 -m http.server 4173 --bind 0.0.0.0`（または Run Task **Serve examples**）のあと `http://127.0.0.1:4173/led-blink/` などを開く。Web Demo は `--editor` で起動済みなので `http://127.0.0.1:4200/` を別タブで開く（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
+`--editor` のあと `http://127.0.0.1:4173/led-blink/` などを開く（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Web Demo は `http://127.0.0.1:4200/` を別タブで開く（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
 
 `/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
 
@@ -141,6 +160,8 @@ docker compose restart chirimen-server
 curl -fsS http://127.0.0.1:8080/healthz
 docker compose --profile editor restart chirimen-web-demo
 curl -fsS http://127.0.0.1:4200/
+docker compose --profile editor restart chirimen-examples
+curl -fsS http://127.0.0.1:4173/led-blink/
 ```
 
 ## Editor image（単独起動）
@@ -161,7 +182,7 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 | Extensions / user-data | `/home/coder/.local` |
 | Config | `/home/coder/.config` |
 | Health | `GET /healthz`（認証不要。HTTP 200 なら healthy。JSON の `expired` もプロセス生存） |
-| Extra packages | `python3-minimal` のみ（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。HTML Example の静的配信）。GPIO / I2C ツールと Node は入れない。Extension のプリインストール・推奨もしない（[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)） |
+| Extra packages | `python3-minimal` のみ（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Compose では `chirimen-examples` が配信。`docker run` 時の任意手段）。GPIO / I2C ツールと Node は入れない。Extension のプリインストール・推奨もしない（[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)） |
 
 ### build
 
@@ -290,4 +311,4 @@ Wiki で想定している次は、現状未実装。
 | --- | --- |
 | `docker/nginx` | reverse proxy / TLS 終端。Web Demo 静的配信は [`docker/web-demo`](../../docker/web-demo/Dockerfile)（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)） |
 
-Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)（`docker compose --profile editor up` / `./scripts/start.sh --editor`）。Example 静的 serve は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)（既定 `127.0.0.1:4173`）。Web Demo は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)（既定 `127.0.0.1:4200`）。Security（bind / 認証 / LAN）は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。
+Editor Compose service は [`compose.yaml`](../../compose.yaml) の `chirimen-editor`（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)）。永続化は [#176](https://github.com/gurezo/chirimen-raspi-docker/issues/176)。optional profile は [#177](https://github.com/gurezo/chirimen-raspi-docker/issues/177)（`docker compose --profile editor up` / `./scripts/start.sh --editor`）。Example 静的 serve は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)（Compose `chirimen-examples`、既定 `127.0.0.1:4173`）。Web Demo は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)（既定 `127.0.0.1:4200`）。Security（bind / 認証 / LAN）は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。
