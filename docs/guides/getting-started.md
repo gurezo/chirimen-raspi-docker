@@ -48,7 +48,7 @@ chmod +x scripts/doctor.sh
 ```sh
 chmod +x scripts/start.sh
 ./scripts/start.sh            # Runtime only
-./scripts/start.sh --editor   # Runtime + Browser Editor + Web Demo
+./scripts/start.sh --editor   # Runtime + Browser Editor + Examples + Web Demo
 ```
 
 `start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor と Web Demo は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。
@@ -78,13 +78,14 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
-## 4. （任意）Browser Editor と Web Demo を起動する
+## 4. （任意）Browser Editor / Examples / Web Demo を起動する
 
-Editor と Web Demo も使う場合:
+Editor / HTML サンプル / Web Demo も使う場合:
 
 ```sh
 ./scripts/start.sh --editor
 curl -fsS http://127.0.0.1:8080/healthz
+curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
@@ -99,7 +100,7 @@ workspace は `led-blink/` / `button/` / `i2c-scan/` である。編集は Edito
 | 実行 | 起動 | URL |
 | --- | --- | --- |
 | Web Demo（Start / Stop UI） | `--editor` で起動済み。Run Task **Open Web Demo** | `http://127.0.0.1:4200/` |
-| HTML サンプル | Run Task **Serve examples** | `http://127.0.0.1:4173/led-blink/` など |
+| HTML サンプル | `--editor` で起動済み。Run Task **Serve examples** | `http://127.0.0.1:4173/led-blink/` など |
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -128,8 +129,8 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | Browser から Runtime を試す（web-demo） | `./scripts/start.sh --editor` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
-| Browser Editor を追加起動する | 上記「4. （任意）Browser Editor と Web Demo を起動する」。`./scripts/start.sh --editor` |
-| Browser Editor から Example / Web Demo を実行する | 上記「4. （任意）Browser Editor と Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は Run Task **Serve examples** → `http://127.0.0.1:4173/...` |
+| Browser Editor を追加起動する | 上記「4. （任意）Browser Editor / Examples / Web Demo を起動する」。`./scripts/start.sh --editor` |
+| Browser Editor から Example / Web Demo を実行する | 上記「4. （任意）Browser Editor / Examples / Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は `http://127.0.0.1:4173/...`（どちらも `--editor` で起動済み） |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --editor --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
 | Browser Editor の Extension | [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。プリインストール・推奨しない。任意導入はユーザー管理 |

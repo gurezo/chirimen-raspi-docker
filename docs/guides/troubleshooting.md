@@ -381,17 +381,18 @@ docker compose --profile editor logs chirimen-editor
 
 ### 症状
 
-`http://127.0.0.1:4173/led-blink/` などが接続できない。または Editor terminal に `python3: command not found` と出る。
+`http://127.0.0.1:4173/led-blink/` などが接続できない。
 
 ### 原因
 
-Editor image に `python3-minimal` が入っていない古い image を使っている。または Run Task **Serve examples** をまだ起動していない。port `4173` は Editor 起動だけでは開かない。
+`--editor` / Compose profile `editor` なしで Runtime only 起動している。または `chirimen-examples` image がまだ build されていない。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
 
 ### 対処
 
-- `./scripts/start.sh --editor` のあと、Editor で Run Task **Serve examples**
-- `docker compose --profile editor exec chirimen-editor python3 --version` で python3 があることを確認する。無いときは Editor image を再 build する
-- host から配信する場合は `cd docs/examples/led-blink && python3 -m http.server 4173`（従来手順）
+- `./scripts/start.sh --editor` で Runtime + Editor + Examples + Web Demo を起動する
+- `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
+- `docker compose --profile editor ps` で `chirimen-examples` が running か見る
+- host から配信する場合は Compose の examples を止めてから `cd docs/examples && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
 
@@ -407,7 +408,7 @@ Editor image に `python3-minimal` が入っていない古い image を使っ�
 
 ### 対処
 
-- `./scripts/start.sh --editor` で Runtime + Editor + Web Demo を起動する
+- `./scripts/start.sh --editor` で Runtime + Editor + Examples + Web Demo を起動する
 - `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
 - `docker compose --profile editor ps` で `chirimen-web-demo` が running か見る
 - host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose --profile editor stop chirimen-web-demo`

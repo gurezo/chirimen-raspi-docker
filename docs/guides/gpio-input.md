@@ -102,7 +102,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/button/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと、Run Task **Serve examples**。`http://127.0.0.1:4173/button/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-input` でも確認できる（Run Task **Open Web Demo**）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと `http://127.0.0.1:4173/button/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-input` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 
