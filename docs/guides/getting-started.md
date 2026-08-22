@@ -43,15 +43,16 @@ chmod +x scripts/doctor.sh
 
 `[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
 
-## 2. Runtime を起動する
+## 2. Runtime と Editor を起動する
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh            # Runtime only
-./scripts/start.sh --editor   # Runtime + Browser Editor + Examples + Web Demo
+./scripts/start.sh            # Runtime + Browser Editor + Examples + Web Demo
+./scripts/start.sh --lan      # 同上。Editor / Example / Web Demo を LAN 公開
+./scripts/start.sh --32bit    # Runtime only（32-bit OS。サポート対象外）
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は Runtime only である。Browser Editor と Web Demo は `./scripts/start.sh --editor`（または `docker compose --profile editor up`）で追加起動する。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
 
 ## 3. health check で確認する
 
@@ -78,29 +79,28 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
-## 4. （任意）Browser Editor / Examples / Web Demo を起動する
+## 4. Browser で Editor / Examples / Web Demo を開く
 
-Editor / HTML サンプル / Web Demo も使う場合:
+`./scripts/start.sh` のあと、health check と Browser で確認する:
 
 ```sh
-./scripts/start.sh --editor
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
-Compose を直接使う場合は `docker compose --profile editor up`（`COMPOSE_PROFILES=editor` でも可）。
+Compose を直接使う場合は `docker compose up`。
 
-Browser で Editor を `http://127.0.0.1:8080`、Web Demo を `http://127.0.0.1:4200/` で別タブで開く。Editor は password 認証である。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。任意で host の `.env`（gitignored。[`.env.example`](../../.env.example)）に `CHIRIMEN_EDITOR_PASSWORD` を置くと `./scripts/start.sh --editor` が渡す。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
+Browser で Editor を `http://127.0.0.1:8080`、Web Demo を `http://127.0.0.1:4200/` で別タブで開く。Editor は password 認証である。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。任意で host の `.env`（gitignored。[`.env.example`](../../.env.example)）に `CHIRIMEN_EDITOR_PASSWORD` を置くと `./scripts/start.sh` が渡す。`docker compose down`（`-v` なし）のあと再作成しても同じ password と extension が残る。`docker compose down -v` は設定・拡張を消す。Example の編集は host の `docs/examples`（bind mount）に残る。`/healthz` は `expired` でも HTTP 200 ならプロセスは生存している。
 
-既定の host bind は `127.0.0.1`（同一ホスト / SSH port forward）。LAN の別マシンから Editor / Example / Web Demo を開くときは `./scripts/start.sh --editor --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）。Internet へは出さない。HTTPS / reverse proxy は本リポジトリでは提供しない。方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
+既定の host bind は `127.0.0.1`（同一ホスト / SSH port forward）。LAN の別マシンから Editor / Example / Web Demo を開くときは `./scripts/start.sh --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）。Internet へは出さない。HTTPS / reverse proxy は本リポジトリでは提供しない。方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
 workspace は `led-blink/` / `button/` / `i2c-scan/` である。編集は Editor、実行は別タブ。
 
 | 実行 | 起動 | URL |
 | --- | --- | --- |
-| Web Demo（Start / Stop UI） | `--editor` で起動済み。Run Task **Open Web Demo** | `http://127.0.0.1:4200/` |
-| HTML サンプル | `--editor` で起動済み。Run Task **Serve examples** | `http://127.0.0.1:4173/led-blink/` など |
+| Web Demo（Start / Stop UI） | `./scripts/start.sh` で起動済み。Run Task **Open Web Demo** | `http://127.0.0.1:4200/` |
+| HTML サンプル | `./scripts/start.sh` で起動済み。Run Task **Serve examples** | `http://127.0.0.1:4173/led-blink/` など |
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -116,7 +116,7 @@ http://127.0.0.1:4200/#/i2c-scan
 Editor は code-server 本体のみ提供する。Extension のプリインストール・推奨はしない。CHIRIMEN Runtime と bundled examples は Editor Extension を必要としない。利用者が任意に入れる Extension は named volume に残る。方針は [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。
 
 ```sh
-docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
 ```
 
 ## 次のステップ
@@ -126,13 +126,12 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 | LED を点滅させる | [gpio-led-blink.md](./gpio-led-blink.md)。HTML サンプル（`docs/examples/led-blink/`）または web-demo の GPIO Output。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | タクトスイッチの入力を確認する | [gpio-input.md](./gpio-input.md)。HTML サンプル（`docs/examples/button/`）または web-demo の GPIO Input。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [i2c-scan.md](./i2c-scan.md)。HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
-| Browser から Runtime を試す（web-demo） | `./scripts/start.sh --editor` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
+| Browser から Runtime を試す（web-demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
-| Browser Editor を追加起動する | 上記「4. （任意）Browser Editor / Examples / Web Demo を起動する」。`./scripts/start.sh --editor` |
-| Browser Editor から Example / Web Demo を実行する | 上記「4. （任意）Browser Editor / Examples / Web Demo を起動する」。Web Demo は `http://127.0.0.1:4200/`。HTML は `http://127.0.0.1:4173/...`（どちらも `--editor` で起動済み） |
+| Browser Editor から Example / Web Demo を実行する | 上記「4. Browser で Editor / Examples / Web Demo を開く」。Web Demo は `http://127.0.0.1:4200/`。HTML は `http://127.0.0.1:4173/...`（どちらも `./scripts/start.sh` で起動済み） |
 | Browser Editor の workspace / 設定の永続化 | [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
-| Browser Editor を LAN から開く | `./scripts/start.sh --editor --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
+| Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[Publish / bind](../architecture/browser-editor.md#publish--bind181)。Internet 公開はしない |
 | Browser Editor の Extension | [browser-editor.md の Extensions](../architecture/browser-editor.md#extensions)。プリインストール・推奨しない。任意導入はユーザー管理 |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |

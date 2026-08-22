@@ -95,7 +95,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 
@@ -116,7 +116,7 @@ Browser Editor から編集する場合は `./scripts/start.sh --editor` のあ�
 代替（web-demo の Start / Stop）:
 
 ```sh
-./scripts/start.sh --editor
+./scripts/start.sh
 ```
 
 `http://127.0.0.1:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`。詳細は [browser-polyfill.md](./browser-polyfill.md)。
@@ -143,7 +143,7 @@ Browser Editor から編集する場合は `./scripts/start.sh --editor` のあ�
 | LED の極性 | アノード（長い足）が抵抗側、カソードが GND |
 | ピン取り違え | 物理 pin 37（BCM 26）と pin 39（GND）。5V ピン（2 / 4）は使わない |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --editor --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `export` が Permission denied / EROFS になる
 

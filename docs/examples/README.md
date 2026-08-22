@@ -16,7 +16,7 @@ GPIO / I2C 操作は Editor ではなく、Browser の Example ページ / Web D
 
 ## 起動
 
-1. Runtime + Editor + Examples + Web Demo を起動する（host で `./scripts/start.sh --editor`）
+1. Runtime + Editor + Examples + Web Demo を起動する（host で `./scripts/start.sh`）
 2. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
 3. Web Demo: Compose が起動済み。Terminal → Run Task → **Open Web Demo**
 4. 別 Browser タブで開く
@@ -38,7 +38,7 @@ http://127.0.0.1:4200/#/gpio-input
 http://127.0.0.1:4200/#/i2c-scan
 ```
 
-HTML サンプルは `--editor` で Compose が配信する。host だけで起動する場合:
+HTML サンプルは `./scripts/start.sh` で Compose が配信する。host だけで起動する場合:
 
 ```sh
 python3 -m http.server 4173 --bind 0.0.0.0

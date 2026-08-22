@@ -118,7 +118,7 @@ Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
 | host paths | `/sys/class/gpio`（chip0 / chip1、gpiochip512 / gpiochip570）・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
 | start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
-| image | `chirimen-raspi-docker/server:phase1`（`./scripts/start.sh --64bit`） |
+| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
 | capability | `gpio=sysfs` / `i2c=i2c-dev` |
 | GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
 | I2C | I2C 有効化後に `i2c-dev` backend を選択 |
@@ -152,7 +152,7 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
 | host paths | `/sys/class/gpio`（chip0 / chip10–13、gpiochip512 / 529 / 535 / 567 / 571）・`/dev/gpiomem0`–`4`・`/dev/gpiochip0` / `10` / `11` / `12` / `13` / `4` あり。`/dev/i2c-1` あり |
 | start mapping | `sysfs=yes` / `gpiomem=0,1,2,3,4` / `gpiochip=0,10,11,12,13,4` / `i2c-1=yes` |
-| image | `chirimen-raspi-docker/server:phase1`（`./scripts/start.sh --64bit`） |
+| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
 | capability | `gpio=sysfs` / `i2c=i2c-dev` |
 | GPIO | Case A。`node-web-gpio` の read (`in`) / write (`out`) 成功。gpiochip 専用 backend は不要 |
 | I2C | `requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可）。既知 slave の Browser Scan は下記「I2C Scan 実機検証（#116）」 |

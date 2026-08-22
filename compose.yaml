@@ -2,8 +2,8 @@ services:
   chirimen-server:
     build:
       context: .
-      # Default is 64-bit (Node 24). scripts/start.sh overrides this for
-      # 32-bit OS (--32bit / auto-detect) to docker/server/Dockerfile.32bit.
+      # Default is 64-bit (Node 24). scripts/start.sh --32bit overrides
+      # this to docker/server/Dockerfile.32bit.
       dockerfile: docker/server/Dockerfile
     image: chirimen-raspi-docker/server:phase1
     environment:
@@ -28,15 +28,15 @@ services:
   # This is not a Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. GPIO / I2C stay on chirimen-server.
   # Default host bind is 127.0.0.1 (#181). LAN is opt-in via
-  # CHIRIMEN_PUBLISH_BIND=0.0.0.0 or ./scripts/start.sh --editor --lan.
+  # CHIRIMEN_PUBLISH_BIND=0.0.0.0 or ./scripts/start.sh --lan.
   # Do not publish to the Internet from this file. Auth is password
   # (Dockerfile --auth password). Do not set auth: none. Do not commit
   # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
   # injected by start.sh when set; empty PASSWORD= is never written here.
-  # Optional via Compose profile `editor` (#177).
-  # `docker compose up` starts Runtime only.
-  # `docker compose --profile editor up` starts Runtime + Editor +
-  # Examples + Web Demo.
+  # `docker compose up` / `./scripts/start.sh` start Runtime + Editor +
+  # Examples + Web Demo (#208). `./scripts/start.sh --32bit` starts
+  # chirimen-server only. Runtime only via Compose is
+  # `docker compose up chirimen-server`.
   # Persistence (#176): bind docs/examples for workspace; named volumes
   # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
   # Do not run as root. docker compose down -v deletes named volumes,
@@ -48,8 +48,6 @@ services:
   # Web Demo is chirimen-web-demo (#180). Node / pnpm / Nx stay out of
   # this image.
   chirimen-editor:
-    profiles:
-      - editor
     build:
       context: docker/editor
       dockerfile: Dockerfile
@@ -70,10 +68,7 @@ services:
   # /sys/class/gpio / /sys/devices. Bind the same host path the Editor
   # edits so Browser reload sees saves. Default host bind is 127.0.0.1
   # (#181). LAN is the same CHIRIMEN_PUBLISH_BIND / --lan as Editor.
-  # Optional via Compose profile `editor` (#179).
   chirimen-examples:
-    profiles:
-      - editor
     build:
       context: docker/examples
       dockerfile: Dockerfile
@@ -91,14 +86,9 @@ services:
   # Browser JS connects to the Runtime WebSocket on the host; this
   # container only serves static files. Default host bind is 127.0.0.1
   # (#181). LAN is the same CHIRIMEN_PUBLISH_BIND / --lan as Editor.
-  # Optional via Compose profile `editor` (#180).
-  # `docker compose --profile editor up` starts Runtime + Editor +
-  # Examples + Web Demo.
   # Host `pnpm nx serve web-demo` (Vite HMR) also uses port 4200; stop this
   # service first. GPIO / I2C stay on chirimen-server.
   chirimen-web-demo:
-    profiles:
-      - editor
     build:
       context: .
       dockerfile: docker/web-demo/Dockerfile

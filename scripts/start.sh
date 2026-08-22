@@ -7,10 +7,8 @@
 #
 # Usage:
 #   ./scripts/start.sh
-#   ./scripts/start.sh --editor
-#   ./scripts/start.sh --editor --lan
+#   ./scripts/start.sh --lan
 #   ./scripts/start.sh --32bit
-#   ./scripts/start.sh --64bit
 #   ./scripts/start.sh --build
 #   ./scripts/start.sh -d
 #
@@ -32,16 +30,12 @@ GPIOMEM_DEVICES=()
 GPIOCHIP_DEVICES=()
 I2C_DEV=0
 
-# 32 or 64. Empty until parsed / auto-detected.
-OS_BITS=""
-OS_BITS_SOURCE=""
-
-# 1 when --editor is passed. Editor + Examples + Web Demo still require
-# 64-bit (Compose profile `editor`).
-WANT_EDITOR=0
+# Default is 64-bit. --32bit is the only arch override.
+OS_BITS=64
+OS_BITS_SOURCE="default"
 
 # 1 when --lan is passed. Publishes Editor / Example / Web Demo on
-# 0.0.0.0. No-op without --editor (does not change Runtime 33330).
+# 0.0.0.0. No-op with --32bit (does not change Runtime 33330).
 WANT_LAN=0
 
 OVERRIDE_FILE=""
@@ -56,16 +50,16 @@ err() {
 
 usage() {
   cat <<'EOF'
-Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [--lan] [docker compose up options...]
+Usage: start.sh [--32bit] [--lan] [docker compose up options...]
 
-  Probe host hardware paths and start chirimen-server with only the
-  devices that exist on this host (capability-aware mapping).
-  Default is Runtime only. Pass --editor on 64-bit to also start
-  chirimen-editor (code-server on 127.0.0.1:8080, password auth),
-  chirimen-examples (http://127.0.0.1:4173/), and chirimen-web-demo
-  (http://127.0.0.1:4200/; Compose profile `editor`).
-  All three are skipped on 32-bit: the official Editor image has no
-  armv7 build.
+  Probe host hardware paths and start services with only the devices
+  that exist on this host (capability-aware mapping).
+  Default is 64-bit: chirimen-server, chirimen-editor (code-server on
+  127.0.0.1:8080, password auth), chirimen-examples
+  (http://127.0.0.1:4173/), and chirimen-web-demo
+  (http://127.0.0.1:4200/).
+  --32bit starts Runtime only: the official Editor image has no armv7
+  build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
@@ -75,18 +69,19 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [--lan] [docker compos
     - Editor host bind 127.0.0.1 unless --lan (does not publish to the Internet)
 
   Dockerfile (Node base image differs by OS bitness):
+    (default)        docker/server/Dockerfile (Node 24, 64-bit)
     --32bit          docker/server/Dockerfile.32bit (Node 22, linux/arm/v7)
-    --64bit          docker/server/Dockerfile (Node 24)
-    --arch 32|64     same as --32bit / --64bit
-    (default)        auto-detect from uname -m
 
-  Optional services:
-    --editor         start chirimen-editor, chirimen-examples, and
-                     chirimen-web-demo (64-bit only; Compose profile editor)
+  Optional:
     --lan            publish Editor 8080 / Example 4173 / Web Demo 4200
-                     on 0.0.0.0 (LAN). Combine with --editor. Does not
-                     change Runtime 33330. Password auth stays required.
+                     on 0.0.0.0 (LAN). 64-bit only. Does not change
+                     Runtime 33330. Password auth stays required.
                      Do not use this to publish on the Internet.
+
+  Removed (error if passed):
+    --editor         Editor / Examples / Web Demo now start by default
+    --64bit          64-bit is the default
+    --arch 32|64     use --32bit for 32-bit; 64-bit needs no flag
 
   Optionally maps when present (chirimen-server only):
     - /dev/gpiomem*
@@ -99,10 +94,8 @@ Usage: start.sh [--32bit|--64bit|--arch 32|64] [--editor] [--lan] [docker compos
 Examples:
   chmod +x scripts/start.sh
   ./scripts/start.sh
-  ./scripts/start.sh --editor
-  ./scripts/start.sh --editor --lan
+  ./scripts/start.sh --lan
   ./scripts/start.sh --32bit
-  ./scripts/start.sh --64bit --editor -d
   ./scripts/start.sh --build --force-recreate
 
 Same procedure on Raspberry Pi 3 / 4 / 5; no per-model compose edits.
@@ -119,7 +112,7 @@ set_os_bits() {
   local bits="$1"
   local source="$2"
 
-  if [ -n "$OS_BITS" ] && [ "$OS_BITS" != "$bits" ]; then
+  if [ -n "$OS_BITS_SOURCE" ] && [ "$OS_BITS_SOURCE" != "default" ] && [ "$OS_BITS" != "$bits" ]; then
     err "conflicting arch flags (already ${OS_BITS}-bit via ${OS_BITS_SOURCE})"
     exit 1
   fi
@@ -128,37 +121,15 @@ set_os_bits() {
   OS_BITS_SOURCE="$source"
 }
 
-parse_arch_value() {
-  local value="$1"
-  local source="$2"
-
-  case "$value" in
-    32 | 32bit | arm32 | armv7)
-      set_os_bits 32 "$source"
-      ;;
-    64 | 64bit | arm64 | aarch64)
-      set_os_bits 64 "$source"
-      ;;
-    *)
-      err "invalid --arch value: ${value} (use 32 or 64)"
-      exit 1
-      ;;
-  esac
-}
-
-detect_os_bits() {
+# 32-bit userland that uname reports as 32-bit (e.g. Pi 3 armv7l).
+# Pi 4 / 5 32-bit OS still reports aarch64; those hosts must pass --32bit.
+reject_32bit_machine_without_flag() {
   local machine
   machine="$(uname -m)"
 
   case "$machine" in
     armv6l | armv7l | armv8l | i386 | i686)
-      set_os_bits 32 "uname -m (${machine})"
-      ;;
-    aarch64 | arm64 | x86_64 | amd64)
-      set_os_bits 64 "uname -m (${machine})"
-      ;;
-    *)
-      err "unknown machine '${machine}'; pass --32bit or --64bit"
+      err "this host looks 32-bit (${machine}); pass --32bit to start Runtime only"
       exit 1
       ;;
   esac
@@ -279,12 +250,12 @@ write_compose_override() {
       fi
     fi
 
-    # Editor + Examples + Web Demo are opt-in (--editor) and 64-bit only.
+    # Editor + Examples + Web Demo start by default on 64-bit.
     # Pass host uid so bind-mounted examples are writable (code-server
     # fixuid). Do not add GPIO / I2C devices to Editor / Examples / Web
     # Demo. Inject password env only when non-empty (empty PASSWORD=
     # can break auth).
-    if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
+    if [ "$OS_BITS" -eq 64 ]; then
       editor_uid="$(id -u)"
       editor_gid="$(id -g)"
       editor_user="$(id -un)"
@@ -336,17 +307,13 @@ log_mapping_summary() {
   log "image: ${image}"
   log "mapping: sysfs=${sysfs_status} gpiomem=${gpiomem_list} gpiochip=${gpiochip_list} i2c-1=${i2c_status}"
   log "privileged: false"
-  if [ "$WANT_EDITOR" -eq 0 ]; then
-    log "editor: off (pass --editor to start chirimen-editor, chirimen-examples, and chirimen-web-demo)"
-    log "examples: off"
-    log "web-demo: off"
-    if [ "$WANT_LAN" -eq 1 ]; then
-      log "publish: --lan ignored without --editor (Runtime 33330 unchanged)"
-    fi
-  elif [ "$OS_BITS" -eq 32 ]; then
+  if [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
     log "examples: skipped (32-bit / armv7; see browser-editor.md)"
     log "web-demo: skipped (32-bit / armv7; see browser-editor.md)"
+    if [ "$WANT_LAN" -eq 1 ]; then
+      log "publish: --lan ignored with --32bit (Runtime 33330 unchanged)"
+    fi
   else
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
     log "auth: password"
@@ -372,6 +339,27 @@ require_docker_compose() {
   exit 1
 }
 
+removed_flag_error() {
+  local flag="$1"
+  case "$flag" in
+    --editor)
+      err "--editor is removed; Editor / Examples / Web Demo start by default"
+      err "use: ./scripts/start.sh"
+      err "LAN: ./scripts/start.sh --lan"
+      ;;
+    --64bit)
+      err "--64bit is removed; 64-bit is the default"
+      err "use: ./scripts/start.sh"
+      ;;
+    --arch)
+      err "--arch is removed; 64-bit is the default. For 32-bit, pass --32bit"
+      err "use: ./scripts/start.sh"
+      err "32-bit: ./scripts/start.sh --32bit"
+      ;;
+  esac
+  exit 1
+}
+
 main() {
   local -a up_args=()
   local dockerfile
@@ -388,24 +376,13 @@ main() {
         shift
         ;;
       --64bit)
-        set_os_bits 64 "--64bit"
-        shift
+        removed_flag_error "--64bit"
         ;;
-      --arch)
-        if [ $# -lt 2 ]; then
-          err "--arch requires 32 or 64"
-          exit 1
-        fi
-        parse_arch_value "$2" "--arch ${2}"
-        shift 2
-        ;;
-      --arch=*)
-        parse_arch_value "${1#--arch=}" "$1"
-        shift
+      --arch | --arch=*)
+        removed_flag_error "--arch"
         ;;
       --editor)
-        WANT_EDITOR=1
-        shift
+        removed_flag_error "--editor"
         ;;
       --lan)
         WANT_LAN=1
@@ -418,8 +395,8 @@ main() {
     esac
   done
 
-  if [ -z "$OS_BITS" ]; then
-    detect_os_bits
+  if [ "$OS_BITS" -eq 64 ]; then
+    reject_32bit_machine_without_flag
   fi
 
   dockerfile="$(dockerfile_for_os_bits)"
@@ -439,7 +416,7 @@ main() {
   cd "$REPO_ROOT"
 
   load_repo_env
-  if [ "$WANT_LAN" -eq 1 ] && [ "$WANT_EDITOR" -eq 1 ]; then
+  if [ "$WANT_LAN" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
     export CHIRIMEN_PUBLISH_BIND=0.0.0.0
   fi
 
@@ -460,11 +437,10 @@ main() {
   write_compose_override "$dockerfile" "$image"
   require_docker_compose
 
-  local -a compose_cmd=(docker compose)
-  if [ "$WANT_EDITOR" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
-    compose_cmd+=(--profile editor)
+  local -a compose_cmd=(docker compose -f compose.yaml -f "$OVERRIDE_FILE" up)
+  if [ "$OS_BITS" -eq 32 ]; then
+    compose_cmd+=(chirimen-server)
   fi
-  compose_cmd+=(-f compose.yaml -f "$OVERRIDE_FILE" up)
 
   log "starting: ${compose_cmd[*]} ${up_args[*]}"
   log ""

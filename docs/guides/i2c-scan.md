@@ -150,14 +150,14 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh --editor` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
 代替（web-demo の Scan / Stop）:
 
 ```sh
-./scripts/start.sh --editor
+./scripts/start.sh
 ```
 
 1. I2C 有効化、`/dev/i2c-1` 確認、device 接続、Runtime 起動を完了する
@@ -204,7 +204,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 | A0 / A1 が GND でない | A0 / A1 を GND へ。上げると address が `0x48` 以外になる |
 | 5V 接続 | VDD / SDA / SCL を 5V ピン（2 / 4）へつながない |
 | 非 Pi 環境 | macOS などでは実 I2C が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --editor --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `open` が Permission denied になる
 
