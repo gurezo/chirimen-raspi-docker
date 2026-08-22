@@ -218,15 +218,15 @@ Browser Editor から `docs/examples` 配下を保存すると Permission denied
 ls -ld docs/examples
 id -u
 id -g
-docker compose --profile editor exec chirimen-editor id
+docker compose exec chirimen-editor id
 ```
 
 起動ログの `editor uid=` が host の `id -u`:`id -g` と一致するか見る。
 
 ### 対処
 
-- 推奨入口は `./scripts/start.sh --editor`（host uid を Editor に渡す）
-- `docker compose --profile editor up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
+- 推奨入口は `./scripts/start.sh`（host uid を Editor に渡す）
+- `docker compose up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
 - root では起動しない
 - GPIO / I2C の Permission denied はこの節ではなく上記「Permission denied（GPIO / I2C）」
 
@@ -246,12 +246,12 @@ container 再作成後に Editor の password が変わり、入れていた ext
 
 ```sh
 docker volume ls | grep chirimen-editor
-docker compose --profile editor exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
 ```
 
 ### 対処
 
-設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh --editor` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
 
 ## LAN から Editor / Web Demo に届かない
 
@@ -267,15 +267,15 @@ docker compose --profile editor exec chirimen-editor cat /home/coder/.config/cod
 
 ```sh
 ./scripts/start.sh --help
-docker compose --profile editor port chirimen-editor 8080
+docker compose port chirimen-editor 8080
 ```
 
 起動ログの `publish:` が `127.0.0.1` か `0.0.0.0 (LAN)` かを見る。
 
 ### 対処
 
-- LAN が必要なら `./scripts/start.sh --editor --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）
-- `--lan` だけで `--editor` が無いときは Runtime `33330` も含め bind は変わらない
+- LAN が必要なら `./scripts/start.sh --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）
+- `--32bit` と `--lan` を同時に付けても Runtime `33330` の bind は変わらず、Editor 系も起動しない
 - Internet へは出さない。reverse proxy は本リポジトリでは提供しない
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
@@ -354,7 +354,7 @@ Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が�
 
 ### 症状
 
-`./scripts/start.sh --editor` のあと `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect になる。`http://127.0.0.1:4200/` と `http://localhost:33330/health` は応答する。
+`./scripts/start.sh` のあと `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect になる。`http://127.0.0.1:4200/` と `http://localhost:33330/health` は応答する。
 
 ### 原因
 
@@ -363,8 +363,8 @@ Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が�
 ### 確認
 
 ```sh
-docker compose --profile editor ps -a
-docker compose --profile editor logs chirimen-editor
+docker compose ps -a
+docker compose logs chirimen-editor
 ```
 
 `fixuid` / `NoNewPrivileges` のエラー、または container が `Exited` ならこの原因。`dmesg` に OOM があればメモリ不足。
@@ -372,7 +372,7 @@ docker compose --profile editor logs chirimen-editor
 ### 対処
 
 - `compose.yaml` の `chirimen-editor` に `no-new-privileges` が無いことを確認する
-- container を再作成する: `./scripts/start.sh --editor --force-recreate`
+- container を再作成する: `./scripts/start.sh --force-recreate`
 - 再確認: `curl -fsS http://127.0.0.1:8080/healthz`（HTTP 200。JSON の `expired` もプロセス生存）
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
@@ -385,13 +385,13 @@ docker compose --profile editor logs chirimen-editor
 
 ### 原因
 
-`--editor` / Compose profile `editor` なしで Runtime only 起動している。または `chirimen-examples` image がまだ build されていない。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
+`--32bit` で Runtime only 起動している。または `chirimen-examples` image がまだ build されていない。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
 
 ### 対処
 
-- `./scripts/start.sh --editor` で Runtime + Editor + Examples + Web Demo を起動する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
 - `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
-- `docker compose --profile editor ps` で `chirimen-examples` が running か見る
+- `docker compose ps` で `chirimen-examples` が running か見る
 - host から配信する場合は Compose の examples を止めてから `cd docs/examples && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
@@ -404,14 +404,14 @@ docker compose --profile editor logs chirimen-editor
 
 ### 原因
 
-`--editor` / Compose profile `editor` なしで Runtime only 起動している。または Web Demo image がまだ build されていない。host の Vite（`pnpm nx serve web-demo`）と Compose `chirimen-web-demo` が同じ port `4200` を使っている。
+`--32bit` で Runtime only 起動している。または Web Demo image がまだ build されていない。host の Vite（`pnpm nx serve web-demo`）と Compose `chirimen-web-demo` が同じ port `4200` を使っている。
 
 ### 対処
 
-- `./scripts/start.sh --editor` で Runtime + Editor + Examples + Web Demo を起動する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
 - `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
-- `docker compose --profile editor ps` で `chirimen-web-demo` が running か見る
-- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose --profile editor stop chirimen-web-demo`
+- `docker compose ps` で `chirimen-web-demo` が running か見る
+- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose stop chirimen-web-demo`
 
 方針は [browser-editor.md の Web Demo 起動](../architecture/browser-editor.md#web-demo-起動180)。
 

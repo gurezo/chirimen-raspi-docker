@@ -133,7 +133,7 @@ chirimen-raspi-docker/
 │   ├── guides/
 │   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様・HTML サンプル（#105 / #108 / #109 / #113 / #116 / #117）
 │   └── api/                    # Typedoc 生成物（git 管理外）
-├── compose.yaml                # chirimen-server（既定）+ chirimen-editor / chirimen-examples / chirimen-web-demo（profile `editor`、#177 / #179 / #180）
+├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-web-demo（既定で全起動。#175 / #179 / #180 / #208）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -160,8 +160,8 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は Runtime only。`--editor` で `chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` も起動する。サポート対象は 64-bit OS）
-- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` は Compose profile `editor`。GPIO / I2C は渡さない）
+- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
+- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Web Demo には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 
@@ -186,7 +186,7 @@ npx nx mcp --help
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
 | [compatibility.md](./compatibility.md) | Compatibility matrix（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外） |
-| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。optional profile は #177。初期設定は #178。Example 編集は #179。Extension は #201） |
+| [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |

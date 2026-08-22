@@ -137,7 +137,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）
 5. `./scripts/doctor.sh` → `./scripts/start.sh`
 6. `docker compose exec chirimen-server ls -l /dev/i2c-1`
-7. HTML サンプル（`docs/examples/i2c-scan/`）または `./scripts/start.sh --editor` → `http://127.0.0.1:4200/#/i2c-scan`
+7. HTML サンプル（`docs/examples/i2c-scan/`）または `./scripts/start.sh` → `http://127.0.0.1:4200/#/i2c-scan`
 8. 走査結果の hex 一覧に `0x48` が出ることを確認する
 
 ## 実機検証（#116）
