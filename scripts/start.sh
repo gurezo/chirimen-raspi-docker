@@ -437,11 +437,7 @@ main() {
   write_compose_override "$dockerfile" "$image"
   require_docker_compose
 
-  local -a compose_cmd=(docker compose)
-  if [ "$OS_BITS" -eq 64 ]; then
-    compose_cmd+=(--profile editor)
-  fi
-  compose_cmd+=(-f compose.yaml -f "$OVERRIDE_FILE" up)
+  local -a compose_cmd=(docker compose -f compose.yaml -f "$OVERRIDE_FILE" up)
   if [ "$OS_BITS" -eq 32 ]; then
     compose_cmd+=(chirimen-server)
   fi
