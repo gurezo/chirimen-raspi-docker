@@ -4,14 +4,14 @@
 # on 1GB models such as Pi 3 B+). Idempotent. Requires root (sudo).
 #
 # Usage:
-#   sudo ./setups/swap.sh              # create/enable 2G /swapfile
-#   sudo ./setups/swap.sh --size 2G    # same (default)
+#   sudo ./setups/swap.sh              # create/enable 4G /swapfile
+#   sudo ./setups/swap.sh --size 4G    # same (default)
 #   sudo ./setups/swap.sh --check      # verify swap is active
 #
 set -euo pipefail
 
 SWAP_FILE="/swapfile"
-SWAP_SIZE="2G"
+SWAP_SIZE="4G"
 WANT_CHECK=0
 
 log() {
@@ -26,9 +26,9 @@ usage() {
   cat <<'EOF'
 Usage: swap.sh [--size SIZE] [--check]
 
-  (default)  Create /swapfile (default 2G), enable it, and persist in
+  (default)  Create /swapfile (default 4G), enable it, and persist in
              /etc/fstab. Safe to re-run when already configured.
-  --size     Swap file size for fallocate / dd (e.g. 2G, 1024M).
+  --size     Swap file size for fallocate / dd (e.g. 4G, 2048M).
   --check    Verify that swap is active (no changes).
 
 Run before Docker image builds on low-memory hosts:
@@ -39,7 +39,7 @@ Run before Docker image builds on low-memory hosts:
 
 Examples:
   sudo ./setups/swap.sh
-  sudo ./setups/swap.sh --size 2G
+  sudo ./setups/swap.sh --size 4G
   sudo ./setups/swap.sh --check
 EOF
 }
@@ -51,7 +51,7 @@ require_root() {
   fi
 }
 
-# Convert SIZE like 2G / 2048M / 2GiB to bytes (integer). Best-effort.
+# Convert SIZE like 4G / 2048M / 4GiB to bytes (integer). Best-effort.
 size_to_bytes() {
   local raw="$1"
   local num unit
@@ -59,7 +59,7 @@ size_to_bytes() {
     num="${BASH_REMATCH[1]}"
     unit="${BASH_REMATCH[2]:-}"
   else
-    err "invalid --size value: ${raw} (use e.g. 2G or 2048M)"
+    err "invalid --size value: ${raw} (use e.g. 4G or 2048M)"
     exit 1
   fi
   case "$unit" in
@@ -197,7 +197,7 @@ main() {
         ;;
       --size)
         if [ $# -lt 2 ]; then
-          err "--size requires a value (e.g. 2G)"
+          err "--size requires a value (e.g. 4G)"
           exit 1
         fi
         SWAP_SIZE="$2"

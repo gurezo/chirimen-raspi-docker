@@ -21,9 +21,9 @@ host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開
 Pi 3 B+（1GB）などでは、Docker image build（`pnpm install` / `pnpm nx build`）の前に swap を有効化すると OOM を避けやすい。
 
 ```sh
-sudo ./setups/swap.sh          # 既定: 2G の /swapfile（idempotent）
+sudo ./setups/swap.sh          # 既定: 4G の /swapfile（idempotent）
 sudo ./setups/swap.sh --check  # 有効化の確認
 free -h
 ```
 
-サイズを変える例: `sudo ./setups/swap.sh --size 2G`。`/etc/fstab` にも追記するので reboot 後も有効。Docker / `./scripts/start.sh` の**前**に実行する。
+サイズを変える例: `sudo ./setups/swap.sh --size 4G`。`/etc/fstab` にも追記するので reboot 後も有効。Docker / `./scripts/start.sh` の**前**に実行する。
