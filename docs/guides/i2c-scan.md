@@ -10,6 +10,7 @@
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
 - [Raspberry Pi setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
+- [Browser Development Environment](./browser-development.md)
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本ガイドでは scan のみ）
@@ -150,7 +151,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 

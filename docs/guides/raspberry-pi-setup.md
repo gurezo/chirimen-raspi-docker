@@ -11,6 +11,7 @@ clone → このページ（Docker / Pi 3 B+ の swap・ファン / GPIO / I2C /
 関連:
 
 - [Getting Started](./getting-started.md)（このページのあと。Runtime の起動）
+- [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
