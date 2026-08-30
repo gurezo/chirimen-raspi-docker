@@ -5,7 +5,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 推奨順:
 
 ```text
-clone → このページ（Docker / GPIO / I2C / doctor） → Getting Started（起動）
+clone → このページ（Docker / Pi 3 B+ の swap・ファン / GPIO / I2C / doctor） → Getting Started（起動）
 ```
 
 関連:
@@ -16,7 +16,7 @@ clone → このページ（Docker / GPIO / I2C / doctor） → Getting Started�
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility matrix](../architecture/compatibility.md)
-- [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose インストール）
+- [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
 - `scripts/doctor.sh` / `scripts/start.sh` / `scripts/enable-i2c.sh`
 
 ## 前提 OS
@@ -47,6 +47,21 @@ docker info
 ```
 
 daemon が動いていない場合は Docker を起動してから再度確認する。一括診断は後述の `doctor.sh` を使う。
+
+## Pi 3 B+ のビルド前提（8GB swap と CPU ファン）
+
+Raspberry Pi 3 B+ で Docker image をビルドするときは、次の **両方** が必須である。片方だけでは足りない。Pi 4 / 5 では任意。
+
+- **8GB swap**: 無いと image をビルドできない。`sudo ./setups/swap.sh`（既定 8G）を `./scripts/start.sh` の前に実行する
+- **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
+
+```sh
+sudo ./setups/swap.sh
+sudo ./setups/swap.sh --check
+free -h
+```
+
+詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [troubleshooting.md](./troubleshooting.md)。
 
 ## 事前診断（doctor）
 

@@ -173,6 +173,46 @@ NX   hashArray is not a function
 
 過去の Runtime 実機結果は [Compatibility matrix](../architecture/compatibility.md) を参照。`Supported` とは書かない。
 
+## Pi 3 B+ で Docker ビルドが OOM / killed
+
+### 症状
+
+- `./scripts/start.sh` や `docker compose up --build` が途中で killed になる
+- `dmesg` に Out of memory が出る
+- container 内の `pnpm install` / `pnpm nx build` が落ちる
+
+### 原因
+
+Raspberry Pi 3 B+ は RAM 1GB である。**8GB swap が無いと Docker image をビルドできない**。CPU ファンだけでは足りない。
+
+### 対処
+
+```sh
+sudo ./setups/swap.sh
+sudo ./setups/swap.sh --check
+free -h
+```
+
+`./scripts/start.sh` の前に実行する。手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
+
+## Pi 3 B+ でビルド中に熱暴走 / ハングする
+
+### 症状
+
+- Docker image ビルド中にホストが止まる / 応答しない
+- 極端に遅くなる（thermal throttle）
+- 電源が落ちる
+
+### 原因
+
+Docker image ビルドは CPU 負荷が高い。Pi 3 B+ では **CPU ファンが無いと熱暴走する**。8GB swap だけでは足りない。
+
+### 対処
+
+- CPU ファンを **必ず実装してから** ビルドする（熱暴走防止）
+- 電源投入前に装着する。特定メーカー / 型番は指定しない
+- 手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md)
+
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
 ### 症状
