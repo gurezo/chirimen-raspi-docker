@@ -132,7 +132,7 @@ http://127.0.0.1:4200/#/i2c-scan
 | Browser Editor から Example / Web Demo を実行する | [Browser Development Environment](./browser-development.md) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
-| Browser Editor の Extension | [browser-development.md](./browser-development.md#extension-の導入--確認)。プリインストール・推奨しない |
+| Browser Editor の Extension | [browser-development.md](./browser-development.md#extension-の導入-確認)。プリインストール・推奨しない |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |

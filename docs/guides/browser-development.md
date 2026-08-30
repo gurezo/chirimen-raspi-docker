@@ -193,15 +193,15 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 | 症状 | 参照 |
 | --- | --- |
-| Pi 3 B+ の Docker ビルドが OOM / killed | [Pi 3 B+ で Docker ビルドが OOM / killed](./troubleshooting.md#pi-3-b-で-docker-ビルドが-oom--killed)（8GB swap） |
-| ビルド中に熱暴走 / ハング | [Pi 3 B+ でビルド中に熱暴走 / ハングする](./troubleshooting.md#pi-3-b-でビルド中に熱暴走--ハングする)（CPU ファン） |
+| Pi 3 B+ の Docker ビルドが OOM / killed | [Pi 3 B+ で Docker ビルドが OOM / killed](./troubleshooting.md#pi-3-b-で-docker-ビルドが-oom-killed)（8GB swap） |
+| ビルド中に熱暴走 / ハング | [Pi 3 B+ でビルド中に熱暴走 / ハングする](./troubleshooting.md#pi-3-b-でビルド中に熱暴走-ハングする)（CPU ファン） |
 | Editor で保存できない | [Editor で Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) |
-| password / 設定が消えた | [Editor の password / 設定が消えた](./troubleshooting.md#editor-の-password--設定が消えた) |
+| password / 設定が消えた | [Editor の password / 設定が消えた](./troubleshooting.md#editor-の-password-設定が消えた) |
 | 8080 が開かない | [Editor（8080）が開かない](./troubleshooting.md#editor8080が開かない) |
 | 4173 が開かない | [Example の静的サーバ（4173）が開かない](./troubleshooting.md#example-の静的サーバ4173が開かない) |
 | 4200 が開かない | [Web Demo（4200）が開かない](./troubleshooting.md#web-demo4200が開かない) |
-| Web Demo は開くが GPIO / I2C が動かない | [Web Demo は開くが GPIO / I2C が動かない](./troubleshooting.md#web-demo-は開くが-gpio--i2c-が動かない) |
-| LAN から届かない | [LAN から Editor / Web Demo に届かない](./troubleshooting.md#lan-から-editor--web-demo-に届かない) |
+| Web Demo は開くが GPIO / I2C が動かない | [Web Demo は開くが GPIO / I2C が動かない](./troubleshooting.md#web-demo-は開くが-gpio-i2c-が動かない) |
+| LAN から届かない | [LAN から Editor / Web Demo に届かない](./troubleshooting.md#lan-から-editor-web-demo-に届かない) |
 | Microsoft Marketplace の拡張が入れられない | [Editor で Microsoft Marketplace の拡張が入れられない](./troubleshooting.md#editor-で-microsoft-marketplace-の拡張が入れられない) |
 | 保存しても Browser に反映されない | [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) |
 
