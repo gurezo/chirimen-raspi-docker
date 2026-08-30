@@ -9,6 +9,7 @@
 - 回路仕様（正本）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
 - HTML サンプル: [docs/examples/led-blink/](../examples/led-blink/)
 - [Getting Started](./getting-started.md)
+- [Browser Development Environment](./browser-development.md)
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
 - 参考: [chirimen-oh/chirimen gc/gpio/LEDblink](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/LEDblink)
@@ -95,7 +96,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Getting Started](./getting-started.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 

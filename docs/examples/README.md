@@ -2,7 +2,7 @@
 
 Browser Editor（code-server）の workspace です。Phase 7 の HTML サンプルを編集します。
 
-GPIO / I2C 操作は Editor ではなく、Browser の Example ページ / Web Demo → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。
+GPIO / I2C 操作は Editor ではなく、Browser の Example ページ / Web Demo → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../guides/browser-development.md)。
 
 ## 配置
 

@@ -18,7 +18,7 @@ cd chirimen-raspi-docker
 curl http://localhost:33330/health
 ```
 
-手順の説明と container 内の device 確認は [Getting Started](docs/guides/getting-started.md) を参照してください。
+手順の説明と container 内の device 確認は [Getting Started](docs/guides/getting-started.md) を参照してください。Browser Editor からの編集は [Browser Development Environment](docs/guides/browser-development.md)。
 
 ## ドキュメント
 
@@ -32,13 +32,14 @@ curl http://localhost:33330/health
 | ---------------------------------------------------------------------- | ------------------------------------------------ |
 | [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | clone → Pi 上の Docker / GPIO / I2C セットアップ |
 | [docs/guides/development.md](docs/guides/development.md)               | リポジトリ開発向けの Node.js / pnpm / Nx         |
-| [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose インストール     |
+| [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose。Pi 3 B+ は 8GB swap と CPU ファン必須 |
 
 ### 使い方
 
 | ドキュメント                                                       | 内容                                                                     |
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | [docs/guides/getting-started.md](docs/guides/getting-started.md)   | doctor → `./scripts/start.sh` → health check                             |
+| [docs/guides/browser-development.md](docs/guides/browser-development.md) | Browser Editor から Example を編集・実行する（#183）                   |
 | [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo         |
 | [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)     | GPIO LED Blink 操作ガイド（HTML サンプルで点滅）                         |
 | [docs/guides/gpio-input.md](docs/guides/gpio-input.md)             | GPIO Input 操作ガイド（HTML サンプルで onchange）                        |

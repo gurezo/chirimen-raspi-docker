@@ -9,10 +9,11 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 - 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183) / [#201 プリインストール Extension 削除](https://github.com/gurezo/chirimen-raspi-docker/issues/201) / [#208 既定の全サーバー起動](https://github.com/gurezo/chirimen-raspi-docker/issues/208)
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
+- 利用ガイド: [browser-development.md](../guides/browser-development.md)（#183）
 
 ## Status
 
-Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。#177 の optional profile は #208 で既定起動へ戻した。初期設定は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181。Extension はプリインストール・推奨しない（#201））
+Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-editor`（#175）。永続化は #176。#177 の optional profile は #208 で既定起動へ戻した。初期設定は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181。Extension はプリインストール・推奨しない（#201）。利用ガイドは #183）
 
 ## Context
 
@@ -434,4 +435,4 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 - プロジェクトは特定 Extension をプリインストール・推奨・必須にしない（#201）。Microsoft 独占拡張も期待しない
 - lint / test / build は host の `pnpm` / Nx。Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）
 - Editor image の extra package 例外は `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `docker/examples`）。Node は入れない。Web Demo は別 image（`docker/web-demo`）
-- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。Example `.vscode` の初期設定は #178。Extension 方針は [#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Web Demo 起動は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)。Security は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。`Supported` とは書かない
+- 実機での Editor 起動確認は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。単独 image の build / run は [#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)。Compose は [#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175)。Example `.vscode` の初期設定は #178。Extension 方針は [#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)。Example 編集は [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)。Web Demo 起動は [#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)。Security は [#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)。利用手順は [#183](https://github.com/gurezo/chirimen-raspi-docker/issues/183) の [browser-development.md](../guides/browser-development.md)。`Supported` とは書かない
