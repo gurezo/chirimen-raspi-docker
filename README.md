@@ -1,8 +1,16 @@
 # chirimen-raspi-docker
 
-Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Docker Runtime
+Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するための Docker ベース CHIRIMEN Runtime です。
 
-このリポジトリは、Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Runtime を Docker / TypeScript / Nx Workspace ベースで再構築するための Monorepo です。詳細な構成は [アーキテクチャ概要](docs/architecture/overview.md) を参照してください。
+## Supported Hardware / Recommended OS
+
+- Raspberry Pi 3 B+
+- Raspberry Pi 4
+- Raspberry Pi 5
+
+Recommended: Raspberry Pi OS Lite 64-bit
+
+> 32-bit OS は非推奨です。詳細は [Compatibility](docs/architecture/compatibility.md) を参照してください。
 
 ## 最短の使い方
 
