@@ -70,13 +70,39 @@
         font-weight: 600;
       }
 
-      ul {
+      ul,
+      ol {
         margin: 0;
         padding-left: 1.25rem;
       }
 
       li + li {
         margin-top: 0.35rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 0.75rem;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 0.45rem 0.65rem;
+        text-align: left;
+      }
+
+      .recommended {
+        margin: 0 0 0.75rem;
+        color: var(--muted);
+      }
+
+      blockquote {
+        margin: 0;
+        padding: 0.25rem 0 0.25rem 1rem;
+        border-left: 3px solid var(--border);
+        color: var(--muted);
       }
 
       a {
@@ -99,9 +125,44 @@
     <main>
       <h1>chirimen-raspi-docker</h1>
       <p class="lead">
-        Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Docker Runtime のドキュメントです。
-        初回は clone と Raspberry Pi setup のあと、Getting Started で起動します。
+        Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C
+        を操作するための Docker ベース CHIRIMEN Runtime です。
       </p>
+
+      <section>
+        <h2>推奨環境</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Raspberry Pi</th>
+              <th>OS</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Raspberry Pi 3 B+</td>
+              <td>Raspberry Pi OS 64-bit</td>
+              <td>Verified</td>
+            </tr>
+            <tr>
+              <td>Raspberry Pi 4</td>
+              <td>Raspberry Pi OS 64-bit</td>
+              <td>Verified</td>
+            </tr>
+            <tr>
+              <td>Raspberry Pi 5</td>
+              <td>Raspberry Pi OS 64-bit</td>
+              <td>Verified</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="recommended">Recommended: Raspberry Pi OS Lite 64-bit</p>
+        <blockquote>
+          32-bit OS は非推奨です。
+          <a href="./architecture/compatibility.html">詳細を見る</a>
+        </blockquote>
+      </section>
 
       <section>
         <h2>API Documentation</h2>
