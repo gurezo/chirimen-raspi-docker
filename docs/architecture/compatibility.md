@@ -6,7 +6,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 
 - 親 Issue: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
-- 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
+- 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - [Getting Started](../guides/getting-started.md)
@@ -196,3 +196,22 @@ host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-
 | Browser E2E 列 | Compatibility matrix の Browser E2E は protocol E2E のまま。実ブラウザ Scan は本節 |
 
 GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
+
+### I2C Host Setup → Docker Runtime 実機検証（#219）
+
+[#215](https://github.com/gurezo/chirimen-raspi-docker/issues/215) の正式順（I2C → Docker → doctor → Runtime）を、Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）で確認した。ホスト環境と Runtime 結果は [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) と同一機。スクリプト責務は [#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216) / [#217](https://github.com/gurezo/chirimen-raspi-docker/issues/217) / [#218](https://github.com/gurezo/chirimen-raspi-docker/issues/218)。既存の「Pi 5 実機検証（#99）」は上書きしない。
+
+| 項目 | 結果 |
+| --- | --- |
+| Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0 |
+| Raspberry Pi OS version | Raspbian OS 64-bit |
+| Kernel version | `6.18.34+rpt-rpi-2712` |
+| Architecture | `aarch64` |
+| `/dev/i2c-1` | 有効化後に存在（`ls -l /dev/i2c-1`） |
+| enable-i2c.sh | `sudo ./scripts/enable-i2c.sh` → reboot。`--check` は sudo 不要で `[ok] /dev/i2c-1 exists`（#216） |
+| doctor.sh | All checks passed。`[ok] I2C: available (/dev/i2c-1)`。`[ capabilities ] gpio=sysfs i2c=i2c-dev`。設定は変更しない（#217） |
+| Docker startup | 既存導入済み。`./setups/docker.sh` は I2C 設定を変更しない（#218）。Compose は導入済み |
+| Runtime health | `./scripts/start.sh` の mapping は `i2c-1=yes`。`curl http://localhost:33330/health` は `{"name":"chirimen-raspi-docker-server","status":"ok","version":"0.0.1"}` |
+| I2C Runtime | `docker compose exec chirimen-server ls -l /dev/i2c-1` で device あり。`requestI2CAccess` + port `1` scan 成功（#99） |
+| Browser Scan | ADT7410 / `0x48` は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) |
+| known limitations | 初期状態で `/dev/i2c-1` が無い場合あり。Docker 済みでは `docker.sh` は idempotent。`Supported` とは書かない |
