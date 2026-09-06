@@ -73,7 +73,7 @@ chmod +x scripts/doctor.sh
 ./scripts/doctor.sh
 ```
 
-`scripts/doctor.sh` は sudo 不要で、次を確認する。
+`scripts/doctor.sh` は sudo 不要の診断専用スクリプトである。I2C 設定は変更しない（`raspi-config` / boot config は触らない）。次を確認する。
 
 - Raspberry Pi model
 - architecture（推奨は `aarch64`。`armv7l` は 32-bit OS のためサポート対象外）
@@ -90,7 +90,15 @@ chmod +x scripts/doctor.sh
 - **GPIO `sysfs`**: `/sys/class/gpio` があり、現行 backend で利用可能
 - **GPIO `gpiochip`**: sysfs が無く `/dev/gpiochip*` のみ → `[warn]` + unsupported（backend 未実装）
 - **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
-- **I2C `unavailable`**: `[error]` とともに `scripts/enable-i2c.sh` の実行案内が出る
+- **I2C `available`**: `/dev/i2c-1` がある → `[ok] I2C: available (/dev/i2c-1)` と `i2c backend: i2c-dev`
+- **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable` とともに次を案内する（doctor 自身は設定を変えない）
+
+```sh
+sudo ./scripts/enable-i2c.sh
+sudo reboot
+./scripts/enable-i2c.sh --check
+```
+
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
 ## GPIO

@@ -47,14 +47,14 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 ### 症状
 
-- doctor で `i2c=unavailable` / `/dev/i2c-1` が `[error]`
+- doctor で `[error] I2C: unavailable` / `i2c=unavailable`
 - container 内に `/dev/i2c-1` が無い
 - `requestNodeI2CAccess()` が失敗し、Runtime 上で I2C が unavailable
 
 ### 対処
 
 1. host で I2C を有効化して reboot する（[raspberry-pi-setup.md](./raspberry-pi-setup.md)）
-2. `sudo ./scripts/enable-i2c.sh --check`
+2. `./scripts/enable-i2c.sh --check`
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
 slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [i2c-scan.md](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
