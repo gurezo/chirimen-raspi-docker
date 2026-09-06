@@ -5,7 +5,7 @@ clone と [Raspberry Pi setup](./raspberry-pi-setup.md) を終えた利用者が
 推奨順:
 
 ```text
-Raspberry Pi setup（clone / I2C / Docker / doctor） → このページ（起動）
+Raspberry Pi setup（clone / I2C / Docker / 低スペックなら swap / doctor） → このページ（起動）
 ```
 
 関連:
@@ -28,9 +28,9 @@ Raspberry Pi setup（clone / I2C / Docker / doctor） → このページ（起�
 - 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること
-- Raspberry Pi 3 B+ では **8GB swap と CPU ファンの両方** がビルド前に必須（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+- 低スペック機（1GB 級。代表は Raspberry Pi 3 B+）ではビルド前に `sudo ./setups/swap.sh` で swap を確保する。Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 
-clone や I2C / Docker / GPIO の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
+clone や I2C / Docker / swap / GPIO の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
 
 開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
 

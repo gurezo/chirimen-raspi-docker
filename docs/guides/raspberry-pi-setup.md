@@ -5,7 +5,7 @@ CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットア�
 推奨順:
 
 ```text
-clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker / Compose → Pi 3 B+ の swap・ファン → GPIO 確認 → doctor → Getting Started（起動）
+clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker / Compose → 低スペックなら swap.sh → GPIO 確認 → doctor → Getting Started（起動）
 ```
 
 関連:
@@ -18,7 +18,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility matrix](../architecture/compatibility.md)
 - [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
-- `scripts/enable-i2c.sh` / `setups/docker.sh` / `scripts/doctor.sh` / `scripts/start.sh`
+- `scripts/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
 
 ## スクリプトの責務
 
@@ -26,6 +26,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 | --- | --- |
 | `scripts/enable-i2c.sh` | ホスト I2C の有効化。`--check` は設定変更なし・sudo 不要で `/dev/i2c-1` を確認する |
 | `setups/docker.sh` / `setups/docker-compose.sh` | Docker / Compose のインストールのみ。I2C 設定は変更しない |
+| `setups/swap.sh` | 低スペック機向けに swap を確保する。I2C 設定は変更しない |
 | `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない |
 | `scripts/start.sh` | 準備済み環境で Runtime を起動する。I2C 設定は変更しない（このページでは実行しない） |
 
@@ -42,7 +43,7 @@ git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
 ```
 
-以降の `scripts/enable-i2c.sh` と `setups/docker.sh` / `scripts/doctor.sh` は、clone したディレクトリで実行する。
+以降の `scripts/enable-i2c.sh` と `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` は、clone したディレクトリで実行する。
 
 ## I2C
 
@@ -99,18 +100,24 @@ docker info
 
 daemon が動いていない場合は Docker を起動してから再度確認する。一括診断は後述の `doctor.sh` を使う。
 
-## Pi 3 B+ のビルド前提（8GB swap と CPU ファン）
+## 低スペック機の swap（swap.sh）
 
-Raspberry Pi 3 B+ で Docker image をビルドするときは、次の **両方** が必須である。片方だけでは足りない。Pi 4 / 5 では任意。
-
-- **8GB swap**: 無いと image をビルドできない。`sudo ./setups/swap.sh`（既定 8G）を `./scripts/start.sh` の前に実行する
-- **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
+RAM が少ないホスト（1GB 級。代表は Raspberry Pi 3 B+）では、Docker image ビルド前に `setups/swap.sh` で swap を確保する。
 
 ```sh
 sudo ./setups/swap.sh
 sudo ./setups/swap.sh --check
 free -h
 ```
+
+既定は 8G の `/swapfile`。サイズを変える例: `sudo ./setups/swap.sh --size 8G`。`./scripts/start.sh` の前に実行する。
+
+Raspberry Pi 3 B+ でビルドするときは、次の **両方** が必須である。片方だけでは足りない。
+
+- **8GB swap**: 無いと image をビルドできない
+- **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
+
+Pi 4 / 5 の swap / ファンは任意。メモリ不足や OOM が出る場合も `swap.sh` を提案する。
 
 詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [troubleshooting.md](./troubleshooting.md)。
 
@@ -143,7 +150,7 @@ Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照�
 
 ## 事前診断（doctor）
 
-I2C と Docker の準備のあと、`./scripts/start.sh` の前に host の前提条件を一括確認できる。
+I2C と Docker（低スペックなら `swap.sh`）の準備のあと、`./scripts/start.sh` の前に host の前提条件を一括確認できる。
 
 ```sh
 chmod +x scripts/doctor.sh
