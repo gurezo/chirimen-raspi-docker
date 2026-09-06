@@ -2,6 +2,8 @@
 
 Raspberry Pi host の Docker / Docker Compose / swap 環境構築。
 
+Docker の前に [Raspberry Pi setup](../docs/guides/raspberry-pi-setup.md) の I2C（`scripts/enable-i2c.sh`）を完了する。`docker.sh` は I2C 設定を変更しない。
+
 host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
 
 ## Docker
