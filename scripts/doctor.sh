@@ -2,6 +2,7 @@
 #
 # Pre-flight checks for chirimen-raspi-docker on Raspberry Pi host.
 # Read-only diagnostics; sudo is not required.
+# This script does not change I2C settings. Enable I2C with enable-i2c.sh.
 # Hardware capability classification matches Server / Node Runtime
 # (detectHardwareCapabilities / classifyHardwareCapabilities).
 #
@@ -50,6 +51,12 @@ Usage: doctor.sh
         - /dev/gpiomem*
         - /dev/gpiochip*
         - /dev/i2c-1
+
+  Diagnostics only: doctor.sh does not change I2C settings
+  (no raspi-config, no boot config). Enable I2C with:
+    sudo ./scripts/enable-i2c.sh
+    sudo reboot
+    ./scripts/enable-i2c.sh --check
 
   Missing items are reported as [error] or [warn].
   Exit 0 when no errors; exit 1 when one or more errors are found.
@@ -280,16 +287,16 @@ check_hardware_capabilities() {
   esac
 
   if [ "$I2C_BACKEND" = "i2c-dev" ]; then
-    log "[ok] $I2C_DEVICE exists"
+    log "[ok] I2C: available ($I2C_DEVICE)"
     list_path_details "$I2C_DEVICE"
     log "[ok] i2c backend: i2c-dev"
   else
-    log "[error] $I2C_DEVICE not found"
+    log "[error] I2C: unavailable ($I2C_DEVICE not found)"
     if [ "$IS_RASPBERRY_PI" -eq 1 ]; then
       log "        enable I2C on the host, then reboot:"
       log "          sudo ./scripts/enable-i2c.sh"
       log "          sudo reboot"
-      log "          sudo ./scripts/enable-i2c.sh --check"
+      log "          ./scripts/enable-i2c.sh --check"
     else
       log "        (Raspberry Pi device node; expected on Pi host)"
     fi
