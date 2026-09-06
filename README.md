@@ -62,7 +62,7 @@ Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capabi
 
 | ドキュメント | 内容 |
 | --- | --- |
-| [Compatibility matrix](docs/architecture/compatibility.md) | Pi 3 B+ / 4 / 5 の 64-bit 実機検証結果。32-bit OS はサポート対象外 |
+| [Compatibility matrix](docs/architecture/compatibility.md) | Pi 3 B+ / 4 / 5 の 64-bit 実機検証結果。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) |
 | [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω）                                                     |
 | [docs/examples/gpio-input.md](docs/examples/gpio-input.md)         | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）                                    |
 | [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md)             | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
