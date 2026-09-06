@@ -6,7 +6,7 @@ Raspberry Pi 3 / 4 / 5 向け CHIRIMEN Docker Runtime
 
 ## 最短の使い方
 
-初回の host 準備（Docker / GPIO / I2C）は [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) を先に完了する。clone もそのページで行う。
+初回の host 準備（I2C → Docker / GPIO）は [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) を先に完了する。clone もそのページで行う。
 
 準備済みなら:
 
@@ -30,7 +30,7 @@ curl http://localhost:33330/health
 
 | ドキュメント                                                           | 内容                                             |
 | ---------------------------------------------------------------------- | ------------------------------------------------ |
-| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | clone → Pi 上の Docker / GPIO / I2C セットアップ |
+| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | clone → I2C → Docker / GPIO セットアップ |
 | [docs/guides/development.md](docs/guides/development.md)               | リポジトリ開発向けの Node.js / pnpm / Nx         |
 | [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose。Pi 3 B+ は 8GB swap と CPU ファン必須 |
 

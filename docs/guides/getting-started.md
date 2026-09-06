@@ -5,7 +5,7 @@ clone と [Raspberry Pi setup](./raspberry-pi-setup.md) を終えた利用者が
 推奨順:
 
 ```text
-Raspberry Pi setup（clone / Docker / GPIO / I2C / doctor） → このページ（起動）
+Raspberry Pi setup（clone / I2C / Docker / doctor） → このページ（起動）
 ```
 
 関連:
@@ -30,7 +30,7 @@ Raspberry Pi setup（clone / Docker / GPIO / I2C / doctor） → このページ
 - GPIO / I2C 用 device が host に存在すること
 - Raspberry Pi 3 B+ では **8GB swap と CPU ファンの両方** がビルド前に必須（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
 
-clone や Docker / GPIO / I2C の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
+clone や I2C / Docker / GPIO の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
 
 開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
 
@@ -54,7 +54,7 @@ chmod +x scripts/start.sh
 ./scripts/start.sh --32bit    # Runtime only（32-bit OS。サポート対象外）
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
 
 ## 3. health check で確認する
 
