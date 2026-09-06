@@ -31,43 +31,79 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。過去の実機検証結果と技術的な理由は [32-bit Compatibility](./compatibility-32bit.md) を参照してください。
 
-## Compatibility matrix
+## Verification Details
 
-Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspbian OS 64-bit** である。32-bit OS はサポート対象外。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspbian OS 64-bit** である。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
 
-- **Browser E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。web-demo の I2C Scan は下記「I2C Scan 実機検証（#116）」
+- **Protocol E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。web-demo の I2C Scan は下記「I2C Scan 実機検証（#116）」
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
-- 詳細は下記の Pi 3 B+（#97） / Pi 4（#98） / Pi 5（#99）実機検証
+- 詳細は下記の Raspberry Pi 3 B+（#97） / 4（#98） / 5（#99）実機検証
 
 ### Raspberry Pi 3 A+
 
-| OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | TBD | TBD | TBD | Not verified |
-
-ハードウェアスペック不足のためサポート対象外。`Supported` と書かない。
+ハードウェアスペック不足のためサポート対象外。未検証。`Supported` と書かない。
 
 ### Raspberry Pi 3 B+
 
-| OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+Raspberry Pi 3 Model B+（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。[#97](https://github.com/gurezo/chirimen-raspi-docker/issues/97)
+
+| Item | Result |
+| --- | --- |
+| OS | Raspbian OS 64-bit |
+| Kernel | `6.18.34+rpt-rpi-v8` |
+| Architecture | `aarch64` |
+| doctor | — |
+| host paths | `/sys/class/gpio`・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `2` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
+| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,2,4` / `i2c-1=yes` |
+| image | — |
+| GPIO | sysfs / Verified。capability は `gpio=sysfs`。WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
+| I2C | i2c-dev / Verified。I2C 有効化後に `i2c-dev` backend を選択 |
+| Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える |
+| volumes | — |
+| known limitations | Raspbian OS 32-bit の Runtime E2E は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 3 B+ 32-bit 実機検証（#135）」 |
 
 ### Raspberry Pi 4
 
-| OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Raspbian OS 64-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` 成功 | Verified |
+Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。[#98](https://github.com/gurezo/chirimen-raspi-docker/issues/98)
 
-検証済み機種は Model B Rev 1.4。
+| Item | Result |
+| --- | --- |
+| OS | Raspbian OS 64-bit |
+| Kernel | `6.18.34+rpt-rpi-v8` |
+| Architecture | `aarch64` |
+| doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
+| host paths | `/sys/class/gpio`（chip0 / chip1、gpiochip512 / gpiochip570）・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
+| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
+| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
+| GPIO | sysfs / Verified。capability は `gpio=sysfs`。WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
+| I2C | i2c-dev / Verified。I2C 有効化後に `i2c-dev` backend を選択 |
+| Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
+| volumes | — |
+| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 4 32-bit 実機検証（#135）」 |
 
 ### Raspberry Pi 5
 
-| OS | Kernel | Arch | GPIO Capability | GPIO Backend | I2C Backend | Browser E2E | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Raspbian OS 64-bit | `6.18.34+rpt-rpi-2712` | `aarch64` | sysfs（`/sys/class/gpio`） | sysfs | i2c-dev | WebSocket `gpio.export` / `write` / `unexport` 成功 | Verified |
+Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）で次を確認済み。[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)
 
-検証済み機種は Model B Rev 1.0。
+| Item | Result |
+| --- | --- |
+| OS | Raspbian OS 64-bit |
+| Kernel | `6.18.34+rpt-rpi-2712` |
+| Architecture | `aarch64` |
+| doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
+| host paths | `/sys/class/gpio`（chip0 / chip10–13、gpiochip512 / 529 / 535 / 567 / 571）・`/dev/gpiomem0`–`4`・`/dev/gpiochip0` / `10` / `11` / `12` / `13` / `4` あり。`/dev/i2c-1` あり |
+| start mapping | `sysfs=yes` / `gpiomem=0,1,2,3,4` / `gpiochip=0,10,11,12,13,4` / `i2c-1=yes` |
+| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
+| GPIO | sysfs / Verified。capability は `gpio=sysfs`。Case A。`node-web-gpio` の read (`in`) / write (`out`) 成功。gpiochip 専用 backend は不要 |
+| I2C | i2c-dev / Verified。`requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可）。既知 slave の Browser Scan は下記「I2C Scan 実機検証（#116）」 |
+| Protocol E2E | Verified。接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
+| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
+| volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
+| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 5 32-bit 実機検証（#135）」 |
+
+host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
 
 ## Raspberry Pi 3 / 4 と 5
 
@@ -75,58 +111,6 @@ Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardw
 - **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（Runtime の必須条件ではない）
 - **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
 - **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
-
-### Pi 3 B+ 実機検証（#97）
-
-Raspberry Pi 3 Model B+（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。
-
-| 項目 | 結果 |
-| --- | --- |
-| host paths | `/sys/class/gpio`・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `2` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
-| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,2,4` / `i2c-1=yes` |
-| capability | `gpio=sysfs` / `i2c=i2c-dev` |
-| GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
-| I2C | I2C 有効化後に `i2c-dev` backend を選択 |
-| WebSocket | 接続、および `gpio.export` の request/response 成功 |
-| cleanup | 切断時の session cleanup で未 unexport pin が消える |
-| known limitations | Raspbian OS 32-bit の Runtime E2E は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 3 B+ 32-bit 実機検証（#135）」 |
-
-### Pi 4 実機検証（#98）
-
-Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-v8`）で次を確認済み。
-
-| 項目 | 結果 |
-| --- | --- |
-| doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
-| host paths | `/sys/class/gpio`（chip0 / chip1、gpiochip512 / gpiochip570）・`/dev/gpiomem`・`/dev/gpiochip0` / `1` / `4` あり。初期状態では `/dev/i2c-1` が無い場合あり（有効化後に利用） |
-| start mapping | `sysfs=yes` / `gpiomem=/dev/gpiomem` / `gpiochip=0,1,4` / `i2c-1=yes` |
-| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
-| capability | `gpio=sysfs` / `i2c=i2c-dev` |
-| GPIO | WebSocket `gpio.export`（port `26` / `out`）成功。gpiochip 専用 backend は不要 |
-| I2C | I2C 有効化後に `i2c-dev` backend を選択 |
-| WebSocket | 接続、および `gpio.export` の request/response 成功 |
-| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 4 32-bit 実機検証（#135）」 |
-
-### Pi 5 実機検証（#99）
-
-Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）で次を確認済み。
-
-| 項目 | 結果 |
-| --- | --- |
-| doctor | All checks passed。architecture は `aarch64`。`[ capabilities ] gpio=sysfs i2c=i2c-dev` |
-| host paths | `/sys/class/gpio`（chip0 / chip10–13、gpiochip512 / 529 / 535 / 567 / 571）・`/dev/gpiomem0`–`4`・`/dev/gpiochip0` / `10` / `11` / `12` / `13` / `4` あり。`/dev/i2c-1` あり |
-| start mapping | `sysfs=yes` / `gpiomem=0,1,2,3,4` / `gpiochip=0,10,11,12,13,4` / `i2c-1=yes` |
-| image | `chirimen-raspi-docker/server:phase1`（当時 `./scripts/start.sh --64bit`。現行は `./scripts/start.sh` が 64-bit 既定） |
-| capability | `gpio=sysfs` / `i2c=i2c-dev` |
-| GPIO | Case A。`node-web-gpio` の read (`in`) / write (`out`) 成功。gpiochip 専用 backend は不要 |
-| I2C | `requestI2CAccess` + port `1` scan 成功（slave 未接続時は空配列で可）。既知 slave の Browser Scan は下記「I2C Scan 実機検証（#116）」 |
-| WebSocket | 接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
-| cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
-| volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 5 32-bit 実機検証（#135）」 |
-
-host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
 
 ### I2C Scan 実機検証（#116）
 
@@ -140,13 +124,13 @@ host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-
 | Runtime scan | Pi 5（#99、Raspbian OS 64-bit / `aarch64` / `6.18.34+rpt-rpi-2712`）で `requestI2CAccess` + port `1` scan 成功。slave 未接続時は空配列 |
 | Browser Scan | web-demo `#/i2c-scan`。probe は Runtime `scanI2cPort` と同じ `open` + `writeByte(0x00)`（範囲 `0x03`–`0x77`）。[#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) / [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) |
 | expected | 配線後 Scan で hex 一覧に `0x48`。空配列は本検証では失敗 |
-| Browser E2E 列 | Compatibility matrix の Browser E2E は protocol E2E のまま。実ブラウザ Scan は本節 |
+| Browser E2E 列 | Compatibility の Protocol E2E は protocol E2E のまま。実ブラウザ Scan は本節 |
 
 GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 
 ### I2C Host Setup → Docker Runtime 実機検証（#219）
 
-[#215](https://github.com/gurezo/chirimen-raspi-docker/issues/215) の正式順（I2C → Docker → doctor → Runtime）を、Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）で確認した。ホスト環境と Runtime 結果は [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) と同一機。スクリプト責務は [#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216) / [#217](https://github.com/gurezo/chirimen-raspi-docker/issues/217) / [#218](https://github.com/gurezo/chirimen-raspi-docker/issues/218)。既存の「Pi 5 実機検証（#99）」は上書きしない。
+[#215](https://github.com/gurezo/chirimen-raspi-docker/issues/215) の正式順（I2C → Docker → doctor → Runtime）を、Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）で確認した。ホスト環境と Runtime 結果は [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) と同一機。スクリプト責務は [#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216) / [#217](https://github.com/gurezo/chirimen-raspi-docker/issues/217) / [#218](https://github.com/gurezo/chirimen-raspi-docker/issues/218)。既存の「Raspberry Pi 5」（#99）は上書きしない。
 
 | 項目 | 結果 |
 | --- | --- |
