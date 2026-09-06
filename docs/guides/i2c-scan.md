@@ -27,10 +27,10 @@ Raspberry Pi の I2C は初期状態で無効なことがある。host で有効
 chmod +x scripts/enable-i2c.sh
 sudo ./scripts/enable-i2c.sh
 sudo reboot
-sudo ./scripts/enable-i2c.sh --check
+./scripts/enable-i2c.sh --check
 ```
 
-`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。**reboot が必要**。詳細と手動手順（`raspi-config` / boot config）は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を参照する。
+`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要。**reboot が必要**。詳細と手動手順（`raspi-config` / boot config）は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を参照する。I2C → Docker → Runtime の実機確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
 ## /dev/i2c-1 確認
 

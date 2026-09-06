@@ -131,7 +131,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 
 ## 確認手順
 
-1. I2C を有効化する: `sudo ./scripts/enable-i2c.sh` → reboot → `sudo ./scripts/enable-i2c.sh --check`
+1. I2C を有効化する: `sudo ./scripts/enable-i2c.sh` → reboot → `./scripts/enable-i2c.sh --check`（`--check` は sudo 不要）
 2. host で `ls -l /dev/i2c-1`
 3. 上記のとおり ADT7410 を接続する
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）

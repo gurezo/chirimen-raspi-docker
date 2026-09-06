@@ -16,7 +16,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
-- [Compatibility matrix](../architecture/compatibility.md)
+- [Compatibility matrix](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)）
 - [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
 - `scripts/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
 
@@ -144,7 +144,7 @@ getent group gpio
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
 - **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 4 実機検証」
-- **Pi 5（#99）**: Raspbian OS 64-bit（`aarch64` / `2712`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
+- **Pi 5（#99）**: Raspbian OS 64-bit（`aarch64` / `2712`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない。I2C → Docker → Runtime のセットアップ順は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) で同一機を確認した
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
