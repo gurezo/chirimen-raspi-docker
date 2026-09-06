@@ -1,11 +1,11 @@
 # Raspberry Pi setup
 
-CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。`setups/*.sh` と `scripts/*` はリポジトリ内にあるため、**先に clone する**。
+CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。`setups/*.sh` と `scripts/*` はリポジトリ内にあるため、**先に clone する**。Docker の前に I2C を有効化する。
 
 推奨順:
 
 ```text
-clone → このページ（Docker / Pi 3 B+ の swap・ファン / GPIO / I2C / doctor） → Getting Started（起動）
+clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker / Compose → Pi 3 B+ の swap・ファン → GPIO 確認 → doctor → Getting Started（起動）
 ```
 
 関連:
@@ -18,7 +18,16 @@ clone → このページ（Docker / Pi 3 B+ の swap・ファン / GPIO / I2C /
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility matrix](../architecture/compatibility.md)
 - [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
-- `scripts/doctor.sh` / `scripts/start.sh` / `scripts/enable-i2c.sh`
+- `scripts/enable-i2c.sh` / `setups/docker.sh` / `scripts/doctor.sh` / `scripts/start.sh`
+
+## スクリプトの責務
+
+| スクリプト | 責務 |
+| --- | --- |
+| `scripts/enable-i2c.sh` | ホスト I2C の有効化。`--check` は設定変更なし・sudo 不要で `/dev/i2c-1` を確認する |
+| `setups/docker.sh` / `setups/docker-compose.sh` | Docker / Compose のインストールのみ。I2C 設定は変更しない |
+| `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない |
+| `scripts/start.sh` | 準備済み環境で Runtime を起動する。I2C 設定は変更しない（このページでは実行しない） |
 
 ## 前提 OS
 
@@ -33,11 +42,52 @@ git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
 ```
 
-以降の `setups/docker.sh` と `scripts/doctor.sh` / `scripts/enable-i2c.sh` は、clone したディレクトリで実行する。
+以降の `scripts/enable-i2c.sh` と `setups/docker.sh` / `scripts/doctor.sh` は、clone したディレクトリで実行する。
+
+## I2C
+
+Docker セットアップの前に、ホストで I2C を有効化し `/dev/i2c-1` を確認する。
+
+### script で有効化する（推奨）
+
+```sh
+chmod +x scripts/enable-i2c.sh
+sudo ./scripts/enable-i2c.sh
+sudo reboot
+```
+
+再接続後:
+
+```sh
+cd chirimen-raspi-docker
+./scripts/enable-i2c.sh --check
+```
+
+`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要で、設定は変更しない。script は `raspi-config` で I2C を有効化し、必要なら boot config に `dtparam=i2c_arm=on` を追加する。**reboot が必要**。
+
+### host の確認
+
+```sh
+ls -l /dev/i2c-1
+getent group i2c
+```
+
+- `/dev/i2c-1` が存在すること
+- `i2c` グループの GID を控えておくこと（将来の non-root 化用）
+
+### 手動で有効化する
+
+1. `sudo raspi-config` → Interface Options → I2C → Enable
+2. または `/boot/firmware/config.txt`（Bookworm）に `dtparam=i2c_arm=on` を追加
+3. reboot 後、`ls -l /dev/i2c-1` で device を確認
+
+### Pi 3 / 4 / 5
+
+標準の primary bus は `/dev/i2c-1`。`./scripts/start.sh` が存在時のみ container に渡す。別名 bus（例: `/dev/i2c-0`）が必要な場合は host で `ls -l /dev/i2c-*` を確認する。
 
 ## Docker / Docker Compose
 
-Runtime の推奨起動入口は `./scripts/start.sh` のため、host に Docker と Compose が必要。未導入なら [setups/README.md](../../setups/README.md) の手順（`setups/docker.sh` → reboot → `setups/docker-compose.sh`）を使う。
+I2C 確認のあと、host に Docker と Compose を入れる。Runtime の推奨起動入口は `./scripts/start.sh` のため、両方が必要。未導入なら [setups/README.md](../../setups/README.md) の手順（`setups/docker.sh` → reboot → `setups/docker-compose.sh`）を使う。`docker.sh` は I2C 設定を変更しない。
 
 インストール後の確認例:
 
@@ -64,9 +114,36 @@ free -h
 
 詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [troubleshooting.md](./troubleshooting.md)。
 
+## GPIO
+
+### host の確認
+
+```sh
+ls -l /sys/class/gpio
+ls -l /dev/gpiomem* /dev/gpiochip*
+getent group gpio
+```
+
+- `/sys/class/gpio` があること（現行 sysfs backend の主経路）
+- `/dev/gpiomem*` は任意（無くても sysfs があればよい）
+- `gpio` グループの GID を控えておくこと（将来 container を non-root 化する際に `group_add` で合わせる）
+
+現在の server image は root で起動するため、当面 `group_add` は必須ではない。
+
+### Pi 3 / 4 と 5
+
+- **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
+- **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
+- **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
+- **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
+- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 4 実機検証」
+- **Pi 5（#99）**: Raspbian OS 64-bit（`aarch64` / `2712`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
+
+Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
+
 ## 事前診断（doctor）
 
-`./scripts/start.sh` の前に、host の前提条件を一括確認できる。
+I2C と Docker の準備のあと、`./scripts/start.sh` の前に host の前提条件を一括確認できる。
 
 ```sh
 chmod +x scripts/doctor.sh
@@ -101,71 +178,9 @@ sudo reboot
 
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
-## GPIO
-
-### host の確認
-
-```sh
-ls -l /sys/class/gpio
-ls -l /dev/gpiomem* /dev/gpiochip*
-getent group gpio
-```
-
-- `/sys/class/gpio` があること（現行 sysfs backend の主経路）
-- `/dev/gpiomem*` は任意（無くても sysfs があればよい）
-- `gpio` グループの GID を控えておくこと（将来 container を non-root 化する際に `group_add` で合わせる）
-
-現在の server image は root で起動するため、当面 `group_add` は必須ではない。
-
-### Pi 3 / 4 と 5
-
-- **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
-- **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
-- **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
-- **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 3 B+ 実機検証」。A+ はスペック不足のため推奨環境外
-- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs` / `i2c=i2c-dev`。詳細は [compatibility.md](../architecture/compatibility.md) の「Pi 4 実機検証」
-- **Pi 5（#99）**: Raspbian OS 64-bit（`aarch64` / `2712`）で `/sys/class/gpio` が利用可能。Runtime は `gpio=sysfs`。sysfs 経路で GPIO 実アクセスまで確認済みのため、Pi 5 専用 gpiochip backend は追加しない
-
-Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
-
-## I2C
-
-### host の確認
-
-```sh
-ls -l /dev/i2c-1
-getent group i2c
-```
-
-- `/dev/i2c-1` が存在すること
-- `i2c` グループの GID を控えておくこと（将来の non-root 化用）
-
-### script で有効化する（推奨）
-
-I2C が無効な場合:
-
-```sh
-chmod +x scripts/enable-i2c.sh
-sudo ./scripts/enable-i2c.sh
-sudo reboot
-sudo ./scripts/enable-i2c.sh --check
-```
-
-`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。script は `raspi-config` で I2C を有効化し、必要なら boot config に `dtparam=i2c_arm=on` を追加する。**reboot が必要**。
-
-### 手動で有効化する
-
-1. `sudo raspi-config` → Interface Options → I2C → Enable
-2. または `/boot/firmware/config.txt`（Bookworm）に `dtparam=i2c_arm=on` を追加
-3. reboot 後、`ls -l /dev/i2c-1` で device を確認
-
-### Pi 3 / 4 / 5
-
-標準の primary bus は `/dev/i2c-1`。`./scripts/start.sh` が存在時のみ container に渡す。別名 bus（例: `/dev/i2c-0`）が必要な場合は host で `ls -l /dev/i2c-*` を確認する。
-
 ## セットアップ後
 
-再び doctor を通し、`[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。
+doctor で `[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。`start.sh` は I2C 設定を変更しない。
 
 ```sh
 ./scripts/doctor.sh
