@@ -31,6 +31,28 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。過去の実機検証結果と技術的な理由は [32-bit Compatibility](./compatibility-32bit.md) を参照してください。
 
+## Runtime / GPIO / I2C 共通仕様
+
+### Runtime startup
+
+Pi 3 / 4 / 5 とも `./scripts/start.sh`。モデルごとの `compose.yaml` 手編集は不要。
+
+### GPIO capability detection
+
+host に `/sys/class/gpio` があるとき capability は `gpio=sysfs`。sysfs が無い場合は GPIO unavailable。
+
+### gpiomem
+
+Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（Runtime の必須条件ではない）。
+
+### gpiochip
+
+`gpiochip*` は存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable。
+
+### I2C primary bus
+
+primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す。初期状態で無い場合あり。有効化後に `i2c-dev`。
+
 ## Verification Details
 
 Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspbian OS 64-bit** である。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
@@ -104,13 +126,6 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 5 32-bit 実機検証（#135）」 |
 
 host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
-
-## Raspberry Pi 3 / 4 と 5
-
-- **同一手順**: Pi 3 / 4 / 5 とも `./scripts/start.sh`。モデルごとの `compose.yaml` 手編集は不要
-- **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（Runtime の必須条件ではない）
-- **`gpiochip*`**: 存在すれば渡る。backend 未実装のため、sysfs が無い場合は GPIO unavailable
-- **I2C**: primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す
 
 ### I2C Scan 実機検証（#116）
 
