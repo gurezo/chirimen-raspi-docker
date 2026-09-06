@@ -12,21 +12,29 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。詳細は [Compatibility](docs/architecture/compatibility.md) を参照してください。
 
-## 最短の使い方
+## Quick Start
 
-初回の host 準備（I2C → Docker / 低スペックなら swap / GPIO）は [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) を先に完了する。clone もそのページで行う。
+初めて使う場合は、先に [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) を完了してください。
+
+```text
+Raspberry Pi Setup
+        ↓
+./scripts/doctor.sh
+        ↓
+./scripts/start.sh
+        ↓
+curl http://localhost:33330/health
+```
 
 準備済みなら:
 
 ```sh
-git clone https://github.com/gurezo/chirimen-raspi-docker.git
-cd chirimen-raspi-docker
 ./scripts/doctor.sh
 ./scripts/start.sh
 curl http://localhost:33330/health
 ```
 
-手順の説明と container 内の device 確認は [Getting Started](docs/guides/getting-started.md) を参照してください。Browser Editor からの編集は [Browser Development Environment](docs/guides/browser-development.md)。
+手順の説明は [Getting Started](docs/guides/getting-started.md) を参照してください。
 
 ## ドキュメント
 
