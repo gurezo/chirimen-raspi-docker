@@ -81,6 +81,8 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
+I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility matrix](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
+
 ## 4. Browser で Editor / Examples / Web Demo を開く
 
 最短フロー:

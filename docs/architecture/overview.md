@@ -185,7 +185,7 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
-| [compatibility.md](./compatibility.md) | Compatibility matrix（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外） |
+| [compatibility.md](./compatibility.md) | Compatibility matrix（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |

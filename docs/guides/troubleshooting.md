@@ -54,8 +54,10 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 ### 対処
 
 1. host で I2C を有効化して reboot する（[raspberry-pi-setup.md](./raspberry-pi-setup.md)）
-2. `./scripts/enable-i2c.sh --check`
+2. `./scripts/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
+
+Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
 slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [i2c-scan.md](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
 
@@ -154,7 +156,7 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 - **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
-- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）
+- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
 
 ## 32-bit OS はサポート対象外
 
