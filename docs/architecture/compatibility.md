@@ -13,20 +13,20 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - [Raspberry Pi setup](../guides/raspberry-pi-setup.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
-## 推奨環境
+## Supported / Verified Environment
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit**（`aarch64`）である。Runtime の Node 24 は Docker image 内で使う。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit**（`aarch64`）である。Runtime の Node 24 は Docker image 内で使う。
 
-### 対応
+| Model | 64-bit OS | GPIO | I2C | Status |
+| --- | --- | --- | --- | --- |
+| Raspberry Pi 3 B+ | Yes | Verified | Verified | Verified |
+| Raspberry Pi 4 | Yes | Verified | Verified | Verified |
+| Raspberry Pi 5 | Yes | Verified | Verified | Verified |
+| Raspberry Pi 3 A+ | — | — | — | Not verified / unsupported |
 
-- Raspberry Pi 3 B+（Raspbian OS 64-bit）
-- Raspberry Pi 4（Raspbian OS 64-bit）
-- Raspberry Pi 5（Raspbian OS 64-bit）
+Recommended: Raspberry Pi OS Lite 64-bit
 
-### サポート対象外
-
-- Raspberry Pi 3 A+（ハードウェアスペック不足）
-- 32-bit OS（Verified でも `Supported` と書かない）
+`Supported` とは書かない。未検証項目も `Supported` と書かない。
 
 ## Compatibility matrix
 
