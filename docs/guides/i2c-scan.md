@@ -42,7 +42,7 @@ chmod +x scripts/doctor.sh
 ./scripts/doctor.sh
 ```
 
-`/dev/i2c-1` が存在し、doctor の I2C が `[error]` でなければ次へ進む。無い場合は上の「I2C 有効化」に戻る。
+`/dev/i2c-1` が存在し、doctor が `[ok] I2C: available (/dev/i2c-1)` を出せば次へ進む。`[error] I2C: unavailable` の場合は上の「I2C 有効化」に戻る。doctor は診断のみで I2C 設定は変更しない。
 
 任意（`i2c-tools` がある場合）:
 
