@@ -36,52 +36,19 @@ curl http://localhost:33330/health
 
 手順の説明は [Getting Started](docs/guides/getting-started.md) を参照してください。
 
-## ドキュメント
+## Documentation
 
 公開 Documentation: https://gurezo.github.io/chirimen-raspi-docker/
 
-初めての利用者は、clone と host 準備の [Raspberry Pi setup](docs/guides/raspberry-pi-setup.md) から始めてください。公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照してください。
-
-### セットアップ
-
-| ドキュメント                                                           | 内容                                             |
-| ---------------------------------------------------------------------- | ------------------------------------------------ |
-| [docs/guides/raspberry-pi-setup.md](docs/guides/raspberry-pi-setup.md) | clone → I2C → Docker / 低スペックなら swap / GPIO セットアップ |
-| [docs/guides/development.md](docs/guides/development.md)               | リポジトリ開発向けの Node.js / pnpm / Nx         |
-| [setups/README.md](setups/README.md)                                   | host の Docker / Docker Compose / `swap.sh`。低スペック機は swap を確保。Pi 3 B+ は 8GB swap と CPU ファン必須 |
-
-### 使い方
-
-| ドキュメント                                                       | 内容                                                                     |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| [docs/guides/getting-started.md](docs/guides/getting-started.md)   | doctor → `./scripts/start.sh` → health check                             |
-| [docs/guides/browser-development.md](docs/guides/browser-development.md) | Browser Editor から Example を編集・実行する（#183）                   |
-| [docs/guides/browser-polyfill.md](docs/guides/browser-polyfill.md) | 旧 `polyfill.js` 相当の script 読み込み / IIFE bundle / web-demo         |
-| [docs/guides/gpio-led-blink.md](docs/guides/gpio-led-blink.md)     | GPIO LED Blink 操作ガイド（HTML サンプルで点滅）                         |
-| [docs/guides/gpio-input.md](docs/guides/gpio-input.md)             | GPIO Input 操作ガイド（HTML サンプルで onchange）                        |
-| [docs/guides/i2c-scan.md](docs/guides/i2c-scan.md)                 | I2C Scan 操作ガイド（web-demo で address scan）                          |
-| [docs/guides/troubleshooting.md](docs/guides/troubleshooting.md)   | よくある起動・device 障害                                                |
-
-### アーキテクチャ
-
-| ドキュメント                                                             | 内容                                                                                                |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| [docs/architecture/overview.md](docs/architecture/overview.md)           | アーキテクチャ概要 / Nx MCP                                                                         |
-| [docs/architecture/docker.md](docs/architecture/docker.md)               | Docker / Compose / device mount                                                                     |
-| [docs/architecture/browser-editor.md](docs/architecture/browser-editor.md) | Phase 8 Browser Editor 選定（code-server）                                                        |
-| [docs/architecture/protocol.md](docs/architecture/protocol.md)           | Protocol メッセージモデル / [I2C Scan API flow](docs/architecture/protocol.md#i2c-scan-api-flow114) |
-| [docs/architecture/nx-boundaries.md](docs/architecture/nx-boundaries.md) | Nx tags / module boundaries                                                                         |
-
-### Compatibility（検証環境）
-
-Raspberry Pi の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録します。推奨環境は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** です。32-bit OS はサポート対象外です。未検証項目は `Supported` と書きません。正本は [Compatibility matrix](docs/architecture/compatibility.md) です。
-
-| ドキュメント | 内容 |
+| 目的 | Documentation |
 | --- | --- |
-| [Compatibility matrix](docs/architecture/compatibility.md) | Pi 3 B+ / 4 / 5 の 64-bit 実機検証結果。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) |
-| [docs/examples/gpio-led-blink.md](docs/examples/gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω）                                                     |
-| [docs/examples/gpio-input.md](docs/examples/gpio-input.md)         | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）                                    |
-| [docs/examples/i2c-scan.md](docs/examples/i2c-scan.md)             | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)） |
+| 初めて使う | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
+| Runtime を起動する | [Getting Started](docs/guides/getting-started.md) |
+| GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) |
+| 問題を調べる | [Troubleshooting](docs/guides/troubleshooting.md) |
+| 対応環境を確認する | [Compatibility](docs/architecture/compatibility.md) |
+| 内部設計を調べる | [Architecture](docs/architecture/overview.md) |
+| API を調べる | [API Reference](https://gurezo.github.io/chirimen-raspi-docker/api/) |
 
 ## Runtime 必要環境
 
