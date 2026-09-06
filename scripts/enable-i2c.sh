@@ -69,11 +69,15 @@ raspi_config_available() {
   command -v raspi-config >/dev/null 2>&1
 }
 
+# raspi-config nonint get_i2c prints 0 (enabled) or 1 (disabled) and
+# exits 0. Some older builds may use only the exit code with no stdout.
 raspi_config_i2c_enabled() {
   if ! raspi_config_available; then
     return 1
   fi
-  raspi-config nonint get_i2c >/dev/null 2>&1
+  local status
+  status="$(raspi-config nonint get_i2c 2>/dev/null)" || return 1
+  [ "$status" = "0" ] || [ -z "$status" ]
 }
 
 i2c_device_exists() {
