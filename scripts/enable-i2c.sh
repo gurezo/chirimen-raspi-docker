@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
 # Enable I2C on Raspberry Pi host for chirimen-raspi-docker.
-# Requires root (sudo). Reboot is required after enabling I2C.
+# Enabling requires root (sudo). Reboot is required after enabling I2C.
+# --check does not change settings and does not require sudo.
 #
 # Usage:
 #   sudo ./scripts/enable-i2c.sh          # enable I2C (idempotent)
-#   sudo ./scripts/enable-i2c.sh --check  # verify /dev/i2c-1 after reboot
+#   ./scripts/enable-i2c.sh --check       # verify /dev/i2c-1 after reboot
 #
 set -euo pipefail
 
@@ -25,12 +26,12 @@ usage() {
 Usage: enable-i2c.sh [--check]
 
   (default)  Enable I2C on Raspberry Pi host (requires sudo).
-  --check    Verify that /dev/i2c-1 is available after reboot.
+  --check    Verify that /dev/i2c-1 is available after reboot (no sudo).
 
 Examples:
   sudo ./scripts/enable-i2c.sh
   sudo reboot
-  sudo ./scripts/enable-i2c.sh --check
+  ./scripts/enable-i2c.sh --check
 EOF
 }
 
@@ -47,6 +48,30 @@ is_raspberry_pi() {
     return $?
   fi
   return 1
+}
+
+os_release_id() {
+  awk -F= '/^ID=/{ gsub(/"/, "", $2); print $2; exit }' /etc/os-release 2>/dev/null || true
+}
+
+# Raspberry Pi OS Bookworm reports ID=debian, so accept Pi OS markers
+# (/etc/rpi-issue, raspi-config) in addition to ID=raspbian.
+is_raspberry_pi_os() {
+  [ -e /etc/rpi-issue ] && return 0
+  raspi_config_available && return 0
+  [ "$(os_release_id)" = "raspbian" ] && return 0
+  return 1
+}
+
+require_raspberry_pi_os() {
+  if ! is_raspberry_pi; then
+    err "this script is intended for Raspberry Pi only."
+    exit 1
+  fi
+  if ! is_raspberry_pi_os; then
+    err "this script is intended for Raspberry Pi OS."
+    exit 1
+  fi
 }
 
 find_boot_config() {
@@ -69,19 +94,59 @@ raspi_config_available() {
   command -v raspi-config >/dev/null 2>&1
 }
 
+# raspi-config nonint get_i2c prints 0 (enabled) or 1 (disabled) and
+# exits 0. Some older builds may use only the exit code with no stdout.
 raspi_config_i2c_enabled() {
   if ! raspi_config_available; then
     return 1
   fi
-  raspi-config nonint get_i2c >/dev/null 2>&1
+  local status
+  status="$(raspi-config nonint get_i2c 2>/dev/null)" || return 1
+  [ "$status" = "0" ] || [ -z "$status" ]
 }
 
 i2c_device_exists() {
   [ -e "$I2C_DEVICE" ]
 }
 
-i2c_fully_enabled() {
-  i2c_device_exists && { ! raspi_config_available || raspi_config_i2c_enabled; }
+show_i2c_state() {
+  log "I2C current state:"
+  if i2c_device_exists; then
+    log "  device: $I2C_DEVICE present"
+  else
+    log "  device: $I2C_DEVICE missing"
+  fi
+
+  if raspi_config_available; then
+    if raspi_config_i2c_enabled; then
+      log "  raspi-config: I2C enabled"
+    else
+      log "  raspi-config: I2C disabled"
+    fi
+  else
+    log "  raspi-config: not found"
+  fi
+
+  local config_file
+  if config_file="$(find_boot_config)"; then
+    if config_has_i2c_enabled "$config_file"; then
+      log "  boot config: I2C dtparam present ($config_file)"
+    else
+      log "  boot config: I2C dtparam missing ($config_file)"
+    fi
+  else
+    log "  boot config: not found"
+  fi
+}
+
+advise_reboot() {
+  log ""
+  log "I2C settings were updated. Reboot is required:"
+  log "  sudo reboot"
+  log ""
+  log "After reboot, verify with:"
+  log "  $0 --check"
+  log "  ls -l $I2C_DEVICE"
 }
 
 ensure_config_dtparam() {
@@ -103,34 +168,35 @@ ensure_config_dtparam() {
 
 enable_i2c() {
   local changed=0
-  local config_file=""
+  local config_status=0
 
-  if i2c_fully_enabled; then
+  show_i2c_state
+  log ""
+
+  if i2c_device_exists; then
     log "I2C is already enabled ($I2C_DEVICE is available)."
+    log "No configuration changes were made."
     return 0
   fi
 
   if raspi_config_available; then
     if raspi_config_i2c_enabled; then
       log "raspi-config reports I2C is enabled, but $I2C_DEVICE is missing."
-      log "A reboot may be required."
-    else
-      log "enabling I2C via raspi-config..."
-      raspi-config nonint do_i2c 0
-      changed=1
-      log "raspi-config: I2C enabled."
+      log "A reboot is required:"
+      log "  sudo reboot"
+      log ""
+      log "After reboot, verify with:"
+      log "  $0 --check"
+      log "  ls -l $I2C_DEVICE"
+      return 0
     fi
+
+    log "enabling I2C via raspi-config..."
+    raspi-config nonint do_i2c 0
+    changed=1
+    log "raspi-config: I2C enabled."
   else
-    log "raspi-config not found; updating boot config directly."
-  fi
-
-  config_file="$(find_boot_config)" || {
-    err "boot config not found (/boot/firmware/config.txt or /boot/config.txt)."
-    return 1
-  }
-
-  if ! config_has_i2c_enabled "$config_file"; then
-    local config_status=0
+    log "raspi-config not found; using boot config fallback."
     ensure_config_dtparam || config_status=$?
     if [ "$config_status" -eq 2 ]; then
       changed=1
@@ -145,13 +211,7 @@ enable_i2c() {
   fi
 
   if [ "$changed" -eq 1 ]; then
-    log ""
-    log "I2C settings were updated. Reboot is required:"
-    log "  sudo reboot"
-    log ""
-    log "After reboot, verify with:"
-    log "  sudo $0 --check"
-    log "  ls -l $I2C_DEVICE"
+    advise_reboot
     return 0
   fi
 
@@ -161,49 +221,28 @@ enable_i2c() {
 }
 
 check_i2c() {
-  local ok=0
-
   log "Checking I2C on Raspberry Pi host..."
   log ""
-
-  if i2c_device_exists; then
-    log "[ok] $I2C_DEVICE exists"
-    ls -l "$I2C_DEVICE"
-  else
-    log "[fail] $I2C_DEVICE not found"
-    ok=1
-  fi
+  show_i2c_state
+  log ""
 
   if getent group i2c >/dev/null 2>&1; then
     log "[ok] i2c group: $(getent group i2c)"
   else
     log "[warn] i2c group not found (may appear after reboot)"
-    ok=1
-  fi
-
-  if raspi_config_available; then
-    if raspi_config_i2c_enabled; then
-      log "[ok] raspi-config: I2C enabled"
-    else
-      log "[fail] raspi-config: I2C disabled"
-      ok=1
-    fi
-  fi
-
-  local config_file
-  if config_file="$(find_boot_config)" && config_has_i2c_enabled "$config_file"; then
-    log "[ok] boot config contains I2C dtparam ($config_file)"
-  elif config_file="$(find_boot_config)"; then
-    log "[warn] boot config has no I2C dtparam ($config_file)"
   fi
 
   log ""
-  if [ "$ok" -eq 0 ]; then
+  if i2c_device_exists; then
+    log "[ok] $I2C_DEVICE exists"
+    ls -l "$I2C_DEVICE"
+    log ""
     log "I2C is ready. You can start with capability-aware mapping:"
     log "  ./scripts/start.sh"
     return 0
   fi
 
+  log "[fail] $I2C_DEVICE not found"
   err "I2C is not ready. Run without --check to enable, then reboot."
   return 1
 }
@@ -229,16 +268,16 @@ main() {
     esac
   done
 
-  require_root
-
-  if ! is_raspberry_pi; then
-    err "this script is intended for Raspberry Pi only."
-    exit 1
-  fi
+  require_raspberry_pi_os
 
   case "$mode" in
-    check) check_i2c ;;
-    enable) enable_i2c ;;
+    check)
+      check_i2c
+      ;;
+    enable)
+      require_root
+      enable_i2c
+      ;;
   esac
 }
 
