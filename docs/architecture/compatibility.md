@@ -83,7 +83,7 @@ Raspberry Pi 3 Model B+（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-r
 | Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える |
 | volumes | — |
-| known limitations | Raspbian OS 32-bit の Runtime E2E は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 3 B+ 32-bit 実機検証（#135）」 |
+| known limitations | Raspbian OS 32-bit の Runtime E2E は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 3 B+ verification」 |
 
 ### Raspberry Pi 4
 
@@ -103,7 +103,7 @@ Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | volumes | — |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 4 32-bit 実機検証（#135）」 |
+| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 4 verification」 |
 
 ### Raspberry Pi 5
 
@@ -123,7 +123,7 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | Protocol E2E | Verified。接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Pi 5 32-bit 実機検証（#135）」 |
+| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 5 verification」 |
 
 host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
 
