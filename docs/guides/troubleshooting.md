@@ -59,7 +59,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
-slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [i2c-scan.md](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
+slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [I2C Scan](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
 
 ## Permission denied（GPIO / I2C）
 
@@ -522,12 +522,12 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 
 ## LED が点かない
 
-配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [gpio-led-blink.md](./gpio-led-blink.md) の Troubleshooting を参照する。
+配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [GPIO LED Blink](./gpio-led-blink.md) の Troubleshooting を参照する。
 
 ## タクトスイッチを押しても値が変わらない
 
-配線・web-demo の Start / onchange / HTML サンプルの切り分けは [gpio-input.md](./gpio-input.md) の Troubleshooting を参照する。
+配線・web-demo の Start / onchange / HTML サンプルの切り分けは [GPIO Input](./gpio-input.md) の Troubleshooting を参照する。
 
 ## I2C Scan で address が出ない
 
-配線・I2C 有効化・web-demo の Scan / hex 一覧の切り分けは [i2c-scan.md](./i2c-scan.md) の Troubleshooting を参照する。
+配線・I2C 有効化・web-demo の Scan / hex 一覧の切り分けは [I2C Scan](./i2c-scan.md) の Troubleshooting を参照する。

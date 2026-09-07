@@ -44,7 +44,7 @@ curl http://localhost:33330/health
 | --- | --- |
 | 初めて使う | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
 | Runtime を起動する | [Getting Started](docs/guides/getting-started.md) |
-| GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) |
+| GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) / [GPIO Input](docs/guides/gpio-input.md) / [I2C Scan](docs/guides/i2c-scan.md) |
 | 問題を調べる | [Troubleshooting](docs/guides/troubleshooting.md) |
 | 対応環境を確認する | [Compatibility](docs/architecture/compatibility.md) |
 | 内部設計を調べる | [Architecture](docs/architecture/overview.md) |

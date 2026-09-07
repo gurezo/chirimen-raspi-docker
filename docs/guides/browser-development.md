@@ -99,7 +99,7 @@ workspace は bind mount `./docs/examples` → `/home/coder/project` である�
 | `button/` | GPIO Input / onchange |
 | `i2c-scan/` | I2C Scan |
 
-配置の正本は [docs/examples/README.md](../examples/README.md)。回路・配線は [gpio-led-blink.md](./gpio-led-blink.md) / [gpio-input.md](./gpio-input.md) / [i2c-scan.md](./i2c-scan.md)。
+配置の正本は [docs/examples/README.md](../examples/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
 
 ## Extension の導入 / 確認
 

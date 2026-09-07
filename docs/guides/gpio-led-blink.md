@@ -130,7 +130,7 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 
 ## Troubleshooting
 
-汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは LED Blink 固有の切り分けだけを書く。
+汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは GPIO LED Blink 固有の切り分けだけを書く。
 
 ### `polyfill.js` が 404 になる
 
