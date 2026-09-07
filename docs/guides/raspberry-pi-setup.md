@@ -121,7 +121,7 @@ Raspberry Pi 3 B+ でビルドするときは、次の **両方** が必須で�
 
 Pi 4 / 5 の swap / ファンは任意。メモリ不足や OOM が出る場合も `swap.sh` を提案する。
 
-詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [troubleshooting.md](./troubleshooting.md)。
+詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [Troubleshooting](./troubleshooting.md)。
 
 ## GPIO
 

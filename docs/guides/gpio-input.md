@@ -66,7 +66,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠と電�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
@@ -138,7 +138,7 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 
 ## Troubleshooting
 
-汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは GPIO Input 固有の切り分けだけを書く。
+汎用の起動・device 障害は [Troubleshooting](./troubleshooting.md) を参照する。ここでは GPIO Input 固有の切り分けだけを書く。
 
 ### `polyfill.js` が 404 になる
 
@@ -159,7 +159,7 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 
 ### `export` が Permission denied / EROFS になる
 
-GPIO device の mount と sysfs の書き込み経路の問題。[troubleshooting.md](./troubleshooting.md) の「Permission denied」と「GPIO export で EROFS」を参照する。
+GPIO device の mount と sysfs の書き込み経路の問題。[Troubleshooting](./troubleshooting.md) の「Permission denied」と「GPIO export で EROFS」を参照する。
 
 ### タブを閉じたあと、同じ GPIO5 を再度使えない
 

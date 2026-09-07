@@ -48,7 +48,7 @@ Web Demo を開く（http://127.0.0.1:4200/）
 - **8GB swap**: 無いと Docker image をビルドできない。`sudo ./setups/swap.sh`（既定 8G）を `./scripts/start.sh` の前に実行する
 - **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
 
-Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
+Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
 
 ## 起動
 
@@ -191,7 +191,7 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 ## Troubleshooting
 
-汎用の切り分けは [troubleshooting.md](./troubleshooting.md) を正とする。ここでは索引だけ書く。
+汎用の切り分けは [Troubleshooting](./troubleshooting.md) を正とする。ここでは索引だけ書く。
 
 | 症状 | 参照 |
 | --- | --- |

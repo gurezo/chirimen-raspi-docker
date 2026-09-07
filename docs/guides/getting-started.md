@@ -28,13 +28,13 @@ Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること
-- 低スペック機（1GB 級。代表は Raspberry Pi 3 B+）ではビルド前に `sudo ./setups/swap.sh` で swap を確保する。Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+- 低スペック機（1GB 級。代表は Raspberry Pi 3 B+）ではビルド前に `sudo ./setups/swap.sh` で swap を確保する。Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須（詳細は [Raspberry Pi Setup](./raspberry-pi-setup.md)）
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-clone や I2C / Docker / swap / GPIO の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
+clone や I2C / Docker / swap / GPIO の準備がまだなら、先に [Raspberry Pi Setup](./raspberry-pi-setup.md) を完了する。
 
-開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [troubleshooting.md](./troubleshooting.md) の「非 Pi 環境」を参照。
+開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
 
 ## 1. host を診断する
 
@@ -45,7 +45,7 @@ chmod +x scripts/doctor.sh
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+`[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
 
 ## 2. Runtime と Editor を起動する
 
@@ -132,7 +132,7 @@ http://127.0.0.1:4200/#/i2c-scan
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Browser から Runtime を試す（web-demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
-| 起動失敗・Permission denied など | [troubleshooting.md](./troubleshooting.md) |
+| 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md) |
 | Browser Editor から Example / Web Demo を実行する | [Browser Development Environment](./browser-development.md) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |

@@ -36,7 +36,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 | 原因 | 対処 |
 | --- | --- |
-| I2C 未有効 | [raspberry-pi-setup.md](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
+| I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
 | GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
 | 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
@@ -53,7 +53,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 ### 対処
 
-1. host で I2C を有効化して reboot する（[raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+1. host で I2C を有効化して reboot する（[Raspberry Pi Setup](./raspberry-pi-setup.md)）
 2. `./scripts/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
@@ -194,7 +194,7 @@ sudo ./setups/swap.sh --check
 free -h
 ```
 
-`./scripts/start.sh` の前に実行する。手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
+`./scripts/start.sh` の前に実行する。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
 
 ## Pi 3 B+ でビルド中に熱暴走 / ハングする
 
@@ -212,7 +212,7 @@ Docker image ビルドは CPU 負荷が高い。Pi 3 B+ では **CPU ファン�
 
 - CPU ファンを **必ず実装してから** ビルドする（熱暴走防止）
 - 電源投入前に装着する。特定メーカー / 型番は指定しない
-- 手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md)
+- 手順は [Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
@@ -516,7 +516,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 3. `/dev/i2c-1`（`enable-i2c.sh`）— `i2c=unavailable` は error
 4. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
 
-解消後に Getting Started へ戻る: [getting-started.md](./getting-started.md)
+解消後に Getting Started へ戻る: [Getting Started](./getting-started.md)
 
 ## LED が点かない
 

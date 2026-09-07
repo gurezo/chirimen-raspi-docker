@@ -30,7 +30,7 @@ sudo reboot
 ./scripts/enable-i2c.sh --check
 ```
 
-`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要。**reboot が必要**。詳細と手動手順（`raspi-config` / boot config）は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を参照する。I2C → Docker → Runtime の実機確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
+`--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要。**reboot が必要**。詳細と手動手順（`raspi-config` / boot config）は [Raspberry Pi Setup](./raspberry-pi-setup.md) を参照する。I2C → Docker → Runtime の実機確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
 ## /dev/i2c-1 確認
 
@@ -108,7 +108,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。GPIO LED Blink（BCM 26 / �
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
@@ -187,7 +187,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 ## Troubleshooting
 
-汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは I2C Scan 固有の切り分けだけを書く。
+汎用の起動・device 障害は [Troubleshooting](./troubleshooting.md) を参照する。ここでは I2C Scan 固有の切り分けだけを書く。
 
 ### `polyfill.js` が 404 になる
 
@@ -197,7 +197,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 | 確認 | 対処 |
 | --- | --- |
-| I2C が無効 | `sudo ./scripts/enable-i2c.sh` → reboot → `--check`。[raspberry-pi-setup.md](./raspberry-pi-setup.md) |
+| I2C が無効 | `sudo ./scripts/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | host に `/dev/i2c-1` が無い | `ls -l /dev/i2c-1` と `./scripts/doctor.sh` |
 | container に `/dev/i2c-1` が無い | `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1` |
 | Runtime が止まっている / 接続が Error | `./scripts/start.sh` と `curl http://localhost:33330/health`。接続状態が **Connected** になってから Scan する |
@@ -209,7 +209,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 ### `open` が Permission denied になる
 
-I2C device の mount と権限の問題。[troubleshooting.md](./troubleshooting.md) の「Permission denied」を参照する。
+I2C device の mount と権限の問題。[Troubleshooting](./troubleshooting.md) の「Permission denied」を参照する。
 
 ### Scan 中に画面を離すと一覧が消える
 
