@@ -1,4 +1,4 @@
-# Compatibility matrix
+# Compatibility
 
 Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。
 

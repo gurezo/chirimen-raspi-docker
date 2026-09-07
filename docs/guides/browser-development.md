@@ -35,7 +35,7 @@ Web Demo を開く（http://127.0.0.1:4200/）
 
 ## 前提
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外。`--32bit` は Runtime only で Editor は起動しない

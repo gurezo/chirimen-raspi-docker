@@ -9,7 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
-- [Compatibility matrix](./compatibility.md)
+- [Compatibility](./compatibility.md)
 - [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176。既定の全サーバー起動は #208（#177 の optional profile を逆転）。初期設定は #178。Example 編集 / 静的 serve は #179。Web Demo Compose は #180。Security は #181。Extension は #201。利用ガイドは #183）
 - [Getting Started](../guides/getting-started.md)
 - [Browser Development Environment](../guides/browser-development.md)
@@ -280,7 +280,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility
 
-推奨環境と実機検証の正本は [Compatibility matrix](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。
+推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。
 
 ## 非 Pi 環境での制限
 

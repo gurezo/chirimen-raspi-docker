@@ -23,7 +23,7 @@ Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 ## 前提
 
 - リポジトリを clone 済みであること
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外
@@ -82,7 +82,7 @@ docker compose exec chirimen-server ls -l /sys/class/gpio
 docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
-I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility matrix](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
+I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
 
 ## 4. Browser で Editor / Examples / Web Demo を開く
 
