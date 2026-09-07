@@ -1,16 +1,16 @@
 # Getting Started
 
-clone と [Raspberry Pi setup](./raspberry-pi-setup.md) を終えた利用者が、Raspberry Pi 上で CHIRIMEN Runtime を起動するまでの最短手順。
+clone と [Raspberry Pi Setup](./raspberry-pi-setup.md) を終えた利用者が、Raspberry Pi 上で CHIRIMEN Runtime を起動するまでの最短手順。
 
 推奨順:
 
 ```text
-Raspberry Pi setup（clone / I2C / Docker / 低スペックなら swap / doctor） → このページ（起動）
+Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor） → このページ（起動）
 ```
 
 関連:
 
-- [Raspberry Pi setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [GPIO LED Blink](./gpio-led-blink.md)

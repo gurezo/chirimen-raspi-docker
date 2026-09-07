@@ -6,7 +6,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
-- [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)

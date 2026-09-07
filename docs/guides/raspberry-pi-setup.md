@@ -1,4 +1,4 @@
-# Raspberry Pi setup
+# Raspberry Pi Setup
 
 CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。`setups/*.sh` と `scripts/*` はリポジトリ内にあるため、**先に clone する**。Docker の前に I2C を有効化する。
 

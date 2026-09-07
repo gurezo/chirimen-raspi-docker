@@ -8,7 +8,7 @@
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
 - HTML サンプル: [docs/examples/i2c-scan/](../examples/i2c-scan/)
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
-- [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
 - [Browser Polyfill](./browser-polyfill.md)

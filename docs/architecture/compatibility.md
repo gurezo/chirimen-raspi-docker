@@ -11,7 +11,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - [Getting Started](../guides/getting-started.md)
-- [Raspberry Pi setup](../guides/raspberry-pi-setup.md)
+- [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
 ## Supported / Verified Environment

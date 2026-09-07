@@ -7,7 +7,7 @@
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
-- [Raspberry Pi setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Getting Started](./getting-started.md)（最短起動）
 - [docs/examples/README.md](../examples/README.md)
 - [Troubleshooting](./troubleshooting.md)
