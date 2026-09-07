@@ -158,11 +158,11 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
 - **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
 
-## 32-bit OS はサポート対象外
+## 32-bit OS は非推奨
 
-32-bit Raspberry Pi OS（`armv7l`）はサポート対象外である。Runtime と Browser Editor を同じ手順で使う推奨環境は **Raspberry Pi OS Lite 64-bit** のみ。host を 64-bit OS に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。
+次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。host を Raspberry Pi OS Lite 64-bit に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
 
 ```text
 failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
@@ -173,8 +173,6 @@ no match for platform in manifest: not found
 NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
-
-過去の Runtime 実機結果は [32-bit Compatibility](../architecture/compatibility-32bit.md) を参照。`Supported` とは書かない。
 
 ## Pi 3 B+ で Docker ビルドが OOM / killed
 

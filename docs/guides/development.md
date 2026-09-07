@@ -32,7 +32,8 @@ Node.js / pnpm / Nx
 - Nx
 - Docker / Docker Compose（Runtime 起動や image build をする場合）
 - Raspberry Pi 上で Runtime を動かす場合は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
-- 32-bit OS はサポート対象外
+
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
 ## Node.js のインストール
 

@@ -26,10 +26,11 @@ Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
-- 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること
 - 低スペック機（1GB 級。代表は Raspberry Pi 3 B+）ではビルド前に `sudo ./setups/swap.sh` で swap を確保する。Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須（詳細は [raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
 clone や I2C / Docker / swap / GPIO の準備がまだなら、先に [raspberry-pi-setup.md](./raspberry-pi-setup.md) を完了する。
 

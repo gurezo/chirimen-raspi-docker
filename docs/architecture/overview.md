@@ -91,7 +91,7 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 ### 未検証 / サポート対象外
 
 - Raspberry Pi 3 A+（ハードウェアスペック不足のためサポート対象外）
-- 32-bit OS（サポート対象外。Runtime と Editor を同じ手順では保証しない）
+- 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
 
 ### 非対応（現時点）
 

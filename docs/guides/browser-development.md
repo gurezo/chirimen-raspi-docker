@@ -38,9 +38,10 @@ Web Demo を開く（http://127.0.0.1:4200/）
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
-- 32-bit OS はサポート対象外。`--32bit` は Runtime only で Editor は起動しない
 - Docker と Docker Compose
-- リポジトリを clone 済みであること。host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md)
+- リポジトリを clone 済みであること。host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md)
+
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
 **Raspberry Pi 3 B+ のビルド前提は次の両方である。片方だけでは足りない。**
 
@@ -62,7 +63,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
-32-bit OS の `./scripts/start.sh --32bit` は Runtime only（サポート対象外）。
+`./scripts/start.sh --32bit` は Runtime only である。
 
 health:
 

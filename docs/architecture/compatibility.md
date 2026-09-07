@@ -29,7 +29,7 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 `Supported` とは書かない。未検証項目も `Supported` と書かない。
 
-> 32-bit OS は非推奨です。過去の実機検証結果と技術的な理由は [32-bit Compatibility](./compatibility-32bit.md) を参照してください。
+> 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
 
 ## Runtime / GPIO / I2C 共通仕様
 
