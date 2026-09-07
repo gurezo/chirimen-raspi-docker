@@ -78,20 +78,20 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 ## 対応対象
 
-OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility matrix](./compatibility.md) を参照。
+OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility](./compatibility.md) を参照。
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** である。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。Recommended: Raspberry Pi OS Lite 64-bit。
 
 ### 対応
 
-- Raspberry Pi 3 B+（Raspbian OS 64-bit）
-- Raspberry Pi 4（Raspbian OS 64-bit）
-- Raspberry Pi 5（Raspbian OS 64-bit）
+- Raspberry Pi 3 B+（Raspberry Pi OS 64-bit）
+- Raspberry Pi 4（Raspberry Pi OS 64-bit）
+- Raspberry Pi 5（Raspberry Pi OS 64-bit）
 
 ### 未検証 / サポート対象外
 
 - Raspberry Pi 3 A+（ハードウェアスペック不足のためサポート対象外）
-- 32-bit OS（サポート対象外。Runtime と Editor を同じ手順では保証しない）
+- 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
 
 ### 非対応（現時点）
 
@@ -185,11 +185,11 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
-| [compatibility.md](./compatibility.md) | Compatibility matrix（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)） |
+| [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
-| [Raspberry Pi setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |
+| [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
 | [Browser Development Environment](../guides/browser-development.md) | Browser Editor から Example を編集・実行する（#183） |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |

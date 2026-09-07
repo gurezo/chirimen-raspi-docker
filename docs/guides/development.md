@@ -2,11 +2,11 @@
 
 リポジトリをホスト上で開発するための Node.js / pnpm / Nx セットアップ。
 
-Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Raspberry Pi setup](./raspberry-pi-setup.md) と [Getting Started](./getting-started.md) を参照してください。
+Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [Getting Started](./getting-started.md) を参照してください。
 
 関連:
 
-- [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
 - [Architecture overview](../architecture/overview.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
@@ -31,7 +31,9 @@ Node.js / pnpm / Nx
 - pnpm v11.x（root `package.json` の `packageManager`）
 - Nx
 - Docker / Docker Compose（Runtime 起動や image build をする場合）
-- 32-bit OS はサポート対象外
+- Raspberry Pi 上で Runtime を動かす場合は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
+
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
 ## Node.js のインストール
 

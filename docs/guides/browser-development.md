@@ -7,7 +7,7 @@
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
-- [Raspberry Pi setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Getting Started](./getting-started.md)（最短起動）
 - [docs/examples/README.md](../examples/README.md)
 - [Troubleshooting](./troubleshooting.md)
@@ -35,18 +35,20 @@ Web Demo を開く（http://127.0.0.1:4200/）
 
 ## 前提
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
-- Raspbian OS 64-bit
-- 32-bit OS はサポート対象外。`--32bit` は Runtime only で Editor は起動しない
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
+- Raspberry Pi OS 64-bit
+- Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
-- リポジトリを clone 済みであること。host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md)
+- リポジトリを clone 済みであること。host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md)
+
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
 **Raspberry Pi 3 B+ のビルド前提は次の両方である。片方だけでは足りない。**
 
 - **8GB swap**: 無いと Docker image をビルドできない。`sudo ./setups/swap.sh`（既定 8G）を `./scripts/start.sh` の前に実行する
 - **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
 
-Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
+Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
 
 ## 起動
 
@@ -61,7 +63,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
-32-bit OS の `./scripts/start.sh --32bit` は Runtime only（サポート対象外）。
+`./scripts/start.sh --32bit` は Runtime only である。
 
 health:
 
@@ -98,7 +100,7 @@ workspace は bind mount `./docs/examples` → `/home/coder/project` である�
 | `button/` | GPIO Input / onchange |
 | `i2c-scan/` | I2C Scan |
 
-配置の正本は [docs/examples/README.md](../examples/README.md)。回路・配線は [gpio-led-blink.md](./gpio-led-blink.md) / [gpio-input.md](./gpio-input.md) / [i2c-scan.md](./i2c-scan.md)。
+配置の正本は [docs/examples/README.md](../examples/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
 
 ## Extension の導入 / 確認
 
@@ -189,7 +191,7 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 ## Troubleshooting
 
-汎用の切り分けは [troubleshooting.md](./troubleshooting.md) を正とする。ここでは索引だけ書く。
+汎用の切り分けは [Troubleshooting](./troubleshooting.md) を正とする。ここでは索引だけ書く。
 
 | 症状 | 参照 |
 | --- | --- |

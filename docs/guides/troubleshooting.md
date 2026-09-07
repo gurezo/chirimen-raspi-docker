@@ -6,7 +6,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
-- [Raspberry Pi setup](./raspberry-pi-setup.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)
@@ -36,7 +36,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 | 原因 | 対処 |
 | --- | --- |
-| I2C 未有効 | [raspberry-pi-setup.md](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
+| I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
 | GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
 | 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
@@ -53,13 +53,13 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 ### 対処
 
-1. host で I2C を有効化して reboot する（[raspberry-pi-setup.md](./raspberry-pi-setup.md)）
+1. host で I2C を有効化して reboot する（[Raspberry Pi Setup](./raspberry-pi-setup.md)）
 2. `./scripts/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
 Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
-slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [i2c-scan.md](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
+slave が接続されていない場合、scan 結果が空になるのは正常なことがある。配線とアドレスを確認する。検証用 slave は ADT7410（expected `0x48`）。操作手順は [I2C Scan](./i2c-scan.md)。配線は [検証仕様](../examples/i2c-scan.md)。
 
 ## Permission denied（GPIO / I2C）
 
@@ -158,11 +158,11 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
 - **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
 
-## 32-bit OS はサポート対象外
+## 32-bit OS は非推奨
 
-32-bit Raspberry Pi OS（`armv7l`）はサポート対象外である。Runtime と Browser Editor を同じ手順で使う推奨環境は **Raspbian OS 64-bit** のみ。host を 64-bit OS に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
+> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。
+次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。host を Raspberry Pi OS Lite 64-bit に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
 
 ```text
 failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
@@ -173,8 +173,6 @@ no match for platform in manifest: not found
 NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
-
-過去の Runtime 実機結果は [32-bit Compatibility](../architecture/compatibility-32bit.md) を参照。`Supported` とは書かない。
 
 ## Pi 3 B+ で Docker ビルドが OOM / killed
 
@@ -196,7 +194,7 @@ sudo ./setups/swap.sh --check
 free -h
 ```
 
-`./scripts/start.sh` の前に実行する。手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
+`./scripts/start.sh` の前に実行する。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
 
 ## Pi 3 B+ でビルド中に熱暴走 / ハングする
 
@@ -214,7 +212,7 @@ Docker image ビルドは CPU 負荷が高い。Pi 3 B+ では **CPU ファン�
 
 - CPU ファンを **必ず実装してから** ビルドする（熱暴走防止）
 - 電源投入前に装着する。特定メーカー / 型番は指定しない
-- 手順は [raspberry-pi-setup.md](./raspberry-pi-setup.md)
+- 手順は [Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
@@ -518,16 +516,16 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 3. `/dev/i2c-1`（`enable-i2c.sh`）— `i2c=unavailable` は error
 4. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
 
-解消後に Getting Started へ戻る: [getting-started.md](./getting-started.md)
+解消後に Getting Started へ戻る: [Getting Started](./getting-started.md)
 
 ## LED が点かない
 
-配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [gpio-led-blink.md](./gpio-led-blink.md) の Troubleshooting を参照する。
+配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [GPIO LED Blink](./gpio-led-blink.md) の Troubleshooting を参照する。
 
 ## タクトスイッチを押しても値が変わらない
 
-配線・web-demo の Start / onchange / HTML サンプルの切り分けは [gpio-input.md](./gpio-input.md) の Troubleshooting を参照する。
+配線・web-demo の Start / onchange / HTML サンプルの切り分けは [GPIO Input](./gpio-input.md) の Troubleshooting を参照する。
 
 ## I2C Scan で address が出ない
 
-配線・I2C 有効化・web-demo の Scan / hex 一覧の切り分けは [i2c-scan.md](./i2c-scan.md) の Troubleshooting を参照する。
+配線・I2C 有効化・web-demo の Scan / hex 一覧の切り分けは [I2C Scan](./i2c-scan.md) の Troubleshooting を参照する。

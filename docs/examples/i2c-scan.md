@@ -121,7 +121,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 | LED Blink | BCM 26（物理 37）。本配線の 2 / 3 とは重ならない |
 | GPIO Input | BCM 5（物理 29）。本配線の 2 / 3 とは重ならない |
 
-モデルごとに配線を変える必要はない。Compatibility matrix は [compatibility.md](../architecture/compatibility.md) を参照。
+モデルごとに配線を変える必要はない。対応環境は [Compatibility](../architecture/compatibility.md) を参照。
 
 ## 期待結果
 
@@ -142,7 +142,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 
 ## 実機検証（#116）
 
-I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i2c-dev` は既存の Compatibility matrix で確認済み。Browser Scan の probe は Runtime `scanI2cPort` と同じ。
+I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i2c-dev` は既存の Compatibility で確認済み。Browser Scan の probe は Runtime `scanI2cPort` と同じ。
 
 | 項目 | 結果 |
 | --- | --- |

@@ -1,6 +1,6 @@
 # 32-bit Compatibility
 
-← [64-bit Compatibility](./compatibility.md)
+← [Compatibility](./compatibility.md)
 
 ## Status
 

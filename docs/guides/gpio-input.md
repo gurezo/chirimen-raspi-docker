@@ -66,7 +66,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠と電�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [raspberry-pi-setup.md](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
@@ -138,7 +138,7 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 
 ## Troubleshooting
 
-汎用の起動・device 障害は [troubleshooting.md](./troubleshooting.md) を参照する。ここでは GPIO Input 固有の切り分けだけを書く。
+汎用の起動・device 障害は [Troubleshooting](./troubleshooting.md) を参照する。ここでは GPIO Input 固有の切り分けだけを書く。
 
 ### `polyfill.js` が 404 になる
 
@@ -153,13 +153,13 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 | 4 pin タクトの端子向き | 常時導通側ではなく、ボタンで切り替わる直交方向へつなぐ |
 | プルアップが無い | 外部 10kΩ を 3.3V と GPIO5 の間に入れる。内部プルアップには依存しない |
 | 離しても `0` のまま | スイッチが常時導通（4 pin の取り違え）か、GPIO が GND に短絡していないか確認する |
-| LED が点かない | [gpio-led-blink.md](./gpio-led-blink.md) の極性・抵抗・物理 pin 37 / 39 を確認する |
+| LED が点かない | [GPIO LED Blink](./gpio-led-blink.md) の極性・抵抗・物理 pin 37 / 39 を確認する |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |
 | 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `export` が Permission denied / EROFS になる
 
-GPIO device の mount と sysfs の書き込み経路の問題。[troubleshooting.md](./troubleshooting.md) の「Permission denied」と「GPIO export で EROFS」を参照する。
+GPIO device の mount と sysfs の書き込み経路の問題。[Troubleshooting](./troubleshooting.md) の「Permission denied」と「GPIO export で EROFS」を参照する。
 
 ### タブを閉じたあと、同じ GPIO5 を再度使えない
 

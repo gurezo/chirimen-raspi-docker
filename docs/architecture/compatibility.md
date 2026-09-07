@@ -1,4 +1,4 @@
-# Compatibility matrix
+# Compatibility
 
 Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。
 
@@ -11,7 +11,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - [Getting Started](../guides/getting-started.md)
-- [Raspberry Pi setup](../guides/raspberry-pi-setup.md)
+- [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
 ## Supported / Verified Environment
@@ -29,7 +29,7 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 `Supported` とは書かない。未検証項目も `Supported` と書かない。
 
-> 32-bit OS は非推奨です。過去の実機検証結果と技術的な理由は [32-bit Compatibility](./compatibility-32bit.md) を参照してください。
+> 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
 
 ## Runtime / GPIO / I2C 共通仕様
 
@@ -55,7 +55,7 @@ primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す。初期状
 
 ## Verification Details
 
-Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspbian OS 64-bit** である。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspberry Pi OS 64-bit** である。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
 
 - **Protocol E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。web-demo の I2C Scan は下記「I2C Scan 実機検証（#116）」
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
@@ -125,7 +125,7 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
 | known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 5 verification」 |
 
-host 側の有効化・診断は [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
+host 側の有効化・診断は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
 
 ### I2C Scan 実機検証（#116）
 
