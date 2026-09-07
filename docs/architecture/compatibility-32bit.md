@@ -1,17 +1,18 @@
 # 32-bit Compatibility
 
-← [Compatibility](./compatibility.md)
+← [64-bit Compatibility](./compatibility.md)
+
+## Status
 
 32-bit Raspberry Pi OS は `chirimen-raspi-docker` の推奨環境ではありません。
 
-このページは過去の実機検証結果と技術的制約を記録するためのものです。Verified でも `Supported` とは書かない。
+このページは過去の実機検証結果と技術的制約を記録するためのものです。Verified でも `Supported` / Recommended とは書かない。
 
 関連:
 
 - 親 Issue: [#224 Documentation を初見ユーザー向けに再構成する](https://github.com/gurezo/chirimen-raspi-docker/issues/224)
 - 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227) / [#228 32-bit Compatibility を独立ページへ分離する](https://github.com/gurezo/chirimen-raspi-docker/issues/228)
 - 実機検証: [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
-- [Compatibility](./compatibility.md)
 
 ## Compatibility matrix
 
