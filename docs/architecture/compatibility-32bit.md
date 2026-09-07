@@ -14,6 +14,26 @@
 - 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227) / [#228 32-bit Compatibility を独立ページへ分離する](https://github.com/gurezo/chirimen-raspi-docker/issues/228)
 - 実機検証: [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
 
+## Why 32-bit is not recommended
+
+推奨環境は Raspberry Pi 3 B+ / 4 / 5 の 64-bit OS である。32-bit OS では Runtime と Browser Editor を同じ手順では保証しない。`./scripts/start.sh --32bit` は Runtime only である。
+
+Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/arm/v7` が無いため、検証時は Node 22 / [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) を使った。
+
+新しい理由は推測で追加しない。根拠は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) の実機検証記録である。
+
+## Runtime / Docker constraints
+
+| OS | ファイル | ベース | 備考 |
+| --- | --- | --- | --- |
+| 64-bit（`aarch64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象 |
+| 32-bit（`armv7l` など） | [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | `node:22-bookworm-slim` | サポート対象外。削除はしない |
+
+- 32-bit 用 build は [`scripts/build-server.mjs`](../../scripts/build-server.mjs)（esbuild bundle）
+- `./scripts/start.sh --32bit` は Runtime only
+- Pi 4 / Pi 5 の 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる。当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた
+- Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
+
 ## Compatibility matrix
 
 32-bit OS はサポート対象外。32-bit の Verified 行は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) の記録として残し、`Supported` とは書かない。
