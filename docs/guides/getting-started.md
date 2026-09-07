@@ -24,7 +24,8 @@ Raspberry Pi setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 
 - リポジトリを clone 済みであること
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
-- Raspbian OS 64-bit
+- Raspberry Pi OS 64-bit
+- Recommended: Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること

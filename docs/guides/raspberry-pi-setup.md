@@ -33,7 +33,8 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 ## 前提 OS
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility matrix](../architecture/compatibility.md)）
-- Raspbian OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
+- Raspberry Pi OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
+- Recommended: Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外
 
 ## リポジトリを clone する

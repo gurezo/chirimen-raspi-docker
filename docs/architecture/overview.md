@@ -80,13 +80,13 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility matrix](./compatibility.md) を参照。
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspbian OS 64-bit** である。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。Recommended: Raspberry Pi OS Lite 64-bit。
 
 ### 対応
 
-- Raspberry Pi 3 B+（Raspbian OS 64-bit）
-- Raspberry Pi 4（Raspbian OS 64-bit）
-- Raspberry Pi 5（Raspbian OS 64-bit）
+- Raspberry Pi 3 B+（Raspberry Pi OS 64-bit）
+- Raspberry Pi 4（Raspberry Pi OS 64-bit）
+- Raspberry Pi 5（Raspberry Pi OS 64-bit）
 
 ### 未検証 / サポート対象外
 

@@ -160,7 +160,7 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 ## 32-bit OS はサポート対象外
 
-32-bit Raspberry Pi OS（`armv7l`）はサポート対象外である。Runtime と Browser Editor を同じ手順で使う推奨環境は **Raspbian OS 64-bit** のみ。host を 64-bit OS に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
+32-bit Raspberry Pi OS（`armv7l`）はサポート対象外である。Runtime と Browser Editor を同じ手順で使う推奨環境は **Raspberry Pi OS Lite 64-bit** のみ。host を 64-bit OS に切り替えてから [Getting Started](./getting-started.md) の手順を使う。
 
 次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。
 
