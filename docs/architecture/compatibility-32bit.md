@@ -8,12 +8,6 @@
 
 このページは過去の実機検証結果と技術的制約を記録するためのものです。Verified でも `Supported` / Recommended とは書かない。
 
-関連:
-
-- 親 Issue: [#224 Documentation を初見ユーザー向けに再構成する](https://github.com/gurezo/chirimen-raspi-docker/issues/224)
-- 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227) / [#228 32-bit Compatibility を独立ページへ分離する](https://github.com/gurezo/chirimen-raspi-docker/issues/228)
-- 実機検証: [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
-
 ## Why 32-bit is not recommended
 
 推奨環境は Raspberry Pi 3 B+ / 4 / 5 の 64-bit OS である。32-bit OS では Runtime と Browser Editor を同じ手順では保証しない。`./scripts/start.sh --32bit` は Runtime only である。
@@ -71,7 +65,6 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 | WebSocket | 接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | image | — |
-| known limitations | サポート対象外。`uname -m` が `aarch64` のため当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた |
 | Status | Verified（サポート対象外。`Supported` とは書かない） |
 
 ## Raspberry Pi 5 verification
@@ -92,5 +85,20 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 | WebSocket | 接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | image | `chirimen-raspi-docker/server:phase1-32bit`（当時 `./scripts/start.sh --32bit`、esbuild bundle） |
-| known limitations | サポート対象外。`uname -m` が `aarch64` のため当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた。native rebuild の `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する |
 | Status | Verified（サポート対象外。`Supported` とは書かない） |
+
+## Known limitations
+
+- 32-bit OS はサポート対象外。Verified でも `Supported` / Recommended とは書かない
+- Runtime と Browser Editor を同じ手順では保証しない。`./scripts/start.sh --32bit` は Runtime only
+- Pi 3 B+ 32-bit は `armv7l`。Node 24 公式 Docker image に `linux/arm/v7` が無いため、検証時は Node 22 / `Dockerfile.32bit` を使った
+- Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため、当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた
+- Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
+
+## Related Issues
+
+- 親 Issue: [#224 Documentation を初見ユーザー向けに再構成する](https://github.com/gurezo/chirimen-raspi-docker/issues/224)
+- 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227)
+- 子 Issue: [#228 32-bit Compatibility を独立ページへ分離する](https://github.com/gurezo/chirimen-raspi-docker/issues/228)
+- 実機検証: [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
+- native rebuild: [#167 nodedir](https://github.com/gurezo/chirimen-raspi-docker/pull/167)
