@@ -174,7 +174,7 @@ NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
 
-過去の Runtime 実機結果は [Compatibility matrix](../architecture/compatibility.md) を参照。`Supported` とは書かない。
+過去の Runtime 実機結果は [32-bit Compatibility](../architecture/compatibility-32bit.md) を参照。`Supported` とは書かない。
 
 ## Pi 3 B+ で Docker ビルドが OOM / killed
 
