@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.20.0",
+  "packageManager": "pnpm@12.3.4",
   "nx": {
     "includedScripts": []
   },
@@ -18,9 +18,9 @@
     "graph": "nx graph"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "node-web-gpio": "^1.1.72",
-    "node-web-i2c": "^1.1.80",
+    "express": "^5.2.1",
+    "node-web-gpio": "^1.1.80",
+    "node-web-i2c": "^1.1.88",
     "tslib": "^2.8.1",
     "ws": "^8.21.3"
   },
@@ -35,22 +35,22 @@
     "@nx/vitest": "23.2.0",
     "@nx/web": "23.2.0",
     "@swc-node/register": "~1.12.1",
-    "@swc/core": "~1.15.47",
+    "@swc/core": "~1.16.2",
     "@swc/helpers": "~0.5.23",
     "@types/express": "^5.0.6",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.5.0",
     "@types/ws": "^8.18.1",
     "esbuild": "^0.28.2",
-    "eslint": "^10.8.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "jsonc-eslint-parser": "^3.3.0",
-    "marked": "^18.0.7",
+    "marked": "^18.0.12",
     "nx": "23.2.0",
     "typedoc": "^0.28.20",
     "typedoc-rhineai-theme": "^1.2.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.66.0",
-    "vite": "^8.2.1",
-    "vitest": "4.1.10"
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.2.2",
+    "vitest": "5.0.0"
   }
 }
