@@ -18,13 +18,15 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/*'
   - typescript-eslint
   - eslint
+  - '@eslint/*'
   - jsonc-eslint-parser
   - node-web-gpio
   - node-web-i2c
   - verkit
   - vite
-  - ws@8.21.3
-  - '@eslint/*'
+  - ws
+  - '@nx/*'
+  - nx
 
 # 明示設定時は strict がデフォルト true。false なら未成熟版へフォールバック可
 minimumReleaseAgeStrict: false
