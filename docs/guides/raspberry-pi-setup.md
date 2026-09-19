@@ -11,6 +11,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 関連:
 
 - [Getting Started](./getting-started.md)（このページのあと。Runtime の起動）
+- [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ。環境構築はここではない）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [I2C Scan](./i2c-scan.md)
@@ -37,6 +38,8 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+
+CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero のセットアップは、このページの手順ではない。host 準備は clone したこのリポジトリの script を使う。GPIO / I2C の学習は [CHIRIMEN Tutorial](./chirimen-tutorial.md)。
 
 ## リポジトリを clone する
 
