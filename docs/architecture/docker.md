@@ -64,7 +64,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
-| Workspace | bind `./docs/examples` → `/home/coder/project`（git 管理。container 削除後も残る） |
+| Workspace | bind `./workspace` → `/home/coder/project`（git 管理。container 削除後も残る） |
 | Extra packages | `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `chirimen-examples`）。Node / GPIO / I2C ツールは入れない |
 | Extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` |
 | Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む。Git に置かない） |
@@ -86,7 +86,7 @@ HTML Examples は Hardware Runtime ではない。`devices` / `privileged` / `/s
 | Dockerfile | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile) |
 | Image | `chirimen-raspi-docker/examples:phase8` |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
-| 配信 | nginx（`nginx:1.30.4-alpine`）が bind `./docs/examples` を静的配信。Editor で保存したファイルは reload で見える |
+| 配信 | nginx（`nginx:1.30.4-alpine`）が bind `./workspace` を静的配信。Editor で保存したファイルは reload で見える |
 | Health | `GET /led-blink/`（HTTP 200） |
 | Network | Compose default。`depends_on` なし。`security_opt: no-new-privileges:true` |
 | GPIO / I2C | 渡さない |
@@ -199,7 +199,7 @@ docker run --rm --name chirimen-editor \
   -p 127.0.0.1:8080:8080 -p 127.0.0.1:4173:4173 \
   -u "$(id -u):$(id -g)" \
   -e "DOCKER_USER=$(id -un)" \
-  -v "$PWD/docs/examples:/home/coder/project" \
+  -v "$PWD/workspace:/home/coder/project" \
   -v chirimen-editor-local:/home/coder/.local \
   -v chirimen-editor-config:/home/coder/.config \
   chirimen-raspi-docker/editor:4.132.0

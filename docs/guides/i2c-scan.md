@@ -6,7 +6,7 @@
 
 - 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
-- HTML サンプル: [docs/examples/i2c-scan/](../examples/i2c-scan/)
+- HTML サンプル: [workspace/i2c-scan/](../../workspace/i2c-scan/)
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
@@ -18,7 +18,7 @@
 
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の I2C1 を走査し、検証用 slave（ADT7410）の address `0x48` を Browser で確認できる。ADT7410 の温度読み取りなど、特定センサの機能 Example は対象外。
 
-Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`docs/examples/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。Runtime 確認用の Web Demo（`#/i2c-scan`）も同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
+Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`workspace/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。Runtime 確認用の Web Demo（`#/i2c-scan`）も同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
 
 ## 学ぶ
 
@@ -154,11 +154,11 @@ docker compose exec chirimen-server ls -l /dev/i2c-1
 サンプルは同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
 
 ```sh
-cd docs/examples/i2c-scan
+cd workspace/i2c-scan
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
+ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/i2c-scan/polyfill.js` へコピーされる）。
 
 Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/i2c-scan/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Browser Development Environment](./browser-development.md)。
 
@@ -200,7 +200,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 ### `polyfill.js` が 404 になる
 
-`docs/examples/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Editor から配信しているときは `http://127.0.0.1:4173/i2c-scan/` を開いているかも見る。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
+`workspace/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Editor から配信しているときは `http://127.0.0.1:4173/i2c-scan/` を開いているかも見る。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### Scan を押しても address が出ない / 空一覧になる
 

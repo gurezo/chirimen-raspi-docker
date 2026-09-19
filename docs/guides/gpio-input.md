@@ -7,7 +7,7 @@
 - 親 Issue: [#51 GPIO Input example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/51)
 - 子 Issue: [#113 GPIO Input guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/113)
 - 回路仕様（正本）: [gpio-input.md](../examples/gpio-input.md)
-- HTML サンプル: [docs/examples/button/](../examples/button/)
+- HTML サンプル: [workspace/button/](../../workspace/button/)
 - LED 回路（HTML サンプルで使用）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
@@ -104,11 +104,11 @@ curl http://localhost:33330/health
 サンプルは旧 button と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
 
 ```sh
-cd docs/examples/button
+cd workspace/button
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/button/polyfill.js` へコピーされる）。
+ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/button/polyfill.js` へコピーされる）。
 
 Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/button/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Browser Development Environment](./browser-development.md)。
 
@@ -149,7 +149,7 @@ Runtime 確認（Web Demo の Start / Stop / Read）:
 
 ### `polyfill.js` が 404 になる
 
-`docs/examples/button/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `docs/examples/button` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
+`workspace/button/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `workspace/button` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### ページは開くが値が変わらない / LED が点かない
 

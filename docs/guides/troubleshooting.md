@@ -251,12 +251,12 @@ gyp ERR! stack Error: getaddrinfo EAI_AGAIN nodejs.org
 
 ### 症状
 
-Browser Editor から `docs/examples` 配下を保存すると Permission denied になる。または host 側のファイル所有者が `coder` / UID 1000 になり、host ユーザーで書けない。
+Browser Editor から `workspace/` 配下を保存すると Permission denied になる。または host 側のファイル所有者が `coder` / UID 1000 になり、host ユーザーで書けない。
 
 ### 確認
 
 ```sh
-ls -ld docs/examples
+ls -ld workspace
 id -u
 id -g
 docker compose exec chirimen-editor id
@@ -292,7 +292,7 @@ docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.y
 
 ### 対処
 
-設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `docs/examples` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `workspace/` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
 
 ## LAN から Editor / Web Demo に届かない
 
@@ -378,11 +378,11 @@ code-server は Microsoft Marketplace に接続しない。既定は Open VSX �
 
 ### 症状
 
-Editor workspace の `docs/examples` で lint が出ない。または eslint が見つからないと出る。
+Editor workspace の `workspace/` で lint が出ない。または eslint が見つからないと出る。
 
 ### 原因
 
-Editor workspace は `docs/examples` のみで、`eslint` / `node_modules` が無い。monorepo の `pnpm lint` は host 向けである。プロジェクトは ESLint Extension を必須・推奨しない。
+Editor workspace は `workspace/` のみで、`eslint` / `node_modules` が無い。monorepo の `pnpm lint` は host 向けである。プロジェクトは ESLint Extension を必須・推奨しない。
 
 ### 対処
 
@@ -433,7 +433,7 @@ docker compose logs chirimen-editor
 - `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
 - `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-examples` が running か見る
-- host から配信する場合は Compose の examples を止めてから `cd docs/examples && python3 -m http.server 4173`（従来手順）
+- host から配信する場合は Compose の examples を止めてから `cd workspace && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
 
@@ -482,14 +482,14 @@ Editor で `main.js` を保存したあと、Example の見た目や LED の動�
 
 HTML サンプルは静的ファイルである。hot reload は無い。標準操作は `Edit → Save → Browser reload` である。Web Demo（`:4200`）は編集結果を表示しない。
 
-保存先は Editor `/home/coder/project` = host `./docs/examples` である。確認先は Example Server `:4173` である。
+保存先は Editor `/home/coder/project` = host `./workspace` である。確認先は Example Server `:4173` である。
 
 ### 対処
 
 - Example を開いている Browser タブを reload する
 - 開いている URL が `http://127.0.0.1:4173/led-blink/` など、編集中のディレクトリと一致しているか確認する
 - `http://127.0.0.1:4200/` を開いていないか確認する（Web Demo は編集結果の確認先ではない）
-- 保存先が Editor `/home/coder/project`（host `./docs/examples`）であることを確認する
+- 保存先が Editor `/home/coder/project`（host `./workspace`）であることを確認する
 - `polyfill.js` を変えた場合は host で `pnpm nx bundle browser-polyfill` したあと reload する
 
 ## 非 Pi 環境（macOS など）

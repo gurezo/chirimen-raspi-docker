@@ -131,8 +131,9 @@ chirimen-raspi-docker/
 ├── docs/
 │   ├── architecture/
 │   ├── guides/
-│   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様・HTML サンプル（#105 / #108 / #109 / #113 / #116 / #117）
+│   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117）
 │   └── api/                    # Typedoc 生成物（git 管理外）
+├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
 ├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-web-demo（既定で全起動。#175 / #179 / #180 / #208）
 ├── package.json
 ├── pnpm-workspace.yaml

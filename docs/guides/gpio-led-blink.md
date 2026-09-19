@@ -7,7 +7,7 @@
 - 親 Issue: [#50 GPIO LED Blink example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/50)
 - 子 Issue: [#108 LED Blink guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/108)
 - 回路仕様（正本）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
-- HTML サンプル: [docs/examples/led-blink/](../examples/led-blink/)
+- HTML サンプル: [workspace/led-blink/](../../workspace/led-blink/)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / 回路を学ぶ）
@@ -97,11 +97,11 @@ curl http://localhost:33330/health
 サンプルは旧 LEDblink と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
 
 ```sh
-cd docs/examples/led-blink
+cd workspace/led-blink
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
+ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/led-blink/polyfill.js` へコピーされる）。
 
 Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/led-blink/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Browser Development Environment](./browser-development.md)。
 
@@ -141,7 +141,7 @@ Runtime 確認（Web Demo の Start / Stop）:
 
 ### `polyfill.js` が 404 になる
 
-`docs/examples/led-blink/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `docs/examples/led-blink` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
+`workspace/led-blink/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `workspace/led-blink` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### ページは開くが LED が点かない / エラーが出る
 
