@@ -1,6 +1,6 @@
 # I2C Scan
 
-初めての利用者が、HTML サンプルまたは web-demo の I2C Scan で bus 上の address を確認する手順。
+初めての利用者が、HTML サンプルで I2C bus 上の address を確認する手順。Web Demo は Runtime の疎通確認に使う。
 
 関連:
 
@@ -17,7 +17,7 @@
 
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の I2C1 を走査し、検証用 slave（ADT7410）の address `0x48` を Browser で確認できる。ADT7410 の温度読み取りなど、特定センサの機能 Example は対象外。
 
-Scan は Public polyfill に無い Demo-only である。入口は HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の `#/i2c-scan`。どちらも `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
+Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`docs/examples/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。Runtime 確認用の Web Demo（`#/i2c-scan`）も同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
 
 ## I2C 有効化
 
@@ -151,11 +151,11 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/i2c-scan` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
-代替（web-demo の Scan / Stop）:
+Runtime 確認（Web Demo の Scan / Stop）:
 
 ```sh
 ./scripts/start.sh
@@ -167,7 +167,7 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 4. **Scan** を押す。走査中はボタンが無効になり、ステータスが「走査中」になる
 5. 完了すると検出 address が hex 一覧で出る。画面離脱 / reload / WebSocket 切断で走査は中断する
 
-host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`（`http://localhost:4200/#/i2c-scan`）。
+Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。
 
 ## 結果の読み方
 
