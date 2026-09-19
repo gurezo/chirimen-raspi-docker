@@ -9,8 +9,34 @@ export const DEVICE_DASHBOARD_URL =
 
 export const EXAMPLE_SERVER_PORT = 4173;
 export const EDITOR_PORT = 8080;
+export const RUNTIME_HEALTH_PORT = 33330;
 export const EDITOR_WORKSPACE_FOLDER = '/home/coder/project';
 export const NO_IMAGE_URL = '/no_image.png';
+
+export const RUNTIME_DIAGNOSTICS_DOC_URL =
+  'https://github.com/gurezo/chirimen-raspi-docker/blob/main/docs/guides/runtime-diagnostics.md';
+
+export const REFERENCE_EXAMPLES: ReadonlyArray<{
+  id: string;
+  title: string;
+  runtimeExamplePath: string;
+}> = [
+  {
+    id: 'gpio-blink',
+    title: 'GPIO LED Blink',
+    runtimeExamplePath: 'workspace/led-blink/',
+  },
+  {
+    id: 'gpio-button',
+    title: 'GPIO Input',
+    runtimeExamplePath: 'workspace/button/',
+  },
+  {
+    id: 'i2c-detect',
+    title: 'I2C Scan',
+    runtimeExamplePath: 'workspace/i2c-scan/',
+  },
+];
 
 export type CatalogStatus = 'legacy' | 'ported' | 'verified';
 
@@ -306,3 +332,8 @@ export const editorWorkspaceHref = (
   port = EDITOR_PORT,
   folder = EDITOR_WORKSPACE_FOLDER
 ): string => `http://${hostname}:${String(port)}/?folder=${folder}`;
+
+export const runtimeHealthHref = (
+  hostname = '127.0.0.1',
+  port = RUNTIME_HEALTH_PORT
+): string => `http://${hostname}:${String(port)}/health`;

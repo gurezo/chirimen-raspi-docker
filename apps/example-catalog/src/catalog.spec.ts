@@ -6,6 +6,9 @@ import {
   DEVICE_FETCH_WARNING,
   EDITOR_WORKSPACE_FOLDER,
   NO_IMAGE_URL,
+  REFERENCE_EXAMPLES,
+  RUNTIME_DIAGNOSTICS_DOC_URL,
+  RUNTIME_HEALTH_PORT,
   buildCatalogEntries,
   canOpenRuntimeExample,
   catalogImageUrl,
@@ -22,6 +25,7 @@ import {
   readInventoryExamples,
   readVerificationByModel,
   runtimeExampleHref,
+  runtimeHealthHref,
   workspaceExampleDir,
 } from './catalog.js';
 
@@ -371,6 +375,34 @@ describe('runtime example links', () => {
     );
     expect(editorWorkspaceHref('192.168.0.10')).toBe(
       `http://192.168.0.10:8080/?folder=${EDITOR_WORKSPACE_FOLDER}`
+    );
+  });
+
+  it('lists Reference Examples for Runtime diagnostics', () => {
+    expect(REFERENCE_EXAMPLES.map((example) => example.id)).toEqual([
+      'gpio-blink',
+      'gpio-button',
+      'i2c-detect',
+    ]);
+    expect(
+      REFERENCE_EXAMPLES.map((example) =>
+        runtimeExampleHref(example.runtimeExamplePath, '127.0.0.1')
+      )
+    ).toEqual([
+      'http://127.0.0.1:4173/led-blink/',
+      'http://127.0.0.1:4173/button/',
+      'http://127.0.0.1:4173/i2c-scan/',
+    ]);
+  });
+
+  it('resolves Runtime health and diagnostics documentation URLs', () => {
+    expect(RUNTIME_HEALTH_PORT).toBe(33330);
+    expect(runtimeHealthHref()).toBe('http://127.0.0.1:33330/health');
+    expect(runtimeHealthHref('192.168.0.10')).toBe(
+      'http://192.168.0.10:33330/health'
+    );
+    expect(RUNTIME_DIAGNOSTICS_DOC_URL).toContain(
+      'docs/guides/runtime-diagnostics.md'
     );
   });
 });
