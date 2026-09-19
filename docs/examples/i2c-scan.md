@@ -154,4 +154,4 @@ I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i
 | 完了条件 | 配線後の hex 一覧に `0x48`。空配列は失敗 |
 | 対象外 | ADT7410 の温度読み取りなどセンサ機能 Example |
 
-詳細は [compatibility.md の I2C Scan 実機検証](../architecture/compatibility.md) を参照。
+詳細は [compatibility.md の I2C Scan 実機検証](../architecture/compatibility.md) を参照。Catalog / Runtime Example の機別記録は [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）。

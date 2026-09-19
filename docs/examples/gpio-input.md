@@ -11,6 +11,7 @@ GPIO input / onchange を確認する最小回路を固定する。配線情報�
 - Cleanup 検証: Stop / unsubscribe / 画面離脱 / reload / WebSocket 切断 / Runtime 再起動。[#112](https://github.com/gurezo/chirimen-raspi-docker/issues/112)
 - 操作手順つきガイド: [gpio-input.md](../guides/gpio-input.md)（#113）
 - HTML サンプル: [workspace/button/](../../workspace/button/)
+- Catalog / Runtime Example 実機: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 - LED 回路（共存可）: [gpio-led-blink.md](./gpio-led-blink.md)（BCM 26）
 - 参考: [chirimen `gc/gpio/button`](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button)
 

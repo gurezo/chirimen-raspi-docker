@@ -152,7 +152,7 @@ Catalog は Issue が挙げた Device 項目のうち、**実在するフィー�
 | I2C address | `generated/devices.json` と `meta.schema.json` に無い。必要な値は Example の `notes` か Runtime 検証仕様（例: [i2c-scan.md](./i2c-scan.md) の `0x48`）に置く |
 | `meta.circuit` / `examples[].circuitUrl` | 回路図の正本は Example の `schematicUrl`（[schematic-compatibility.md](./schematic-compatibility.md)） |
 | `meta.examples[]` の upstream 実行コード | Runtime コードの正本は `runtimeExamplePath` |
-| `meta.status` / `meta.verified` / platform の `primary` 等 | Catalog 状態は `portingStatus` / `verificationStatus` から導出する |
+| `meta.status` / `meta.verified` / platform の `primary` 等 | Catalog 状態は `portingStatus` / `verificationByModel` から導出する |
 | `meta.tag` | 参考情報。Catalog の filter は Example の `category` / `interface` を使う |
 | `meta.productUrl` / `datasheet` / `reference` | Catalog 必須ではない。Device Dashboard 側の情報とする |
 

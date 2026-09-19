@@ -1,6 +1,6 @@
 # I2C SHT30 回路仕様
 
-SHT30 の温度・湿度読み取り回路を固定する。机上確認の根拠であり、実機 `verified` は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+SHT30 の温度・湿度読み取り回路を固定する。机上確認の根拠であり、実機は Pi 3 / 4 / 5 とも `unverified`（[runtime-verification.md](./runtime-verification.md)、[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）。
 
 関連:
 
@@ -10,6 +10,7 @@ SHT30 の温度・湿度読み取り回路を固定する。机上確認の根�
 - 回路図出典: [gc/i2c/i2c-SHT30/schematic.png](https://www.chirimen.org/chirimen/gc/i2c/i2c-SHT30/schematic.png)
 - 移植元: [chirimen `gc/i2c/i2c-SHT30`](https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-SHT30)
 - 互換性ルール: [schematic-compatibility.md](./schematic-compatibility.md)
+- 実機記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 
 ## 目的
 
@@ -79,7 +80,7 @@ GND (物理 pin 6)
 | 3.3V / 5V | センサ電源は 3.3V |
 | Pi 固有特殊機能 | 40-pin I2C1 のみ |
 
-机上確認は合格。`supportedRaspberryPi` は `["3","4","5"]`。実機結果は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+机上確認は合格。`supportedRaspberryPi` は `["3","4","5"]`。実機結果は [runtime-verification.md](./runtime-verification.md)（Pi 3 / 4 / 5 とも `unverified`）。
 
 ## 期待結果
 
