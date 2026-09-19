@@ -26,6 +26,9 @@
     },
     {
       "path": "./apps/web-demo"
+    },
+    {
+      "path": "./apps/example-catalog"
     }
   ]
 }
