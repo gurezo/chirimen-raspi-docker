@@ -4,6 +4,8 @@
 
 関連:
 
+- 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
+- 子 Issue: [#240 Browser Editor → Workspace → Example Server の実行フローを明確化する](https://github.com/gurezo/chirimen-raspi-docker/issues/240)
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
@@ -17,7 +19,27 @@ GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tuto
 
 このガイドの手順だけで、Editor → Workspace → Example Server → Runtime の開発フローを再現できる。
 
-Web Demo（`:4200`）は Example の編集結果確認先ではない。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
+```text
+code-server :8080
+       ↓
+Workspace
+       ↓
+Edit / Save
+       ↓
+Example Server :4173
+       ↓
+Browser reload
+       ↓
+Browser Polyfill
+       ↓
+WebSocket
+       ↓
+chirimen-server :33330
+       ↓
+GPIO / I2C
+```
+
+Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
 ## 概要
 
