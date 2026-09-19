@@ -45,6 +45,7 @@ curl http://localhost:33330/health
 | GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](docs/guides/chirimen-tutorial.md) |
 | 初めて使う | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
 | Runtime を起動する | [Getting Started](docs/guides/getting-started.md) |
+| Browser から Example を書く | [Browser Development](docs/guides/browser-development.md) |
 | GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) / [GPIO Input](docs/guides/gpio-input.md) / [I2C Scan](docs/guides/i2c-scan.md) |
 | 問題を調べる | [Troubleshooting](docs/guides/troubleshooting.md) |
 | 対応環境を確認する | [Compatibility](docs/architecture/compatibility.md) |
