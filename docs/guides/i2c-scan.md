@@ -11,6 +11,7 @@
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
+- [CHIRIMEN Tutorial](./chirimen-tutorial.md)（I2C を学ぶ）
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本ガイドでは scan のみ）
@@ -18,6 +19,14 @@
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の I2C1 を走査し、検証用 slave（ADT7410）の address `0x48` を Browser で確認できる。ADT7410 の温度読み取りなど、特定センサの機能 Example は対象外。
 
 Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`docs/examples/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。Runtime 確認用の Web Demo（`#/i2c-scan`）も同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
+
+## 学ぶ
+
+I2C の考え方は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学ぶ。優先は [センサーを使ってみよう](https://tutorial.chirimen.org/raspi/section2)。配線ピン・I2C 有効化・Runtime 起動はこのガイドと [検証仕様](../examples/i2c-scan.md) を正本とする。
+
+本ガイドの完了条件は address `0x48` の検出である。Tutorial の温度センサー Example（ADT7410 / SHT30 の `read()`）は別物であり、ここでは実行しない。
+
+Tutorial の SD イメージや `/home/pi/Desktop/gc/` の手順は使わない。
 
 ## I2C 有効化
 
