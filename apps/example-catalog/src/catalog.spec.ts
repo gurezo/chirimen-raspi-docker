@@ -5,12 +5,15 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   DEVICE_FETCH_WARNING,
   EDITOR_WORKSPACE_FOLDER,
+  NO_IMAGE_URL,
   buildCatalogEntries,
   canOpenRuntimeExample,
+  catalogImageUrl,
   deriveCatalogStatus,
   editorWorkspaceHref,
   filterCatalogEntries,
   findCertifiedDevice,
+  isPlaceholderImageUrl,
   loadCertifiedDevices,
   parseDevicesPayload,
   readInventoryExamples,
@@ -255,5 +258,29 @@ describe('runtime example links', () => {
     expect(editorWorkspaceHref('192.168.0.10')).toBe(
       `http://192.168.0.10:8080/?folder=${EDITOR_WORKSPACE_FOLDER}`
     );
+  });
+});
+
+describe('catalog images', () => {
+  it('uses the device image when present', () => {
+    expect(
+      catalogImageUrl({
+        id: 'led',
+        meta: { image: 'https://example.test/led.png' },
+      })
+    ).toBe('https://example.test/led.png');
+  });
+
+  it('falls back to no_image.png when the device image is missing', () => {
+    expect(catalogImageUrl(null)).toBe(NO_IMAGE_URL);
+    expect(catalogImageUrl({ id: 'led' })).toBe(NO_IMAGE_URL);
+    expect(catalogImageUrl({ id: 'led', meta: { image: '' } })).toBe(
+      NO_IMAGE_URL
+    );
+    expect(isPlaceholderImageUrl(NO_IMAGE_URL)).toBe(true);
+    expect(
+      isPlaceholderImageUrl('http://localhost:4174/no_image.png')
+    ).toBe(true);
+    expect(isPlaceholderImageUrl('https://example.test/led.png')).toBe(false);
   });
 });
