@@ -86,11 +86,12 @@ export default [
                             ]
                         },
                         {
-                            sourceTag: "scope:demo",
+                            sourceTag: "scope:server",
                             onlyDependOnLibsWithTags: [
-                                "scope:polyfill",
-                                "scope:hardware",
+                                "scope:runtime",
                                 "scope:shared",
+                                "scope:hardware",
+                                "layer:protocol",
                                 "layer:domain",
                                 "layer:core"
                             ]
@@ -101,8 +102,7 @@ export default [
                             notDependOnLibsWithTags: [
                                 "scope:polyfill",
                                 "scope:hardware",
-                                "scope:runtime",
-                                "scope:demo"
+                                "scope:runtime"
                             ]
                         }
                     ]

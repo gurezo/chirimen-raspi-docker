@@ -9,10 +9,10 @@
   },
   "scripts": {
     "nx": "nx",
-    "build": "nx run-many -t build --projects=server,web-demo,example-catalog && nx bundle browser-polyfill",
+    "build": "nx run-many -t build --projects=server,example-catalog && nx bundle browser-polyfill",
     "serve": "nx serve server",
-    "lint": "nx run-many -t lint --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,web-demo,example-catalog",
-    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,web-demo,example-catalog",
+    "lint": "nx run-many -t lint --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,example-catalog",
+    "test": "nx run-many -t test --projects=core,gpio,i2c,protocol,node-runtime,browser-polyfill,server,example-catalog",
     "docs:api": "typedoc",
     "docs:site": "node scripts/build-docs-site.mjs",
     "graph": "nx graph"

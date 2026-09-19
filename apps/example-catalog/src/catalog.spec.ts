@@ -425,7 +425,7 @@ describe('catalog images', () => {
     );
     expect(isPlaceholderImageUrl(NO_IMAGE_URL)).toBe(true);
     expect(
-      isPlaceholderImageUrl('http://localhost:4174/no_image.png')
+      isPlaceholderImageUrl('http://localhost:4200/no_image.png')
     ).toBe(true);
     expect(isPlaceholderImageUrl('https://example.test/led.png')).toBe(false);
   });

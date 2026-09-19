@@ -1,7 +1,7 @@
 # Browser Example Catalog static image (linux/amd64, linux/arm64).
 # This is not a Hardware Runtime: do not add GPIO / I2C tools or devices.
 # Build context is the repository root (Compose build.context: .).
-# Vite production output is served by nginx on port 4174.
+# Vite production output is served by nginx on port 4200.
 FROM node:24-bookworm-slim AS base
 
 WORKDIR /workspace
@@ -44,7 +44,7 @@ RUN apk add --no-cache wget \
 COPY docker/example-catalog/nginx.conf /etc/nginx/conf.d/example-catalog.conf
 COPY --from=build /workspace/apps/example-catalog/dist /usr/share/nginx/html
 
-EXPOSE 4174
+EXPOSE 4200
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:4174/ >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:4200/ >/dev/null || exit 1

@@ -27,7 +27,7 @@ Jest は導入しない。既存の `@nx/vite:test` と Vitest を正式な基�
 | `node-runtime` | `libs/node-runtime` |
 | `browser-polyfill` | `libs/browser-polyfill` |
 | `server` | `apps/server` |
-| `web-demo` | `apps/web-demo` |
+| `example-catalog` | `apps/example-catalog` |
 
 新規 lib / app を追加するときは、同様に `vite.config.mts`・`tsconfig.spec.json`・`project.json` の `test` target を揃える。
 
@@ -51,7 +51,7 @@ pnpm nx test protocol
 pnpm nx test node-runtime
 pnpm nx test browser-polyfill
 pnpm nx test server
-pnpm nx test web-demo
+pnpm nx test example-catalog
 ```
 
 ## CI
