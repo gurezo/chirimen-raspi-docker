@@ -11,12 +11,16 @@ import {
   catalogImageUrl,
   deriveCatalogStatus,
   editorWorkspaceHref,
+  emptyVerificationByModel,
   filterCatalogEntries,
   findCertifiedDevice,
+  isFullyVerifiedByModel,
   isPlaceholderImageUrl,
   loadCertifiedDevices,
+  modelVerificationLabel,
   parseDevicesPayload,
   readInventoryExamples,
+  readVerificationByModel,
   runtimeExampleHref,
   workspaceExampleDir,
 } from './catalog.js';
@@ -29,20 +33,50 @@ const inventoryPath = resolve(
 const inventory = JSON.parse(readFileSync(inventoryPath, 'utf8')) as unknown;
 
 describe('deriveCatalogStatus', () => {
-  it('maps ported + verified to verified', () => {
+  it('maps ported + all models verified to verified', () => {
     expect(
       deriveCatalogStatus({
         portingStatus: 'ported',
-        verificationStatus: 'verified',
+        verificationByModel: {
+          '3': 'verified',
+          '4': 'verified',
+          '5': 'verified',
+        },
       })
     ).toBe('verified');
   });
 
-  it('maps ported + unverified to ported', () => {
+  it('maps ported + unverified models to ported', () => {
     expect(
       deriveCatalogStatus({
         portingStatus: 'ported',
-        verificationStatus: 'unverified',
+        verificationByModel: emptyVerificationByModel(),
+      })
+    ).toBe('ported');
+  });
+
+  it('keeps mixed model results as ported', () => {
+    expect(
+      deriveCatalogStatus({
+        portingStatus: 'ported',
+        verificationByModel: {
+          '3': 'verified',
+          '4': 'unverified',
+          '5': 'verified',
+        },
+      })
+    ).toBe('ported');
+  });
+
+  it('keeps a failed model as ported', () => {
+    expect(
+      deriveCatalogStatus({
+        portingStatus: 'ported',
+        verificationByModel: {
+          '3': 'verified',
+          '4': 'verified',
+          '5': 'failed',
+        },
       })
     ).toBe('ported');
   });
@@ -51,7 +85,7 @@ describe('deriveCatalogStatus', () => {
     expect(
       deriveCatalogStatus({
         portingStatus: '',
-        verificationStatus: '',
+        verificationByModel: emptyVerificationByModel(),
       })
     ).toBe('legacy');
   });
@@ -60,9 +94,43 @@ describe('deriveCatalogStatus', () => {
     expect(
       deriveCatalogStatus({
         portingStatus: 'legacy',
-        verificationStatus: 'unverified',
+        verificationByModel: emptyVerificationByModel(),
       })
     ).toBe('legacy');
+  });
+});
+
+describe('verificationByModel', () => {
+  it('defaults missing or invalid values to unverified', () => {
+    expect(readVerificationByModel(undefined)).toEqual(emptyVerificationByModel());
+    expect(readVerificationByModel({ '3': 'verified', '4': 'nope' })).toEqual({
+      '3': 'verified',
+      '4': 'unverified',
+      '5': 'unverified',
+    });
+  });
+
+  it('requires all three models for full verification', () => {
+    expect(
+      isFullyVerifiedByModel({
+        '3': 'verified',
+        '4': 'verified',
+        '5': 'verified',
+      })
+    ).toBe(true);
+    expect(
+      isFullyVerifiedByModel({
+        '3': 'verified',
+        '4': 'verified',
+        '5': 'unverified',
+      })
+    ).toBe(false);
+  });
+
+  it('labels chips without calling unverified models verified', () => {
+    expect(modelVerificationLabel('3', 'verified')).toBe('Pi 3 verified');
+    expect(modelVerificationLabel('4', 'unverified')).toBe('Pi 4 unverified');
+    expect(modelVerificationLabel('5', 'failed')).toBe('Pi 5 failed');
   });
 });
 
@@ -74,6 +142,11 @@ describe('readInventoryExamples', () => {
       deviceId: 'led',
       portingStatus: 'ported',
       verificationStatus: 'verified',
+      verificationByModel: {
+        '3': 'verified',
+        '4': 'verified',
+        '5': 'verified',
+      },
       runtimeExamplePath: 'workspace/led-blink/',
     });
   });
