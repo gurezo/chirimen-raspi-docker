@@ -7,7 +7,11 @@
     "rootDir": ".",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "../..",
+    "paths": {
+      "@inventory": ["docs/examples/legacy-inventory.json"]
+    }
   },
   "include": [
     "vite.config.mts",
