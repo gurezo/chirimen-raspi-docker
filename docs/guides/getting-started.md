@@ -88,24 +88,7 @@ I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が
 
 ## 4. Browser で Editor / Examples を開く
 
-最短フロー:
-
-```text
-./scripts/start.sh
-  （同等: docker compose up）
-↓
-Browser で Editor を開く（http://127.0.0.1:8080）
-↓
-Example を編集して保存
-  Editor: /home/coder/project
-  Host:   ./workspace
-↓
-Example Server で確認する（http://127.0.0.1:4173/...）
-↓
-保存後に Example タブを reload する（Edit → Save → Browser reload）
-```
-
-保存先・共有 workspace・Runtime 接続の正本は [Browser Development Environment](./browser-development.md)。
+`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。
 
 ```sh
 curl -fsS http://127.0.0.1:8080/healthz
@@ -113,30 +96,14 @@ curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
-| 役割 | URL |
-| --- | --- |
-| Editor（書く） | `http://127.0.0.1:8080` |
-| Example Server（書いたものを動かす） | `http://127.0.0.1:4173/led-blink/` など |
-| Web Demo（Runtime を確認する） | `http://127.0.0.1:4200/` |
+| Port | Service | Role |
+| --- | --- | --- |
+| 33330 | chirimen-server | Hardware Runtime / WebSocket |
+| 8080 | chirimen-editor | code-server / Edit |
+| 4173 | chirimen-examples | Edited Example execution |
+| 4200 | chirimen-web-demo | Runtime Demo / diagnostics |
 
-password、workspace、Extension、停止、更新、Security は [Browser Development Environment](./browser-development.md)。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
-
-Example の確認先:
-
-```text
-http://127.0.0.1:4173/led-blink/
-http://127.0.0.1:4173/button/
-http://127.0.0.1:4173/i2c-scan/
-```
-
-Web Demo は Example の編集結果確認先ではない。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通確認に使う。
-
-```text
-http://127.0.0.1:4200/
-http://127.0.0.1:4200/#/gpio-output
-http://127.0.0.1:4200/#/gpio-input
-http://127.0.0.1:4200/#/i2c-scan
-```
+確認先は Example Server `:4173` である。Web Demo（`:4200`）は編集結果の確認先ではない。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
 
 ## 次のステップ
 
@@ -148,7 +115,7 @@ http://127.0.0.1:4200/#/i2c-scan
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Runtime の疎通を確認する（Web Demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。Web Demo 自体の開発は [Development Guide](./development.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
-| 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md) |
+| 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) |
 | Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
 | Runtime を Web Demo で確認する | [browser-development.md の Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
