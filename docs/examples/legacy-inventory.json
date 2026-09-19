@@ -6,7 +6,8 @@
   "relatedIssues": {
     "parent": 250,
     "inventory": 251,
-    "catalogMetadata": 252
+    "catalogMetadata": 252,
+    "schematicCompatibility": 253
   },
   "status": {
     "portingStatus": [
