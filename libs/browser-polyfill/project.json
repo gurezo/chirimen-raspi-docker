@@ -15,7 +15,11 @@
         "{workspaceRoot}/libs/browser-polyfill/dist/polyfill.js",
         "{workspaceRoot}/workspace/led-blink/polyfill.js",
         "{workspaceRoot}/workspace/button/polyfill.js",
-        "{workspaceRoot}/workspace/i2c-scan/polyfill.js"
+        "{workspaceRoot}/workspace/i2c-scan/polyfill.js",
+        "{workspaceRoot}/workspace/pir-sensor/polyfill.js",
+        "{workspaceRoot}/workspace/adt7410/polyfill.js",
+        "{workspaceRoot}/workspace/sht30/polyfill.js",
+        "{workspaceRoot}/workspace/ads1115/polyfill.js"
       ],
       "options": {
         "outputPath": "libs/browser-polyfill/dist",
