@@ -32,7 +32,7 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 | Raspberry Pi | 3 B+ / 4 / 5 |
 | OS | Raspberry Pi OS Lite 64-bit |
 | Architecture | `aarch64` |
-| Catalog | `http://127.0.0.1:4174/` |
+| Catalog | `http://127.0.0.1:4200/` |
 | Runtime Example | `http://127.0.0.1:4173/` |
 | Runtime | `chirimen-server` `:33330` |
 
@@ -78,7 +78,7 @@ notes
 curl http://localhost:33330/health
 ```
 
-1. Catalog `http://127.0.0.1:4174/` を開き、対象カードの全体バッジと機種チップが inventory と一致するか見る
+1. Catalog `http://127.0.0.1:4200/` を開き、対象カードの全体バッジと機種チップが inventory と一致するか見る
 2. 回路図どおり配線する。40-pin / BCM / I2C1（SDA 物理 pin 3 / SCL 物理 pin 5）/ 3.3V を確認する。GPIO へ 5V を入れない
 3. Runtime Example（`:4173`）をブラウザで開く
 4. 合格条件を確認し、`verified` または `failed` を記録する
@@ -157,7 +157,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | LED / 回路図あり | BCM 26 / 物理 pin 37。export / write 成功。LED 点滅 | verified | [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / #243。Catalog `:4174` と Runtime Example `:4173/led-blink/` |
+| `gpio-blink` | LED / 回路図あり | BCM 26 / 物理 pin 37。export / write 成功。LED 点滅 | verified | [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / #243。Catalog `:4200` と Runtime Example `:4173/led-blink/` |
 | `gpio-button` | tactile-switch / 回路図あり | BCM 5 / 物理 pin 29。read / onchange。外部 10kΩ プルアップ | verified | #99 の GPIO input と #243。Runtime Example `:4173/button/` |
 | `i2c-detect` | ADT7410 `0x48` | I2C1。Browser Scan に `0x48` | verified | #116 / #243 / #99。Runtime Example `:4173/i2c-scan/` |
 | `gpio-pir-sensor` | KP-IR412 | — | unverified | #256 で移植。実機未実施 |
@@ -165,7 +165,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 | `i2c-adt7410` | ADT7410 `0x48` | — | unverified | 同上 |
 | `i2c-ads1115` | ADS1115 `0x48` | — | unverified | ADT7410 と同時接続しない |
 
-Catalog 表示（host `http://localhost:4174/`）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
+Catalog 表示（host `http://localhost:4200/`）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
 
 ### Phase 2（PIR / SHT30 / ADT7410 / ADS1115）
 

@@ -8,7 +8,12 @@ import {
   type CatalogFilters,
 } from './catalog.js';
 import { CATALOG_TITLE } from './constants.js';
-import { renderCatalogCards, renderFilters, renderHeaderLinks } from './render.js';
+import {
+  renderCatalogCards,
+  renderFilters,
+  renderHeaderLinks,
+  renderRuntimeDiagnostics,
+} from './render.js';
 import './styles.css';
 
 const root = document.getElementById('root');
@@ -25,6 +30,12 @@ if (root) {
 
   const headerLinks = document.createElement('div');
   renderHeaderLinks(headerLinks);
+
+  const diagnostics = document.createElement('div');
+  renderRuntimeDiagnostics(
+    diagnostics,
+    globalThis.location?.hostname || '127.0.0.1'
+  );
 
   const warning = document.createElement('p');
   warning.className =
@@ -43,7 +54,7 @@ if (root) {
 
   const main = document.createElement('main');
   main.className = 'mx-auto max-w-6xl px-4 py-8';
-  main.append(heading, lead, headerLinks, warning, filterBar, count, cards);
+  main.append(heading, lead, headerLinks, diagnostics, warning, filterBar, count, cards);
   root.append(main);
 
   const examples = readInventoryExamples(inventory);

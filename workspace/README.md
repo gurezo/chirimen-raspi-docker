@@ -13,9 +13,7 @@ Editor（`:8080`）と Example Server（`:4173`）は同じ host `./workspace` �
 
 GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../docs/guides/browser-development.md)。実機 E2E は [Compatibility](../docs/architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
-Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
-
-Example Catalog（`:4174`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。出典・責務は [catalog.md](../docs/examples/catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）。
+Example Catalog（`:4200`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。出典・責務は [catalog.md](../docs/examples/catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）。Runtime の確認は [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md) です。
 
 回路・検証仕様の markdown は [docs/examples](../docs/examples/) にあります。
 
@@ -33,8 +31,8 @@ Example Catalog（`:4174`）は題材の発見入口です。ported Example の�
 
 ## 起動
 
-1. Runtime + Editor + Examples + Web Demo + Catalog を起動する（host で `./scripts/start.sh`）
-2. 題材探し: `http://127.0.0.1:4174/`。Terminal → Run Task → **Open Example Catalog**（URL 案内）
+1. Runtime + Editor + Examples + Catalog を起動する（host で `./scripts/start.sh`）
+2. 題材探し: `http://127.0.0.1:4200/`。Terminal → Run Task → **Open Example Catalog**（URL 案内）
 3. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
 4. 別 Browser タブで Example Server を開く。Catalog の「実行」でも同じ URL を開く
 
@@ -56,21 +54,18 @@ HTML サンプルは `./scripts/start.sh` で Compose が配信する。host だ
 python3 -m http.server 4173 --bind 0.0.0.0
 ```
 
-## Runtime 確認（Web Demo）
+## Runtime 確認
 
-Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI です。`workspace/` の保存結果は反映されません。Terminal → Run Task → **Open Web Demo** は URL 案内です。
+Host は `./scripts/doctor.sh`、Server は `GET /health`、Browser は GPIO LED Blink / GPIO Input / I2C Scan です。Catalog の「Runtime 確認」からも開けます。手順は [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md)。
 
 ```text
-http://127.0.0.1:4200/
-http://127.0.0.1:4200/#/gpio-output
-http://127.0.0.1:4200/#/gpio-input
-http://127.0.0.1:4200/#/i2c-scan
+http://127.0.0.1:4173/led-blink/
+http://127.0.0.1:4173/button/
+http://127.0.0.1:4173/i2c-scan/
 ```
-
-Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](../docs/guides/development.md) を参照してください。
 
 ## 変更の反映
 
-標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Web Demo（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。
+標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Catalog（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。
 
 `polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。

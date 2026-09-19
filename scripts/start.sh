@@ -34,7 +34,7 @@ I2C_DEV=0
 OS_BITS=64
 OS_BITS_SOURCE="default"
 
-# 1 when --lan is passed. Publishes Editor / Example / Web Demo /
+# 1 when --lan is passed. Publishes Editor / Example /
 # Example Catalog on 0.0.0.0. No-op with --32bit (does not change
 # Runtime 33330).
 WANT_LAN=0
@@ -57,16 +57,15 @@ Usage: start.sh [--32bit] [--lan] [docker compose up options...]
   that exist on this host (capability-aware mapping).
   Default is 64-bit: chirimen-server, chirimen-editor (code-server on
   127.0.0.1:8080, password auth), chirimen-examples
-  (http://127.0.0.1:4173/), chirimen-web-demo
-  (http://127.0.0.1:4200/), and chirimen-example-catalog
-  (http://127.0.0.1:4174/).
+  (http://127.0.0.1:4173/), and chirimen-example-catalog
+  (http://127.0.0.1:4200/).
   --32bit starts Runtime only: the official Editor image has no armv7
   build.
 
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
-    - Editor, Examples, Web Demo, and Example Catalog without GPIO / I2C
+    - Editor, Examples, and Example Catalog without GPIO / I2C
       devices (not a Hardware Runtime)
     - Editor host bind 127.0.0.1 unless --lan (does not publish to the Internet)
 
@@ -75,13 +74,13 @@ Usage: start.sh [--32bit] [--lan] [docker compose up options...]
     --32bit          docker/server/Dockerfile.32bit (Node 22, linux/arm/v7)
 
   Optional:
-    --lan            publish Editor 8080 / Example 4173 / Web Demo 4200 /
-                     Catalog 4174 on 0.0.0.0 (LAN). 64-bit only. Does
+    --lan            publish Editor 8080 / Example 4173 / Catalog 4200
+                     on 0.0.0.0 (LAN). 64-bit only. Does
                      not change Runtime 33330. Password auth stays
                      required. Do not use this to publish on the Internet.
 
   Removed (error if passed):
-    --editor         Editor / Examples / Web Demo / Catalog now start by default
+    --editor         Editor / Examples / Catalog now start by default
     --64bit          64-bit is the default
     --arch 32|64     use --32bit for 32-bit; 64-bit needs no flag
 
@@ -252,10 +251,10 @@ write_compose_override() {
       fi
     fi
 
-    # Editor + Examples + Web Demo + Example Catalog start by default on 64-bit.
+    # Editor + Examples + Example Catalog start by default on 64-bit.
     # Pass host uid so bind-mounted examples are writable (code-server
-    # fixuid). Do not add GPIO / I2C devices to Editor / Examples / Web
-    # Demo / Catalog. Inject password env only when non-empty (empty PASSWORD=
+    # fixuid). Do not add GPIO / I2C devices to Editor / Examples /
+    # Catalog. Inject password env only when non-empty (empty PASSWORD=
     # can break auth).
     if [ "$OS_BITS" -eq 64 ]; then
       editor_uid="$(id -u)"
@@ -312,7 +311,6 @@ log_mapping_summary() {
   if [ "$OS_BITS" -eq 32 ]; then
     log "editor: skipped (32-bit / armv7; see browser-editor.md)"
     log "examples: skipped (32-bit / armv7; see browser-editor.md)"
-    log "web-demo: skipped (32-bit / armv7; see browser-editor.md)"
     log "example-catalog: skipped (32-bit / armv7; see browser-editor.md)"
     if [ "$WANT_LAN" -eq 1 ]; then
       log "publish: --lan ignored with --32bit (Runtime 33330 unchanged)"
@@ -321,15 +319,13 @@ log_mapping_summary() {
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
     log "auth: password"
     if [ "$WANT_LAN" -eq 1 ]; then
-      log "publish: 0.0.0.0 (LAN) 8080/4173/4200/4174"
+      log "publish: 0.0.0.0 (LAN) 8080/4173/4200"
       log "examples: http://0.0.0.0:4173/ (no GPIO/I2C devices)"
-      log "web-demo: http://0.0.0.0:4200/ (no GPIO/I2C devices)"
-      log "example-catalog: http://0.0.0.0:4174/ (no GPIO/I2C devices)"
+      log "example-catalog: http://0.0.0.0:4200/ (no GPIO/I2C devices)"
     else
-      log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 8080/4173/4200/4174"
+      log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 8080/4173/4200"
       log "examples: http://127.0.0.1:4173/ (no GPIO/I2C devices)"
-      log "web-demo: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
-      log "example-catalog: http://127.0.0.1:4174/ (no GPIO/I2C devices)"
+      log "example-catalog: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
     fi
   fi
 }
@@ -348,7 +344,7 @@ removed_flag_error() {
   local flag="$1"
   case "$flag" in
     --editor)
-      err "--editor is removed; Editor / Examples / Web Demo / Catalog start by default"
+      err "--editor is removed; Editor / Examples / Catalog start by default"
       err "use: ./scripts/start.sh"
       err "LAN: ./scripts/start.sh --lan"
       ;;

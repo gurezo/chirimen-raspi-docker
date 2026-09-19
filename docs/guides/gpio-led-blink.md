@@ -104,7 +104,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/led-blink/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/led-blink/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
+Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/led-blink/`（Run Task **Serve examples** は URL 案内）。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
 
 `index.html` の読み込み順:
 
@@ -122,19 +122,13 @@ Browser Editor から編集する場合の標準操作は `Edit → Save → Bro
 3. ページ表示と同時に GPIO26 の点滅が始まる（Start ボタンは無い）
 4. タブを閉じると点滅は止まる。サンプルは旧 LEDblink と同じ無限ループのためクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
 
-Runtime 確認（Web Demo の Start / Stop）:
-
-```sh
-./scripts/start.sh
-```
-
-`http://127.0.0.1:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サンプルは `http://127.0.0.1:4173/led-blink/`。
 
 ## 期待結果
 
 - ページを開くと LED が **1 秒間隔**で点灯 / 消灯する
 - `write(1)` で点灯、`write(0)` で消灯（active HIGH）
-- タブを閉じたあと、同じ GPIO26 を再度 `export` できる（HTML サンプルを開き直す、または web-demo の Start）
+- タブを閉じたあと、同じ GPIO26 を再度 `export` できる（HTML サンプルを開き直す）
 
 ## Troubleshooting
 
@@ -152,7 +146,7 @@ Runtime 確認（Web Demo の Start / Stop）:
 | LED の極性 | アノード（長い足）が抵抗側、カソードが GND |
 | ピン取り違え | 物理 pin 37（BCM 26）と pin 39（GND）。5V ピン（2 / 4）は使わない |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Catalog は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL` で WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `export` が Permission denied / EROFS になる
 

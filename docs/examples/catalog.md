@@ -36,7 +36,7 @@ Device catalog
 chirimen-certified-devices
         │ Device metadata
         ↓
-Legacy GC ─────→ Example Catalog :4174
+Legacy GC ─────→ Example Catalog :4200
 Examples         HTML / Vanilla JS
 │                Tailwind CSS はスタイルのみ
 ├─ schematic           │
@@ -125,16 +125,16 @@ verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 �
 | --- | --- |
 | UI | HTML + Vanilla JavaScript。Tailwind CSS はスタイルのみ |
 | 使わないもの | Angular / React / Vue などの SPA framework。Device Dashboard の iframe |
-| 入口 | `http://127.0.0.1:4174/`（Compose `chirimen-example-catalog`） |
+| 入口 | `http://127.0.0.1:4200/`（Compose `chirimen-example-catalog`） |
 | 実行 | ported のみ Example Server `:4173` |
 | 編集 | ported のみ Editor `:8080/?folder=/home/coder/project` |
 | Example metadata | [legacy-inventory.json](./legacy-inventory.json) |
 | Device metadata | certified-devices の `generated/devices.json`（実行時 fetch） |
 | UI 思想 | 親 Issue の chirimen-lite-console を参考にする。本リポジトリには埋め込まない |
 
-親 Issue の「Web UI 入口」は Example Catalog である。Catalog の port は実装どおり **`:4174`** とする。`:4173` は Example Server（Runtime Example の静的配信）であり、Catalog ではない。
+親 Issue の「Web UI 入口」は Example Catalog である。Catalog の port は **`:4200`** とする（[#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263)）。`:4173` は Example Server（Runtime Example の静的配信）であり、Catalog ではない。
 
-host 開発は `pnpm nx serve example-catalog`。Compose の `chirimen-example-catalog` と同じ port `4174` を使うため同時には使わない。手順は [Development](../guides/development.md) と [Browser Development Environment](../guides/browser-development.md)。
+host 開発は `pnpm nx serve example-catalog`。Compose の `chirimen-example-catalog` と同じ port `4200` を使うため同時には使わない。手順は [Development](../guides/development.md) と [Browser Development Environment](../guides/browser-development.md)。
 
 ## 関連する正本
 

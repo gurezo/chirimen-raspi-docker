@@ -8,7 +8,7 @@ async function main() {
   const port = i2cAccess.ports.get(1); // bus 1 を走査する
 
   const found = [];
-  // Runtime scanI2cPort / web-demo と同じ範囲。Public polyfill に scan API は無い。
+  // Runtime scanI2cPort と同じ範囲。Public polyfill に scan API は無い。
   for (let addr = 0x03; addr <= 0x77; addr++) {
     try {
       const device = await port.open(addr);

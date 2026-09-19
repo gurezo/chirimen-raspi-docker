@@ -31,7 +31,6 @@ Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/
 | `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
 | `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:runtime`, `platform:node` |
 | `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
-| `web-demo` | `apps/web-demo` | `type:app`, `scope:demo`, `platform:browser` |
 | `example-catalog` | `apps/example-catalog` | `type:app`, `scope:catalog`, `platform:browser` |
 
 tags は各 `project.json` の `tags` 配列に設定する。新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
@@ -50,12 +49,6 @@ apps/server
 
 libs/browser-polyfill
   → libs/protocol
-  → libs/gpio
-  → libs/i2c
-  → libs/core
-
-apps/web-demo
-  → libs/browser-polyfill
   → libs/gpio
   → libs/i2c
   → libs/core
@@ -99,8 +92,7 @@ platform:browser ↔ platform:node の直接依存
 | `scope:runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
 | `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
 | `scope:server` | `onlyDependOnLibsWithTags: ['scope:runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の server 許可依存 |
-| `scope:demo` | `onlyDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:shared', 'layer:domain', 'layer:core']` | `web-demo` の許可依存 |
-| `scope:catalog` | `onlyDependOnLibsWithTags: []` かつ `notDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:runtime', 'scope:demo']` | Catalog は hardware / polyfill に依存しない |
+| `scope:catalog` | `onlyDependOnLibsWithTags: []` かつ `notDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:runtime']` | Catalog は hardware / polyfill に依存しない |
 
 ## 確認方法
 
@@ -115,7 +107,6 @@ pnpm nx show project i2c --json
 pnpm nx show project protocol --json
 pnpm nx show project node-runtime --json
 pnpm nx show project browser-polyfill --json
-pnpm nx show project web-demo --json
 pnpm nx show project example-catalog --json
 pnpm nx graph
 ```

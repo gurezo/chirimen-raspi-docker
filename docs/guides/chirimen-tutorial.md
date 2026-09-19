@@ -33,9 +33,9 @@ chirimen-raspi-docker
 
 ```text
 Tutorial = 学ぶ
+Catalog  = 題材を見つける（`:4200`）
 Editor   = 書く
-Examples = 書いたものを動かす
-Web Demo = Runtime を確認する
+Examples = 書いたものを動かす（`:4173`）
 ```
 
 GPIO / I2C の概念は Tutorial、配線ピン・抵抗値・Runtime 操作は本リポジトリの Example Guide と回路仕様を正本とする。同じ解説を両側に置かない。
@@ -73,7 +73,8 @@ Raspberry Pi Tutorial はハードウェア系統が近い。PiZero Tutorial は
 | Runtime 起動 | [Getting Started](./getting-started.md) |
 | Example を書く | [Editor を開く](./browser-development.md#editor-を開く)（code-server `:8080`） |
 | 書いたものを動かす | [Example Server を開く](./browser-development.md#example-server-を開く)（`:4173`） |
-| Runtime を確認する | [Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する)（`:4200`。編集結果の確認先ではない） |
+| 題材を見つける | [Example Catalog](../examples/catalog.md)（`:4200`） |
+| Runtime を確認する | [Runtime Diagnostics](./runtime-diagnostics.md)（`doctor.sh` / `GET /health` / Reference Examples `:4173`） |
 
 ## 学びたいこと
 

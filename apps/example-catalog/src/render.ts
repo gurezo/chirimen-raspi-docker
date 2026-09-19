@@ -3,6 +3,8 @@ import {
   DEVICE_DASHBOARD_URL,
   NO_IMAGE_URL,
   RASPBERRY_PI_MODELS,
+  REFERENCE_EXAMPLES,
+  RUNTIME_DIAGNOSTICS_DOC_URL,
   STATUS_FILTERS,
   canOpenRuntimeExample,
   catalogImageUrl,
@@ -12,6 +14,7 @@ import {
   isPlaceholderImageUrl,
   modelVerificationLabel,
   runtimeExampleHref,
+  runtimeHealthHref,
   workspaceExampleDir,
   type CatalogEntry,
   type CatalogFilters,
@@ -82,6 +85,58 @@ export const renderHeaderLinks = (parent: HTMLElement): void => {
   nav.className = 'mt-3';
   nav.append(createExternalLink(DEVICE_DASHBOARD_URL, 'Device Dashboard'));
   parent.append(nav);
+};
+
+export const renderRuntimeDiagnostics = (
+  parent: HTMLElement,
+  hostname = '127.0.0.1'
+): void => {
+  const section = document.createElement('section');
+  section.className =
+    'mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4';
+  section.setAttribute('aria-labelledby', 'runtime-diagnostics-heading');
+
+  const heading = document.createElement('h2');
+  heading.id = 'runtime-diagnostics-heading';
+  heading.className = 'text-sm font-semibold text-slate-900';
+  heading.textContent = 'Runtime 確認';
+
+  const lead = document.createElement('p');
+  lead.className = 'mt-1 text-sm text-slate-600';
+  lead.textContent =
+    'Host は ./scripts/doctor.sh、Server は GET /health、GPIO / I2C は次の Example で確認します。Catalog から Runtime へは接続しません。';
+
+  const links = document.createElement('p');
+  links.className = 'mt-2 flex flex-wrap gap-x-3 gap-y-2';
+  for (const example of REFERENCE_EXAMPLES) {
+    const dir = workspaceExampleDir(example.runtimeExamplePath).replace(
+      /\/$/,
+      ''
+    );
+    links.append(
+      createServiceLink(
+        runtimeExampleHref(example.runtimeExamplePath, hostname),
+        example.title,
+        `${dir} を実行する`
+      )
+    );
+  }
+
+  const docs = document.createElement('p');
+  docs.className = 'mt-2 flex flex-wrap gap-x-3 gap-y-2';
+  docs.append(
+    createServiceLink(
+      runtimeHealthHref(hostname),
+      'GET /health',
+      'chirimen-server の /health を開く'
+    )
+  );
+  docs.append(
+    createExternalLink(RUNTIME_DIAGNOSTICS_DOC_URL, 'Runtime Diagnostics')
+  );
+
+  section.append(heading, lead, links, docs);
+  parent.append(section);
 };
 
 const renderCardLinks = (

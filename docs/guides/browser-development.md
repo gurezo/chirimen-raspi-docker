@@ -25,7 +25,7 @@
 CHIRIMEN Tutorial
 GPIO / I2C / JavaScript / 回路を学ぶ
         ↓
-Example Catalog :4174
+Example Catalog :4200
         ↓
 ported「実行」 → Example Server :4173
 ported「編集」 → Browser Editor :8080（workspace ルート）
@@ -39,7 +39,7 @@ chirimen-server :33330
 Raspberry Pi GPIO / I2C
 ```
 
-Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
+Catalog（`:4200`）は題材の発見入口である。編集結果の確認先は Example Server `:4173`。Runtime / Browser Polyfill / GPIO / I2C の疎通は [Runtime Diagnostics](./runtime-diagnostics.md) で確認する。
 
 legacy Example は Catalog から旧 GC Example を参照するだけである。実行 / 編集リンクは出さない。Editor は `/home/coder/project`（host `./workspace`）を開く。子ディレクトリを新しい workspace にはしない。
 
@@ -52,7 +52,6 @@ Tutorial = 学ぶ
 Editor   = 書く
 Examples = 書いたものを動かす
 Catalog  = Example を探す
-Web Demo = Runtime を確認する
 ```
 
 | Port | Service | Role |
@@ -60,8 +59,7 @@ Web Demo = Runtime を確認する
 | 33330 | chirimen-server | Hardware Runtime / WebSocket |
 | 8080 | chirimen-editor | code-server / Edit |
 | 4173 | chirimen-examples | Edited Example execution |
-| 4174 | chirimen-example-catalog | Example Catalog |
-| 4200 | chirimen-web-demo | Runtime Demo / diagnostics |
+| 4200 | chirimen-example-catalog | Example Catalog |
 
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
 
@@ -71,7 +69,7 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 ./scripts/start.sh
   （同等: docker compose up）
 ↓
-Browser で Catalog を開く（http://127.0.0.1:4174/）
+Browser で Catalog を開く（http://127.0.0.1:4200/）
 ↓
 ported「実行」で Example Server を開く（http://127.0.0.1:4173/...）
 ported「編集」で Editor を開く（http://127.0.0.1:8080/?folder=/home/coder/project）
@@ -115,8 +113,8 @@ Tutorial の環境構築手順は本リポジトリの手順ではない。clone
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Web Demo
-./scripts/start.sh --lan      # 同上。Editor / Example / Web Demo を LAN 公開
+./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
 ```
 
 同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
@@ -130,14 +128,13 @@ curl http://localhost:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
-curl -fsS http://127.0.0.1:4174/
 ```
 
 `/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started](./getting-started.md)。
 
 ## Catalog で題材を探す
 
-Browser で `http://127.0.0.1:4174/` を開く。ported Example だけ「実行」と「編集」がある。
+Browser で `http://127.0.0.1:4200/` を開く。ported Example だけ「実行」と「編集」がある。
 
 - **実行**: Example Server（`:4173`）。URL は `legacy-inventory.json` の `runtimeExamplePath` から解決する
 - **編集**: Editor（`:8080/?folder=/home/coder/project`）。既存 workspace ルートを開く
@@ -215,7 +212,7 @@ Editor で保存する。保存先は Editor `/home/coder/project` = host `./wor
 
 ## Example Server を開く
 
-別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）。確認先は Example Server `:4173` である。Web Demo（`:4200`）は編集結果を表示しない。
+別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）。確認先は Example Server `:4173` である。Catalog（`:4200`）は編集結果を表示しない。
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -236,7 +233,6 @@ Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)
 | 面 | 既定 | 上書き |
 | --- | --- | --- |
 | HTML Example | `ws://localhost:33330/` | script 前の `CHIRIMEN_WS_URL` |
-| Web Demo | ページが localhost / `127.0.0.1` なら `ws://localhost:33330/` | それ以外の hostname なら `ws://<hostname>:33330/` |
 
 HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）。
 
@@ -246,32 +242,15 @@ curl http://localhost:33330/health
 
 保存しても見た目や LED が変わらないときは [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) を確認する。
 
-## Web Demo で Runtime を診断する
+## Runtime を診断する
 
-Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI である。`workspace/` の編集結果は反映されない。次の疎通を確認するときに使う。
-
-```text
-Runtime が起動しているか
-↓
-Browser Polyfill が接続できるか
-↓
-WebSocket が接続できるか
-↓
-GPIO / I2C API が動作するか
-```
-
-`./scripts/start.sh` で起動済みである。別タブで開く。
+診断の正本は [Runtime Diagnostics](./runtime-diagnostics.md) である。Catalog の「Runtime 確認」から GPIO LED Blink / GPIO Input / I2C Scan を開ける。Host は `./scripts/doctor.sh`、Server は `GET /health`。
 
 ```text
-http://127.0.0.1:4200/
-http://127.0.0.1:4200/#/gpio-output
-http://127.0.0.1:4200/#/gpio-input
-http://127.0.0.1:4200/#/i2c-scan
+http://127.0.0.1:4173/led-blink/
+http://127.0.0.1:4173/button/
+http://127.0.0.1:4173/i2c-scan/
 ```
-
-接続状態が **Connected** なら Runtime に届いている。LAN では Pi の IP でページを開く。Run Task **Open Web Demo** は URL 案内のみ。Compose 経路に hot reload は無い。再 build は image 再 build。タブは reload する。
-
-Web Demo 自体を host で開発する（`pnpm nx serve web-demo`）手順は [Development Guide](./development.md) を参照する。既定の Browser Editor 利用手順にはしない。
 
 ```sh
 curl http://localhost:33330/health
@@ -302,7 +281,7 @@ Security:
 - 既定は password 認証。`auth: none` は使わない
 - 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない
 - HTTPS / reverse proxy は本リポジトリでは提供しない
-- GPIO / I2C device は `chirimen-server` のみ。Editor / Examples / Web Demo には渡さない
+- GPIO / I2C device は `chirimen-server` のみ。Editor / Examples / Catalog には渡さない
 - 秘密情報は named volume または gitignored の `.env`。compose.yaml に `PASSWORD=` は書かない
 
 詳細は [Authentication](../architecture/browser-editor.md#authentication) と [Publish / bind](../architecture/browser-editor.md#publish--bind181)。
@@ -324,8 +303,8 @@ curl http://localhost:33330/health
 3. `http://127.0.0.1:4173/led-blink/` 等を reload する
 4. 保存内容が反映されることを確認する
 5. GPIO / I2C の既存 Example を可能な範囲で実機確認する
-6. `http://127.0.0.1:4200/` を開く
-7. Web Demo を Runtime Demo / Diagnostic UI として確認する
+6. `http://127.0.0.1:4200/` で Catalog を開く
+7. Catalog の「Runtime 確認」から Reference Examples を開けることを確認する
 
 container 再起動後の保持:
 
@@ -334,7 +313,7 @@ docker compose down
 ./scripts/start.sh
 ```
 
-host `./workspace` の変更は残る。**`-v` は付けない。** Web Demo（`:4200`）は編集結果の確認先ではない。
+host `./workspace` の変更は残る。**`-v` は付けない。** Catalog（`:4200`）は編集結果の確認先ではない。
 
 記録項目と機種別の結果は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243) を正本とする。GPIO / I2C の回路は各 Example ガイドへ。
 
@@ -350,10 +329,9 @@ host `./workspace` の変更は残る。**`-v` は付けない。** Web Demo（`
 | password / 設定が消えた | [Editor の password / 設定が消えた](./troubleshooting.md#editor-の-password-設定が消えた) |
 | 8080 が開かない | [Editor（8080）が開かない](./troubleshooting.md#editor8080が開かない) |
 | 4173 が開かない | [Example の静的サーバ（4173）が開かない](./troubleshooting.md#example-の静的サーバ4173が開かない) |
-| 4174 が開かない | [Example Catalog（4174）が開かない](./troubleshooting.md#example-catalog4174が開かない) |
-| 4200 が開かない | [Web Demo（4200）が開かない](./troubleshooting.md#web-demo4200が開かない) |
-| Web Demo は開くが GPIO / I2C が動かない | [Web Demo は開くが GPIO / I2C が動かない](./troubleshooting.md#web-demo-は開くが-gpio-i2c-が動かない) |
-| LAN から届かない | [LAN から Editor / Web Demo に届かない](./troubleshooting.md#lan-から-editor-web-demo-に届かない) |
+| 4200 が開かない | [Example Catalog（4200）が開かない](./troubleshooting.md#example-catalog4200が開かない) |
+| Example は開くが GPIO / I2C が動かない | [Example は開くが GPIO / I2C が動かない](./troubleshooting.md#example-は開くが-gpio-i2c-が動かない) |
+| LAN から届かない | [LAN から Editor / Catalog に届かない](./troubleshooting.md#lan-から-editor-catalog-に届かない) |
 | Microsoft Marketplace の拡張が入れられない | [Editor で Microsoft Marketplace の拡張が入れられない](./troubleshooting.md#editor-で-microsoft-marketplace-の拡張が入れられない) |
 | 保存しても Browser に反映されない | [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) |
 | 実機 E2E の記録を見る | [実機 E2E 検証（#243）](#実機-e2e-検証243)。結果は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243) |

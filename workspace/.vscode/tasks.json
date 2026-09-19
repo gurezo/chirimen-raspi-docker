@@ -14,17 +14,7 @@
     {
       "label": "Open Example Catalog",
       "type": "shell",
-      "command": "printf '%s\\n' 'Example Catalog is started by Compose (./scripts/start.sh).' 'Find examples:' 'http://127.0.0.1:4174/' 'Run ported examples on Example Server:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/' 'http://127.0.0.1:4173/pir-sensor/' 'http://127.0.0.1:4173/adt7410/' 'http://127.0.0.1:4173/sht30/' 'http://127.0.0.1:4173/ads1115/' 'Edit in the existing Editor workspace root (/home/coder/project):' 'http://127.0.0.1:8080/?folder=/home/coder/project'",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "focus": true
-      }
-    },
-    {
-      "label": "Open Web Demo",
-      "type": "shell",
-      "command": "printf '%s\\n' 'Web Demo is a Runtime diagnostic UI (./scripts/start.sh).' 'It does not show Example edits. Open Example Server instead:' 'http://127.0.0.1:4173/led-blink/' 'Open Web Demo to check Runtime / Polyfill / WebSocket / GPIO / I2C:' 'http://127.0.0.1:4200/' 'http://127.0.0.1:4200/#/gpio-output' 'http://127.0.0.1:4200/#/gpio-input' 'http://127.0.0.1:4200/#/i2c-scan'",
+      "command": "printf '%s\\n' 'Example Catalog is started by Compose (./scripts/start.sh).' 'Find examples:' 'http://127.0.0.1:4200/' 'Run ported examples on Example Server:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/' 'http://127.0.0.1:4173/pir-sensor/' 'http://127.0.0.1:4173/adt7410/' 'http://127.0.0.1:4173/sht30/' 'http://127.0.0.1:4173/ads1115/' 'Edit in the existing Editor workspace root (/home/coder/project):' 'http://127.0.0.1:8080/?folder=/home/coder/project'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
