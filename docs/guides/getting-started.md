@@ -150,10 +150,10 @@ http://127.0.0.1:4200/#/i2c-scan
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md) |
 | Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
-| Runtime を Web Demo で確認する | [browser-development.md の Runtime を Web Demo で確認する](./browser-development.md#runtime-を-web-demo-で確認する) |
-| Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
+| Runtime を Web Demo で確認する | [browser-development.md の Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する) |
+| Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
-| Browser Editor の Extension | [browser-development.md](./browser-development.md#extension-の導入-確認)。プリインストール・推奨しない |
+| Browser Editor の Extension | [browser-development.md](./browser-development.md#editor-を開く)。プリインストール・推奨しない |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
 | 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
