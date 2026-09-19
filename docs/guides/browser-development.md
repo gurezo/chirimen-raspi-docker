@@ -123,6 +123,27 @@ LAN の別マシンから開くときは `./scripts/start.sh --lan`。Internet �
 
 ## Workspace を開く
 
+保存先:
+
+```text
+Editor: /home/coder/project
+Host:   ./docs/examples
+```
+
+Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./docs/examples` は残る。
+
+```text
+Host ./docs/examples
+      │
+      ├─────────────────────┐
+      ↓                     ↓
+chirimen-editor       chirimen-examples
+/home/coder/project   /usr/share/nginx/html
+      │                     │
+      │ Edit / Save         │ Serve
+      └──────────────────→ :4173
+```
+
 workspace は bind mount `./docs/examples` → `/home/coder/project` である。monorepo 全体は mount しない。`package.json` / `node_modules` は無い。`pnpm` / `nx` は Editor では使わない。
 
 | ディレクトリ | Example |
