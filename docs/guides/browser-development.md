@@ -283,7 +283,7 @@ Security:
 
 ## Troubleshooting
 
-汎用の切り分けは [Troubleshooting](./troubleshooting.md) を正とする。ここでは索引だけ書く。
+汎用の切り分けは [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) を正とする。ここでは索引だけ書く。
 
 | 症状 | 参照 |
 | --- | --- |

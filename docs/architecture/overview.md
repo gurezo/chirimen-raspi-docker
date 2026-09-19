@@ -192,7 +192,7 @@ npx nx mcp --help
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
-| [Browser Development Environment](../guides/browser-development.md) | Browser Editor から Example を編集・実行する（#183） |
+| [Browser Development Environment](../guides/browser-development.md) | Learn → Edit → Save → Run → Verify の正本（#242） |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
 | [GPIO Input](../guides/gpio-input.md) | 必要部品・配線・HTML サンプルでの入力確認手順 |
