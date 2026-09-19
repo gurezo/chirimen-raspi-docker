@@ -153,6 +153,30 @@ Catalog は Issue が挙げた Device 項目のうち、**実在するフィー�
 | `meta.tag` | 参考情報。Catalog の filter は Example の `category` / `interface` を使う |
 | `meta.productUrl` / `datasheet` / `reference` | Catalog 必須ではない。Device Dashboard 側の情報とする |
 
+## Fallback
+
+Catalog UI（#254）は Device 情報の欠落や取得失敗で致命エラーにしない。Example カードは常に [legacy-inventory.json](./legacy-inventory.json) だけで描画できる。
+
+| 状況 | Catalog の振る舞い |
+| --- | --- |
+| `deviceId` が空 | Device なしとして Example だけ表示する。GPIO LED でも I2C Scan でも成立する。プレースホルダ画像は任意。Device 未登録と誤認させない |
+| `deviceId` が `devices[]` に無い | 上と同じ。`device` ラベルだけ出す |
+| `devices.json` の取得失敗 | 全 Example を Device なしで描画する。短い警告を出してよい。画面全体を落とさない |
+| JSON として読めない / `version` が `1` 以外 | 取得失敗と同じ |
+| `image` が空または読み込めない | 画像無し。カードは残す |
+| `packages` が空 / `driver` が `"none"` | ドライバ無し。カードは残す |
+| `description` が空 | Device 説明を出さない。Example の `title` / `notes` は出す |
+
+取得失敗の例:
+
+- ネットワークエラー
+- HTTP 4xx / 5xx
+- 空レスポンス
+- JSON でないレスポンス
+- `devices` 配列が無い
+
+本リポジトリに `devices.json` のスナップショットを正本として置かない。オフライン時も Example metadata だけで Catalog が開くことを優先する。
+
 ## Device Dashboard
 
 CHIRIMEN 全体の Device Catalog は [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) への外部リンクとする。iframe で埋め込まない。
