@@ -67,9 +67,9 @@ Remote は `relayServer.js`、micro:bit は WebBluetooth、Camera は CSI / `get
 
 ## 一覧
 
-GPIO / I2C を優先して記録する。Advanced / Remote は後続で追加する。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
+GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさない。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
 
-`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。現時点の Basic GPIO / I2C はすべて `legacy` / `unverified`。
+`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。この段階ではすべて `legacy` / `unverified`。
 
 ### Basic GPIO
 
@@ -101,3 +101,56 @@ GPIO / I2C を優先して記録する。Advanced / Remote は後続で追加す
 | `i2c-veml6070` | I2C-VEML6070 | VEML6070 | あり | legacy |
 | `i2c-vl53l0x` | I2C-VL53L0X | VL53L0X | あり | legacy |
 | `i2c-multi-sensors` | I2C-multi-sensors | ADT7410 | あり | legacy |
+
+### Advanced GPIO / I2C
+
+公開ページの Advanced Examples と、`gc/contrib/examples/` の派生ディレクトリを含む。
+
+| id | title | interface | schematic | notes |
+| --- | --- | --- | --- | --- |
+| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC |
+| `i2c-ads1115-load-cell` | I2C-ADS1115-LoadCell | i2c | あり | ソースは `i2c-ADS1115` |
+| `i2c-arduino-stepping-motor` | I2C-arduino-steppingMotor | i2c | あり | Arduino 経由 |
+| `i2c-bme280` | I2C-BME280 | i2c | あり | |
+| `i2c-bmp180` | I2C-BMP180 | i2c | あり | BMP280 とは別 |
+| `i2c-bmp280` | I2C-BMP280 | i2c | あり | BMP180 とは別 |
+| `i2c-canzasi-blink` | I2C-canzasi-blink | i2c | あり | 自作ボード |
+| `i2c-mpu6050` | I2C-MPU6050 | i2c | あり | |
+| `i2c-mpu9250` | I2C-MPU9250 | i2c | あり | |
+| `gpio-hbridge` | GPIO-HBridge | gpio | あり | 外部モータ電源 |
+| `gpio-i2c-pwm-hbridge-1` | GPIO-I2C-PWMHBridge その１ | gpio+i2c | あり | |
+| `gpio-i2c-pwm-hbridge-2` | GPIO-I2C-PWMHBridge その２ | gpio+i2c | あり | |
+| `i2c-neopixel-i2c` | I2C-NEOPIXEL_I2C | i2c | あり | ATTINY85 要ファームウェア |
+| `i2c-pcf8591` | I2C-PCF8591 | i2c | あり | |
+| `i2c-amg8833` | I2C-AMG8833 | i2c | あり | |
+| `i2c-bh1750` | I2C-BH1750 | i2c | あり | |
+| `i2c-tcs34725` | I2C-TCS34725 | i2c | あり | |
+| `i2c-vl53l1x` | I2C-VL53L1X | i2c | あり | |
+| `i2c-ina219` | I2C-INA219 | i2c | あり | |
+| `i2c-mlx90614` | I2C-MLX90614 | i2c | あり | |
+| `i2c-apds9960` | I2C-APDS9960 | i2c | あり | |
+| `i2c-seesaw` | I2C-seesaw | i2c | あり | |
+| `i2c-seesaw-npix` | I2C-seesawNpix | i2c | あり | ソースは `i2c-seesaw` |
+| `i2c-ccs811` | I2C-CCS811 | i2c | なし | ソースディレクトリ無し。baudrate 変更が必要 |
+| `i2c-bme680` | I2C-BME680 | i2c | なし | ソースディレクトリ無し |
+| `gpio-a4988` | GPIO-A4988 | gpio | あり | ステッピングモータ |
+| `i2c-htu21d` | I2C-HTU21D | i2c | あり | |
+| `i2c-scd40` | I2C-SCD40 | i2c | あり | |
+| `i2c-ht16k33` | I2C-HT16K33 | i2c | あり | 派生 Example あり |
+| `i2c-ht16k33-led-7seg` | I2C-HT16K33 7seg | i2c | あり | contrib 派生 |
+| `i2c-ht16k33-led-14seg` | I2C-HT16K33 14seg | i2c | あり | contrib 派生 |
+| `i2c-ht16k33-led-16x8` | I2C-HT16K33 16x8 | i2c | あり | contrib 派生 |
+| `i2c-ht16k33-led-8x8aitendo` | I2C-HT16K33 8x8 aitendo | i2c | あり | contrib 派生 |
+
+### Remote / other（本 Runtime 対象外の可能性が高い）
+
+| id | title | interface | 対象外の理由 |
+| --- | --- | --- | --- |
+| `remote-gpio-led` | REMOTE-LED | remote | `relayServer.js` |
+| `remote-gpio-hbridge` | REMOTE-HBridge | remote | `relayServer.js` |
+| `remote-gpio-sw` | REMOTE-SW | remote | `relayServer.js` |
+| `remote-i2c-sht30` | REMOTE-I2C-SHT30 | remote | `relayServer.js` |
+| `remote-i2c-pca9685` | REMOTE-I2C-PCA9685 | remote | `relayServer.js` |
+| `remote-others-camera` | REMOTE-OTHERS-CAMERA | remote | `relayServer.js` と CSI カメラ |
+| `others-camera` | Raspberry Pi Camera | camera | CSI / `getUserMedia` |
+| `chirimen-micro-bit` | CHIRIMEN with micro:bit | web-bluetooth | WebBluetooth |
