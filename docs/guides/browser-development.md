@@ -12,13 +12,15 @@
 - [docs/examples/README.md](../examples/README.md)
 - [Troubleshooting](./troubleshooting.md)
 
-このガイドの手順だけで、Editor → Example 編集 → Web Demo / Runtime の開発フローを再現できる。
+このガイドの手順だけで、Editor → Workspace → Example Server → Runtime の開発フローを再現できる。
+
+Web Demo（`:4200`）は Example の編集結果確認先ではない。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
 ## 概要
 
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
 
-編集は Editor、実行は別 Browser タブ（HTML Example / Web Demo）である。
+編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
 
 ```text
 ./scripts/start.sh
@@ -26,9 +28,13 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 ↓
 Browser で Editor を開く（http://127.0.0.1:8080）
 ↓
-Example を編集（docs/examples）
+Workspace で Example を編集して保存（docs/examples）
 ↓
-Web Demo を開く（http://127.0.0.1:4200/）
+Example Server で確認する（http://127.0.0.1:4173/...）
+↓
+保存後に Example タブを reload する
+↓
+chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 ```
 
 方針の詳細は [browser-editor.md](../architecture/browser-editor.md)。
@@ -123,22 +129,7 @@ http://127.0.0.1:4173/i2c-scan/
 
 Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
-静的ファイルのため hot reload は無い。保存後に Example タブを reload する。配線と期待結果は各 Example ガイドへ。
-
-## Web Demo を起動する
-
-Web Demo も `./scripts/start.sh` で起動済みである。別タブで開く。
-
-```text
-http://127.0.0.1:4200/
-http://127.0.0.1:4200/#/gpio-output
-http://127.0.0.1:4200/#/gpio-input
-http://127.0.0.1:4200/#/i2c-scan
-```
-
-Run Task **Open Web Demo** は URL 案内のみ。Compose 経路に hot reload は無い。再 build は image 再 build。タブは reload する。
-
-host で Vite HMR（`pnpm nx serve web-demo`）を使うときは port 4200 が衝突するので、先に `docker compose stop chirimen-web-demo` する。既定手順にはしない。
+静的ファイルのため hot reload は無い。保存後に Example タブを reload する。配線と期待結果は各 Example ガイドへ。Web Demo（`:4200`）は編集結果を表示しない。
 
 ## Runtime に接続する
 
@@ -149,7 +140,38 @@ GPIO / I2C 操作は Editor 内ではなく、Browser の Polyfill が Runtime �
 | HTML Example | `ws://localhost:33330/` | script 前の `CHIRIMEN_WS_URL` |
 | Web Demo | ページが localhost / `127.0.0.1` なら `ws://localhost:33330/` | それ以外の hostname なら `ws://<hostname>:33330/` |
 
-Web Demo の接続状態が **Connected** なら Runtime に届いている。LAN では Pi の IP でページを開く。HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）。
+HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）。
+
+```sh
+curl http://localhost:33330/health
+```
+
+## Runtime を Web Demo で確認する
+
+Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI である。`docs/examples` の編集結果は反映されない。次の疎通を確認するときに使う。
+
+```text
+Runtime が起動しているか
+↓
+Browser Polyfill が接続できるか
+↓
+WebSocket が接続できるか
+↓
+GPIO / I2C API が動作するか
+```
+
+`./scripts/start.sh` で起動済みである。別タブで開く。
+
+```text
+http://127.0.0.1:4200/
+http://127.0.0.1:4200/#/gpio-output
+http://127.0.0.1:4200/#/gpio-input
+http://127.0.0.1:4200/#/i2c-scan
+```
+
+接続状態が **Connected** なら Runtime に届いている。LAN では Pi の IP でページを開く。Run Task **Open Web Demo** は URL 案内のみ。Compose 経路に hot reload は無い。再 build は image 再 build。タブは reload する。
+
+Web Demo 自体を host で開発する（`pnpm nx serve web-demo`）手順は [Development Guide](./development.md) を参照する。既定の Browser Editor 利用手順にはしない。
 
 ```sh
 curl http://localhost:33330/health

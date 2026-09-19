@@ -29,7 +29,7 @@
 
 4 pin タクトスイッチを使う場合、端子が出ている向き（縦）は常時導通で、それと直交する方向がボタンで切り替わる。ジャンパは直交方向の端子へつなぐ。詳細は [回路仕様](../examples/gpio-input.md) を参照する。
 
-HTML サンプルは旧 button と同じく GPIO26 の LED も使う。LED 側の部品は [GPIO LED Blink](./gpio-led-blink.md) を参照する。web-demo の GPIO Input だけを使う場合、LED は不要。
+HTML サンプルは旧 button と同じく GPIO26 の LED も使う。LED 側の部品は [GPIO LED Blink](./gpio-led-blink.md) を参照する。Runtime 確認用の Web Demo（GPIO Input）だけを使う場合、LED は不要。
 
 ## 配線
 
@@ -103,7 +103,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/button/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/button/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-input` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/button/` を開き、保存後に Example タブを reload する（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 
@@ -122,13 +122,13 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 4. タクトスイッチを押すと GPIO26 の LED が点灯し、離すと消灯する
 5. タブを閉じると購読は止まる。サンプルは旧 button と同じくクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
 
-代替（web-demo の Start / Stop / Read）:
+Runtime 確認（Web Demo の Start / Stop / Read）:
 
 ```sh
 ./scripts/start.sh
 ```
 
-`http://127.0.0.1:4200/#/gpio-input` を開き、接続状態が **Connected** のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断でも止まる。LED は使わない。host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+`http://127.0.0.1:4200/#/gpio-input` を開き、接続状態が **Connected** のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断でも止まる。LED は使わない。Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
 ## 期待結果
 

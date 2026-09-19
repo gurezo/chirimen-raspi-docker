@@ -208,7 +208,7 @@ workspace を named volume にはしない。Example が git から切り離さ�
 
 bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。workspace 設定は git 管理の [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json) / [`tasks.json`](../examples/.vscode/tasks.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178 / #179 / #201）。`extensions.json` による recommendation は置かない。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
 
-Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル / Web Demo → Polyfill → WebSocket → Runtime。Editor に GPIO / I2C device は渡さない。
+Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル → Polyfill → WebSocket → Runtime。Web Demo は Runtime 確認用であり、編集結果のプレビューではない。Editor に GPIO / I2C device は渡さない。
 
 ### Example 編集 / 静的 serve（#179）
 
@@ -227,7 +227,7 @@ Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO I
 | HTML / JS の編集 | Editor workspace（`docs/examples`） |
 | `pnpm install` | しない（Example に依存は無い） |
 | `pnpm nx bundle browser-polyfill` | **host**。`polyfill.js` を各 HTML ディレクトリへコピーする |
-| `pnpm nx serve web-demo`（Vite HMR） | **host**。Compose の `chirimen-web-demo`（port 4200）と衝突するため、使うときはその service を止める |
+| `pnpm nx serve web-demo`（Vite HMR） | **host / リポジトリ開発者向け**。Example 編集の確認先ではない。手順は [Development Guide](../guides/development.md) |
 
 serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `docs/examples`）。`./scripts/start.sh` で Editor / Web Demo と一緒に起動する。Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
 
@@ -251,13 +251,13 @@ http://127.0.0.1:4173/i2c-scan/
 
 ### Web Demo 起動（#180）
 
-編集（Editor）と実行（別 Browser タブ）を分ける。Editor image に Node / pnpm / Nx は入れない。workspace は `docs/examples` のまま。
+Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確認先ではない。確認内容は Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通である。Editor image に Node / pnpm / Nx は入れない。workspace は `docs/examples` のまま。Example の実行先は `:4173`。
 
 ```text
 ./scripts/start.sh
-  → Editor     http://127.0.0.1:8080
-  → Examples   http://127.0.0.1:4173/led-blink/  （Compose が起動済み）
-  → Web Demo   http://127.0.0.1:4200/   （Compose が起動済み）
+  → Editor     http://127.0.0.1:8080     （書く）
+  → Examples   http://127.0.0.1:4173/... （書いたものを動かす）
+  → Web Demo   http://127.0.0.1:4200/    （Runtime を確認する）
   → Runtime    ws://localhost:33330/
 ```
 
@@ -277,7 +277,7 @@ hot reload:
 | --- | --- |
 | Compose `chirimen-web-demo` | 無し。静的 production build。再 build は image 再 build。タブは reload |
 | Compose `chirimen-examples`（4173） | 無し。bind `docs/examples`。保存後に Example タブを reload（#179） |
-| host `pnpm nx serve web-demo` | 有り（Vite）。開発者向け。port 4200 が衝突するので Compose web-demo を先に止める |
+| host `pnpm nx serve web-demo` | 有り（Vite）。リポジトリ開発者向け。Example 編集の確認先ではない。port 4200 が衝突するので Compose web-demo を先に止める。手順は [Development Guide](../guides/development.md) |
 
 WebSocket:
 
@@ -424,7 +424,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | 起動 | 既定は Runtime + Editor + Examples + Web Demo（`docker compose up` / `./scripts/start.sh`。#208）。LAN は `--lan`（#181）。`--32bit` は Runtime only |
 | 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
 | Example 編集 / serve | HTML は `docs/examples`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
-| Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信（#180）。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo` |
+| Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信する Runtime Demo / Diagnostic UI（#180）。Example の編集結果確認先ではない。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo`（[Development Guide](../guides/development.md)） |
 
 #174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `docs/examples` を静的配信する。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 

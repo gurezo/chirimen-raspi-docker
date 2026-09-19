@@ -8,6 +8,7 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - [Getting Started](./getting-started.md)
+- [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する。Web Demo 自体の開発ではない）
 - [Architecture overview](../architecture/overview.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
 
@@ -62,6 +63,25 @@ pnpm nx serve web-demo
 npx nx graph
 ```
 
-`pnpm nx serve web-demo` は `http://localhost:4200/` で Browser demo を起動します（Vite HMR）。Compose の `chirimen-web-demo`（`./scripts/start.sh`）も同じ port を使うため、同時には使いません。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。
+`pnpm nx serve web-demo` は Web Demo 自体（`apps/web-demo`）を host で開発する手順です。Vite HMR で `http://localhost:4200/` が開きます。Browser Editor から Example を編集する手順ではありません。Example の確認先は `http://127.0.0.1:4173/` です（[Browser Development Environment](./browser-development.md)）。
 
-操作手順は [Getting Started](./getting-started.md) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
+Web Demo は Runtime Demo / Diagnostic UI です。次の疎通確認に使います。
+
+```text
+Runtime が起動しているか
+↓
+Browser Polyfill が接続できるか
+↓
+WebSocket が接続できるか
+↓
+GPIO / I2C API が動作するか
+```
+
+Compose の `chirimen-web-demo`（`./scripts/start.sh`）も同じ port `4200` を使うため、同時には使いません。host で serve するときは先に止めます。
+
+```sh
+docker compose stop chirimen-web-demo
+pnpm nx serve web-demo
+```
+
+`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started](./getting-started.md) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。

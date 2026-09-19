@@ -452,7 +452,7 @@ docker compose logs chirimen-editor
 - `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
 - `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-web-demo` が running か見る
-- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose stop chirimen-web-demo`
+- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose stop chirimen-web-demo`。手順は [Development Guide](./development.md)
 
 方針は [browser-editor.md の Web Demo 起動](../architecture/browser-editor.md#web-demo-起動180)。
 

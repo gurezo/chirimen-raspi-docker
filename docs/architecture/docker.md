@@ -95,7 +95,7 @@ host で `python3 -m http.server 4173` する従来手順も port `4173` を使�
 
 ### chirimen-web-demo
 
-Web Demo は Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。Browser 内の Polyfill が Runtime の WebSocket へ接続する（localhost なら `ws://localhost:33330/`、LAN ならページの hostname）。正本は [browser-editor.md の Web Demo 起動](./browser-editor.md#web-demo-起動180)。
+Web Demo は Hardware Runtime ではない。Runtime Demo / Diagnostic UI であり、Example の編集結果確認先ではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。Browser 内の Polyfill が Runtime の WebSocket へ接続する（localhost なら `ws://localhost:33330/`、LAN ならページの hostname）。正本は [browser-editor.md の Web Demo 起動](./browser-editor.md#web-demo-起動180)。
 
 | 項目 | 値 |
 | --- | --- |
@@ -108,7 +108,7 @@ Web Demo は Hardware Runtime ではない。`devices` / `privileged` / `/sys/cl
 | Network | Compose default。`depends_on` なし。`security_opt: no-new-privileges:true` |
 | GPIO / I2C | 渡さない |
 
-host の `pnpm nx serve web-demo`（Vite HMR）も port `4200` を使う。同時には使わない。Compose web-demo を止めてから host で serve する。
+host の `pnpm nx serve web-demo`（Vite HMR）も port `4200` を使う。同時には使わない。Compose web-demo を止めてから host で serve する。手順は [Development Guide](../guides/development.md)。Web Demo 自体の開発であり、Example 編集の確認先ではない。
 
 ### 起動と health check
 
@@ -128,7 +128,7 @@ LAN 公開（Editor / Example / Web Demo のみ。Runtime `33330` は変えな�
 ./scripts/start.sh --lan
 ```
 
-`./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` などを開く（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Web Demo は `http://127.0.0.1:4200/` を別タブで開く（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
+`./scripts/start.sh` のあと Example の確認先は `http://127.0.0.1:4173/led-blink/` など（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Web Demo（`http://127.0.0.1:4200/`）は Runtime 確認用である（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
 
 `/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
 

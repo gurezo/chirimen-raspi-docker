@@ -96,7 +96,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/led-blink/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する。Web Demo は起動済みなので `http://127.0.0.1:4200/#/gpio-output` でも確認できる（Run Task **Open Web Demo** / **Serve examples** は URL 案内）。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/led-blink/` を開き、保存後に Example タブを reload する（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
 
 `index.html` の読み込み順:
 
@@ -114,13 +114,13 @@ Browser Editor から編集する場合は `./scripts/start.sh` のあと `http:
 3. ページ表示と同時に GPIO26 の点滅が始まる（Start ボタンは無い）
 4. タブを閉じると点滅は止まる。サンプルは旧 LEDblink と同じ無限ループのためクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
 
-代替（web-demo の Start / Stop）:
+Runtime 確認（Web Demo の Start / Stop）:
 
 ```sh
 ./scripts/start.sh
 ```
 
-`http://127.0.0.1:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。host 開発は Compose web-demo を止めて `pnpm nx serve web-demo`。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+`http://127.0.0.1:4200/#/gpio-output` を開き、接続状態が **Connected** のとき Start で点滅、Stop で消灯する。画面離脱 / reload / WebSocket 切断でも止まる。Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
 ## 期待結果
 

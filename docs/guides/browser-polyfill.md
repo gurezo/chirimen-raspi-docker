@@ -130,7 +130,19 @@ error
 
 `error` のときは第 2 引数に `ChirimenError` が付く。ESM では `installBrowserPolyfill` の**前**に `requestGPIOAccess` / `requestI2CAccess` を呼ぶと `ChirimenError(InvalidAccess)` になる。lazy 接続は IIFE / script tag 専用。
 
-### web-demo で確認する
+### Web Demo で Runtime を確認する
+
+Web Demo（`apps/web-demo`）は Runtime Demo / Diagnostic UI である。Example の編集結果確認先ではない。確認内容は次に限る。
+
+```text
+Runtime が起動しているか
+↓
+Browser Polyfill が接続できるか
+↓
+WebSocket が接続できるか
+↓
+GPIO / I2C API が動作するか
+```
 
 Browser だけの経路（推奨）:
 
@@ -138,7 +150,7 @@ Browser だけの経路（推奨）:
 ./scripts/start.sh
 ```
 
-ブラウザで `http://127.0.0.1:4200/` を開く。Editor からは Run Task **Open Web Demo**。host で Vite HMR を使う場合は Compose の `chirimen-web-demo` を止めてから `pnpm nx serve web-demo`（`http://localhost:4200/`）。
+ブラウザで `http://127.0.0.1:4200/` を開く。Editor の Run Task **Open Web Demo** は URL 案内である。Web Demo 自体を host で開発する（`pnpm nx serve web-demo`）手順は [Development Guide](./development.md)。
 
 画面上の接続状態が次のいずれかになる。
 

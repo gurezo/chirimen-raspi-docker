@@ -14,7 +14,7 @@
     {
       "label": "Open Web Demo",
       "type": "shell",
-      "command": "printf '%s\\n' 'Web Demo is started by Compose (./scripts/start.sh).' 'Open a Browser tab:' 'http://127.0.0.1:4200/' 'http://127.0.0.1:4200/#/gpio-output' 'http://127.0.0.1:4200/#/gpio-input' 'http://127.0.0.1:4200/#/i2c-scan'",
+      "command": "printf '%s\\n' 'Web Demo is a Runtime diagnostic UI (./scripts/start.sh).' 'It does not show Example edits. Open Example Server instead:' 'http://127.0.0.1:4173/led-blink/' 'Open Web Demo to check Runtime / Polyfill / WebSocket / GPIO / I2C:' 'http://127.0.0.1:4200/' 'http://127.0.0.1:4200/#/gpio-output' 'http://127.0.0.1:4200/#/gpio-input' 'http://127.0.0.1:4200/#/i2c-scan'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
