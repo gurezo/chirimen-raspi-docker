@@ -11,6 +11,7 @@ Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 関連:
 
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
+- [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
 - [GPIO LED Blink](./gpio-led-blink.md)
@@ -137,6 +138,7 @@ http://127.0.0.1:4200/#/i2c-scan
 
 | やりたいこと | 参照 |
 | --- | --- |
+| GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](./chirimen-tutorial.md)。環境構築は Tutorial ではなくこのページと [Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | LED を点滅させる | [GPIO LED Blink](./gpio-led-blink.md)。HTML サンプル（`http://127.0.0.1:4173/led-blink/`）。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |

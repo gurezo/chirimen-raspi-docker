@@ -10,11 +10,18 @@
 - HTML サンプル: [docs/examples/led-blink/](../examples/led-blink/)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
+- [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / 回路を学ぶ）
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
 - 参考: [chirimen-oh/chirimen gc/gpio/LEDblink](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/LEDblink)
 
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の GPIO26 を 1 秒間隔で点滅できる。
+
+## 学ぶ
+
+GPIO / L チカ / LED 極性の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学ぶ。優先は [L チカしてみよう](https://tutorial.chirimen.org/raspi/section0)。配線ピン・抵抗値・Runtime 起動はこのガイドと [回路仕様](../examples/gpio-led-blink.md) を正本とする。
+
+Tutorial の SD イメージや `/home/pi/Desktop/gc/` の手順は使わない。
 
 ## 必要部品
 

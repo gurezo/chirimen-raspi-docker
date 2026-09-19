@@ -9,8 +9,11 @@
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Getting Started](./getting-started.md)（最短起動）
+- [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [docs/examples/README.md](../examples/README.md)
 - [Troubleshooting](./troubleshooting.md)
+
+GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学び、このガイドでは Editor で書く。Tutorial の SD イメージや CodeSandbox は本リポジトリの Editor ではない。
 
 このガイドの手順だけで、Editor → Workspace → Example Server → Runtime の開発フローを再現できる。
 
