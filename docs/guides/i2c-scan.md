@@ -1,6 +1,6 @@
 # I2C Scan
 
-初めての利用者が、HTML サンプルで I2C bus 上の address を確認する手順。Web Demo は Runtime の疎通確認に使う。
+初めての利用者が、HTML サンプルで I2C bus 上の address を確認する手順。Runtime の疎通確認は [Runtime Diagnostics](./runtime-diagnostics.md)。
 
 関連:
 
@@ -19,7 +19,7 @@
 
 このガイドの手順だけで、Raspberry Pi 3 / 4 / 5 上の I2C1 を走査し、検証用 slave（ADT7410）の address `0x48` を Browser で確認できる。ADT7410 の温度読み取りなど、特定センサの機能 Example は対象外。
 
-Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`workspace/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。Runtime 確認用の Web Demo（`#/i2c-scan`）も同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
+Scan は Public polyfill に無い Demo-only である。学習・編集の入口は HTML サンプル（`workspace/i2c-scan/`、確認先 `http://127.0.0.1:4173/i2c-scan/`）。同じ `requestI2CAccess` → `open` + `writeByte(0x00)` で合成する。呼び出し経路は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。
 
 ## 学ぶ
 
@@ -161,33 +161,20 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/i2c-scan/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
+Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/i2c-scan/`（Run Task **Serve examples** は URL 案内）。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
-Runtime 確認（Web Demo の Scan / Stop）:
-
-```sh
-./scripts/start.sh
-```
-
-1. I2C 有効化、`/dev/i2c-1` 確認、device 接続、Runtime 起動を完了する
-2. ブラウザで `http://127.0.0.1:4200/#/i2c-scan` を Raspberry Pi 上で開く
-3. 接続状態が **Connected** になるまで待つ（Runtime が止まっていると `Error`）
-4. **Scan** を押す。走査中はボタンが無効になり、ステータスが「走査中」になる
-5. 完了すると検出 address が hex 一覧で出る。画面離脱 / reload / WebSocket 切断で走査は中断する
-
-Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。
+Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サンプルは `http://127.0.0.1:4173/i2c-scan/`。
 
 ## 結果の読み方
 
-HTML サンプルはページ表示で走査し、ステータスが「走査中」から「N 件」になる。web-demo は Scan ボタンを使う。
+HTML サンプルはページ表示で走査し、ステータスが「走査中」から「N 件」になる。
 
 | UI | 意味 |
 | --- | --- |
-| 走査中 | `0x03`–`0x77` を順に probe している。web-demo では Scan ボタンが無効 |
+| 走査中 | `0x03`–`0x77` を順に probe している |
 | N 件 | 走査が完了した。一覧の件数が N |
-| 停止中 | web-demo のみ。未実行、または画面離脱 / 切断で中断した |
 
 一覧の各行は `0x48` 形式（2 桁 hex）。本 example の成功条件は、一覧に **`0x48`** が含まれること。他の address が出ても `0x48` があれば可。
 
@@ -203,19 +190,19 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 `workspace/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Editor から配信しているときは `http://127.0.0.1:4173/i2c-scan/` を開いているかも見る。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
-### Scan を押しても address が出ない / 空一覧になる
+### address が出ない / 空一覧になる
 
 | 確認 | 対処 |
 | --- | --- |
 | I2C が無効 | `sudo ./scripts/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | host に `/dev/i2c-1` が無い | `ls -l /dev/i2c-1` と `./scripts/doctor.sh` |
 | container に `/dev/i2c-1` が無い | `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1` |
-| Runtime が止まっている / 接続が Error | `./scripts/start.sh` と `curl http://localhost:33330/health`。接続状態が **Connected** になってから Scan する |
+| Runtime が止まっている | `./scripts/start.sh` と `curl http://localhost:33330/health` |
 | ピン取り違え | 物理 pin 1（3.3V）、pin 3（SDA）、pin 5（SCL）、pin 6（GND） |
 | A0 / A1 が GND でない | A0 / A1 を GND へ。上げると address が `0x48` 以外になる |
 | 5V 接続 | VDD / SDA / SCL を 5V ピン（2 / 4）へつながない |
 | 非 Pi 環境 | macOS などでは実 I2C が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Catalog は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL` で WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `open` が Permission denied になる
 
@@ -223,4 +210,4 @@ I2C device の mount と権限の問題。[Troubleshooting](./troubleshooting.md
 
 ### Scan 中に画面を離すと一覧が消える
 
-画面離脱 / reload / WebSocket 切断で走査を中断し、結果を捨てる。再 Scan するときは `#/i2c-scan` に戻り、接続状態が **Connected** になってから Scan を押す。
+画面離脱 / reload / WebSocket 切断で走査を中断し、結果を捨てる。再度走査するときは HTML サンプルを開き直す。

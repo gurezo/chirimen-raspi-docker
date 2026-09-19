@@ -6,22 +6,22 @@ GPIO input / onchange を確認する最小回路を固定する。配線情報�
 
 - 親 Issue: [#51 GPIO Input example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/51)
 - 子 Issue: [#109 GPIO Input 回路仕様を決定する](https://github.com/gurezo/chirimen-raspi-docker/issues/109)
-- Browser GPIO Input UI: web-demo の GPIO Input（`#/gpio-input`）。[#110](https://github.com/gurezo/chirimen-raspi-docker/issues/110)
-- onchange UI: web-demo の GPIO Input が Start 後に `onchange` で realtime 更新する。[#111](https://github.com/gurezo/chirimen-raspi-docker/issues/111)
-- Cleanup 検証: Stop / unsubscribe / 画面離脱 / reload / WebSocket 切断 / Runtime 再起動。[#112](https://github.com/gurezo/chirimen-raspi-docker/issues/112)
+- Browser GPIO Input Example: [workspace/button/](../../workspace/button/)（`:4173/button/`）。[#110](https://github.com/gurezo/chirimen-raspi-docker/issues/110)
+- onchange: HTML サンプルがページ表示後に `onchange` で realtime 更新する。[#111](https://github.com/gurezo/chirimen-raspi-docker/issues/111)
+- Cleanup 検証: タブを閉じる / reload / WebSocket 切断 / Runtime 再起動。[#112](https://github.com/gurezo/chirimen-raspi-docker/issues/112)
 - 操作手順つきガイド: [gpio-input.md](../guides/gpio-input.md)（#113）
 - HTML サンプル: [workspace/button/](../../workspace/button/)
 - Catalog / Runtime Example 実機: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 - LED 回路（共存可）: [gpio-led-blink.md](./gpio-led-blink.md)（BCM 26）
 - 参考: [chirimen `gc/gpio/button`](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button)
 
-web-demo の GPIO port 定数は `apps/web-demo/src/gpio-input.ts` の `GPIO_INPUT_PORT`（`5`）。`navigator.requestGPIOAccess().ports.get(5)` で参照する。
+GPIO port は HTML サンプル [workspace/button/main.js](../../workspace/button/main.js) の `ports.get(5)`。`navigator.requestGPIOAccess().ports.get(5)` で参照する。
 
 旧 button サンプルは GPIO5 のスイッチに加えて GPIO26 の LED を `onchange` で点灯する。LED 配線は [gpio-led-blink.md](./gpio-led-blink.md) に任せる。本仕様はスイッチ（入力）側のみを採用する。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全なタクトスイッチ + プルアップ回路を 1 つに決める。web-demo の Input UI と [操作ガイド](../guides/gpio-input.md) はこの文書を正本とする。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全なタクトスイッチ + プルアップ回路を 1 つに決める。HTML サンプルと [操作ガイド](../guides/gpio-input.md) はこの文書を正本とする。
 
 ## ピン対応
 
@@ -113,21 +113,19 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は入力ピ
 
 配線後、GPIO5 を input にして `read()` すると、離したとき `1`、押したとき `0` になる。`onchange` は値が変わるたびに同じ `0` / `1` を通知する。
 
-web-demo の GPIO Input（`#/gpio-input`）では Start で `export('in')` と初回 `read()` をし、`onchange` で入力変化を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / 切断で `onchange` 解除と `unexport` をする。HTML サンプル（[workspace/button/](../../workspace/button/)）は旧 button と同じく GPIO26 の LED を `onchange` で点灯する。Cleanup の詳細は下記、操作手順は [gpio-input.md](../guides/gpio-input.md)。
+HTML サンプル（[workspace/button/](../../workspace/button/)）はページ表示で GPIO5 を input で開き、`onchange` で入力変化を realtime に扱う。旧 button と同じく GPIO26 の LED を `onchange` で点灯する。Cleanup の詳細は下記、操作手順は [gpio-input.md](../guides/gpio-input.md)。
 
 ## Cleanup
 
-Demo 終了後に GPIO5 の watch / session を残さない。次のタイミングで `onchange` を解除し、`unexport` する。
+Example 終了後に GPIO5 の watch / session を残さない。HTML サンプルは旧 button と同じく、クライアントでは `unexport` しない。サーバが切断時に解放する。
 
 | タイミング | クライアント | サーバ |
 | --- | --- | --- |
-| Stop button | `GpioInputSession.stop()`（`onchange = null` → `unexport`） | `gpio.unsubscribe` → `gpio.unexport` |
-| unsubscribe | `onchange = null`。後続の `gpio.onchange` は無視する | `gpio.unsubscribe`。最後の購読解除で watch 停止 |
-| page navigation | `#/gpio-input` 以外への `hashchange` で `stop()` | `gpio.unsubscribe` → `gpio.unexport` |
-| browser reload | `pagehide` で `stop()`（await しない best-effort） | WebSocket `close` → `GpioSession.releaseAll()`（watch 停止 + unexport） |
-| WebSocket disconnect | Connected 以外の接続状態で `stop()`。再接続後は自動再開しない | WebSocket `close` → `GpioSession.releaseAll()` |
-| Runtime restart | 切断ステータスで `stop()`。再接続後は自動再開しない | shutdown の `cleanupAll()` → `releaseAll()` → process 全体の `unexportAll` |
+| tab close | ページ終了（クライアント `unexport` なし） | WebSocket `close` → `GpioSession.releaseAll()`（watch 停止 + unexport） |
+| browser reload | ページ再読込 | WebSocket `close` → `GpioSession.releaseAll()` |
+| WebSocket disconnect | 接続切断。再接続後は自動再開しない | WebSocket `close` → `GpioSession.releaseAll()` |
+| Runtime restart | 接続切断。再接続後は自動再開しない | shutdown の `cleanupAll()` → `releaseAll()` → process 全体の `unexportAll` |
 
-切断中の `unexport` RPC が失敗しても、Browser Polyfill はローカルの `exported` を落とす。web-demo は切断時に session を止めるため、reconnect で watch を張り直さない。サーバ側は切断時と shutdown 時に必ず `releaseAll()` する。
+切断中の `unexport` RPC が失敗しても、Browser Polyfill はローカルの `exported` を落とす。reconnect で watch を張り直さない。サーバ側は切断時と shutdown 時に必ず `releaseAll()` する。
 
 完了条件: GPIO Input 終了後に GPIO watch / session が残らず、同じ GPIO port（BCM 5）を再度 `export` できる。

@@ -103,8 +103,7 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 chirimen-raspi-docker/
 ├── apps/
 │   ├── server/                 # Express + WebSocket server
-│   ├── web-demo/               # Runtime Demo / Diagnostic UI（Polyfill / 接続状態 UI / GPIO・I2C ナビ）
-│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254 / #255）
+│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254 / #255 / #263）
 ├── libs/
 │   ├── core/                   # 共通エラー / 型
 │   ├── gpio/                   # Web GPIO 風 domain（型・契約）
@@ -115,10 +114,8 @@ chirimen-raspi-docker/
 ├── docker/
 │   ├── editor/
 │   │   └── Dockerfile          # code-server 4.132.0（amd64 / arm64）
-│   ├── web-demo/
-│   │   └── Dockerfile          # Vite production build + nginx（port 4200、#180）
 │   ├── example-catalog/
-│   │   └── Dockerfile          # Vite production build + nginx（port 4174、#254）
+│   │   └── Dockerfile          # Vite production build + nginx（port 4200、#254 / #263）
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
@@ -137,7 +134,7 @@ chirimen-raspi-docker/
 │   ├── examples/               # GPIO / I2C Example 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117 / #256）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
-├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-web-demo / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
+├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -152,8 +149,7 @@ chirimen-raspi-docker/
 | Path | 責務 |
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
-| `apps/web-demo` | Runtime Demo / Diagnostic UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan の Scan / hex 一覧）。Example の編集結果確認先ではない |
-| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。出典と責務は [catalog.md](../examples/catalog.md)。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255） |
+| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。出典と責務は [catalog.md](../examples/catalog.md)。入口は `:4200`。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255 / #263） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |
@@ -166,8 +162,8 @@ chirimen-raspi-docker/
 ## Docker と scripts
 
 - 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
-- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
-- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Web Demo には付けない）
+- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
+- GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 
 詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
@@ -202,7 +198,7 @@ npx nx mcp --help
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
 | [GPIO Input](../guides/gpio-input.md) | 必要部品・配線・HTML サンプルでの入力確認手順 |
 | [GPIO Input 回路仕様](../examples/gpio-input.md) | BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ |
-| [I2C Scan](../guides/i2c-scan.md) | I2C 有効化・配線・HTML サンプル / web-demo での address scan 手順 |
+| [I2C Scan](../guides/i2c-scan.md) | I2C 有効化・配線・HTML サンプルでの address scan 手順 |
 | [I2C Scan 検証仕様](../examples/i2c-scan.md) | ADT7410 / `0x48` / I2C1（物理 pin 3 / 5）。[#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) |
 | [Troubleshooting](../guides/troubleshooting.md) | よくある障害 |
 

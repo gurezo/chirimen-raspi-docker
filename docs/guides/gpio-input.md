@@ -37,7 +37,7 @@ Tutorial の SD イメージや `/home/pi/Desktop/gc/` の手順は使わない�
 
 4 pin タクトスイッチを使う場合、端子が出ている向き（縦）は常時導通で、それと直交する方向がボタンで切り替わる。ジャンパは直交方向の端子へつなぐ。詳細は [回路仕様](../examples/gpio-input.md) を参照する。
 
-HTML サンプルは旧 button と同じく GPIO26 の LED も使う。LED 側の部品は [GPIO LED Blink](./gpio-led-blink.md) を参照する。Runtime 確認用の Web Demo（GPIO Input）だけを使う場合、LED は不要。
+HTML サンプルは旧 button と同じく GPIO26 の LED も使う。LED 側の部品は [GPIO LED Blink](./gpio-led-blink.md) を参照する。入力値だけを確認するなら LED は不要。
 
 ## 配線
 
@@ -111,7 +111,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/button/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/button/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
+Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/button/`（Run Task **Serve examples** は URL 案内）。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
 
 `index.html` の読み込み順:
 
@@ -130,19 +130,13 @@ Browser Editor から編集する場合の標準操作は `Edit → Save → Bro
 4. タクトスイッチを押すと GPIO26 の LED が点灯し、離すと消灯する
 5. タブを閉じると購読は止まる。サンプルは旧 button と同じくクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
 
-Runtime 確認（Web Demo の Start / Stop / Read）:
-
-```sh
-./scripts/start.sh
-```
-
-`http://127.0.0.1:4200/#/gpio-input` を開き、接続状態が **Connected** のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断でも止まる。LED は使わない。Web Demo は Example の編集結果確認先ではない。Web Demo 自体の開発は [Development Guide](./development.md)。詳細は [browser-polyfill.md](./browser-polyfill.md)。
+Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サンプルは `http://127.0.0.1:4173/button/`。
 
 ## 期待結果
 
 - 離すと GPIO5 は **`1`**、押すと **`0`**（active LOW）
 - HTML サンプルでは押下で LED が点灯し、離すと消灯する
-- タブを閉じたあと、同じ GPIO5（と GPIO26）を再度 `export` できる（HTML サンプルを開き直す、または web-demo の Start）
+- タブを閉じたあと、同じ GPIO5（と GPIO26）を再度 `export` できる（HTML サンプルを開き直す）
 
 ## Troubleshooting
 
@@ -163,7 +157,7 @@ Runtime 確認（Web Demo の Start / Stop / Read）:
 | 離しても `0` のまま | スイッチが常時導通（4 pin の取り違え）か、GPIO が GND に短絡していないか確認する |
 | LED が点かない | [GPIO LED Blink](./gpio-led-blink.md) の極性・抵抗・物理 pin 37 / 39 を確認する |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |
-| 別マシンのブラウザ | Editor / Example / Web Demo は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL`、Web Demo はページの hostname へ WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
+| 別マシンのブラウザ | Editor / Example / Catalog は既定で `127.0.0.1` のみ。LAN は `./scripts/start.sh --lan`。HTML は `CHIRIMEN_WS_URL` で WS 接続する（[browser-polyfill.md](./browser-polyfill.md)） |
 
 ### `export` が Permission denied / EROFS になる
 

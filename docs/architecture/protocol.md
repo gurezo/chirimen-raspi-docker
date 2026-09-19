@@ -302,8 +302,8 @@ Scan は Web I2C 仕様外（chirimen-server 参照実装互換）。`readByte` 
 | 面 | 決定 |
 | --- | --- |
 | Public API（`libs/i2c` / `libs/protocol` / `libs/browser-polyfill`） | **置かない**。`i2c.scan` operation も `I2CPort.scan()` も追加しない |
-| Demo-only（`apps/web-demo`） | Browser example は `navigator.requestI2CAccess()` のみを使い、`open` + `writeByte(0x00)` で走査を合成する（[#118](https://github.com/gurezo/chirimen-raspi-docker/issues/118)） |
-| Node Runtime（`libs/node-runtime`） | `I2cSession.scan` / `scanI2cPort` は host / server 用の既存 Public API。Browser / web-demo からは呼ばない |
+| Demo-only（`workspace/i2c-scan/`） | Browser example は `navigator.requestI2CAccess()` のみを使い、`open` + `writeByte(0x00)` で走査を合成する（[#118](https://github.com/gurezo/chirimen-raspi-docker/issues/118)） |
+| Node Runtime（`libs/node-runtime`） | `I2cSession.scan` / `scanI2cPort` は host / server 用の既存 Public API。Browser / Example からは呼ばない |
 
 ### Node Runtime scan
 
@@ -335,7 +335,7 @@ if (port) {
 ### 呼び出し経路
 
 ```text
-web-demo helper（Demo-only）
+I2C Scan example（Demo-only）
   → navigator.requestI2CAccess()
   → libs/browser-polyfill
   → Protocol: i2c.open / i2c.writeByte（既存 operation。i2c.scan は無い）
@@ -344,7 +344,7 @@ web-demo helper（Demo-only）
   → I2C bus
 ```
 
-Browser 側（#115 が実装した Demo helper）の合成:
+Browser 側（`workspace/i2c-scan/` の合成。当時 #115 が web-demo helper として実装）:
 
 ```ts
 const access = await navigator.requestI2CAccess();
@@ -373,7 +373,7 @@ for (let addr = 0x03; addr <= 0x77; addr++) {
 | --- | --- | --- |
 | 入口 | `session.scan(1)` / `scanI2cPort(port)` | `navigator.requestI2CAccess()` → `port.open` + `writeByte` |
 | protocol | 使わない（server 内） | `i2c.open` / `i2c.writeByte` を最大 117 往復 |
-| session 追跡 | probe の open は opened map に載せない | 成功した `open` は server `I2cSession` に残る。polyfill は `i2c.close` を公開しないため、切断時 `closeAll()` で掃除。web-demo は画面離脱 / reload / 切断で走査を中断する。再 Scan のため server の `i2c.open` は既 open なら success |
+| session 追跡 | probe の open は opened map に載せない | 成功した `open` は server `I2cSession` に残る。polyfill は `i2c.close` を公開しないため、切断時 `closeAll()` で掃除。HTML サンプルはタブを閉じる / reload / 切断で走査を中断する。再走査のため server の `i2c.open` は既 open なら success |
 
 demo 用途では往復数は許容する。
 
@@ -397,6 +397,6 @@ demo 用途では往復数は許容する。
 | #41 | Browser GPIO onchange（本節「Browser GPIO polyfill 入口」で完了） |
 | #42 | WebSocket reconnect（reconnect 後の GPIO export / subscription 復元を含む。本節で完了） |
 | #114 | Browser から I2C Scan を呼び出す API flow（本節「I2C Scan API flow」で完了） |
-| #115 | I2C Scan UI（web-demo Demo helper と `i2c.open` / `i2c.writeByte` routing。完了） |
+| #115 | I2C Scan UI（当時 web-demo Demo helper。#263 以降は `workspace/i2c-scan/` と `i2c.open` / `i2c.writeByte` routing。完了） |
 | #116 | I2C Scan の実機検証（ADT7410 / `0x48`。[i2c-scan.md](../examples/i2c-scan.md)。完了） |
 | #117 | I2C Scan guide（[i2c-scan.md](../guides/i2c-scan.md)。完了） |

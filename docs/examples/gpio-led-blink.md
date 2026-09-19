@@ -6,20 +6,20 @@
 
 - 親 Issue: [#50 GPIO LED Blink example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/50)
 - 子 Issue: [#105 LED Blink の回路仕様を決定する](https://github.com/gurezo/chirimen-raspi-docker/issues/105)
-- Blink UI（Start / Stop）: web-demo の GPIO Output（`#/gpio-output`）。[#106](https://github.com/gurezo/chirimen-raspi-docker/issues/106)
-- Cleanup 検証: Stop / 画面離脱 / reload / WebSocket 切断。[#107](https://github.com/gurezo/chirimen-raspi-docker/issues/107)
+- Blink Example: [workspace/led-blink/](../../workspace/led-blink/)（`:4173/led-blink/`）。[#106](https://github.com/gurezo/chirimen-raspi-docker/issues/106)
+- Cleanup 検証: タブを閉じる / reload / WebSocket 切断。[#107](https://github.com/gurezo/chirimen-raspi-docker/issues/107)
 - 操作手順つきガイド: [gpio-led-blink.md](../guides/gpio-led-blink.md)（#108）
 - HTML サンプル: [workspace/led-blink/](../../workspace/led-blink/)
 - Catalog / Runtime Example 実機: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 - 参考: [chirimen.org hello-real-world（Lチカ）](https://github.com/chirimen-oh/chirimen.org/tree/master/pizero/src/esm-examples/hello-real-world)
 
-web-demo の GPIO port 定数は `apps/web-demo/src/gpio-led-blink.ts` の `LED_BLINK_GPIO_PORT`（`26`）。`navigator.requestGPIOAccess().ports.get(26)` で参照する。
+GPIO port は HTML サンプル [workspace/led-blink/main.js](../../workspace/led-blink/main.js) の `ports.get(26)`。`navigator.requestGPIOAccess().ports.get(26)` で参照する。
 
 モータ配線は本仕様の対象外（hello-real-world の Lチカ部分のみを採用する）。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全な LED + 抵抗回路を 1 つに決める。web-demo の Blink UI と [操作ガイド](../guides/gpio-led-blink.md) はこの文書を正本とする。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V GPIO に安全な LED + 抵抗回路を 1 つに決める。HTML サンプルと [操作ガイド](../guides/gpio-led-blink.md) はこの文書を正本とする。
 
 ## ピン対応
 
@@ -103,18 +103,17 @@ Raspberry Pi の GPIO は **3.3V** ロジックである。本回路は次の前
 
 配線後、GPIO26 を output にして `write(1)` すると LED が点灯し、`write(0)` すると消灯する。
 
-HTML サンプル（[workspace/led-blink/](../../workspace/led-blink/)）を開くと 1 秒間隔で点滅する。web-demo の GPIO Output（`#/gpio-output`）では Start で点滅し、Stop で消灯して unexport する。終了後は同じ GPIO26 を再度 `export` できる。操作手順・Troubleshooting は [gpio-led-blink.md](../guides/gpio-led-blink.md)。
+HTML サンプル（[workspace/led-blink/](../../workspace/led-blink/)）を開くと 1 秒間隔で点滅する。タブを閉じると点滅は止まる。終了後は同じ GPIO26 を再度 `export` できる。操作手順・Troubleshooting は [gpio-led-blink.md](../guides/gpio-led-blink.md)。
 
 ## Cleanup
 
-Demo 停止後に GPIO26 を残さない。次のタイミングで点滅を止め、`write(0)` のあと `unexport` する。
+Example 終了後に GPIO26 を残さない。HTML サンプルは旧 LEDblink と同じ無限ループのため、クライアントでは `unexport` しない。サーバが切断時に解放する。
 
 | タイミング | クライアント | サーバ |
 | --- | --- | --- |
-| Stop button | `LedBlinkSession.stop()` | `gpio.unexport` |
-| page navigation | `#/gpio-output` 以外への `hashchange` で `stop()` | `gpio.unexport` |
-| browser reload | `pagehide` で `stop()`（await しない best-effort） | WebSocket `close` → `GpioSession.releaseAll()` |
-| WebSocket disconnect | Connected 以外の接続状態で `stop()`。再接続後は自動再開しない | WebSocket `close` → `GpioSession.releaseAll()` |
+| tab close | ページ終了（クライアント `unexport` なし） | WebSocket `close` → `GpioSession.releaseAll()` |
+| browser reload | ページ再読込 | WebSocket `close` → `GpioSession.releaseAll()` |
+| WebSocket disconnect | 接続切断。再接続後は自動再開しない | WebSocket `close` → `GpioSession.releaseAll()` |
 
 切断中の `unexport` RPC が失敗しても、Browser Polyfill はローカルの `exported` を落とす。reconnect でピンを取り直さない。サーバ側は切断時に必ず `releaseAll()` する。
 

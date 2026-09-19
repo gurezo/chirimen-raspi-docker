@@ -53,8 +53,8 @@ chmod +x scripts/doctor.sh
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Web Demo + Catalog
-./scripts/start.sh --lan      # 同上。Editor / Example / Web Demo / Catalog を LAN 公開
+./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
 ./scripts/start.sh --32bit    # Runtime only（32-bit OS。サポート対象外）
 ```
 
@@ -95,7 +95,6 @@ I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
-curl -fsS http://127.0.0.1:4174/
 ```
 
 | Port | Service | Role |
@@ -103,10 +102,9 @@ curl -fsS http://127.0.0.1:4174/
 | 33330 | chirimen-server | Hardware Runtime / WebSocket |
 | 8080 | chirimen-editor | code-server / Edit |
 | 4173 | chirimen-examples | Edited Example execution |
-| 4174 | chirimen-example-catalog | Example Catalog |
-| 4200 | chirimen-web-demo | Runtime Demo / diagnostics |
+| 4200 | chirimen-example-catalog | Example Catalog（Web UI 入口） |
 
-確認先は Example Server `:4173` である。Catalog（`:4174`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor の既存 workspace ルートを開く。Web Demo（`:4200`）は編集結果の確認先ではない。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
+確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor の既存 workspace ルートを開く。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
 
 ## 次のステップ
 
@@ -114,7 +112,7 @@ curl -fsS http://127.0.0.1:4174/
 | --- | --- |
 | GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](./chirimen-tutorial.md)。環境構築は Tutorial ではなくこのページと [Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | LED を点滅させる | [GPIO LED Blink](./gpio-led-blink.md)。HTML サンプル（`http://127.0.0.1:4173/led-blink/`）。配線は [回路仕様](../examples/gpio-led-blink.md) |
-| Example を探す（Catalog） | `http://127.0.0.1:4174/`。ported は「実行」と「編集」。手順は [Browser Development Environment](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。metadata は [catalog-metadata.md](../examples/catalog-metadata.md) |
+| Example を探す（Catalog） | `http://127.0.0.1:4200/`。ported は「実行」と「編集」。手順は [Browser Development Environment](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。metadata は [catalog-metadata.md](../examples/catalog-metadata.md) |
 | タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
 | Runtime の疎通を確認する | [Runtime Diagnostics](./runtime-diagnostics.md)。Host は `doctor.sh`、Server は `GET /health`、Browser は GPIO LED Blink / GPIO Input / I2C Scan |
@@ -122,7 +120,7 @@ curl -fsS http://127.0.0.1:4174/
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) |
 | Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
 | Browser Development Flow の実機 E2E | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
-| Runtime を Web Demo で確認する | [browser-development.md の Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する) |
+| Runtime を診断する | [Runtime Diagnostics](./runtime-diagnostics.md) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
 | Browser Editor の Extension | [browser-development.md](./browser-development.md#editor-を開く)。プリインストール・推奨しない |

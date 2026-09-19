@@ -81,7 +81,7 @@ workspace/ads1115/polyfill.js
 2. script 読み込み**前**に `globalThis.CHIRIMEN_WS_URL` を設定
 3. 省略時は `ws://localhost:33330/`
 
-LAN の別マシンから HTML Example を開くときは、Browser の `localhost` は Pi ではない。`--lan` で 4173 を公開したうえで、script 前に `CHIRIMEN_WS_URL` を Pi の IP（`ws://192.168.1.10:33330/` など）へ向ける。Web Demo（`apps/web-demo`）はページの hostname が localhost でなければ `ws://<hostname>:33330/` に接続する。
+LAN の別マシンから HTML Example を開くときは、Browser の `localhost` は Pi ではない。`--lan` で 4173 を公開したうえで、script 前に `CHIRIMEN_WS_URL` を Pi の IP（`ws://192.168.1.10:33330/` など）へ向ける。
 
 ### 明示初期化（installBrowserPolyfill）
 
@@ -109,7 +109,7 @@ LAN の別マシンから HTML Example を開くときは、Browser の `localho
 
 ## ESM import との使い分け
 
-TypeScript / Vite アプリでは、IIFE ではなく ESM から import する。`apps/web-demo` はこの方法で Browser Polyfill を組み込んでいる。
+TypeScript / Vite アプリでは、IIFE ではなく ESM から import する。
 
 ```ts
 import { installBrowserPolyfill } from 'browser-polyfill';
@@ -134,50 +134,21 @@ error
 
 `error` のときは第 2 引数に `ChirimenError` が付く。ESM では `installBrowserPolyfill` の**前**に `requestGPIOAccess` / `requestI2CAccess` を呼ぶと `ChirimenError(InvalidAccess)` になる。lazy 接続は IIFE / script tag 専用。
 
-### Web Demo で Runtime を確認する
+### Runtime を確認する
 
-Web Demo（`apps/web-demo`）は Runtime Demo / Diagnostic UI である。Example の編集結果確認先ではない。確認内容は次に限る。
-
-```text
-Runtime が起動しているか
-↓
-Browser Polyfill が接続できるか
-↓
-WebSocket が接続できるか
-↓
-GPIO / I2C API が動作するか
-```
-
-Browser だけの経路（推奨）:
-
-```sh
-./scripts/start.sh
-```
-
-ブラウザで `http://127.0.0.1:4200/` を開く。Editor の Run Task **Open Web Demo** は URL 案内である。Web Demo 自体を host で開発する（`pnpm nx serve web-demo`）手順は [Development Guide](./development.md)。
-
-画面上の接続状態が次のいずれかになる。
+診断の正本は [Runtime Diagnostics](./runtime-diagnostics.md) である。Host は `./scripts/doctor.sh`、Server は `GET /health`、GPIO / I2C は Reference Examples で確認する。
 
 ```text
-Disconnected
-Connecting
-Connected
-Error
+http://127.0.0.1:4173/led-blink/
+http://127.0.0.1:4173/button/
+http://127.0.0.1:4173/i2c-scan/
 ```
 
-Runtime が止まっていると `Error` と起動確認の案内が出る。[Runtime を起動](./getting-started.md)すると `Connected` に変わる。画面上のナビから次の demo へ移動できる。
+GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。操作手順は [GPIO LED Blink](./gpio-led-blink.md)。
 
-```text
-GPIO Output   → #/gpio-output（Start / Stop で GPIO LED Blink）
-GPIO Input    → #/gpio-input（Start 後 onchange で realtime。Read は再読込。回路仕様は BCM 5）
-I2C Scan      → #/i2c-scan（Scan で bus 1 を走査。応答 address を hex 表示）
-```
+GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ）。操作手順は [GPIO Input](./gpio-input.md)。
 
-GPIO Output の配線は [回路仕様](../examples/gpio-led-blink.md)（BCM 26 / 物理 pin 37 / LED + 330Ω）。Runtime が `Connected` のとき Start で点滅を開始し、Stop / 画面離脱 / reload / WebSocket 切断で止めて GPIO を unexport する。終了後は同じ GPIO26 を再度 Start できる。操作手順の本ガイドは [GPIO LED Blink](./gpio-led-blink.md)（旧 LEDblink 相当の HTML サンプルを含む）。
-
-GPIO Input の配線は [回路仕様](../examples/gpio-input.md)（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ。旧 [gc/gpio/button](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button) と同じピン）。Runtime が `Connected` のとき Start で GPIO5 を input で開き、`onchange` で現在値 `0` / `1` を realtime 表示する。Read で再読込、Stop / 画面離脱 / reload / WebSocket 切断 / Runtime 停止で unsubscribe と unexport をする。再接続後は自動再開せず、同じ GPIO5 を再度 Start できる。操作手順の本ガイドは [GPIO Input](./gpio-input.md)（旧 button 相当の HTML サンプルを含む）。
-
-I2C Scan は Runtime が `Connected` のとき `#/i2c-scan` の Scan で I2C bus 1 を `0x03`–`0x77` 走査する。応答 address を hex 一覧で表示する。画面離脱 / reload / WebSocket 切断で走査を中断する。検証用 slave は ADT7410（expected `0x48`）。配線は [検証仕様](../examples/i2c-scan.md)（#116）。I2C 有効化は [Raspberry Pi Setup](./raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）。操作手順の本ガイドは [I2C Scan](./i2c-scan.md)。
+I2C Scan の検証用 slave は ADT7410（expected `0x48`）。配線は [検証仕様](../examples/i2c-scan.md)。操作手順は [I2C Scan](./i2c-scan.md)。
 
 接続成功後、コンソールで次が関数であることを確認できる。
 
@@ -190,6 +161,6 @@ navigator.requestI2CAccess
 
 `navigator.requestI2CAccess()` が公開する API は `I2CPort.open` と slave の read/write のみである。`I2CPort.scan()` は追加しない（Web I2C 仕様外のため Public polyfill には置かない）。
 
-I2C Scan example は Demo-only として、web-demo が `requestI2CAccess` → `port.open(addr)` → `writeByte(0x00)` を `0x03`–`0x77` で合成する。呼び出し経路の正本は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（[検証仕様](../examples/i2c-scan.md)）。操作手順は [I2C Scan](./i2c-scan.md)。
+I2C Scan example は Demo-only として、HTML サンプルが `requestI2CAccess` → `port.open(addr)` → `writeByte(0x00)` を `0x03`–`0x77` で合成する。呼び出し経路の正本は [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)。UI は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) で実装済み。実機検証は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) で完了（[検証仕様](../examples/i2c-scan.md)）。操作手順は [I2C Scan](./i2c-scan.md)。
 
 公開 TypeScript API は [API リファレンス](https://gurezo.github.io/chirimen-raspi-docker/api/) を参照。

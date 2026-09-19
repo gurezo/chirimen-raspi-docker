@@ -158,10 +158,9 @@
         <h2>Browser Development Flow</h2>
         <p>Learn → Edit → Save → Run → Verify</p>
         <pre>Tutorial = 学ぶ
-Catalog  = Example を探す（:4174）。ported は実行 / 編集
+Catalog  = Example を探す（:4200）。ported は実行 / 編集
 Editor   = 書く（:8080）
-Examples = 書いたものを動かす（:4173）
-Web Demo = Runtime を確認する（:4200）</pre>
+Examples = 書いたものを動かす（:4173）</pre>
         <table>
           <thead>
             <tr>
@@ -187,14 +186,9 @@ Web Demo = Runtime を確認する（:4200）</pre>
               <td>Edited Example execution</td>
             </tr>
             <tr>
-              <td>4174</td>
+              <td>4200</td>
               <td>chirimen-example-catalog</td>
               <td>Example Catalog</td>
-            </tr>
-            <tr>
-              <td>4200</td>
-              <td>chirimen-web-demo</td>
-              <td>Runtime Demo / diagnostics</td>
             </tr>
           </tbody>
         </table>
@@ -277,8 +271,7 @@ Web Demo = Runtime を確認する（:4200）</pre>
       <section id="use">
         <h2>使う</h2>
         <p>
-          書いた Example の確認先は Example Server（<code>:4173</code>）です。Catalog（<code>:4174</code>）は題材の発見入口です。ported の「実行」は Example Server、「編集」は Editor の既存 workspace ルートを開きます。Web
-          Demo（<code>:4200</code>）は編集結果の確認先ではありません。
+          書いた Example の確認先は Example Server（<code>:4173</code>）です。Catalog（<code>:4200</code>）は題材の発見入口です。ported の「実行」は Example Server、「編集」は Editor の既存 workspace ルートを開きます。
         </p>
         <ul>
           <li>
@@ -329,8 +322,8 @@ Web Demo = Runtime を確認する（:4200）</pre>
       <section id="develop">
         <h2>開発する</h2>
         <p>
-          Browser Development は Editor で書く手順です。Web Demo は Runtime
-          診断用です。Browser Polyfill と Development Guide
+          Browser Development は Editor で書く手順です。Runtime の確認は
+          Runtime Diagnostics です。Browser Polyfill と Development Guide
           はリポジトリ開発者向けです。
         </p>
         <ul>
@@ -340,8 +333,8 @@ Web Demo = Runtime を確認する（:4200）</pre>
             >
           </li>
           <li>
-            <a href="./guides/browser-development.html#web-demo-で-runtime-を診断する"
-              >Web Demo（Runtime 診断）</a
+            <a href="./guides/runtime-diagnostics.html"
+              >Runtime Diagnostics</a
             >
           </li>
           <li>

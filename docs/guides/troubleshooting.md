@@ -18,17 +18,16 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 ## Browser Development の切り分け
 
-`Learn → Edit → Save → Run → Verify` で詰まったときの入口。詳細は各節へ。Web Demo（`:4200`）は編集結果の確認先ではない。
+`Learn → Edit → Save → Run → Verify` で詰まったときの入口。詳細は各節へ。Catalog（`:4200`）は題材の発見入口であり、編集結果の確認先ではない。Runtime の切り分けは [Runtime Diagnostics](./runtime-diagnostics.md)。
 
 | 症状 | 参照 |
 | --- | --- |
 | 8080 が開かない | [Editor（8080）が開かない](#editor8080が開かない) |
 | 4173 が開かない | [Example の静的サーバ（4173）が開かない](#example-の静的サーバ4173が開かない) |
-| 4174 が開かない | [Example Catalog（4174）が開かない](#example-catalog4174が開かない) |
-| 4200 が開かない | [Web Demo（4200）が開かない](#web-demo4200が開かない) |
+| 4200 が開かない | [Example Catalog（4200）が開かない](#example-catalog4200が開かない) |
 | 保存できない | [Editor で Example が保存できない](#editor-で-example-が保存できないpermission-denied) |
 | 保存後未反映 | [Example を保存しても Browser に反映されない](#example-を保存しても-browser-に反映されない) |
-| Runtime 接続不可 | [LAN から Web Demo / Example は開くが GPIO / I2C が動かない](#lan-から-web-demo-example-は開くが-gpio-i2c-が動かない) / [Web Demo は開くが GPIO / I2C が動かない](#web-demo-は開くが-gpio-i2c-が動かない) |
+| Runtime 接続不可 | [LAN から Example は開くが GPIO / I2C が動かない](#lan-から-example-は開くが-gpio-i2c-が動かない) / [Example は開くが GPIO / I2C が動かない](#example-は開くが-gpio-i2c-が動かない) |
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
 | 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 
@@ -312,7 +311,7 @@ docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.y
 
 設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `workspace/` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
 
-## LAN から Editor / Web Demo に届かない
+## LAN から Editor / Catalog に届かない
 
 ### 症状
 
@@ -339,22 +338,21 @@ docker compose port chirimen-editor 8080
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
-## LAN から Web Demo / Example は開くが GPIO / I2C が動かない
+## LAN から Example は開くが GPIO / I2C が動かない
 
 ### 症状
 
-別マシンで `http://<Pi の IP>:4200/` や `:4173/led-blink/` は表示されるが、接続状態が Error のまま。または GPIO / I2C 操作が失敗する。
+別マシンで `http://<Pi の IP>:4173/led-blink/` や Catalog `:4200` は表示されるが、GPIO / I2C 操作が失敗する。
 
 ### 原因
 
-HTML Example の既定 WebSocket 先は `ws://localhost:33330/` で、別マシンの localhost を指す。Web Demo はページの hostname が localhost でなければ `ws://<hostname>:33330/` に接続する。Runtime は `--lan` しても bind を変えない（もともと全 interface）。
+HTML Example の既定 WebSocket 先は `ws://localhost:33330/` で、別マシンの localhost を指す。Runtime は `--lan` しても bind を変えない（もともと全 interface）。
 
 ### 対処
 
-- Web Demo は Pi の IP でページを開く（hostname 解決）。`http://127.0.0.1:4200/` を別マシンから開いても届かない
 - HTML Example は script の前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）
 - `curl http://<Pi の IP>:33330/health` で Runtime を確認する
-- Editor / web-demo container に GPIO / I2C device は渡していない
+- Editor / Catalog container に GPIO / I2C device は渡していない
 
 ## Editor を IP 直打ち HTTP で開くと webview が壊れる
 
@@ -417,7 +415,7 @@ Editor workspace は `workspace/` のみで、`eslint` / `node_modules` が無�
 
 ### 原因
 
-`chirimen-editor` が code-server を起動せずに終了している。公式 entrypoint は先頭で `fixuid`（setuid）を実行する。`security_opt: no-new-privileges:true` があると setuid が効かず、8080 は listen しない。Web Demo と Runtime は `fixuid` を使わないため生き残る。メモリ不足で kill された場合も同じ症状になる。
+`chirimen-editor` が code-server を起動せずに終了している。公式 entrypoint は先頭で `fixuid`（setuid）を実行する。`security_opt: no-new-privileges:true` があると setuid が効かず、8080 は listen しない。Catalog と Runtime は `fixuid` を使わないため生き残る。メモリ不足で kill された場合も同じ症状になる。
 
 ### 確認
 
@@ -448,67 +446,49 @@ docker compose logs chirimen-editor
 
 ### 対処
 
-- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Catalog を起動する
 - `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-examples` が running か見る
 - host から配信する場合は Compose の examples を止めてから `cd workspace && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
 
-## Example Catalog（4174）が開かない
+## Example Catalog（4200）が開かない
 
 ### 症状
 
-`http://127.0.0.1:4174/` に接続できない。または host の `pnpm nx serve example-catalog` が port 使用中で失敗する。
+`http://127.0.0.1:4200/` に接続できない。または host の `pnpm nx serve example-catalog` が port 使用中で失敗する。
 
 ### 原因
 
-`--32bit` で Runtime only 起動している。または Catalog image がまだ build されていない。host の Vite と Compose `chirimen-example-catalog` が同じ port `4174` を使っている。
+`--32bit` で Runtime only 起動している。または Catalog image がまだ build されていない。host の Vite と Compose `chirimen-example-catalog` が同じ port `4200` を使っている。
 
 ### 対処
 
-- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
-- `curl -fsS http://127.0.0.1:4174/` が HTML を返すことを確認する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Catalog を起動する
+- `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-example-catalog` が running か見る
 - host で Vite を使うときは Compose の catalog を止める: `docker compose stop chirimen-example-catalog`。手順は [Development Guide](./development.md)
 - Catalog の「実行」は Example Server `:4173`、「編集」は Editor `:8080/?folder=/home/coder/project` を別タブで開く。子ディレクトリを新しい workspace にはしない。legacy に実行 / 編集は出ない
 
 方針は [browser-development.md の Catalog で題材を探す](./browser-development.md#catalog-で題材を探す)。
 
-## Web Demo（4200）が開かない
+## Example は開くが GPIO / I2C が動かない
 
 ### 症状
 
-`http://127.0.0.1:4200/` に接続できない。または host の `pnpm nx serve web-demo` が port 使用中で失敗する。
+`http://127.0.0.1:4173/led-blink/` などは表示されるが、GPIO / I2C 操作が失敗する。Runtime 未接続時はページ上にエラーが出る。
 
 ### 原因
 
-`--32bit` で Runtime only 起動している。または Web Demo image がまだ build されていない。host の Vite（`pnpm nx serve web-demo`）と Compose `chirimen-web-demo` が同じ port `4200` を使っている。
-
-### 対処
-
-- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
-- `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
-- `docker compose ps` で `chirimen-web-demo` が running か見る
-- host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose stop chirimen-web-demo`。手順は [Development Guide](./development.md)
-
-方針は [browser-editor.md の Web Demo 起動](../architecture/browser-editor.md#web-demo-起動180)。
-
-## Web Demo は開くが GPIO / I2C が動かない
-
-### 症状
-
-`http://127.0.0.1:4200/` は表示されるが、接続状態が Error のまま。または GPIO / I2C 操作が失敗する。
-
-### 原因
-
-WebSocket 先は Browser から `ws://localhost:33330/` である。web-demo container は静的ファイルだけを配信し、GPIO / I2C には触れない。Runtime が止まっていると Polyfill は接続できない。
+WebSocket 先は Browser から `ws://localhost:33330/` である。Catalog / Examples container は静的ファイルだけを配信し、GPIO / I2C には触れない。Runtime が止まっていると Polyfill は接続できない。
 
 ### 対処
 
 - `curl http://localhost:33330/health` で Runtime を確認する
 - 接続先は `ws://localhost:33330/`（[browser-polyfill.md](./browser-polyfill.md)）
-- Editor / web-demo container に GPIO / I2C device は渡していない
+- Editor / Catalog container に GPIO / I2C device は渡していない
+- 切り分けは [Runtime Diagnostics](./runtime-diagnostics.md)
 
 ## Example を保存しても Browser に反映されない
 
@@ -518,7 +498,7 @@ Editor で `main.js` を保存したあと、Example の見た目や LED の動�
 
 ### 原因
 
-HTML サンプルは静的ファイルである。hot reload は無い。標準操作は `Edit → Save → Browser reload` である。Web Demo（`:4200`）は編集結果を表示しない。
+HTML サンプルは静的ファイルである。hot reload は無い。標準操作は `Edit → Save → Browser reload` である。Catalog（`:4200`）は編集結果を表示しない。
 
 保存先は Editor `/home/coder/project` = host `./workspace` である。確認先は Example Server `:4173` である。
 
@@ -526,7 +506,7 @@ HTML サンプルは静的ファイルである。hot reload は無い。標準�
 
 - Example を開いている Browser タブを reload する
 - 開いている URL が `http://127.0.0.1:4173/led-blink/` など、編集中のディレクトリと一致しているか確認する
-- `http://127.0.0.1:4200/` を開いていないか確認する（Web Demo は編集結果の確認先ではない）
+- `http://127.0.0.1:4200/` を開いていないか確認する（Catalog は編集結果の確認先ではない）
 - 保存先が Editor `/home/coder/project`（host `./workspace`）であることを確認する
 - `polyfill.js` を変えた場合は host で `pnpm nx bundle browser-polyfill` したあと reload する
 
@@ -562,12 +542,12 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 
 ## LED が点かない
 
-配線・`polyfill.js` の配置・HTML サンプル / web-demo の切り分けは [GPIO LED Blink](./gpio-led-blink.md) の Troubleshooting を参照する。
+配線・`polyfill.js` の配置・HTML サンプルの切り分けは [GPIO LED Blink](./gpio-led-blink.md) の Troubleshooting を参照する。
 
 ## タクトスイッチを押しても値が変わらない
 
-配線・web-demo の Start / onchange / HTML サンプルの切り分けは [GPIO Input](./gpio-input.md) の Troubleshooting を参照する。
+配線・HTML サンプルの切り分けは [GPIO Input](./gpio-input.md) の Troubleshooting を参照する。
 
 ## I2C Scan で address が出ない
 
-配線・I2C 有効化・web-demo の Scan / hex 一覧の切り分けは [I2C Scan](./i2c-scan.md) の Troubleshooting を参照する。
+配線・I2C 有効化・HTML サンプルの切り分けは [I2C Scan](./i2c-scan.md) の Troubleshooting を参照する。

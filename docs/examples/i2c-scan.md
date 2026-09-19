@@ -1,13 +1,13 @@
 # I2C Scan 検証仕様
 
-既知 address の I2C device を 1 つ固定し、web-demo の I2C Scan が正しい address を返すことを実機で確認する。配線情報だけで同じ接続を再現できることが完了条件。
+既知 address の I2C device を 1 つ固定し、HTML サンプルの I2C Scan が正しい address を返すことを実機で確認する。配線情報だけで同じ接続を再現できることが完了条件。
 
 関連:
 
 - 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - API flow（Demo-only）: [protocol.md の I2C Scan API flow](../architecture/protocol.md#i2c-scan-api-flow114)（#114）
-- Scan UI: web-demo の I2C Scan（`#/i2c-scan`）。[#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
+- Scan Example: [workspace/i2c-scan/](../../workspace/i2c-scan/)（`:4173/i2c-scan/`）。[#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - HTML サンプル: [workspace/i2c-scan/](../../workspace/i2c-scan/)（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)）
 - 操作手順つきガイド: [i2c-scan.md](../guides/i2c-scan.md)（#117）
 - I2C 有効化: [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）
@@ -15,11 +15,11 @@
 
 本仕様の対象は **I2C Scan 自体** である。ADT7410 の温度読み取りなど、特定センサの機能 Example は追加しない。
 
-web-demo の I2C port 定数は `apps/web-demo/src/i2c-scan.ts` の `I2C_SCAN_PORT`（`1`）。`navigator.requestI2CAccess().ports.get(1)` で参照する。走査範囲は `0x03`–`0x77`（Runtime `scanI2cPort` と同じ）。
+I2C port は HTML サンプル [workspace/i2c-scan/main.js](../../workspace/i2c-scan/main.js) の `ports.get(1)`。`navigator.requestI2CAccess().ports.get(1)` で参照する。走査範囲は `0x03`–`0x77`（Runtime `scanI2cPort` と同じ）。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 で共通の、3.3V I2C1 に接続する検証用 slave を 1 つに決める。web-demo の Scan UI と [操作ガイド](../guides/i2c-scan.md) はこの文書を正本とする。
+Raspberry Pi 3 / 4 / 5 で共通の、3.3V I2C1 に接続する検証用 slave を 1 つに決める。HTML サンプルと [操作ガイド](../guides/i2c-scan.md) はこの文書を正本とする。
 
 ## 検証デバイス
 
@@ -117,7 +117,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 | 確認項目 | 結果 |
 | --- | --- |
 | 40-pin header | Pi 3 / 4 / 5 で物理 pin 3 = SDA（BCM 2）、pin 5 = SCL（BCM 3） |
-| default I2C | `/dev/i2c-1`。web-demo の `ports.get(1)` と一致 |
+| default I2C | `/dev/i2c-1`。HTML サンプルの `ports.get(1)` と一致 |
 | LED Blink | BCM 26（物理 37）。本配線の 2 / 3 とは重ならない |
 | GPIO Input | BCM 5（物理 29）。本配線の 2 / 3 とは重ならない |
 
@@ -125,7 +125,7 @@ Raspberry Pi の I2C は **3.3V** ロジックである。本配線は 3.3V 電�
 
 ## 期待結果
 
-配線後、host で `/dev/i2c-1` があり、`i2cdetect -y 1`（`i2c-tools` がある場合）に `48` が出る。HTML サンプル（[workspace/i2c-scan/](../../workspace/i2c-scan/)）または web-demo の I2C Scan（`#/i2c-scan`）で走査すると、hex 一覧に **`0x48`** が含まれる。
+配線後、host で `/dev/i2c-1` があり、`i2cdetect -y 1`（`i2c-tools` がある場合）に `48` が出る。HTML サンプル（[workspace/i2c-scan/](../../workspace/i2c-scan/)）で走査すると、hex 一覧に **`0x48`** が含まれる。
 
 slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）では正常だが、本 Issue の完了条件ではない。空配列は失敗として、配線と I2C 有効化を見直す。操作手順・Troubleshooting は [i2c-scan.md](../guides/i2c-scan.md)。切り分けは [troubleshooting.md](../guides/troubleshooting.md) の「I2C が使えない / scan が空」。
 
@@ -137,7 +137,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）
 5. `./scripts/doctor.sh` → `./scripts/start.sh`
 6. `docker compose exec chirimen-server ls -l /dev/i2c-1`
-7. HTML サンプル（`workspace/i2c-scan/`）または `./scripts/start.sh` → `http://127.0.0.1:4200/#/i2c-scan`
+7. HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）
 8. 走査結果の hex 一覧に `0x48` が出ることを確認する
 
 ## 実機検証（#116）
@@ -150,7 +150,7 @@ I2C1 の pin assignment は Pi 3 / 4 / 5 で同一。`/dev/i2c-1` と Runtime `i
 | 一次環境 | Raspberry Pi 5 Model B Rev 1.0 / Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)） |
 | host `/dev/i2c-1` | 有効化後に存在。Pi 3 B+（#97 / #135）/ Pi 4（#98 / #135）/ Pi 5（#99 / #135）でも同様 |
 | Runtime scan | Pi 5 で port `1` scan 成功。slave 未接続時は空配列（#99） |
-| Browser Scan | `#/i2c-scan` の Scan。`open` + `writeByte(0x00)` を `0x03`–`0x77`（#114 / #115） |
+| Browser Scan | `:4173/i2c-scan/`。`open` + `writeByte(0x00)` を `0x03`–`0x77`（#114 / #115） |
 | 完了条件 | 配線後の hex 一覧に `0x48`。空配列は失敗 |
 | 対象外 | ADT7410 の温度読み取りなどセンサ機能 Example |
 
