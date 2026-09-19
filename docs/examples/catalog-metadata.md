@@ -8,6 +8,7 @@ Example Catalog が参照する metadata の責務を、Example 固有情報と 
 - 子 Issue: [#252 Example Catalog metadata と chirimen-certified-devices 連携を設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/252)
 - 前段: [#251 Legacy CHIRIMEN Example の移植対象と metadata を整理する](https://github.com/gurezo/chirimen-raspi-docker/issues/251)（[legacy-inventory.md](./legacy-inventory.md)）
 - 回路図: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
+- 実機検証: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 - Device 正本: [gurezo/chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json)
 
 この文書は **Catalog metadata の設計** が目的である。Catalog UI の実装は [`apps/example-catalog`](../../apps/example-catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)、`http://127.0.0.1:4174/`）。ported Example から Workspace Example を開く導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)。実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
@@ -69,12 +70,13 @@ https://raw.githubusercontent.com/gurezo/chirimen-certified-devices/main/generat
 | `schematicUrl` | はい | 回路図 URL。無ければ空。Device 側回路図は使わない |
 | `runtimeExamplePath` | はい | 本リポジトリの Runtime Example パス。未移植は空 |
 | `portingStatus` | はい | `legacy` または `ported` |
-| `verificationStatus` | はい | `unverified` または `verified` |
+| `verificationStatus` | はい | 集約値。`unverified` または `verified` |
+| `verificationByModel` | はい | Pi `"3"` / `"4"` / `"5"` ごとの `unverified` / `verified` / `failed` |
 | `supportedRaspberryPi` | はい | `"3"` / `"4"` / `"5"` の配列。未確認は `[]` |
 | `interface` | はい | `gpio` / `i2c` / `gpio+i2c` / `remote` / `camera` / `web-bluetooth` |
 | `notes` | はい | 補足。I2C address が必要な場合もここに置く |
 
-`supportedRaspberryPi` のピン互換の確認方法は [schematic-compatibility.md](./schematic-compatibility.md)。実機検証の記録は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) に基づき `["3","4","5"]` とする。
+`supportedRaspberryPi` のピン互換の確認方法は [schematic-compatibility.md](./schematic-compatibility.md)。実機検証の記録は [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）。全体の `verified` は Pi 3 / 4 / 5 がすべて `verificationByModel.verified` のときだけ。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) に基づき `["3","4","5"]` とする。
 
 ## Join
 
