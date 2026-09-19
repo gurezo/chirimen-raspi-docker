@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KP-IR412</title>
+    <style>
+      p {
+        color: blue;
+        text-align: center;
+        font-size: 24px;
+      }
+      #sensor {
+        text-align: center;
+        font-size: 28px;
+      }
+      #error {
+        color: crimson;
+        text-align: center;
+        font-size: 18px;
+      }
+    </style>
+    <script src="./polyfill.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <p>人体赤外線感知素子 KP-IR412（人感センサー）→ GPIO-12</p>
+    <p id="sensor">—</p>
+    <p id="error"></p>
+  </body>
+</html>

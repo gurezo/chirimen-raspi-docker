@@ -10,6 +10,10 @@ const samplePolyfills = [
   resolve(workspaceRoot, 'workspace/led-blink/polyfill.js'),
   resolve(workspaceRoot, 'workspace/button/polyfill.js'),
   resolve(workspaceRoot, 'workspace/i2c-scan/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/pir-sensor/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/adt7410/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/sht30/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/ads1115/polyfill.js'),
 ];
 
 function copySamplePolyfills(): Plugin {

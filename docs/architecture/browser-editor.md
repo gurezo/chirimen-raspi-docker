@@ -209,7 +209,7 @@ workspace を named volume にはしない。Example が git から切り離さ�
 
 bind mount した `workspace/` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。workspace 設定は git 管理の [`workspace/.vscode/settings.json`](../../workspace/.vscode/settings.json) / [`tasks.json`](../../workspace/.vscode/tasks.json) と [`.prettierrc.json`](../../workspace/.prettierrc.json)（#178 / #179 / #201）。`extensions.json` による recommendation は置かない。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
 
-Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル → Polyfill → WebSocket → Runtime。Web Demo は Runtime 確認用であり、編集結果のプレビューではない。Editor に GPIO / I2C device は渡さない。
+Editor workspace に載せる対象は HTML Example（GPIO LED Blink / GPIO Input / I2C Scan / PIR / ADT7410 / SHT30 / ADS1115）である。実行は Editor 内ではなく、Browser の HTML サンプル → Polyfill → WebSocket → Runtime。Web Demo は Runtime 確認用であり、編集結果のプレビューではない。Editor に GPIO / I2C device は渡さない。
 
 ### Example 編集 / 静的 serve（#179）
 
@@ -220,6 +220,10 @@ Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO I
 | `led-blink/` | GPIO LED Blink |
 | `button/` | GPIO Input / onchange |
 | `i2c-scan/` | I2C Scan（Public polyfill の `open` + `writeByte(0x00)` で合成） |
+| `pir-sensor/` | GPIO PIR Sensor（BCM 12） |
+| `adt7410/` | ADT7410 温度読み取り（I2C1 / `0x48`） |
+| `sht30/` | SHT30 温湿度（I2C1 / `0x44`） |
+| `ads1115/` | ADS1115 4ch ADC（I2C1 / `0x48`） |
 
 依存:
 
@@ -246,6 +250,10 @@ serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `workspace/`�
 http://127.0.0.1:4173/led-blink/
 http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
+http://127.0.0.1:4173/pir-sensor/
+http://127.0.0.1:4173/adt7410/
+http://127.0.0.1:4173/sht30/
+http://127.0.0.1:4173/ads1115/
 ```
 
 静的ファイルのため hot reload は無い。Editor で保存したあと Example タブを reload する。WebSocket 先は同一ホストなら `ws://localhost:33330/`。LAN の別マシンから開くときは script 前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける。Compose を使わず host で `python3 -m http.server 4173` する手順も残す。

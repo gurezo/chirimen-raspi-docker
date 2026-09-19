@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>i2c-ADS1115</title>
+    <style>
+      p {
+        color: blue;
+        text-align: center;
+        font-size: 24px;
+      }
+      .row {
+        text-align: center;
+        font-size: 20px;
+        margin: 8px 0;
+      }
+      #error {
+        color: crimson;
+        text-align: center;
+        font-size: 18px;
+      }
+    </style>
+    <script src="./polyfill.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <p>ADS1115 16-BIT 4ch ADC → bus 1 / 0x48</p>
+    <p class="row"><span id="rawData0">ch0:—</span> <span id="voltage0">—</span></p>
+    <p class="row"><span id="rawData1">ch1:—</span> <span id="voltage1">—</span></p>
+    <p class="row"><span id="rawData2">ch2:—</span> <span id="voltage2">—</span></p>
+    <p class="row"><span id="rawData3">ch3:—</span> <span id="voltage3">—</span></p>
+    <p id="error"></p>
+  </body>
+</html>

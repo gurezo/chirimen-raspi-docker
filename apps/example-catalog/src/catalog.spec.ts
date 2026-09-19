@@ -205,6 +205,19 @@ describe('filterCatalogEntries', () => {
       'i2c-detect',
     ]);
   });
+
+  it('filters ported status for Phase 2 examples', () => {
+    const ported = filterCatalogEntries(entries, {
+      category: 'all',
+      status: 'ported',
+    });
+    expect(ported.map((entry) => entry.id).sort()).toEqual([
+      'gpio-pir-sensor',
+      'i2c-ads1115',
+      'i2c-adt7410',
+      'i2c-sht30',
+    ]);
+  });
 });
 
 describe('runtime example links', () => {
@@ -215,10 +228,18 @@ describe('runtime example links', () => {
     const button = entries.find((entry) => entry.id === 'gpio-button');
     const scan = entries.find((entry) => entry.id === 'i2c-detect');
     const unread = entries.find((entry) => entry.id === 'gpio-read-gpio-value');
+    const pir = entries.find((entry) => entry.id === 'gpio-pir-sensor');
+    const adt7410 = entries.find((entry) => entry.id === 'i2c-adt7410');
+    const sht30 = entries.find((entry) => entry.id === 'i2c-sht30');
+    const ads1115 = entries.find((entry) => entry.id === 'i2c-ads1115');
     expect(blink).toBeDefined();
     expect(button).toBeDefined();
     expect(scan).toBeDefined();
     expect(unread).toBeDefined();
+    expect(pir).toBeDefined();
+    expect(adt7410).toBeDefined();
+    expect(sht30).toBeDefined();
+    expect(ads1115).toBeDefined();
     expect(canOpenRuntimeExample(blink as (typeof entries)[number])).toBe(true);
     expect(canOpenRuntimeExample(button as (typeof entries)[number])).toBe(
       true
@@ -226,6 +247,14 @@ describe('runtime example links', () => {
     expect(canOpenRuntimeExample(scan as (typeof entries)[number])).toBe(true);
     expect(canOpenRuntimeExample(unread as (typeof entries)[number])).toBe(
       false
+    );
+    expect(canOpenRuntimeExample(pir as (typeof entries)[number])).toBe(true);
+    expect(canOpenRuntimeExample(adt7410 as (typeof entries)[number])).toBe(
+      true
+    );
+    expect(canOpenRuntimeExample(sht30 as (typeof entries)[number])).toBe(true);
+    expect(canOpenRuntimeExample(ads1115 as (typeof entries)[number])).toBe(
+      true
     );
     expect(
       canOpenRuntimeExample({
@@ -248,6 +277,18 @@ describe('runtime example links', () => {
     );
     expect(runtimeExampleHref('workspace/i2c-scan/', '192.168.0.10')).toBe(
       'http://192.168.0.10:4173/i2c-scan/'
+    );
+    expect(runtimeExampleHref('workspace/pir-sensor/')).toBe(
+      'http://127.0.0.1:4173/pir-sensor/'
+    );
+    expect(runtimeExampleHref('workspace/adt7410/')).toBe(
+      'http://127.0.0.1:4173/adt7410/'
+    );
+    expect(runtimeExampleHref('workspace/sht30/')).toBe(
+      'http://127.0.0.1:4173/sht30/'
+    );
+    expect(runtimeExampleHref('workspace/ads1115/')).toBe(
+      'http://127.0.0.1:4173/ads1115/'
     );
   });
 
