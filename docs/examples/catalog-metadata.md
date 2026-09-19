@@ -83,6 +83,38 @@ device = devices.find((d) => d.id === example.deviceId)
 
 `deviceId` が空でも Example は Catalog に残す。GPIO LED Blink や I2C Scan のように Device が無い、または認定デバイスへ一意に対応できない場合を正規ケースとする。
 
+inventory の `device` 文字列は certified-devices の `id` と一致しないことが多い。一意に決まる場合だけ実 ID を入れる。決まらない場合は空にし、`notes` に候補または「認定デバイス未登録」を書く。推測で誤 join しない。
+
+GPIO / I2C 優先分と、空 `deviceId` の正規ケース:
+
+| inventory `id` | `device` | `deviceId` |
+| --- | --- | --- |
+| `gpio-blink` 等 LED | LED | `led` |
+| `gpio-button` 等 | tactile-switch | `2pin` |
+| `gpio-pir-sensor` | KP-IR412 | `KP-IR412` |
+| `i2c-detect` | （空） | `""`（Device なし） |
+| `i2c-sht30` | SHT30 | `sht30-31` |
+| `i2c-adt7410` | ADT7410 | `ADT7410` |
+| `i2c-grove-accelerometer` | ADXL345 | `grove-accelerometer-adxl345` |
+| `i2c-grove-gesture` | PAJ7620U2 | `grove-gesture-paj7620u2` |
+| `i2c-grove-light` | TSL2561 | `grove-light-tsl2561` |
+| `i2c-grove-oled-display` | SSD1308 | `grove-oleddisplay-ssd1308` |
+| `i2c-grove-touch` | MPR121 | `grove-touch-mpr121` |
+| `i2c-pca9685` | PCA9685 | `PCA9685_MX1508` |
+| `i2c-ht16k33-led-7seg` | HT16K33 | `ht16k33-7-led` |
+| `i2c-ht16k33-led-14seg` | HT16K33 | `ht16k33-14-led` |
+| `i2c-ht16k33-led-16x8` | HT16K33 | `ht16k33-16x8led` |
+| `remote-i2c-pca9685` | PCA9685 | `remote_PCA9685_MX1508` |
+
+空 `deviceId` の例:
+
+- Device なし: `i2c-detect`
+- 複合で一意に決まらない: `i2c-multi-sensors`（ADT7410 と `grove-light-tsl2561`）
+- 派生が複数: `i2c-ht16k33`、`i2c-ht16k33-led-8x8aitendo`
+- 認定デバイス未登録: Arduino、Canzasi、micro:bit、Raspberry Pi Camera
+
+全件の値は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
+
 ## generated/devices.json の実 schema
 
 参照する JSON は `version: 1` である。トップレベルは次を持つ。
