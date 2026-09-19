@@ -7,9 +7,9 @@
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#251 Legacy CHIRIMEN Example の移植対象と metadata を整理する](https://github.com/gurezo/chirimen-raspi-docker/issues/251)
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
-- 次の設計: [#252 Example Catalog metadata と chirimen-certified-devices 連携](https://github.com/gurezo/chirimen-raspi-docker/issues/252)
+- Catalog metadata 設計: [catalog-metadata.md](./catalog-metadata.md)（[#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)）
 
-この文書は **移植候補の整理** が目的である。Catalog UI、`chirimen-certified-devices` の schema 結合、回路図の Pi 3 / 4 / 5 互換性ルール、実行コードの移植は対象外。
+この文書は **移植候補の整理** が目的である。Catalog UI、回路図の Pi 3 / 4 / 5 互換性ルール、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。
 
 ## 出典
 
@@ -32,14 +32,16 @@
 | `legacyUrl` | 公開デモ URL。ディレクトリが無い場合は一覧ページ |
 | `legacySourceUrl` | GitHub のソースディレクトリ。無ければ空 |
 | `schematicUrl` | 回路図画像 URL。無ければ空 |
-| `device` | 対応デバイス候補。GPIO LED 等は部品名。未対応は空 |
+| `device` | 人間可読の部品名。Device 未解決時の表示用。Device 正本ではない |
+| `deviceId` | `generated/devices.json` の `devices[].id`。未解決は空 |
 | `interface` | `gpio` / `i2c` / `gpio+i2c` / `remote` / `camera` / `web-bluetooth` |
 | `portingStatus` | `legacy` または `ported` |
 | `verificationStatus` | `unverified` または `verified` |
+| `supportedRaspberryPi` | `"3"` / `"4"` / `"5"` の配列。未確認は `[]` |
 | `runtimeExamplePath` | 本リポジトリの Runtime Example パス。未移植は空 |
 | `notes` | 回路図欠落、Runtime 対象外、既存 workspace への対応など |
 
-`device` は Catalog 最終の `deviceId` ではない。Device metadata の責務分離は #252 が設計する。
+`deviceId` が Catalog の join キーである。Device の name / image / driver は本 JSON に複製しない。詳細は [catalog-metadata.md](./catalog-metadata.md)。
 
 ## ステータス
 
