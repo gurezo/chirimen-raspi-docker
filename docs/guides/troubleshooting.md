@@ -23,6 +23,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | --- | --- |
 | 8080 が開かない | [Editor（8080）が開かない](#editor8080が開かない) |
 | 4173 が開かない | [Example の静的サーバ（4173）が開かない](#example-の静的サーバ4173が開かない) |
+| 4174 が開かない | [Example Catalog（4174）が開かない](#example-catalog4174が開かない) |
 | 4200 が開かない | [Web Demo（4200）が開かない](#web-demo4200が開かない) |
 | 保存できない | [Editor で Example が保存できない](#editor-で-example-が保存できないpermission-denied) |
 | 保存後未反映 | [Example を保存しても Browser に反映されない](#example-を保存しても-browser-に反映されない) |
@@ -446,12 +447,29 @@ docker compose logs chirimen-editor
 
 ### 対処
 
-- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
 - `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-examples` が running か見る
 - host から配信する場合は Compose の examples を止めてから `cd workspace && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。
+
+## Example Catalog（4174）が開かない
+
+### 症状
+
+`http://127.0.0.1:4174/` に接続できない。または host の `pnpm nx serve example-catalog` が port 使用中で失敗する。
+
+### 原因
+
+`--32bit` で Runtime only 起動している。または Catalog image がまだ build されていない。host の Vite と Compose `chirimen-example-catalog` が同じ port `4174` を使っている。
+
+### 対処
+
+- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
+- `curl -fsS http://127.0.0.1:4174/` が HTML を返すことを確認する
+- `docker compose ps` で `chirimen-example-catalog` が running か見る
+- host で Vite を使うときは Compose の catalog を止める: `docker compose stop chirimen-example-catalog`。手順は [Development Guide](./development.md)
 
 ## Web Demo（4200）が開かない
 
@@ -465,7 +483,7 @@ docker compose logs chirimen-editor
 
 ### 対処
 
-- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo を起動する
+- `./scripts/start.sh` で Runtime + Editor + Examples + Web Demo + Catalog を起動する
 - `curl -fsS http://127.0.0.1:4200/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-web-demo` が running か見る
 - host で Vite HMR を使うときは Compose の web-demo を止める: `docker compose stop chirimen-web-demo`。手順は [Development Guide](./development.md)

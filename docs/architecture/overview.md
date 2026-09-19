@@ -103,7 +103,8 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 chirimen-raspi-docker/
 ├── apps/
 │   ├── server/                 # Express + WebSocket server
-│   └── web-demo/               # Runtime Demo / Diagnostic UI（Polyfill / 接続状態 UI / GPIO・I2C ナビ）
+│   ├── web-demo/               # Runtime Demo / Diagnostic UI（Polyfill / 接続状態 UI / GPIO・I2C ナビ）
+│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254）
 ├── libs/
 │   ├── core/                   # 共通エラー / 型
 │   ├── gpio/                   # Web GPIO 風 domain（型・契約）
@@ -116,6 +117,8 @@ chirimen-raspi-docker/
 │   │   └── Dockerfile          # code-server 4.132.0（amd64 / arm64）
 │   ├── web-demo/
 │   │   └── Dockerfile          # Vite production build + nginx（port 4200、#180）
+│   ├── example-catalog/
+│   │   └── Dockerfile          # Vite production build + nginx（port 4174、#254）
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
@@ -134,7 +137,7 @@ chirimen-raspi-docker/
 │   ├── examples/               # GPIO LED Blink / GPIO Input / I2C Scan 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
-├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-web-demo（既定で全起動。#175 / #179 / #180 / #208）
+├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-web-demo / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -150,6 +153,7 @@ chirimen-raspi-docker/
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
 | `apps/web-demo` | Runtime Demo / Diagnostic UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan の Scan / hex 一覧）。Example の編集結果確認先ではない |
+| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` へリンク。iframe は使わない） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |
@@ -162,7 +166,7 @@ chirimen-raspi-docker/
 ## Docker と scripts
 
 - 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
-- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` も既定で起動する。GPIO / I2C は渡さない）
+- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-web-demo` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Web Demo には付けない）
 - host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
 

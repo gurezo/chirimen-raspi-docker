@@ -40,6 +40,8 @@ Raspberry Pi GPIO / I2C
 
 Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
+Example Catalog（`:4174`）は題材の発見 UI である。ported Example の実行リンクは `:4173` を開く。Editor からの本導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255) の対象である。
+
 ## 概要
 
 ユーザー向けの役割:
@@ -48,6 +50,7 @@ Web Demo（`:4200`）はこの実行フローには入らない。Example の編
 Tutorial = 学ぶ
 Editor   = 書く
 Examples = 書いたものを動かす
+Catalog  = Example を探す
 Web Demo = Runtime を確認する
 ```
 
@@ -56,6 +59,7 @@ Web Demo = Runtime を確認する
 | 33330 | chirimen-server | Hardware Runtime / WebSocket |
 | 8080 | chirimen-editor | code-server / Edit |
 | 4173 | chirimen-examples | Edited Example execution |
+| 4174 | chirimen-example-catalog | Example Catalog |
 | 4200 | chirimen-web-demo | Runtime Demo / diagnostics |
 
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
@@ -124,6 +128,7 @@ curl http://localhost:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
+curl -fsS http://127.0.0.1:4174/
 ```
 
 `/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started](./getting-started.md)。
@@ -326,6 +331,7 @@ host `./workspace` の変更は残る。**`-v` は付けない。** Web Demo（`
 | password / 設定が消えた | [Editor の password / 設定が消えた](./troubleshooting.md#editor-の-password-設定が消えた) |
 | 8080 が開かない | [Editor（8080）が開かない](./troubleshooting.md#editor8080が開かない) |
 | 4173 が開かない | [Example の静的サーバ（4173）が開かない](./troubleshooting.md#example-の静的サーバ4173が開かない) |
+| 4174 が開かない | [Example Catalog（4174）が開かない](./troubleshooting.md#example-catalog4174が開かない) |
 | 4200 が開かない | [Web Demo（4200）が開かない](./troubleshooting.md#web-demo4200が開かない) |
 | Web Demo は開くが GPIO / I2C が動かない | [Web Demo は開くが GPIO / I2C が動かない](./troubleshooting.md#web-demo-は開くが-gpio-i2c-が動かない) |
 | LAN から届かない | [LAN から Editor / Web Demo に届かない](./troubleshooting.md#lan-から-editor-web-demo-に届かない) |
