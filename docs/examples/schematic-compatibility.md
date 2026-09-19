@@ -67,3 +67,59 @@ Catalog / Documentation は `schematicUrl` を出典として残す。表示す�
 | Legacy ソース | https://github.com/chirimen-oh/chirimen/tree/master/gc |
 
 出典切れ（HTTP 404 など）でも `schematicUrl` は残す。Catalog は画像が読めなくても Example カードを落とさない。
+
+## 互換性確認の 2 層
+
+回路図の案内と Catalog の `Verified` は別である。
+
+| 層 | 目的 | metadata | 実施 Issue |
+| --- | --- | --- | --- |
+| 机上確認 | 40-pin / BCM / I2C / 電源が Pi 3 B+ / 4 / 5 で共通か見る | `supportedRaspberryPi` | 本 Issue（#253）。移植時（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）に適用する |
+| 実機確認 | 本 Runtime で Pi ごとに動くかを記録する | `verificationStatus` | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) |
+
+本 Issue は確認方法を定義する。62 件すべての机上確認と実機検証は対象外。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) で机上 + 実機済みであり、`supportedRaspberryPi` は `["3","4","5"]`、`verificationStatus` は `verified` のままとする。
+
+### 机上確認（`supportedRaspberryPi`）
+
+Pi 3 B+ / 4 / 5 の 40-pin header は物理ピン配置が共通である。次をすべて満たしたモデルだけ配列に入れる。未確認は `[]`。
+
+| 確認項目 | 合格条件 |
+| --- | --- |
+| 40-pin header | 配線が 40-pin GPIO header を前提にしている |
+| physical pin | 使う物理 pin が 40-pin 上に存在する |
+| BCM GPIO | GPIO として使う BCM 番号が Browser Polyfill の `CHIRIMEN_GPIO_PORTS`（`4, 17, 18, 27, 22, 23, 24, 25, 5, 6, 12, 13, 19, 16, 26, 20, 21`）に含まれる |
+| I2C SDA / SCL | I2C は I2C1。SDA = 物理 pin 3（BCM 2）、SCL = 物理 pin 5（BCM 3）。`/dev/i2c-1`、`ports.get(1)` |
+| 3.3V / 5V | GPIO へ 5V（物理 pin 2 / 4）を入れない。センサ電源は 3.3V（物理 pin 1 / 17）を正とする |
+| GND | 40-pin の GND に落ちる |
+| Pi 固有特殊機能 | CSI / DSI / Pi 5 PCIe など、40-pin GPIO / I2C1 以外に依存しない |
+
+モータドライバなど外部電源が必要な回路は、GPIO へ 5V を入れない限り机上確認の対象から外さない。外部電源の注意は `notes` に残す。
+
+不合格、または未実施のときは `supportedRaspberryPi` を `[]` のままにし、`notes` に理由を書く。Catalog は「Pi 3/4/5 で利用可能」と案内しない。
+
+参考にする既存仕様:
+
+- GPIO output: [gpio-led-blink.md](./gpio-led-blink.md)（BCM 26 / 物理 pin 37）
+- GPIO input: [gpio-input.md](./gpio-input.md)（BCM 5 / 物理 pin 29。Pi 5 は内部プルに依存しない）
+- I2C1: [i2c-scan.md](./i2c-scan.md)（SDA 物理 pin 3 / SCL 物理 pin 5）
+
+### 実機確認（`verificationStatus`）
+
+机上確認に合格しても `verified` にはしない。実機確認の記録は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) とする。
+
+| 確認項目 | 条件 |
+| --- | --- |
+| Raspberry Pi 3 B+ | Raspberry Pi OS 64-bit で本 Runtime を動かす |
+| Raspberry Pi 4 | 同上 |
+| Raspberry Pi 5 | 同上 |
+
+モデルごとに結果が異なる場合は `supportedRaspberryPi` を絞り、`notes` に差を書く。対応環境の Runtime 記録は [Compatibility](../architecture/compatibility.md) を参照する。
+
+### 適用タイミング
+
+```text
+移植時（#256）  → 机上確認 → supportedRaspberryPi を更新
+実機時（#257）  → Pi 3 B+ / 4 / 5 で確認 → verificationStatus を更新
+```
+
+本 Issue ではルール定義のみ行う。
