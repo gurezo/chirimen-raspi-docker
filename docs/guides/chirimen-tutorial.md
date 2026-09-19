@@ -70,9 +70,9 @@ Raspberry Pi Tutorial はハードウェア系統が近い。PiZero Tutorial は
 | --- | --- |
 | host 準備 | [Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | Runtime 起動 | [Getting Started](./getting-started.md) |
-| Example を書く | [Browser Development Environment](./browser-development.md)（code-server `:8080`） |
-| 書いたものを動かす | Example Server `:4173` |
-| Runtime を確認する | Web Demo `:4200`（編集結果の確認先ではない） |
+| Example を書く | [Editor を開く](./browser-development.md#editor-を開く)（code-server `:8080`） |
+| 書いたものを動かす | [Example Server を開く](./browser-development.md#example-server-を開く)（`:4173`） |
+| Runtime を確認する | [Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する)（`:4200`。編集結果の確認先ではない） |
 
 ## 学びたいこと
 
@@ -81,7 +81,7 @@ Raspberry Pi Tutorial はハードウェア系統が近い。PiZero Tutorial は
 | GPIO 出力 / L チカ / LED 極性 | [L チカしてみよう](https://tutorial.chirimen.org/raspi/section0) | [GPIO LED Blink](./gpio-led-blink.md) |
 | GPIO 入力 / onchange | [GPIO の使い方](https://tutorial.chirimen.org/raspi/section1) | [GPIO Input](./gpio-input.md) |
 | I2C の考え方 / センサー | [センサーを使ってみよう](https://tutorial.chirimen.org/raspi/section2) | [I2C Scan](./i2c-scan.md) |
-| JavaScript / 非同期 / 電子工作の基礎 | [PiZero 概要](https://tutorial.chirimen.org/pizero/) と付録（概念のみ） | [Getting Started](./getting-started.md) / [Browser Development Environment](./browser-development.md) |
+| JavaScript / 非同期 / 電子工作の基礎 | [PiZero 概要](https://tutorial.chirimen.org/pizero/) と付録（概念のみ） | [Getting Started](./getting-started.md) / [CHIRIMEN Tutorial で学ぶ](./browser-development.md#chirimen-tutorial-で学ぶ) |
 
 概念の補足（セットアップは読まない）:
 

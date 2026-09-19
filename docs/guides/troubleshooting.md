@@ -14,6 +14,20 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Docker 構成](../architecture/docker.md)
 - [Browser Editor](../architecture/browser-editor.md)
 
+## Browser Development の切り分け
+
+`Learn → Edit → Save → Run → Verify` で詰まったときの入口。詳細は各節へ。Web Demo（`:4200`）は編集結果の確認先ではない。
+
+| 症状 | 参照 |
+| --- | --- |
+| 8080 が開かない | [Editor（8080）が開かない](#editor8080が開かない) |
+| 4173 が開かない | [Example の静的サーバ（4173）が開かない](#example-の静的サーバ4173が開かない) |
+| 4200 が開かない | [Web Demo（4200）が開かない](#web-demo4200が開かない) |
+| 保存できない | [Editor で Example が保存できない](#editor-で-example-が保存できないpermission-denied) |
+| 保存後未反映 | [Example を保存しても Browser に反映されない](#example-を保存しても-browser-に反映されない) |
+| Runtime 接続不可 | [LAN から Web Demo / Example は開くが GPIO / I2C が動かない](#lan-から-web-demo-example-は開くが-gpio-i2c-が動かない) / [Web Demo は開くが GPIO / I2C が動かない](#web-demo-は開くが-gpio-i2c-が動かない) |
+| GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
+
 ## device が無く GPIO / I2C が unavailable になる
 
 ### 症状

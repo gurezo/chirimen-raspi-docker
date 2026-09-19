@@ -5,7 +5,7 @@
 関連:
 
 - 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
-- 子 Issue: [#240 Browser Editor → Workspace → Example Server の実行フローを明確化する](https://github.com/gurezo/chirimen-raspi-docker/issues/240)
+- 子 Issue: [#242 Browser Development Documentation と navigation を新しい開発フローに合わせて更新する](https://github.com/gurezo/chirimen-raspi-docker/issues/242)
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
@@ -15,33 +15,46 @@
 - [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
 
-GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学び、このガイドでは Editor で書く。Tutorial の SD イメージや CodeSandbox は本リポジトリの Editor ではない。
-
-このガイドの手順だけで、Editor → Workspace → Example Server → Runtime の開発フローを再現できる。
+このガイドの手順だけで、`Learn → Edit → Save → Run → Verify` を再現できる。
 
 ```text
-code-server :8080
-       ↓
+CHIRIMEN Tutorial
+GPIO / I2C / JavaScript / 回路を学ぶ
+        ↓
+Browser Editor :8080
+        ↓
 Workspace
-       ↓
+        ↓
 Edit / Save
-       ↓
+        ↓
 Example Server :4173
-       ↓
+        ↓
 Browser reload
-       ↓
-Browser Polyfill
-       ↓
-WebSocket
-       ↓
+        ↓
 chirimen-server :33330
-       ↓
-GPIO / I2C
+        ↓
+Raspberry Pi GPIO / I2C
 ```
 
 Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
 ## 概要
+
+ユーザー向けの役割:
+
+```text
+Tutorial = 学ぶ
+Editor   = 書く
+Examples = 書いたものを動かす
+Web Demo = Runtime を確認する
+```
+
+| Port | Service | Role |
+| --- | --- | --- |
+| 33330 | chirimen-server | Hardware Runtime / WebSocket |
+| 8080 | chirimen-editor | code-server / Edit |
+| 4173 | chirimen-examples | Edited Example execution |
+| 4200 | chirimen-web-demo | Runtime Demo / diagnostics |
 
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
 
@@ -64,7 +77,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 方針の詳細は [browser-editor.md](../architecture/browser-editor.md)。
 
-## 前提
+前提:
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit
@@ -81,7 +94,13 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
 
-## 起動
+## CHIRIMEN Tutorial で学ぶ
+
+GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学び、このガイドでは Editor で書く。Tutorial の SD イメージや CodeSandbox は本リポジトリの Editor ではない。
+
+Tutorial の環境構築手順は本リポジトリの手順ではない。clone / Docker / Runtime は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [Getting Started](./getting-started.md) を正本とする。
+
+## Runtime / Editor / Examples を起動する
 
 推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。
 
@@ -121,6 +140,12 @@ docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.y
 
 LAN の別マシンから開くときは `./scripts/start.sh --lan`。Internet へは出さない。方針は [Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
+プロジェクトは code-server / VS Code Extension をプリインストール・配布・推奨・必須にしない（[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)）。CHIRIMEN Runtime と bundled examples は Editor Extension を必要としない。
+
+確認は、workspace の HTML / JS を開いて編集できることである。code-server 内蔵の HTML / CSS / JavaScript Language Features は Editor 本体の一部であり、プリインストール Extension ではない。
+
+利用者が任意に入れる Extension は named volume `chirimen-editor-local` に残る。Marketplace は Open VSX / Coder gallery である。Microsoft Marketplace（GitHub Copilot など）は使えない。方針は [Extensions](../architecture/browser-editor.md#extensions)。
+
 ## Workspace を開く
 
 保存先:
@@ -154,23 +179,21 @@ workspace は bind mount `./workspace` → `/home/coder/project` である。mon
 
 配置の正本は [workspace/README.md](../../workspace/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
 
-## Extension の導入 / 確認
-
-プロジェクトは code-server / VS Code Extension をプリインストール・配布・推奨・必須にしない（[#201](https://github.com/gurezo/chirimen-raspi-docker/issues/201)）。CHIRIMEN Runtime と bundled examples は Editor Extension を必要としない。
-
-確認は、workspace の HTML / JS を開いて編集できることである。code-server 内蔵の HTML / CSS / JavaScript Language Features は Editor 本体の一部であり、プリインストール Extension ではない。
-
-利用者が任意に入れる Extension は named volume `chirimen-editor-local` に残る。Marketplace は Open VSX / Coder gallery である。Microsoft Marketplace（GitHub Copilot など）は使えない。方針は [Extensions](../architecture/browser-editor.md#extensions)。
-
 ## Example を編集する
 
 標準操作は `Edit → Save → Browser reload` である。静的ファイルのため hot reload は無い。
 
-1. Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` を編集して保存する
-2. 別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）
-3. 保存するたびに Example タブを reload する
+Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` を開いて編集する。配線と期待結果は各 Example ガイドへ。
 
-保存後に開く URL:
+## 保存する
+
+Editor で保存する。保存先は Editor `/home/coder/project` = host `./workspace` である。container 内だけには保存されない。
+
+保存できないときは [Editor で Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) を確認する。
+
+## Example Server を開く
+
+別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）。確認先は Example Server `:4173` である。Web Demo（`:4200`）は編集結果を表示しない。
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -180,11 +203,9 @@ http://127.0.0.1:4173/i2c-scan/
 
 Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
-配線と期待結果は各 Example ガイドへ。Web Demo（`:4200`）は編集結果を表示しない。確認先は Example Server `:4173` である。
+## Reload して hardware を確認する
 
-## Runtime に接続する
-
-GPIO / I2C 操作は Editor 内ではなく、Browser の Polyfill が Runtime の WebSocket へ接続する。
+保存するたびに Example タブを reload する。GPIO / I2C 操作は Editor 内ではなく、Browser の Polyfill が Runtime の WebSocket へ接続する。
 
 | 面 | 既定 | 上書き |
 | --- | --- | --- |
@@ -197,7 +218,9 @@ HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の I
 curl http://localhost:33330/health
 ```
 
-## Runtime を Web Demo で確認する
+保存しても見た目や LED が変わらないときは [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) を確認する。
+
+## Web Demo で Runtime を診断する
 
 Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI である。`workspace/` の編集結果は反映されない。次の疎通を確認するときに使う。
 
@@ -228,21 +251,13 @@ Web Demo 自体を host で開発する（`pnpm nx serve web-demo`）手順は [
 curl http://localhost:33330/health
 ```
 
-## 停止
+## 停止 / バックアップ
 
 ```sh
 docker compose down
 ```
 
 **`-v` は付けない。** named volume（password / 任意 Extension）が消える。workspace の bind mount（`workspace/`）は `-v` の有無に関わらず残る。
-
-## 更新
-
-Editor image は `codercom/code-server:<semver>` を pin する。`latest` は使わない。上げるときは Dockerfile / Compose の tag を更新する PR。host への npm インストールでは更新しない。
-
-設定・workspace は named volume と bind mount に残る。image / container 再作成後も `config.yaml` / 任意 Extension / 編集中の Example は維持される（`down -v` しない場合）。方針は [Upgrade](../architecture/browser-editor.md#upgrade)。
-
-## バックアップ
 
 | 対象 | 置き場 | `docker compose down` | `docker compose down -v` |
 | --- | --- | --- | --- |
@@ -252,7 +267,11 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 `.env` と password は git に含めない。Example のバックアップは git を正とする。
 
-## Security
+Editor image は `codercom/code-server:<semver>` を pin する。`latest` は使わない。上げるときは Dockerfile / Compose の tag を更新する PR。host への npm インストールでは更新しない。
+
+設定・workspace は named volume と bind mount に残る。image / container 再作成後も `config.yaml` / 任意 Extension / 編集中の Example は維持される（`down -v` しない場合）。方針は [Upgrade](../architecture/browser-editor.md#upgrade)。
+
+Security:
 
 - 既定は password 認証。`auth: none` は使わない
 - 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない
@@ -264,7 +283,7 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 ## Troubleshooting
 
-汎用の切り分けは [Troubleshooting](./troubleshooting.md) を正とする。ここでは索引だけ書く。
+汎用の切り分けは [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) を正とする。ここでは索引だけ書く。
 
 | 症状 | 参照 |
 | --- | --- |
