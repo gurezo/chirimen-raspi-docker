@@ -8,8 +8,9 @@
 - 子 Issue: [#253 Legacy GC 回路図の再利用ルールと Raspberry Pi 3/4/5 互換性確認方法を定義する](https://github.com/gurezo/chirimen-raspi-docker/issues/253)
 - 前段: [#251](https://github.com/gurezo/chirimen-raspi-docker/issues/251)（[legacy-inventory.md](./legacy-inventory.md)）/ [#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)（[catalog-metadata.md](./catalog-metadata.md)）
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
+- 実機記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 
-この文書は **回路図の再利用ルールと互換性確認方法** が目的である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）、実機検証の記録（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）、実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。
+この文書は **回路図の再利用ルールと互換性確認方法** が目的である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）、実機検証の記録（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [runtime-verification.md](./runtime-verification.md)）、実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。
 
 ## 責務分離
 
@@ -36,7 +37,7 @@ Example metadata             schematicUrl を参照
 | Device | `generated/devices.json` | 型番、画像、説明、ドライバ |
 | 実行コード | Example の `runtimeExamplePath` | Device の upstream Example は使わない |
 | ピン互換 | `supportedRaspberryPi` | 本文書の机上確認結果 |
-| 実機結果 | `verificationStatus` | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) の記録 |
+| 実機結果 | `verificationByModel` | [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)） |
 
 本リポジトリへ回路図 PNG を正本としてコピーしない。`devices.json` 側の回路図フィールドも正本にしない。
 
@@ -75,9 +76,9 @@ Catalog / Documentation は `schematicUrl` を出典として残す。表示す�
 | 層 | 目的 | metadata | 実施 Issue |
 | --- | --- | --- | --- |
 | 机上確認 | 40-pin / BCM / I2C / 電源が Pi 3 B+ / 4 / 5 で共通か見る | `supportedRaspberryPi` | 本 Issue（#253）。移植時（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）に適用する |
-| 実機確認 | 本 Runtime で Pi ごとに動くかを記録する | `verificationStatus` | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) |
+| 実機確認 | 本 Runtime で Pi ごとに動くかを記録する | `verificationByModel` | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) |
 
-本 Issue は確認方法を定義する。62 件すべての机上確認と実機検証は対象外。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) で机上 + 実機済みであり、`supportedRaspberryPi` は `["3","4","5"]`、`verificationStatus` は `verified` のままとする。
+本 Issue は確認方法を定義する。62 件すべての机上確認と実機検証は対象外。既存の `gpio-blink` / `gpio-button` / `i2c-detect` は机上 + 実機済みで `supportedRaspberryPi` は `["3","4","5"]`、`verificationByModel` は 3 / 4 / 5 とも `verified`（[runtime-verification.md](./runtime-verification.md)）。
 
 ### 机上確認（`supportedRaspberryPi`）
 
@@ -103,9 +104,9 @@ Pi 3 B+ / 4 / 5 の 40-pin header は物理ピン配置が共通である。次�
 - GPIO input: [gpio-input.md](./gpio-input.md)（BCM 5 / 物理 pin 29。Pi 5 は内部プルに依存しない）
 - I2C1: [i2c-scan.md](./i2c-scan.md)（SDA 物理 pin 3 / SCL 物理 pin 5）
 
-### 実機確認（`verificationStatus`）
+### 実機確認（`verificationByModel`）
 
-机上確認に合格しても `verified` にはしない。実機確認の記録は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) とする。
+机上確認に合格しても `verified` にはしない。実機確認の記録は [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）とする。
 
 | 確認項目 | 条件 |
 | --- | --- |
@@ -113,13 +114,13 @@ Pi 3 B+ / 4 / 5 の 40-pin header は物理ピン配置が共通である。次�
 | Raspberry Pi 4 | 同上 |
 | Raspberry Pi 5 | 同上 |
 
-モデルごとに結果が異なる場合は `supportedRaspberryPi` を絞り、`notes` に差を書く。対応環境の Runtime 記録は [Compatibility](../architecture/compatibility.md) を参照する。
+モデルごとに結果が異なる場合は `verificationByModel` に機別の `verified` / `failed` / `unverified` を残す。1 機種でも未確認なら集約 `verificationStatus` は `unverified` であり、Catalog の全体バッジは `ported`。ピン互換の机上結果は `supportedRaspberryPi` のままにする。対応環境の Runtime 記録は [Compatibility](../architecture/compatibility.md) を参照する。
 
 ### 適用タイミング
 
 ```text
 移植時（#256）  → 机上確認 → supportedRaspberryPi を更新
-実機時（#257）  → Pi 3 B+ / 4 / 5 で確認 → verificationStatus を更新
+実機時（#257）  → Pi 3 B+ / 4 / 5 で確認 → verificationByModel を更新
 ```
 
 本 Issue ではルール定義のみ行う。
@@ -130,15 +131,15 @@ Pi 3 B+ / 4 / 5 の 40-pin header は物理ピン配置が共通である。次�
 
 ```text
 legacy   = portingStatus が legacy
-ported   = portingStatus が ported かつ verificationStatus が unverified
-verified = portingStatus が ported かつ verificationStatus が verified
+ported   = portingStatus が ported かつ verificationByModel の 3/4/5 がすべて verified ではない
+verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 かつ 5 が verified
 ```
 
-`supportedRaspberryPi` はピン互換の机上結果、`verificationStatus` は本リポジトリの実機結果である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）は次を守る。
+`supportedRaspberryPi` はピン互換の机上結果、`verificationByModel` は本リポジトリの実機結果である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）は次を守る。
 
 | 状況 | Catalog の振る舞い |
 | --- | --- |
-| `verificationStatus` が `unverified` | `Verified` バッジを出さない。回路図リンクがあっても同様 |
+| 1 機種でも `unverified` / `failed` | 全体バッジは `ported`。その機種チップを `verified` にしない |
 | Legacy GC に回路図があるだけ | `verified` にしない |
 | 机上確認合格（`supportedRaspberryPi` が空でない） | ピン互換のモデルだけ案内する。`Verified` バッジは出さない |
 | `schematicUrl` が空 | 回路図リンクを出さない |

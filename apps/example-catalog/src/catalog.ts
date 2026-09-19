@@ -14,6 +14,17 @@ export const NO_IMAGE_URL = '/no_image.png';
 
 export type CatalogStatus = 'legacy' | 'ported' | 'verified';
 
+export const RASPBERRY_PI_MODELS = ['3', '4', '5'] as const;
+
+export type RaspberryPiModel = (typeof RASPBERRY_PI_MODELS)[number];
+
+export type ModelVerificationStatus = 'unverified' | 'verified' | 'failed';
+
+export type VerificationByModel = Record<
+  RaspberryPiModel,
+  ModelVerificationStatus
+>;
+
 export type InventoryExample = {
   id: string;
   title: string;
@@ -26,6 +37,7 @@ export type InventoryExample = {
   runtimeExamplePath: string;
   portingStatus: string;
   verificationStatus: string;
+  verificationByModel: VerificationByModel;
   supportedRaspberryPi: string[];
   interface: string;
   notes: string;
@@ -65,16 +77,47 @@ const asStringArray = (value: unknown): string[] =>
     ? value.filter((item): item is string => typeof item === 'string')
     : [];
 
+const asModelVerificationStatus = (value: unknown): ModelVerificationStatus =>
+  value === 'verified' || value === 'failed' || value === 'unverified'
+    ? value
+    : 'unverified';
+
+export const emptyVerificationByModel = (): VerificationByModel => ({
+  '3': 'unverified',
+  '4': 'unverified',
+  '5': 'unverified',
+});
+
+export const readVerificationByModel = (value: unknown): VerificationByModel => {
+  const record = isRecord(value) ? value : {};
+  return {
+    '3': asModelVerificationStatus(record['3']),
+    '4': asModelVerificationStatus(record['4']),
+    '5': asModelVerificationStatus(record['5']),
+  };
+};
+
+export const isFullyVerifiedByModel = (
+  byModel: VerificationByModel
+): boolean =>
+  RASPBERRY_PI_MODELS.every((model) => byModel[model] === 'verified');
+
+export const modelVerificationLabel = (
+  model: RaspberryPiModel,
+  status: ModelVerificationStatus
+): string => `Pi ${model} ${status}`;
+
 export const deriveCatalogStatus = (
-  example: Pick<InventoryExample, 'portingStatus' | 'verificationStatus'>
+  example: Pick<InventoryExample, 'portingStatus' | 'verificationByModel'>
 ): CatalogStatus => {
-  if (example.portingStatus === 'ported') {
-    if (example.verificationStatus === 'verified') {
-      return 'verified';
-    }
-    return 'ported';
+  if (example.portingStatus !== 'ported') {
+    return 'legacy';
   }
-  return 'legacy';
+  const byModel = example.verificationByModel ?? emptyVerificationByModel();
+  if (isFullyVerifiedByModel(byModel)) {
+    return 'verified';
+  }
+  return 'ported';
 };
 
 export const readInventoryExamples = (data: unknown): InventoryExample[] => {
@@ -100,6 +143,7 @@ export const readInventoryExamples = (data: unknown): InventoryExample[] => {
         runtimeExamplePath: asString(item['runtimeExamplePath']),
         portingStatus: asString(item['portingStatus']),
         verificationStatus: asString(item['verificationStatus']),
+        verificationByModel: readVerificationByModel(item['verificationByModel']),
         supportedRaspberryPi: asStringArray(item['supportedRaspberryPi']),
         interface: asString(item['interface']),
         notes: asString(item['notes']),

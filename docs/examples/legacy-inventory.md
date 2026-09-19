@@ -9,8 +9,9 @@
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
 - Catalog metadata 設計: [catalog-metadata.md](./catalog-metadata.md)（[#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)）
 - 回路図の再利用と互換性確認: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
+- 実機検証の記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 
-この文書は **移植候補の整理** が目的である。Catalog UI、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。回路図の Pi 3 / 4 / 5 互換性ルールは [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
+この文書は **移植候補の整理** が目的である。Catalog UI、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。回路図の Pi 3 / 4 / 5 互換性ルールは [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。実機結果は [runtime-verification.md](./runtime-verification.md) を正本とする。
 
 ## 出典
 
@@ -37,7 +38,8 @@
 | `deviceId` | `generated/devices.json` の `devices[].id`。未解決は空 |
 | `interface` | `gpio` / `i2c` / `gpio+i2c` / `remote` / `camera` / `web-bluetooth` |
 | `portingStatus` | `legacy` または `ported` |
-| `verificationStatus` | `unverified` または `verified` |
+| `verificationStatus` | 集約値。`unverified` または `verified` |
+| `verificationByModel` | Pi `"3"` / `"4"` / `"5"` ごとの `unverified` / `verified` / `failed` |
 | `supportedRaspberryPi` | `"3"` / `"4"` / `"5"` の配列。未確認は `[]` |
 | `runtimeExamplePath` | 本リポジトリの Runtime Example パス。未移植は空 |
 | `notes` | 回路図欠落、Runtime 対象外、既存 workspace への対応など |
@@ -46,15 +48,15 @@
 
 ## ステータス
 
-親 Issue の Example 状態 `legacy` / `ported` / `verified` は、2 フィールドから導出する。
+親 Issue の Example 状態 `legacy` / `ported` / `verified` は、`portingStatus` と機種別実機結果から導出する。
 
 ```text
 legacy   = portingStatus が legacy
-ported   = portingStatus が ported かつ verificationStatus が unverified
-verified = portingStatus が ported かつ verificationStatus が verified
+ported   = portingStatus が ported かつ verificationByModel の 3/4/5 がすべて verified ではない
+verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 かつ 5 が verified
 ```
 
-`verified` は本リポジトリの Raspberry Pi 3 / 4 / 5 実機検証を指す。Legacy GC 側の動作実績だけでは `verified` にしない。
+`verificationStatus` は上記の集約値として残す。`verified` は本リポジトリの Raspberry Pi 3 / 4 / 5 実機検証を指す。1 機種でも未確認または失敗なら全体は `ported`。Legacy GC 側の動作実績だけでは `verified` にしない。詳細は [runtime-verification.md](./runtime-verification.md)。
 
 ## 段階移植の波
 
@@ -74,21 +76,21 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 収録数は 62 件（gpio 6 / i2c 15 / advanced 33 / remote 6 / other 2）。`ported` + `verified` は 3 件。`ported` + `unverified`（#256 Phase 2）は 4 件。
 
-`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。
+`catalogStatus` は `portingStatus` と `verificationByModel` から導出する。
 
 ## 本リポジトリの Runtime Example
 
-既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りとは別である。#256 Phase 2 で PIR / SHT30 / ADT7410 / ADS1115 を `ported` / `unverified` にした。実機 `verified` は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りとは別である。#256 Phase 2 で PIR / SHT30 / ADT7410 / ADS1115 を `ported` / `unverified` にした。[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) で Pi 3 / 4 / 5 を対象としたが、4 件は実機未実施のため `unverified` のままである。推測で `verified` にしない。機別記録は [runtime-verification.md](./runtime-verification.md)。
 
 | id | workspace | 回路 / 検証仕様 | catalogStatus | 根拠 |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-ads1115` | [workspace/ads1115/](../../workspace/ads1115/) | [i2c-ads1115.md](./i2c-ads1115.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
+| `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-ads1115` | [workspace/ads1115/](../../workspace/ads1115/) | [i2c-ads1115.md](./i2c-ads1115.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
 
 ### Basic GPIO
 
@@ -127,7 +129,7 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 | id | title | interface | schematic | notes |
 | --- | --- | --- | --- | --- |
-| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC。#256 で ported / unverified |
+| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC。#256 で ported。#257 で Pi 3 / 4 / 5 とも unverified |
 | `i2c-ads1115-load-cell` | I2C-ADS1115-LoadCell | i2c | あり | ソースは `i2c-ADS1115` |
 | `i2c-arduino-stepping-motor` | I2C-arduino-steppingMotor | i2c | あり | Arduino 経由 |
 | `i2c-bme280` | I2C-BME280 | i2c | あり | |

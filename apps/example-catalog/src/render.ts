@@ -2,6 +2,7 @@ import {
   CATEGORY_FILTERS,
   DEVICE_DASHBOARD_URL,
   NO_IMAGE_URL,
+  RASPBERRY_PI_MODELS,
   STATUS_FILTERS,
   canOpenRuntimeExample,
   catalogImageUrl,
@@ -9,12 +10,14 @@ import {
   deviceModel,
   editorWorkspaceHref,
   isPlaceholderImageUrl,
+  modelVerificationLabel,
   runtimeExampleHref,
   workspaceExampleDir,
   type CatalogEntry,
   type CatalogFilters,
   type CatalogStatus,
   type CategoryFilter,
+  type ModelVerificationStatus,
   type StatusFilter,
 } from './catalog.js';
 
@@ -22,6 +25,12 @@ const STATUS_BADGE_CLASS: Record<CatalogStatus, string> = {
   legacy: 'bg-slate-100 text-slate-700',
   ported: 'bg-sky-100 text-sky-800',
   verified: 'bg-emerald-100 text-emerald-800',
+};
+
+const MODEL_CHIP_CLASS: Record<ModelVerificationStatus, string> = {
+  unverified: 'bg-slate-100 text-slate-600',
+  verified: 'bg-emerald-100 text-emerald-800',
+  failed: 'bg-rose-100 text-rose-800',
 };
 
 const FILTER_BUTTON_BASE =
@@ -176,6 +185,25 @@ const appendPiModels = (
   card.append(pi);
 };
 
+const appendModelVerification = (card: HTMLElement, entry: CatalogEntry): void => {
+  if (entry.portingStatus !== 'ported') {
+    return;
+  }
+  const row = document.createElement('div');
+  row.className = 'mt-2 flex flex-wrap gap-1.5';
+  row.setAttribute('aria-label', '実機検証');
+  for (const model of RASPBERRY_PI_MODELS) {
+    const status = entry.verificationByModel[model];
+    const chip = document.createElement('span');
+    chip.className = `inline-flex w-fit rounded-full px-2 py-0.5 text-xs font-medium ${MODEL_CHIP_CLASS[status]}`;
+    chip.textContent = modelVerificationLabel(model, status);
+    chip.dataset.piModel = model;
+    chip.dataset.verification = status;
+    row.append(chip);
+  }
+  card.append(row);
+};
+
 export const renderExampleCard = (entry: CatalogEntry): HTMLElement => {
   const card = document.createElement('article');
   card.className =
@@ -244,6 +272,7 @@ export const renderExampleCard = (entry: CatalogEntry): HTMLElement => {
   }
 
   appendPiModels(body, entry.supportedRaspberryPi);
+  appendModelVerification(body, entry);
   renderCardLinks(body, entry, window.location.hostname || '127.0.0.1');
   card.append(body);
   return card;

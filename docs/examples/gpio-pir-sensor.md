@@ -1,6 +1,6 @@
 # GPIO PIR Sensor 回路仕様
 
-人感センサー（KP-IR412）のデジタル出力を GPIO input / onchange で確認する回路を固定する。机上確認の根拠であり、実機 `verified` は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+人感センサー（KP-IR412）のデジタル出力を GPIO input / onchange で確認する回路を固定する。机上確認の根拠であり、実機は Pi 3 / 4 / 5 とも `unverified`（[runtime-verification.md](./runtime-verification.md)、[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）。
 
 関連:
 
@@ -10,6 +10,7 @@
 - 回路図出典: [gc/gpio/pirSensor/schematic.png](https://www.chirimen.org/chirimen/gc/gpio/pirSensor/schematic.png)
 - 移植元: [chirimen `gc/gpio/pirSensor`](https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/pirSensor)
 - 互換性ルール: [schematic-compatibility.md](./schematic-compatibility.md)
+- 実機記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 
 ## 目的
 
@@ -78,7 +79,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。
 | GPIO Input | BCM 5（物理 29）。本回路の 12 とは重ならない |
 | LED Blink | BCM 26（物理 37）。本回路の 12 とは重ならない |
 
-机上確認は合格。`supportedRaspberryPi` は `["3","4","5"]`。実機結果は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+机上確認は合格。`supportedRaspberryPi` は `["3","4","5"]`。実機結果は [runtime-verification.md](./runtime-verification.md)（Pi 3 / 4 / 5 とも `unverified`）。
 
 ## 期待結果
 

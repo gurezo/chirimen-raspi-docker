@@ -10,6 +10,7 @@
 - Cleanup 検証: Stop / 画面離脱 / reload / WebSocket 切断。[#107](https://github.com/gurezo/chirimen-raspi-docker/issues/107)
 - 操作手順つきガイド: [gpio-led-blink.md](../guides/gpio-led-blink.md)（#108）
 - HTML サンプル: [workspace/led-blink/](../../workspace/led-blink/)
+- Catalog / Runtime Example 実機: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
 - 参考: [chirimen.org hello-real-world（Lチカ）](https://github.com/chirimen-oh/chirimen.org/tree/master/pizero/src/esm-examples/hello-real-world)
 
 web-demo の GPIO port 定数は `apps/web-demo/src/gpio-led-blink.ts` の `LED_BLINK_GPIO_PORT`（`26`）。`navigator.requestGPIOAccess().ports.get(26)` で参照する。
