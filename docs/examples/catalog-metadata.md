@@ -160,11 +160,11 @@ Catalog UI（#254）は Device 情報の欠落や取得失敗で致命エラー�
 
 | 状況 | Catalog の振る舞い |
 | --- | --- |
-| `deviceId` が空 | Device なしとして Example だけ表示する。GPIO LED でも I2C Scan でも成立する。プレースホルダ画像は任意。Device 未登録と誤認させない |
+| `deviceId` が空 | Device なしとして Example だけ表示する。GPIO LED でも I2C Scan でも成立する。画像は [`no_image.png`](../../apps/example-catalog/public/no_image.png)。Device 未登録と誤認させない |
 | `deviceId` が `devices[]` に無い | 上と同じ。`device` ラベルだけ出す |
 | `devices.json` の取得失敗 | 全 Example を Device なしで描画する。短い警告を出してよい。画面全体を落とさない |
 | JSON として読めない / `version` が `1` 以外 | 取得失敗と同じ |
-| `image` が空または読み込めない | 画像無し。カードは残す |
+| `image` が空または読み込めない | [`no_image.png`](../../apps/example-catalog/public/no_image.png) を表示する。カードは残す |
 | `packages` が空 / `driver` が `"none"` | ドライバ無し。カードは残す |
 | `description` が空 | Device 説明を出さない。Example の `title` / `notes` は出す |
 
