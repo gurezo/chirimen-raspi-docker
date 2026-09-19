@@ -6,7 +6,9 @@ import {
   deviceDescription,
   deviceImageUrl,
   deviceModel,
+  editorWorkspaceHref,
   runtimeExampleHref,
+  workspaceExampleDir,
   type CatalogEntry,
   type CatalogFilters,
   type CatalogStatus,
@@ -49,6 +51,21 @@ export const createExternalLink = (
   return link;
 };
 
+const createServiceLink = (
+  href: string,
+  label: string,
+  ariaLabel: string
+): HTMLAnchorElement => {
+  const link = document.createElement('a');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.className = `${LINK_CLASS} font-semibold`;
+  link.textContent = label;
+  link.setAttribute('aria-label', ariaLabel);
+  return link;
+};
+
 export const renderHeaderLinks = (parent: HTMLElement): void => {
   const nav = document.createElement('p');
   nav.className = 'mt-3';
@@ -71,11 +88,21 @@ const renderCardLinks = (
     actions.append(createExternalLink(entry.legacyUrl, 'Legacy Example'));
   }
   if (canOpenRuntimeExample(entry)) {
-    const run = document.createElement('a');
-    run.href = runtimeExampleHref(entry.runtimeExamplePath, hostname);
-    run.className = `${LINK_CLASS} font-semibold`;
-    run.textContent = '実行';
-    actions.append(run);
+    const dir = workspaceExampleDir(entry.runtimeExamplePath).replace(/\/$/, '');
+    actions.append(
+      createServiceLink(
+        runtimeExampleHref(entry.runtimeExamplePath, hostname),
+        '実行',
+        `${dir} を実行する`
+      )
+    );
+    actions.append(
+      createServiceLink(
+        editorWorkspaceHref(hostname),
+        '編集',
+        `Editor で ${dir} を編集する`
+      )
+    );
   }
 
   if (actions.childElementCount > 0) {
