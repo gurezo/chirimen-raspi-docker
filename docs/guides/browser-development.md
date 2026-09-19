@@ -194,14 +194,18 @@ workspace は bind mount `./workspace` → `/home/coder/project` である。mon
 | `led-blink/` | GPIO LED Blink |
 | `button/` | GPIO Input / onchange |
 | `i2c-scan/` | I2C Scan |
+| `pir-sensor/` | GPIO PIR Sensor |
+| `adt7410/` | ADT7410 温度読み取り |
+| `sht30/` | SHT30 温湿度 |
+| `ads1115/` | ADS1115 4ch ADC |
 
-配置の正本は [workspace/README.md](../../workspace/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
+配置の正本は [workspace/README.md](../../workspace/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。Phase 2 の回路仕様は [gpio-pir-sensor.md](../examples/gpio-pir-sensor.md) / [i2c-adt7410.md](../examples/i2c-adt7410.md) / [i2c-sht30.md](../examples/i2c-sht30.md) / [i2c-ads1115.md](../examples/i2c-ads1115.md)。
 
 ## Example を編集する
 
 標準操作は `Edit → Save → Browser reload` である。静的ファイルのため hot reload は無い。
 
-Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` を開いて編集する。配線と期待結果は各 Example ガイドへ。
+Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` / `pir-sensor/` / `adt7410/` / `sht30/` / `ads1115/` を開いて編集する。配線と期待結果は各 Example ガイドまたは回路仕様へ。
 
 ## 保存する
 
@@ -217,6 +221,10 @@ Editor で保存する。保存先は Editor `/home/coder/project` = host `./wor
 http://127.0.0.1:4173/led-blink/
 http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
+http://127.0.0.1:4173/pir-sensor/
+http://127.0.0.1:4173/adt7410/
+http://127.0.0.1:4173/sht30/
+http://127.0.0.1:4173/ads1115/
 ```
 
 Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。Catalog の「実行」も同じ Example Server を開く。

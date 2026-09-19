@@ -32,9 +32,13 @@ libs/browser-polyfill/dist/polyfill.js
 workspace/led-blink/polyfill.js
 workspace/button/polyfill.js
 workspace/i2c-scan/polyfill.js
+workspace/pir-sensor/polyfill.js
+workspace/adt7410/polyfill.js
+workspace/sht30/polyfill.js
+workspace/ads1115/polyfill.js
 ```
 
-`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。GPIO LED Blink / GPIO Input / I2C Scan サンプル用の `polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
+`pnpm build`（CI 含む）でも同じ bundle が走る。`dist` の成果物は git 管理外。GPIO LED Blink / GPIO Input / I2C Scan / PIR / ADT7410 / SHT30 / ADS1115 サンプル用の `polyfill.js` は bundle 時にコピーし、サンプルから `<script src="./polyfill.js">` で読む。
 
 ## 旧 polyfill.js からの移行
 

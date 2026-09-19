@@ -4,7 +4,7 @@
     {
       "label": "Serve examples",
       "type": "shell",
-      "command": "printf '%s\\n' 'HTML Examples are started by Compose (./scripts/start.sh).' 'Open a Browser tab:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/'",
+      "command": "printf '%s\\n' 'HTML Examples are started by Compose (./scripts/start.sh).' 'Open a Browser tab:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/' 'http://127.0.0.1:4173/pir-sensor/' 'http://127.0.0.1:4173/adt7410/' 'http://127.0.0.1:4173/sht30/' 'http://127.0.0.1:4173/ads1115/'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -14,7 +14,7 @@
     {
       "label": "Open Example Catalog",
       "type": "shell",
-      "command": "printf '%s\\n' 'Example Catalog is started by Compose (./scripts/start.sh).' 'Find examples:' 'http://127.0.0.1:4174/' 'Run ported examples on Example Server:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/' 'Edit in the existing Editor workspace root (/home/coder/project):' 'http://127.0.0.1:8080/?folder=/home/coder/project'",
+      "command": "printf '%s\\n' 'Example Catalog is started by Compose (./scripts/start.sh).' 'Find examples:' 'http://127.0.0.1:4174/' 'Run ported examples on Example Server:' 'http://127.0.0.1:4173/led-blink/' 'http://127.0.0.1:4173/button/' 'http://127.0.0.1:4173/i2c-scan/' 'http://127.0.0.1:4173/pir-sensor/' 'http://127.0.0.1:4173/adt7410/' 'http://127.0.0.1:4173/sht30/' 'http://127.0.0.1:4173/ads1115/' 'Edit in the existing Editor workspace root (/home/coder/project):' 'http://127.0.0.1:8080/?folder=/home/coder/project'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",

@@ -61,9 +61,9 @@ verified = portingStatus が ported かつ verificationStatus が verified
 実装は [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) の対象。ここでの推奨順だけを固定する。
 
 1. 済: GPIO Blink / GPIO Button / I2C detect
-2. 残りの Basic GPIO
-3. 回路図ありの Basic I2C センサ
-4. Advanced GPIO / I2C
+2. 一部済: GPIO PIR Sensor（残り Basic GPIO は未移植）
+3. 一部済: I2C SHT30 / ADT7410（他の回路図あり Basic I2C は未移植）
+4. 一部済: I2C ADS1115（他の Advanced は未移植）
 5. Remote / Camera / micro:bit（本 Runtime 対象外の可能性が高い）
 
 Remote は `relayServer.js`、micro:bit は WebBluetooth、Camera は CSI / `getUserMedia` に依存する。
@@ -72,19 +72,23 @@ Remote は `relayServer.js`、micro:bit は WebBluetooth、Camera は CSI / `get
 
 GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさない。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
 
-収録数は 62 件（gpio 6 / i2c 15 / advanced 33 / remote 6 / other 2）。`ported` + `verified` は 3 件。
+収録数は 62 件（gpio 6 / i2c 15 / advanced 33 / remote 6 / other 2）。`ported` + `verified` は 3 件。`ported` + `unverified`（#256 Phase 2）は 4 件。
 
 `catalogStatus` は `portingStatus` と `verificationStatus` から導出する。
 
 ## 本リポジトリの Runtime Example
 
-既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りは未移植のまま残す。
+既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りとは別である。#256 Phase 2 で PIR / SHT30 / ADT7410 / ADS1115 を `ported` / `unverified` にした。実機 `verified` は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
 
 | id | workspace | 回路 / 検証仕様 | catalogStatus | 根拠 |
 | --- | --- | --- | --- | --- |
 | `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
+| `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
+| `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
+| `i2c-ads1115` | [workspace/ads1115/](../../workspace/ads1115/) | [i2c-ads1115.md](./i2c-ads1115.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
 
 ### Basic GPIO
 
@@ -93,7 +97,7 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 | `gpio-blink` | GPIO-Blink | LED | あり | verified |
 | `gpio-button` | GPIO-Button | tactile-switch | あり | verified |
 | `gpio-read-gpio-value` | GPIO-readGpioValue | tactile-switch | あり | legacy |
-| `gpio-pir-sensor` | GPIO-pirSensor | KP-IR412 | あり | legacy |
+| `gpio-pir-sensor` | GPIO-pirSensor | KP-IR412 | あり | ported |
 | `gpio-multi-blink-all` | GPIO-MultiBlinkAll | LED | なし | legacy |
 | `gpio-button-all` | GPIO-buttonAll | tactile-switch | あり（`buttonAll.png`） | legacy |
 
@@ -102,8 +106,8 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 | id | title | device | schematic | catalogStatus |
 | --- | --- | --- | --- | --- |
 | `i2c-detect` | I2C-detect | （なし。scan のみ） | なし | verified |
-| `i2c-sht30` | I2C-SHT30 | SHT30 | あり | legacy |
-| `i2c-adt7410` | I2C-ADT7410 | ADT7410 | あり | legacy |
+| `i2c-sht30` | I2C-SHT30 | SHT30 | あり | ported |
+| `i2c-adt7410` | I2C-ADT7410 | ADT7410 | あり | ported |
 | `i2c-grove-accelerometer` | I2C-Grove-Accelerometer | ADXL345 | あり | legacy |
 | `i2c-grove-gesture` | I2C-Grove-Gesture | PAJ7620U2 | あり | legacy |
 | `i2c-grove-light` | I2C-Grove-Light | TSL2561 | あり | legacy |
@@ -123,7 +127,7 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 | id | title | interface | schematic | notes |
 | --- | --- | --- | --- | --- |
-| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC |
+| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC。#256 で ported / unverified |
 | `i2c-ads1115-load-cell` | I2C-ADS1115-LoadCell | i2c | あり | ソースは `i2c-ADS1115` |
 | `i2c-arduino-stepping-motor` | I2C-arduino-steppingMotor | i2c | あり | Arduino 経由 |
 | `i2c-bme280` | I2C-BME280 | i2c | あり | |

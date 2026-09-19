@@ -26,6 +26,10 @@ Example Catalog（`:4174`）は題材の発見入口です。ported Example の�
 | `led-blink/` | GPIO LED Blink（BCM 26） |
 | `button/` | GPIO Input / onchange（BCM 5 + LED） |
 | `i2c-scan/` | I2C Scan（bus 1。ADT7410 expected `0x48`） |
+| `pir-sensor/` | GPIO PIR Sensor（BCM 12。KP-IR412） |
+| `adt7410/` | ADT7410 温度読み取り（bus 1 / `0x48`） |
+| `sht30/` | SHT30 温湿度（bus 1 / `0x44`） |
+| `ads1115/` | ADS1115 4ch ADC（bus 1 / `0x48`） |
 
 ## 起動
 
@@ -40,6 +44,10 @@ Example の確認先:
 http://127.0.0.1:4173/led-blink/
 http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
+http://127.0.0.1:4173/pir-sensor/
+http://127.0.0.1:4173/adt7410/
+http://127.0.0.1:4173/sht30/
+http://127.0.0.1:4173/ads1115/
 ```
 
 HTML サンプルは `./scripts/start.sh` で Compose が配信する。host だけで起動する場合:
