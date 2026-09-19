@@ -98,7 +98,7 @@ Browser で Editor を開く（http://127.0.0.1:8080）
 ↓
 Example を編集して保存
   Editor: /home/coder/project
-  Host:   ./docs/examples
+  Host:   ./workspace
 ↓
 Example Server で確認する（http://127.0.0.1:4173/...）
 ↓

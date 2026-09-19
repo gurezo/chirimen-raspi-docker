@@ -7,7 +7,7 @@ FROM codercom/code-server:4.132.0
 # Official image already runs as UID 1000 (coder) and ships git / curl / nano.
 # Create the three mount points as coder so bind mounts and named volumes work.
 # python3 is the #179 exception to "no extra packages": Editor terminal
-# serves docs/examples over HTTP. Do not add GPIO / I2C tools or Node.
+# serves workspace/ over HTTP. Do not add GPIO / I2C tools or Node.
 USER root
 RUN apt-get update \
   && apt-get install -y --no-install-recommends python3-minimal \

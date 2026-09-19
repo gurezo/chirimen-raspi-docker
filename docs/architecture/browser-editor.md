@@ -150,7 +150,7 @@ code-server 内蔵の HTML / CSS / JavaScript / TypeScript Language Features は
 
 `docker compose down`（`-v` なし）ではユーザー導入 Extension は残る。`docker compose down -v` では消える。再インストールはユーザー判断である。
 
-lint / format / TypeScript のプロジェクト作業は host の `pnpm lint` / `pnpm test` / `pnpm build`（[development.md](../guides/development.md)）。Editor workspace（`docs/examples`）に `eslint` / `node_modules` は無い。Editor workspace へ Nx は入れない。[`docs/examples/.prettierrc.json`](../examples/.prettierrc.json) は Extension ではなく任意のフォーマット設定である。workspace 設定は [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json)（tab / eol / encoding）。ユーザー固有のテーマ / キーバインド / Extension は git に含めない。
+lint / format / TypeScript のプロジェクト作業は host の `pnpm lint` / `pnpm test` / `pnpm build`（[development.md](../guides/development.md)）。Editor workspace（`workspace/`）に `eslint` / `node_modules` は無い。Editor workspace へ Nx は入れない。[`workspace/.prettierrc.json`](../../workspace/.prettierrc.json) は Extension ではなく任意のフォーマット設定である。workspace 設定は [`workspace/.vscode/settings.json`](../../workspace/.vscode/settings.json)（tab / eol / encoding）。ユーザー固有のテーマ / キーバインド / Extension は git に含めない。
 
 GPIO / I2C 操作用の Extension は使わない。Hardware は Browser Polyfill → WebSocket → Runtime。
 
@@ -188,7 +188,7 @@ CHIRIMEN Example の編集・Browser 実行に Editor Extension は必須では�
 
 | 対象 | 方法 | 理由 |
 | --- | --- | --- |
-| workspace（Phase 7 Example） | bind mount `./docs/examples` → `/home/coder/project` | git 管理のソース。host から差分が見え、container 削除後も残る |
+| workspace（Phase 7 Example） | bind mount `./workspace` → `/home/coder/project` | git 管理のソース。host から差分が見え、container 削除後も残る |
 | editor settings / password | named volume `chirimen-editor-config` → `/home/coder/.config` | `config.yaml` は git に置かない。`compose down`（`-v` なし）後も password が残る |
 | extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` | 公式と同じ分離。host `$HOME` を汚さない |
 | container image / `/tmp` / build cache | 永続化しない | image 再 build と container 再作成で捨てる |
@@ -206,13 +206,13 @@ workspace を named volume にはしない。Example が git から切り離さ�
 | `./scripts/start.sh` | host の `id -u` / `id -g` / `id -un` を Compose override に書く |
 | `docker compose up` 直接 | `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER`。未設定時は `1000` / `coder` |
 
-bind mount した `docs/examples` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。workspace 設定は git 管理の [`docs/examples/.vscode/settings.json`](../examples/.vscode/settings.json) / [`tasks.json`](../examples/.vscode/tasks.json) と [`.prettierrc.json`](../examples/.prettierrc.json)（#178 / #179 / #201）。`extensions.json` による recommendation は置かない。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
+bind mount した `workspace/` への書き込みを host ユーザー所有に合わせる。named volume 初回の所有権は image の `chown coder` と `fixuid` に任せる。workspace 設定は git 管理の [`workspace/.vscode/settings.json`](../../workspace/.vscode/settings.json) / [`tasks.json`](../../workspace/.vscode/tasks.json) と [`.prettierrc.json`](../../workspace/.prettierrc.json)（#178 / #179 / #201）。`extensions.json` による recommendation は置かない。ユーザー固有の `.vscode` ファイルは bind mount に出うるが git には含めない。
 
 Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO Input / I2C Scan）である。実行は Editor 内ではなく、Browser の HTML サンプル → Polyfill → WebSocket → Runtime。Web Demo は Runtime 確認用であり、編集結果のプレビューではない。Editor に GPIO / I2C device は渡さない。
 
 ### Example 編集 / 静的 serve（#179）
 
-配置は [`docs/examples/README.md`](../examples/README.md) を正とする。monorepo 全体は mount しない。`package.json` / `node_modules` は置かない。
+配置は [`workspace/README.md`](../../workspace/README.md) を正とする。monorepo 全体は mount しない。`package.json` / `node_modules` は置かない。
 
 | ディレクトリ | Example |
 | --- | --- |
@@ -224,17 +224,17 @@ Editor workspace に載せる対象は Phase 7 Example（GPIO LED Blink / GPIO I
 
 | 作業 | 場所 |
 | --- | --- |
-| HTML / JS の編集 | Editor workspace（`docs/examples`） |
+| HTML / JS の編集 | Editor workspace（`workspace/`） |
 | `pnpm install` | しない（Example に依存は無い） |
 | `pnpm nx bundle browser-polyfill` | **host**。`polyfill.js` を各 HTML ディレクトリへコピーする |
 | `pnpm nx serve web-demo`（Vite HMR） | **host / リポジトリ開発者向け**。Example 編集の確認先ではない。手順は [Development Guide](../guides/development.md) |
 
-serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `docs/examples`）。`./scripts/start.sh` で Editor / Web Demo と一緒に起動する。Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
+serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `workspace/`）。`./scripts/start.sh` で Editor / Web Demo と一緒に起動する。Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
 
 | 項目 | 方針 |
 | --- | --- |
 | Service | [`compose.yaml`](../../compose.yaml) の `chirimen-examples`。既定で起動する（#208） |
-| Image | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile)。nginx（`nginx:1.30.4-alpine`）が bind `docs/examples` を静的配信 |
+| Image | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile)。nginx（`nginx:1.30.4-alpine`）が bind `workspace/` を静的配信 |
 | Port | 既定 `127.0.0.1:4173:4173`。Editor `8080` / Web Demo `4200` / Runtime `33330` と分離する。LAN は同じ `CHIRIMEN_PUBLISH_BIND` / `--lan`（#181） |
 | URL | `http://127.0.0.1:4173/led-blink/` など |
 | Editor terminal | サーバは起動しない。Run Task **Serve examples** が URL を出す |
@@ -251,7 +251,7 @@ http://127.0.0.1:4173/i2c-scan/
 
 ### Web Demo 起動（#180）
 
-Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確認先ではない。確認内容は Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通である。Editor image に Node / pnpm / Nx は入れない。workspace は `docs/examples` のまま。Example の実行先は `:4173`。
+Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確認先ではない。確認内容は Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通である。Editor image に Node / pnpm / Nx は入れない。workspace は `workspace/`。Example の実行先は `:4173`。
 
 ```text
 ./scripts/start.sh
@@ -267,7 +267,7 @@ Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確
 | Image | [`docker/web-demo/Dockerfile`](../../docker/web-demo/Dockerfile)。Vite production build を nginx（`nginx:1.30.4-alpine`）で静的配信 |
 | Port | 既定 `127.0.0.1:4200:4200`。Editor `8080` / Example `4173` / Runtime `33330` と分離する。LAN は同じ `CHIRIMEN_PUBLISH_BIND` / `--lan`（#181） |
 | URL | `http://127.0.0.1:4200/`（`#/gpio-output` / `#/gpio-input` / `#/i2c-scan`） |
-| Editor terminal | サーバは起動しない。Run Task **Open Web Demo**（[`tasks.json`](../examples/.vscode/tasks.json)）が URL を出す |
+| Editor terminal | サーバは起動しない。Run Task **Open Web Demo**（[`tasks.json`](../../workspace/.vscode/tasks.json)）が URL を出す |
 | GPIO / I2C | 渡さない。Browser 内の Polyfill が Runtime の WebSocket へ接続する（web-demo container 経由ではない） |
 | `depends_on` | 付けない。Runtime / Editor と独立 |
 
@@ -276,7 +276,7 @@ hot reload:
 | 経路 | HMR |
 | --- | --- |
 | Compose `chirimen-web-demo` | 無し。静的 production build。再 build は image 再 build。タブは reload |
-| Compose `chirimen-examples`（4173） | 無し。bind `docs/examples`。保存後に Example タブを reload（#179） |
+| Compose `chirimen-examples`（4173） | 無し。bind `workspace/`。保存後に Example タブを reload（#179） |
 | host `pnpm nx serve web-demo` | 有り（Vite）。リポジトリ開発者向け。Example 編集の確認先ではない。port 4200 が衝突するので Compose web-demo を先に止める。手順は [Development Guide](../guides/development.md) |
 
 WebSocket:
@@ -422,11 +422,11 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |
 | 起動 | 既定は Runtime + Editor + Examples + Web Demo（`docker compose up` / `./scripts/start.sh`。#208）。LAN は `--lan`（#181）。`--32bit` は Runtime only |
-| 永続化 | workspace は bind `docs/examples`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
-| Example 編集 / serve | HTML は `docs/examples`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
+| 永続化 | workspace は bind `workspace/`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
+| Example 編集 / serve | HTML は `workspace/`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信する Runtime Demo / Diagnostic UI（#180）。Example の編集結果確認先ではない。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo`（[Development Guide](../guides/development.md)） |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `docs/examples` を静的配信する。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `workspace/` を静的配信する。#180 は `chirimen-web-demo`（port `4200`）と Editor task **Open Web Demo** を固定した。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 

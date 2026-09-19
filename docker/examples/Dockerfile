@@ -1,7 +1,7 @@
 # HTML Example static image (linux/amd64, linux/arm64).
 # This is not a Hardware Runtime: do not add GPIO / I2C tools or devices.
 # Build context is docker/examples. Example files are bind-mounted at
-# runtime from docs/examples so Editor saves are visible after reload.
+# runtime from workspace/ so Editor saves are visible after reload.
 FROM nginx:1.30.4-alpine
 
 # wget is for HEALTHCHECK. GPIO / I2C tools are not installed.

@@ -37,8 +37,9 @@ services:
   # Examples + Web Demo (#208). `./scripts/start.sh --32bit` starts
   # chirimen-server only. Runtime only via Compose is
   # `docker compose up chirimen-server`.
-  # Persistence (#176): bind docs/examples for workspace; named volumes
-  # for settings / extensions. Host uid via user + DOCKER_USER (fixuid).
+  # Persistence (#176 / #241): bind workspace/ for Editor workspace;
+  # named volumes for settings / extensions. Host uid via user +
+  # DOCKER_USER (fixuid).
   # Do not run as root. docker compose down -v deletes named volumes,
   # not the workspace bind mount.
   # Do not set no-new-privileges or cap_drop ALL here: the official
@@ -58,11 +59,11 @@ services:
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080"
     volumes:
-      - ./docs/examples:/home/coder/project
+      - ./workspace:/home/coder/project
       - chirimen-editor-local:/home/coder/.local
       - chirimen-editor-config:/home/coder/.config
 
-  # HTML Examples (nginx static of docs/examples). Independent of
+  # HTML Examples (nginx static of workspace/). Independent of
   # Runtime, Editor, and Web Demo: no depends_on. This is not a
   # Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. Bind the same host path the Editor
@@ -76,7 +77,7 @@ services:
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173"
     volumes:
-      - ./docs/examples:/usr/share/nginx/html:ro
+      - ./workspace:/usr/share/nginx/html:ro
     security_opt:
       - no-new-privileges:true
 

@@ -12,7 +12,7 @@
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Getting Started](./getting-started.md)（最短起動）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
-- [docs/examples/README.md](../examples/README.md)
+- [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
 
 GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学び、このガイドでは Editor で書く。Tutorial の SD イメージや CodeSandbox は本リポジトリの Editor ではない。
@@ -53,7 +53,7 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 ↓
 Browser で Editor を開く（http://127.0.0.1:8080）
 ↓
-Workspace で Example を編集して保存（docs/examples）
+Workspace で Example を編集して保存（workspace）
 ↓
 Example Server で確認する（http://127.0.0.1:4173/...）
 ↓
@@ -127,13 +127,13 @@ LAN の別マシンから開くときは `./scripts/start.sh --lan`。Internet �
 
 ```text
 Editor: /home/coder/project
-Host:   ./docs/examples
+Host:   ./workspace
 ```
 
-Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./docs/examples` は残る。
+Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./workspace` は残る。
 
 ```text
-Host ./docs/examples
+Host ./workspace
       │
       ├─────────────────────┐
       ↓                     ↓
@@ -144,7 +144,7 @@ chirimen-editor       chirimen-examples
       └──────────────────→ :4173
 ```
 
-workspace は bind mount `./docs/examples` → `/home/coder/project` である。monorepo 全体は mount しない。`package.json` / `node_modules` は無い。`pnpm` / `nx` は Editor では使わない。
+workspace は bind mount `./workspace` → `/home/coder/project` である。monorepo 全体は mount しない。`package.json` / `node_modules` は無い。`pnpm` / `nx` は Editor では使わない。
 
 | ディレクトリ | Example |
 | --- | --- |
@@ -152,7 +152,7 @@ workspace は bind mount `./docs/examples` → `/home/coder/project` である�
 | `button/` | GPIO Input / onchange |
 | `i2c-scan/` | I2C Scan |
 
-配置の正本は [docs/examples/README.md](../examples/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
+配置の正本は [workspace/README.md](../../workspace/README.md)。回路・配線は [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md)。
 
 ## Extension の導入 / 確認
 
@@ -178,7 +178,7 @@ http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
 ```
 
-Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
+Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
 配線と期待結果は各 Example ガイドへ。Web Demo（`:4200`）は編集結果を表示しない。確認先は Example Server `:4173` である。
 
@@ -199,7 +199,7 @@ curl http://localhost:33330/health
 
 ## Runtime を Web Demo で確認する
 
-Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI である。`docs/examples` の編集結果は反映されない。次の疎通を確認するときに使う。
+Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI である。`workspace/` の編集結果は反映されない。次の疎通を確認するときに使う。
 
 ```text
 Runtime が起動しているか
@@ -234,7 +234,7 @@ curl http://localhost:33330/health
 docker compose down
 ```
 
-**`-v` は付けない。** named volume（password / 任意 Extension）が消える。workspace の bind mount（`docs/examples`）は `-v` の有無に関わらず残る。
+**`-v` は付けない。** named volume（password / 任意 Extension）が消える。workspace の bind mount（`workspace/`）は `-v` の有無に関わらず残る。
 
 ## 更新
 
@@ -246,7 +246,7 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 | 対象 | 置き場 | `docker compose down` | `docker compose down -v` |
 | --- | --- | --- | --- |
-| Example ソース | host `docs/examples`（git / bind） | 残る | 残る |
+| Example ソース | host `workspace/`（git / bind） | 残る | 残る |
 | password / `config.yaml` | named volume `chirimen-editor-config` | 残る | 消える |
 | 任意 Extension / user-data | named volume `chirimen-editor-local` | 残る | 消える |
 

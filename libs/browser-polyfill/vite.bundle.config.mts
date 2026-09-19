@@ -3,12 +3,13 @@ import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 
+// Nx monorepo root. Distinct from the host Editor directory ./workspace.
 const workspaceRoot = resolve(import.meta.dirname, '../..');
 const bundleOutFile = resolve(import.meta.dirname, 'dist/polyfill.js');
 const samplePolyfills = [
-  resolve(workspaceRoot, 'docs/examples/led-blink/polyfill.js'),
-  resolve(workspaceRoot, 'docs/examples/button/polyfill.js'),
-  resolve(workspaceRoot, 'docs/examples/i2c-scan/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/led-blink/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/button/polyfill.js'),
+  resolve(workspaceRoot, 'workspace/i2c-scan/polyfill.js'),
 ];
 
 function copySamplePolyfills(): Plugin {
