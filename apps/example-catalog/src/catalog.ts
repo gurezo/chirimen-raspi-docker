@@ -168,3 +168,52 @@ export const deviceDescription = (device: CertifiedDevice | null): string =>
 
 export const deviceImageUrl = (device: CertifiedDevice | null): string =>
   asString(device?.meta?.image);
+
+export type CategoryFilter =
+  | 'all'
+  | 'gpio'
+  | 'i2c'
+  | 'advanced'
+  | 'remote'
+  | 'other';
+
+export type StatusFilter = 'all' | CatalogStatus;
+
+export type CatalogFilters = {
+  category: CategoryFilter;
+  status: StatusFilter;
+};
+
+export const CATEGORY_FILTERS: ReadonlyArray<{
+  id: CategoryFilter;
+  label: string;
+}> = [
+  { id: 'all', label: 'すべて' },
+  { id: 'gpio', label: 'GPIO' },
+  { id: 'i2c', label: 'I2C' },
+  { id: 'advanced', label: 'Advanced' },
+  { id: 'remote', label: 'Remote' },
+  { id: 'other', label: 'Other' },
+];
+
+export const STATUS_FILTERS: ReadonlyArray<{
+  id: StatusFilter;
+  label: string;
+}> = [
+  { id: 'all', label: 'すべて' },
+  { id: 'legacy', label: 'legacy' },
+  { id: 'ported', label: 'ported' },
+  { id: 'verified', label: 'verified' },
+];
+
+export const filterCatalogEntries = (
+  entries: CatalogEntry[],
+  filters: CatalogFilters
+): CatalogEntry[] =>
+  entries.filter((entry) => {
+    const categoryOk =
+      filters.category === 'all' || entry.category === filters.category;
+    const statusOk =
+      filters.status === 'all' || entry.catalogStatus === filters.status;
+    return categoryOk && statusOk;
+  });

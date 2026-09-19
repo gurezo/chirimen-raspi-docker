@@ -6,6 +6,7 @@ import {
   DEVICE_FETCH_WARNING,
   buildCatalogEntries,
   deriveCatalogStatus,
+  filterCatalogEntries,
   findCertifiedDevice,
   loadCertifiedDevices,
   parseDevicesPayload,
@@ -161,5 +162,39 @@ describe('Device join', () => {
     expect(
       entries.find((entry) => entry.id === 'gpio-read-gpio-value')?.catalogStatus
     ).toBe('legacy');
+  });
+});
+
+describe('filterCatalogEntries', () => {
+  const entries = buildCatalogEntries(readInventoryExamples(inventory), []);
+
+  it('filters GPIO examples', () => {
+    const gpio = filterCatalogEntries(entries, {
+      category: 'gpio',
+      status: 'all',
+    });
+    expect(gpio.length).toBe(6);
+    expect(gpio.every((entry) => entry.category === 'gpio')).toBe(true);
+  });
+
+  it('filters I2C examples', () => {
+    const i2c = filterCatalogEntries(entries, {
+      category: 'i2c',
+      status: 'all',
+    });
+    expect(i2c.length).toBe(15);
+    expect(i2c.every((entry) => entry.category === 'i2c')).toBe(true);
+  });
+
+  it('filters verified status', () => {
+    const verified = filterCatalogEntries(entries, {
+      category: 'all',
+      status: 'verified',
+    });
+    expect(verified.map((entry) => entry.id).sort()).toEqual([
+      'gpio-blink',
+      'gpio-button',
+      'i2c-detect',
+    ]);
   });
 });
