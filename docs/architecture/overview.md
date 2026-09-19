@@ -186,13 +186,13 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
-| [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)） |
+| [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |
 | [Getting Started](../guides/getting-started.md) | 初回起動手順 |
-| [Browser Development Environment](../guides/browser-development.md) | Learn → Edit → Save → Run → Verify の正本（#242） |
+| [Browser Development Environment](../guides/browser-development.md) | Learn → Edit → Save → Run → Verify の正本（#242）。実機 E2E は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |
 | [GPIO Input](../guides/gpio-input.md) | 必要部品・配線・HTML サンプルでの入力確認手順 |

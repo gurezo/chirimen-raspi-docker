@@ -88,7 +88,7 @@ I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が
 
 ## 4. Browser で Editor / Examples を開く
 
-`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。
+`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
 ```sh
 curl -fsS http://127.0.0.1:8080/healthz
@@ -117,6 +117,7 @@ curl -fsS http://127.0.0.1:4200/
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) |
 | Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
+| Browser Development Flow の実機 E2E | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | Runtime を Web Demo で確認する | [browser-development.md の Web Demo で Runtime を診断する](./browser-development.md#web-demo-で-runtime-を診断する) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |

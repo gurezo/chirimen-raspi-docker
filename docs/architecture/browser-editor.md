@@ -10,6 +10,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - 利用ガイド: [browser-development.md](../guides/browser-development.md)（#183）
+- 実機 E2E: [Compatibility の Browser Development Flow 実機検証](./compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 
 ## Status
 

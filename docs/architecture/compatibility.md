@@ -6,12 +6,13 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 
 - 親 Issue: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
-- 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
+- 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219) / [#243 Browser Development Flow](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 - 32-bit 記録: [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - [Getting Started](../guides/getting-started.md)
 - [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)
+- [Browser Development Environment](../guides/browser-development.md)（#243）
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 
 ## Supported / Verified Environment
@@ -59,6 +60,7 @@ Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardw
 
 - **Protocol E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。web-demo の I2C Scan は下記「I2C Scan 実機検証（#116）」
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
+- **Browser Development Flow**: Editor → Workspace → Example Server → Runtime の一連は下記「Browser Development Flow 実機検証（#243）」。既存の Pi 3 / 4 / 5 節は上書きしない
 - 詳細は下記の Raspberry Pi 3 B+（#97） / 4（#98） / 5（#99）実機検証
 
 ### Raspberry Pi 3 A+
@@ -161,3 +163,25 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | I2C Runtime | `docker compose exec chirimen-server ls -l /dev/i2c-1` で device あり。`requestI2CAccess` + port `1` scan 成功（#99） |
 | Browser Scan | ADT7410 / `0x48` は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) |
 | known limitations | 初期状態で `/dev/i2c-1` が無い場合あり。Docker 済みでは `docker.sh` は idempotent。`Supported` とは書かない |
+
+### Browser Development Flow 実機検証（#243）
+
+[#237](https://github.com/gurezo/chirimen-raspi-docker/issues/237) の `Learn → Edit → Save → Run → Verify` を、Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-rpi-2712`）を一次環境として記録する。ホスト環境と Runtime / GPIO / I2C / WebSocket 結果は [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) と同一機。Editor / Workspace / Example Server は [#241](https://github.com/gurezo/chirimen-raspi-docker/issues/241) の `workspace/` bind mount であり、GPIO / I2C device は渡さない。Web Demo の役割分離は [#238](https://github.com/gurezo/chirimen-raspi-docker/issues/238)。既存の「Raspberry Pi 5」（#99）は上書きしない。手順の正本は [browser-development.md](../guides/browser-development.md#実機-e2e-検証243)。
+
+| 項目 | 結果 |
+| --- | --- |
+| Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0（一次環境） |
+| Raspberry Pi OS | Raspbian OS 64-bit |
+| Kernel | `6.18.34+rpt-rpi-2712` |
+| Architecture | `aarch64` |
+| Docker version | 既存導入済み（#219） |
+| Editor startup | Compose `chirimen-editor`（#175 / #208）。`curl -fsS http://127.0.0.1:8080/healthz` は HTTP 200 ならプロセス生存 |
+| Workspace save | Editor `/home/coder/project` = host `./workspace`（#176 / #241）。container 内だけには保存されない |
+| Example Server reflection | 同一 bind を `chirimen-examples` が `:4173` で配信（#179 / #241）。hot reload は無い。reload で反映 |
+| Runtime health | `./scripts/start.sh` のあと `curl http://localhost:33330/health` は `{"name":"chirimen-raspi-docker-server","status":"ok","version":"0.0.1"}`（#219） |
+| WebSocket connection | Protocol E2E Verified（#99）。HTML Example は `ws://localhost:33330/` |
+| GPIO result | sysfs / Verified。port `26` の export / write（#99）。回路は BCM 26 / 物理 pin 37（[gpio-led-blink.md](../examples/gpio-led-blink.md)） |
+| I2C result | i2c-dev / Verified。Browser Scan は ADT7410 / `0x48`（#116） |
+| Web Demo result | `:4200` は Runtime Demo / Diagnostic UI。`workspace/` の編集は反映されない（#238）。I2C Scan UI は #116 |
+| container 再起動後の保持 | `docker compose down`（`-v` なし）後も host `./workspace` は残る。named volume の password / 任意 Extension も残る |
+| known limitations | 一次環境は Pi 5。Pi 3 B+ / 4 の Editor 個別再測定は未実施（Runtime / GPIO / I2C は #97 / #98）。`./scripts/start.sh --32bit` は Runtime only。`Supported` とは書かない |

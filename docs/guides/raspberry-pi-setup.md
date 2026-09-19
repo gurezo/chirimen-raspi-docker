@@ -17,7 +17,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
-- [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)）
+- [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
 - `scripts/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
 
@@ -147,7 +147,7 @@ getent group gpio
 - **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
 - **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
-- 機種別の実機検証結果は [Compatibility](../architecture/compatibility.md) を参照する。Raspberry Pi 3 A+ はスペック不足のため推奨環境外
+- 機種別の実機検証結果は [Compatibility](../architecture/compatibility.md) を参照する。Raspberry Pi 3 A+ はスペック不足のため推奨環境外。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 

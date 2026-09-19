@@ -280,7 +280,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility
 
-推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。
+推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
 
 ## 非 Pi 環境での制限
 

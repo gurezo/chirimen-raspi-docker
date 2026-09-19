@@ -11,6 +11,7 @@
 - LED 回路（HTML サンプルで使用）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
+- 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO 入力を学ぶ）
 - [Browser Polyfill](./browser-polyfill.md)
 - [Troubleshooting](./troubleshooting.md)
