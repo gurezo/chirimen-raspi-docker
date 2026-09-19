@@ -112,7 +112,7 @@ host の `pnpm nx serve web-demo`（Vite HMR）も port `4200` を使う。同�
 
 ### chirimen-example-catalog
 
-Example Catalog は Hardware Runtime ではない。Legacy Example の発見 UI であり、実行コードそのものではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。ported Example の実行リンクは Example Server `:4173` を指す。Device Dashboard は iframe せず外部リンクにする（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
+Example Catalog は Hardware Runtime ではない。Legacy Example の発見入口であり、実行コードそのものではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。ported Example の「実行」は Example Server `:4173`、「編集」は Editor の既存 workspace ルート `:8080/?folder=/home/coder/project` を指す（[#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Device Dashboard は iframe せず外部リンクにする（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
 
 | 項目 | 値 |
 | --- | --- |
@@ -146,7 +146,7 @@ LAN 公開（Editor / Example / Web Demo / Catalog のみ。Runtime `33330` は�
 ./scripts/start.sh --lan
 ```
 
-`./scripts/start.sh` のあと Example の確認先は `http://127.0.0.1:4173/led-blink/` など（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Example Catalog は `http://127.0.0.1:4174/`。Web Demo（`http://127.0.0.1:4200/`）は Runtime 確認用である（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
+`./scripts/start.sh` のあと Example の確認先は `http://127.0.0.1:4173/led-blink/` など（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Example Catalog は `http://127.0.0.1:4174/`（Run Task **Open Example Catalog**。ported の「実行」/「編集」は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Web Demo（`http://127.0.0.1:4200/`）は Runtime 確認用である（Run Task **Open Web Demo**）。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179) と [Web Demo 起動](./browser-editor.md#web-demo-起動180)。
 
 `/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
 

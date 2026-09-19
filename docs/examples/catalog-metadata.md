@@ -10,7 +10,7 @@ Example Catalog が参照する metadata の責務を、Example 固有情報と 
 - 回路図: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - Device 正本: [gurezo/chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json)
 
-この文書は **Catalog metadata の設計** が目的である。Catalog UI の実装は [`apps/example-catalog`](../../apps/example-catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)、`http://127.0.0.1:4174/`）。実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
+この文書は **Catalog metadata の設計** が目的である。Catalog UI の実装は [`apps/example-catalog`](../../apps/example-catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)、`http://127.0.0.1:4174/`）。ported Example から Workspace Example を開く導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)。実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
 
 ## 責務分離
 
@@ -38,7 +38,7 @@ Example metadata             HTML / Vanilla JS
 | Example | [legacy-inventory.json](./legacy-inventory.json) | 題材、状態、回路図 URL、Runtime パス |
 | Device | `generated/devices.json` | 型番、画像、説明、ドライバ |
 | 回路図 | Example の `schematicUrl` | Device の `circuit` は使わない（[schematic-compatibility.md](./schematic-compatibility.md)） |
-| 実行コード | Example の `runtimeExamplePath` | Device の upstream Example は使わない |
+| 実行コード | Example の `runtimeExamplePath` | Device の upstream Example は使わない。ported の実行 URL と Editor 導線の元（[#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)） |
 | Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | iframe せず外部リンク |
 
 本リポジトリへ `devices.json` を正本としてコピーしない。

@@ -104,7 +104,7 @@ chirimen-raspi-docker/
 ├── apps/
 │   ├── server/                 # Express + WebSocket server
 │   ├── web-demo/               # Runtime Demo / Diagnostic UI（Polyfill / 接続状態 UI / GPIO・I2C ナビ）
-│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254）
+│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254 / #255）
 ├── libs/
 │   ├── core/                   # 共通エラー / 型
 │   ├── gpio/                   # Web GPIO 風 domain（型・契約）
@@ -153,7 +153,7 @@ chirimen-raspi-docker/
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
 | `apps/web-demo` | Runtime Demo / Diagnostic UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan の Scan / hex 一覧）。Example の編集結果確認先ではない |
-| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` へリンク。iframe は使わない） |
+| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |

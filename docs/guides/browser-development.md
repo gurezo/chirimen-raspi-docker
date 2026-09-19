@@ -9,6 +9,8 @@
 - 子 Issue: [#243 Browser Development Flow を Raspberry Pi 実機で E2E 検証する](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
+- 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
+- 子 Issue: [#255 Example Catalog から Workspace Example を開く導線を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/255)
 - 実機検証結果: [Compatibility の Browser Development Flow 実機検証（#243）](../architecture/compatibility.md#browser-development-flow-実機検証243)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
@@ -17,21 +19,20 @@
 - [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
 
-このガイドの手順だけで、`Learn → Edit → Save → Run → Verify` を再現できる。
+このガイドの手順だけで、`Learn → Edit → Save → Run → Verify` を再現できる。題材探しの入口は Example Catalog である。
 
 ```text
 CHIRIMEN Tutorial
 GPIO / I2C / JavaScript / 回路を学ぶ
         ↓
-Browser Editor :8080
+Example Catalog :4174
         ↓
-Workspace
+ported「実行」 → Example Server :4173
+ported「編集」 → Browser Editor :8080（workspace ルート）
         ↓
 Edit / Save
         ↓
-Example Server :4173
-        ↓
-Browser reload
+Example タブを Browser reload
         ↓
 chirimen-server :33330
         ↓
@@ -40,7 +41,7 @@ Raspberry Pi GPIO / I2C
 
 Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
-Example Catalog（`:4174`）は題材の発見 UI である。ported Example の実行リンクは `:4173` を開く。Editor からの本導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255) の対象である。
+legacy Example は Catalog から旧 GC Example を参照するだけである。実行 / 編集リンクは出さない。Editor は `/home/coder/project`（host `./workspace`）を開く。子ディレクトリを新しい workspace にはしない。
 
 ## 概要
 
@@ -70,11 +71,12 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 ./scripts/start.sh
   （同等: docker compose up）
 ↓
-Browser で Editor を開く（http://127.0.0.1:8080）
+Browser で Catalog を開く（http://127.0.0.1:4174/）
+↓
+ported「実行」で Example Server を開く（http://127.0.0.1:4173/...）
+ported「編集」で Editor を開く（http://127.0.0.1:8080/?folder=/home/coder/project）
 ↓
 Workspace で Example を編集して保存（workspace）
-↓
-Example Server で確認する（http://127.0.0.1:4173/...）
 ↓
 保存後に Example タブを reload する
 ↓
@@ -132,6 +134,15 @@ curl -fsS http://127.0.0.1:4174/
 ```
 
 `/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started](./getting-started.md)。
+
+## Catalog で題材を探す
+
+Browser で `http://127.0.0.1:4174/` を開く。ported Example だけ「実行」と「編集」がある。
+
+- **実行**: Example Server（`:4173`）。URL は `legacy-inventory.json` の `runtimeExamplePath` から解決する
+- **編集**: Editor（`:8080/?folder=/home/coder/project`）。既存 workspace ルートを開く
+
+legacy は回路図 / Legacy Example の外部リンクのみである。Run Task **Open Example Catalog**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
 ## Editor を開く
 
@@ -208,7 +219,7 @@ http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
 ```
 
-Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
+Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。Catalog の「実行」も同じ Example Server を開く。
 
 ## Reload して hardware を確認する
 
