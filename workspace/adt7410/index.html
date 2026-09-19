@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>i2c-ADT7410</title>
+    <style>
+      p {
+        color: blue;
+        text-align: center;
+        font-size: 24px;
+      }
+      #head {
+        text-align: center;
+        font-size: 28px;
+      }
+      #error {
+        color: crimson;
+        text-align: center;
+        font-size: 18px;
+      }
+    </style>
+    <script src="./polyfill.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <p>ADT7410 高精度 I2C 16-bit 温度センサ → bus 1 / 0x48</p>
+    <p id="head">接続中</p>
+    <p id="error"></p>
+  </body>
+</html>

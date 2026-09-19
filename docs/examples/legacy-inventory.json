@@ -179,11 +179,15 @@
       "device": "ADT7410",
       "deviceId": "ADT7410",
       "interface": "i2c",
-      "portingStatus": "legacy",
+      "portingStatus": "ported",
       "verificationStatus": "unverified",
-      "supportedRaspberryPi": [],
-      "runtimeExamplePath": "",
-      "notes": "温度センサー。本リポジトリの I2C Scan は address 確認のみで、この温度読み取り Example とは別。"
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
+      "runtimeExamplePath": "workspace/adt7410/",
+      "notes": "温度センサー。I2C1 / address 0x48。本リポジトリの I2C Scan（i2c-detect）は address 確認のみで、この温度読み取りとは別。ADS1115 既定アドレスも 0x48 のため同時接続できない。移植元 https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-ADT7410 。実機 verified は #257。"
     },
     {
       "id": "i2c-grove-accelerometer",
