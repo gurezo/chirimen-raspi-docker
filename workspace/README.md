@@ -11,7 +11,7 @@ Host:   ./workspace
 
 Editor（`:8080`）と Example Server（`:4173`）は同じ host `./workspace` を bind します。container 内だけには保存されません。`docker compose down` 後も host `./workspace` は残ります。
 
-GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../docs/guides/browser-development.md)。
+GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../docs/guides/browser-development.md)。実機 E2E は [Compatibility](../docs/architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
 Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
 

@@ -16,3 +16,4 @@ HTML サンプルの編集場所は [workspace/](../../workspace/) です。Brow
 - [GPIO Input](../guides/gpio-input.md)
 - [I2C Scan](../guides/i2c-scan.md)
 - [Browser Development Environment](../guides/browser-development.md)
+- 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）

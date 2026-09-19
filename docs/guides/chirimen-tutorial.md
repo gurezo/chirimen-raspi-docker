@@ -9,6 +9,7 @@ GPIO / I2C / JavaScript / 回路の基礎は既存 CHIRIMEN Tutorial で学び�
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（host 準備の正本）
 - [Getting Started](./getting-started.md)（Runtime 起動の正本）
 - [Browser Development Environment](./browser-development.md)（Editor で書く）
+- 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)

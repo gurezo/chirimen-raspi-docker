@@ -7,6 +7,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Getting Started](./getting-started.md)
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
+- 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)
@@ -27,6 +28,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | 保存後未反映 | [Example を保存しても Browser に反映されない](#example-を保存しても-browser-に反映されない) |
 | Runtime 接続不可 | [LAN から Web Demo / Example は開くが GPIO / I2C が動かない](#lan-から-web-demo-example-は開くが-gpio-i2c-が動かない) / [Web Demo は開くが GPIO / I2C が動かない](#web-demo-は開くが-gpio-i2c-が動かない) |
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
+| 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 
 ## device が無く GPIO / I2C が unavailable になる
 
@@ -170,7 +172,7 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 - **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
-- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)
+- **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow（Editor → Workspace → Example Server → Runtime）は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 
 ## 32-bit OS は非推奨
 
