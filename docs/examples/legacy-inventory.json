@@ -1,0 +1,21 @@
+{
+  "source": {
+    "legacyExamplesPage": "https://www.chirimen.org/chirimen/gc/top/examples/",
+    "legacyRepository": "https://github.com/chirimen-oh/chirimen/tree/master/gc"
+  },
+  "relatedIssues": {
+    "parent": 250,
+    "inventory": 251,
+    "catalogMetadata": 252
+  },
+  "status": {
+    "portingStatus": ["legacy", "ported"],
+    "verificationStatus": ["unverified", "verified"],
+    "catalogStatus": {
+      "legacy": "portingStatus が legacy",
+      "ported": "portingStatus が ported かつ verificationStatus が unverified",
+      "verified": "portingStatus が ported かつ verificationStatus が verified"
+    }
+  },
+  "examples": []
+}
