@@ -69,14 +69,26 @@ Remote は `relayServer.js`、micro:bit は WebBluetooth、Camera は CSI / `get
 
 GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさない。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
 
-`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。この段階ではすべて `legacy` / `unverified`。
+収録数は 62 件（gpio 6 / i2c 15 / advanced 33 / remote 6 / other 2）。`ported` + `verified` は 3 件。
+
+`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。
+
+## 本リポジトリの Runtime Example
+
+既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りは未移植のまま残す。
+
+| id | workspace | 回路 / 検証仕様 | catalogStatus | 根拠 |
+| --- | --- | --- | --- | --- |
+| `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 
 ### Basic GPIO
 
 | id | title | device | schematic | catalogStatus |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | GPIO-Blink | LED | あり | legacy |
-| `gpio-button` | GPIO-Button | tactile-switch | あり | legacy |
+| `gpio-blink` | GPIO-Blink | LED | あり | verified |
+| `gpio-button` | GPIO-Button | tactile-switch | あり | verified |
 | `gpio-read-gpio-value` | GPIO-readGpioValue | tactile-switch | あり | legacy |
 | `gpio-pir-sensor` | GPIO-pirSensor | KP-IR412 | あり | legacy |
 | `gpio-multi-blink-all` | GPIO-MultiBlinkAll | LED | なし | legacy |
@@ -86,7 +98,7 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 | id | title | device | schematic | catalogStatus |
 | --- | --- | --- | --- | --- |
-| `i2c-detect` | I2C-detect | （なし。scan のみ） | なし | legacy |
+| `i2c-detect` | I2C-detect | （なし。scan のみ） | なし | verified |
 | `i2c-sht30` | I2C-SHT30 | SHT30 | あり | legacy |
 | `i2c-adt7410` | I2C-ADT7410 | ADT7410 | あり | legacy |
 | `i2c-grove-accelerometer` | I2C-Grove-Accelerometer | ADXL345 | あり | legacy |

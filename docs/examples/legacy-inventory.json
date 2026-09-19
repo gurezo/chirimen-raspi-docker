@@ -33,10 +33,10 @@
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/LEDblink/schematic.png",
       "device": "LED",
       "interface": "gpio",
-      "portingStatus": "legacy",
-      "verificationStatus": "unverified",
-      "runtimeExamplePath": "",
-      "notes": "Legacy ディレクトリ名は LEDblink。LED 点滅。"
+      "portingStatus": "ported",
+      "verificationStatus": "verified",
+      "runtimeExamplePath": "workspace/led-blink/",
+      "notes": "Legacy ディレクトリ名は LEDblink。本リポジトリでは workspace/led-blink/ と docs/examples/gpio-led-blink.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。"
     },
     {
       "id": "gpio-button",
@@ -47,10 +47,10 @@
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/button/schematic.png",
       "device": "tactile-switch",
       "interface": "gpio",
-      "portingStatus": "legacy",
-      "verificationStatus": "unverified",
-      "runtimeExamplePath": "",
-      "notes": "onchange でタクトスイッチ入力を読み、LED を点灯する。"
+      "portingStatus": "ported",
+      "verificationStatus": "verified",
+      "runtimeExamplePath": "workspace/button/",
+      "notes": "onchange でタクトスイッチ入力を読む。本リポジトリでは workspace/button/ と docs/examples/gpio-input.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。"
     },
     {
       "id": "gpio-read-gpio-value",
@@ -117,10 +117,10 @@
       "schematicUrl": "",
       "device": "",
       "interface": "i2c",
-      "portingStatus": "legacy",
-      "verificationStatus": "unverified",
-      "runtimeExamplePath": "",
-      "notes": "ウェブ版 i2cdetect。特定センサの機能 Example ではない。回路図は無い。"
+      "portingStatus": "ported",
+      "verificationStatus": "verified",
+      "runtimeExamplePath": "workspace/i2c-scan/",
+      "notes": "ウェブ版 i2cdetect。本リポジトリでは workspace/i2c-scan/ と docs/examples/i2c-scan.md。ADT7410（0x48）を scan 対象にした検証は #116 / #243。i2c-adt7410 の温度読み取りとは別。"
     },
     {
       "id": "i2c-sht30",
