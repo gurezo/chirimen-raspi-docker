@@ -166,6 +166,21 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 
 Catalog 表示（host `http://localhost:4174/`）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
 
+### Phase 2（PIR / SHT30 / ADT7410 / ADS1115）
+
+#256 で `ported` にした 4 件は、机上確認で `supportedRaspberryPi` が `["3","4","5"]` である。本 Issue では Pi 3 B+ / 4 / 5 を実機対象としたが、GPIO / I2C 実機へ到達できなかったため **3 モデルとも `unverified` のまま** にする。推測で `verified` にしない。
+
+| 確認 | 結果 |
+| --- | --- |
+| 机上（40-pin / BCM / I2C1 / 3.3V） | 合格。各回路仕様を参照 |
+| Catalog 表示 | 全体バッジ `ported`。機種チップは `Pi 3 unverified` / `Pi 4 unverified` / `Pi 5 unverified` |
+| GPIO PIR（BCM 12） | 未実施 |
+| SHT30（I2C1 / `0x44`） | 未実施 |
+| ADT7410 温度（I2C1 / `0x48`） | 未実施。`i2c-detect` の Scan とは別 |
+| ADS1115（I2C1 / `0x48`） | 未実施。ADT7410 と同時接続しない |
+
+実機合格後にだけ `verificationByModel` を `verified` へ更新する。1 機種でも未確認なら集約 `verificationStatus` は `unverified` のままである。
+
 ## catalogStatus の導出
 
 ```text

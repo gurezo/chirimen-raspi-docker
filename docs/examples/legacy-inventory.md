@@ -80,17 +80,17 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 ## 本リポジトリの Runtime Example
 
-既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りとは別である。#256 Phase 2 で PIR / SHT30 / ADT7410 / ADS1115 を `ported` / `unverified` にした。実機 `verified` は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。
+既存の GPIO LED Blink / GPIO Input / I2C Scan を同じ metadata に統合する。I2C Scan は Legacy `i2c-detect` 相当であり、`i2c-adt7410` の温度読み取りとは別である。#256 Phase 2 で PIR / SHT30 / ADT7410 / ADS1115 を `ported` / `unverified` にした。[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) で Pi 3 / 4 / 5 を対象としたが、4 件は実機未実施のため `unverified` のままである。推測で `verified` にしない。機別記録は [runtime-verification.md](./runtime-verification.md)。
 
 | id | workspace | 回路 / 検証仕様 | catalogStatus | 根拠 |
 | --- | --- | --- | --- | --- |
 | `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
-| `i2c-ads1115` | [workspace/ads1115/](../../workspace/ads1115/) | [i2c-ads1115.md](./i2c-ads1115.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
+| `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
+| `i2c-ads1115` | [workspace/ads1115/](../../workspace/ads1115/) | [i2c-ads1115.md](./i2c-ads1115.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256) / [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)（机上確認済み。Pi 3 / 4 / 5 とも unverified） |
 
 ### Basic GPIO
 
@@ -129,7 +129,7 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 | id | title | interface | schematic | notes |
 | --- | --- | --- | --- | --- |
-| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC。#256 で ported / unverified |
+| `i2c-ads1115` | I2C-ADS1115 | i2c | あり | 16bit ADC。#256 で ported。#257 で Pi 3 / 4 / 5 とも unverified |
 | `i2c-ads1115-load-cell` | I2C-ADS1115-LoadCell | i2c | あり | ソースは `i2c-ADS1115` |
 | `i2c-arduino-stepping-motor` | I2C-arduino-steppingMotor | i2c | あり | Arduino 経由 |
 | `i2c-bme280` | I2C-BME280 | i2c | あり | |
