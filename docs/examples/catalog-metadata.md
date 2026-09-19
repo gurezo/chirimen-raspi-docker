@@ -83,6 +83,44 @@ device = devices.find((d) => d.id === example.deviceId)
 
 `deviceId` が空でも Example は Catalog に残す。GPIO LED Blink や I2C Scan のように Device が無い、または認定デバイスへ一意に対応できない場合を正規ケースとする。
 
+## generated/devices.json の実 schema
+
+参照する JSON は `version: 1` である。トップレベルは次を持つ。
+
+```text
+version
+generatedAt
+platforms
+aliases
+devices[]
+```
+
+`devices[]` の 1 件は `{ id, directory, meta, readme }` である。`meta` は certified-devices の [schema/meta.schema.json](https://github.com/gurezo/chirimen-certified-devices/blob/main/schema/meta.schema.json) と一致する。
+
+Catalog は Issue が挙げた Device 項目のうち、**実在するフィールドだけ**を使う。存在しない項目は捏造しない。
+
+### Catalog が Device から読む項目
+
+| Catalog での意味 | 実フィールド | 備考 |
+| --- | --- | --- |
+| 表示名 | `meta.model` | 補助として `readme.frontmatter.title` |
+| 型番 | `meta.model` | |
+| Device カテゴリ | `meta.category` | Example の `category`（gpio / i2c）とは別 |
+| 画像 | `meta.image` | 空や壊れ URL でも Catalog は落とさない |
+| 説明 | `meta.description` | |
+| ドライバ | `meta.packages[]` と `meta.examples[].driver` | `driver` が `"none"` のときはパッケージ無し |
+
+### Catalog が Device から読まない項目
+
+| 項目 | 理由 |
+| --- | --- |
+| I2C address | `generated/devices.json` と `meta.schema.json` に無い。必要な値は Example の `notes` か Runtime 検証仕様（例: [i2c-scan.md](./i2c-scan.md) の `0x48`）に置く |
+| `meta.circuit` / `examples[].circuitUrl` | 回路図の正本は Example の `schematicUrl`（#253） |
+| `meta.examples[]` の upstream 実行コード | Runtime コードの正本は `runtimeExamplePath` |
+| `meta.status` / `meta.verified` / platform の `primary` 等 | Catalog 状態は `portingStatus` / `verificationStatus` から導出する |
+| `meta.tag` | 参考情報。Catalog の filter は Example の `category` / `interface` を使う |
+| `meta.productUrl` / `datasheet` / `reference` | Catalog 必須ではない。Device Dashboard 側の情報とする |
+
 ## Device Dashboard
 
 CHIRIMEN 全体の Device Catalog は [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) への外部リンクとする。iframe で埋め込まない。
