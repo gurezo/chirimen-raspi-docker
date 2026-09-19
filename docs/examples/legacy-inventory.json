@@ -49,7 +49,7 @@
         "5"
       ],
       "runtimeExamplePath": "workspace/led-blink/",
-      "notes": "Legacy ディレクトリ名は LEDblink。本リポジトリでは workspace/led-blink/ と docs/examples/gpio-led-blink.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。",
+      "notes": "Legacy ディレクトリ名は LEDblink。本リポジトリでは workspace/led-blink/ と docs/examples/gpio-led-blink.md。Pi 3 / 4 / 5 で verified（#257 / #243 / #97 / #98 / #99）。",
       "verificationByModel": {
         "3": "verified",
         "4": "verified",
@@ -74,7 +74,7 @@
         "5"
       ],
       "runtimeExamplePath": "workspace/button/",
-      "notes": "onchange でタクトスイッチ入力を読む。本リポジトリでは workspace/button/ と docs/examples/gpio-input.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。",
+      "notes": "onchange でタクトスイッチ入力を読む。本リポジトリでは workspace/button/ と docs/examples/gpio-input.md。Pi 3 / 4 / 5 で verified（#257 / #243 / #97 / #98 / #99）。",
       "verificationByModel": {
         "3": "verified",
         "4": "verified",
@@ -187,7 +187,7 @@
         "5"
       ],
       "runtimeExamplePath": "workspace/i2c-scan/",
-      "notes": "ウェブ版 i2cdetect。本リポジトリでは workspace/i2c-scan/ と docs/examples/i2c-scan.md。ADT7410（0x48）を scan 対象にした検証は #116 / #243。i2c-adt7410 の温度読み取りとは別。",
+      "notes": "ウェブ版 i2cdetect。本リポジトリでは workspace/i2c-scan/ と docs/examples/i2c-scan.md。ADT7410（0x48）を scan 対象にした検証は #257 / #116 / #243。i2c-adt7410 の温度読み取りとは別。",
       "verificationByModel": {
         "3": "verified",
         "4": "verified",

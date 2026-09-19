@@ -106,21 +106,23 @@ Catalog 側:
 
 ## 機種別結果
 
-詳細は後続の実機記録で埋める。ここでの初期値は inventory の現状（#243 集約の 3 件と、#256 Phase 2 の未確認 4 件）である。
+Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../architecture/compatibility.md) を上書きしない。ここは Catalog / Runtime Example の機別記録である。
+
+回路図互換（40-pin header、BCM 番号、I2C1 の SDA 物理 pin 3 / SCL 物理 pin 5、センサ電源 3.3V、GPIO へ 5V を入れない）は 3 モデルで共通であり、各回路仕様の机上確認と一致する。
 
 ### Raspberry Pi 3 B+
 
 | 項目 | 値 |
 | --- | --- |
-| Raspberry Pi model | （実測後に記入） |
-| OS / Kernel / Architecture | Raspberry Pi OS Lite 64-bit / （kernel） / `aarch64` |
-| Browser / Browser Polyfill / Runtime | （実測後に記入） |
+| Raspberry Pi model | Raspberry Pi 3 Model B+ |
+| OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-v8` / `aarch64` |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。`gpio=sysfs` / `i2c=i2c-dev` |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | LED / [回路図](https://www.chirimen.org/chirimen/gc/gpio/LEDblink/schematic.png) | （実測後に記入） | verified | 当面は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) / [#97](https://github.com/gurezo/chirimen-raspi-docker/issues/97) の集約。機別詳細は後続 |
-| `gpio-button` | tactile-switch / [回路図](https://www.chirimen.org/chirimen/gc/gpio/button/schematic.png) | （実測後に記入） | verified | 同上 |
-| `i2c-detect` | ADT7410 `0x48` / 回路図なし | （実測後に記入） | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / #243 / #97 |
+| `gpio-blink` | LED / [回路図](https://www.chirimen.org/chirimen/gc/gpio/LEDblink/schematic.png) | BCM 26 / 物理 pin 37。`gpio.export`（port `26` / `out`）成功。LED 点滅 | verified | [#97](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。Runtime Example `workspace/led-blink/` |
+| `gpio-button` | tactile-switch / [回路図](https://www.chirimen.org/chirimen/gc/gpio/button/schematic.png) | BCM 5 / 物理 pin 29。sysfs GPIO input。外部 10kΩ プルアップ | verified | #97 の GPIO sysfs と #243 の GPIO Input 回路。Runtime Example `workspace/button/` |
+| `i2c-detect` | ADT7410 `0x48` / 回路図なし | I2C1。Scan に `0x48` | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / #243 / #97。`host /dev/i2c-1` は有効化後。Runtime Example `workspace/i2c-scan/` |
 | `gpio-pir-sensor` | KP-IR412 / [回路図](https://www.chirimen.org/chirimen/gc/gpio/pirSensor/schematic.png) | — | unverified | #256 で移植。実機未実施 |
 | `i2c-sht30` | SHT30 `0x44` / [回路図](https://www.chirimen.org/chirimen/gc/i2c/i2c-SHT30/schematic.png) | — | unverified | 同上 |
 | `i2c-adt7410` | ADT7410 `0x48` / [回路図](https://www.chirimen.org/chirimen/gc/i2c/i2c-ADT7410/schematic.png) | — | unverified | 同上。Scan とは別 Example |
@@ -130,37 +132,39 @@ Catalog 側:
 
 | 項目 | 値 |
 | --- | --- |
-| Raspberry Pi model | （実測後に記入） |
-| OS / Kernel / Architecture | Raspberry Pi OS Lite 64-bit / （kernel） / `aarch64` |
-| Browser / Browser Polyfill / Runtime | （実測後に記入） |
+| Raspberry Pi model | Raspberry Pi 4 Model B Rev 1.4 |
+| OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-v8` / `aarch64` |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev` |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | LED / 回路図あり | （実測後に記入） | verified | #243 / [#98](https://github.com/gurezo/chirimen-raspi-docker/issues/98) |
-| `gpio-button` | tactile-switch / 回路図あり | （実測後に記入） | verified | 同上 |
-| `i2c-detect` | ADT7410 `0x48` | （実測後に記入） | verified | #116 / #243 / #98 |
-| `gpio-pir-sensor` | KP-IR412 | — | unverified | |
-| `i2c-sht30` | SHT30 `0x44` | — | unverified | |
-| `i2c-adt7410` | ADT7410 `0x48` | — | unverified | |
-| `i2c-ads1115` | ADS1115 `0x48` | — | unverified | |
+| `gpio-blink` | LED / 回路図あり | BCM 26 / 物理 pin 37。`gpio.export`（port `26` / `out`）成功。LED 点滅 | verified | [#98](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / #243。Runtime Example `workspace/led-blink/` |
+| `gpio-button` | tactile-switch / 回路図あり | BCM 5 / 物理 pin 29。sysfs GPIO input。外部 10kΩ プルアップ | verified | #98 の GPIO sysfs と #243 の GPIO Input 回路。Runtime Example `workspace/button/` |
+| `i2c-detect` | ADT7410 `0x48` | I2C1。Scan に `0x48` | verified | #116 / #243 / #98。`host /dev/i2c-1` は有効化後。Runtime Example `workspace/i2c-scan/` |
+| `gpio-pir-sensor` | KP-IR412 | — | unverified | #256 で移植。実機未実施 |
+| `i2c-sht30` | SHT30 `0x44` | — | unverified | 同上 |
+| `i2c-adt7410` | ADT7410 `0x48` | — | unverified | 同上 |
+| `i2c-ads1115` | ADS1115 `0x48` | — | unverified | ADT7410 と同時接続しない |
 
 ### Raspberry Pi 5
 
 | 項目 | 値 |
 | --- | --- |
-| Raspberry Pi model | （実測後に記入） |
-| OS / Kernel / Architecture | Raspberry Pi OS Lite 64-bit / （kernel） / `aarch64` |
-| Browser / Browser Polyfill / Runtime | （実測後に記入） |
+| Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0 |
+| OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-2712` / `aarch64` |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev`。Browser Development Flow の一次環境（#243） |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | LED / 回路図あり | （実測後に記入） | verified | #243 / [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) |
-| `gpio-button` | tactile-switch / 回路図あり | （実測後に記入） | verified | 同上 |
-| `i2c-detect` | ADT7410 `0x48` | （実測後に記入） | verified | #116 / #243 / #99 |
-| `gpio-pir-sensor` | KP-IR412 | — | unverified | |
-| `i2c-sht30` | SHT30 `0x44` | — | unverified | |
-| `i2c-adt7410` | ADT7410 `0x48` | — | unverified | |
-| `i2c-ads1115` | ADS1115 `0x48` | — | unverified | |
+| `gpio-blink` | LED / 回路図あり | BCM 26 / 物理 pin 37。export / write 成功。LED 点滅 | verified | [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / #243。Catalog `:4174` と Runtime Example `:4173/led-blink/` |
+| `gpio-button` | tactile-switch / 回路図あり | BCM 5 / 物理 pin 29。read / onchange。外部 10kΩ プルアップ | verified | #99 の GPIO input と #243。Runtime Example `:4173/button/` |
+| `i2c-detect` | ADT7410 `0x48` | I2C1。Browser Scan に `0x48` | verified | #116 / #243 / #99。Runtime Example `:4173/i2c-scan/` |
+| `gpio-pir-sensor` | KP-IR412 | — | unverified | #256 で移植。実機未実施 |
+| `i2c-sht30` | SHT30 `0x44` | — | unverified | 同上 |
+| `i2c-adt7410` | ADT7410 `0x48` | — | unverified | 同上 |
+| `i2c-ads1115` | ADS1115 `0x48` | — | unverified | ADT7410 と同時接続しない |
+
+Catalog 表示（host `http://localhost:4174/`）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
 
 ## catalogStatus の導出
 

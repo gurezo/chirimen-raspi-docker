@@ -84,9 +84,9 @@ GPIO / I2C を優先して記録し、Advanced / Remote / other も落とさな�
 
 | id | workspace | 回路 / 検証仕様 | catalogStatus | 根拠 |
 | --- | --- | --- | --- | --- |
-| `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
-| `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-blink` | [workspace/led-blink/](../../workspace/led-blink/) | [gpio-led-blink.md](./gpio-led-blink.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `gpio-button` | [workspace/button/](../../workspace/button/) | [gpio-input.md](./gpio-input.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
+| `i2c-detect` | [workspace/i2c-scan/](../../workspace/i2c-scan/) | [i2c-scan.md](./i2c-scan.md) | verified | [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | `gpio-pir-sensor` | [workspace/pir-sensor/](../../workspace/pir-sensor/) | [gpio-pir-sensor.md](./gpio-pir-sensor.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
 | `i2c-sht30` | [workspace/sht30/](../../workspace/sht30/) | [i2c-sht30.md](./i2c-sht30.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
 | `i2c-adt7410` | [workspace/adt7410/](../../workspace/adt7410/) | [i2c-adt7410.md](./i2c-adt7410.md) | ported | [#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)（机上確認済み。実機は #257） |
