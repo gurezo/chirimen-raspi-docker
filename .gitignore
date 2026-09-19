@@ -16,12 +16,12 @@ coverage
 docs/api/
 _site/
 
-# Editor user settings in the Example bind mount (#176).
+# Editor user settings in the Example bind mount (#176 / #241).
 # Committed .vscode is settings / tasks only (#178 / #179 / #201).
 # Do not commit extensions.json recommendations.
-docs/examples/.vscode/*
-!docs/examples/.vscode/settings.json
-!docs/examples/.vscode/tasks.json
+workspace/.vscode/*
+!workspace/.vscode/settings.json
+!workspace/.vscode/tasks.json
 
 # Editor / Compose secrets (#181). Commit .env.example only.
 .env
