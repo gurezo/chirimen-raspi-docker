@@ -1,12 +1,14 @@
 import {
   CATEGORY_FILTERS,
   DEVICE_DASHBOARD_URL,
+  NO_IMAGE_URL,
   STATUS_FILTERS,
   canOpenRuntimeExample,
+  catalogImageUrl,
   deviceDescription,
-  deviceImageUrl,
   deviceModel,
   editorWorkspaceHref,
+  isPlaceholderImageUrl,
   runtimeExampleHref,
   workspaceExampleDir,
   type CatalogEntry,
@@ -181,17 +183,22 @@ export const renderExampleCard = (entry: CatalogEntry): HTMLElement => {
   card.dataset.exampleId = entry.id;
   card.dataset.status = entry.catalogStatus;
 
-  const imageUrl = deviceImageUrl(entry.certifiedDevice);
-  if (imageUrl !== '') {
-    const image = document.createElement('img');
-    image.src = imageUrl;
-    image.alt = deviceModel(entry.certifiedDevice) || entry.device || entry.title;
-    image.className = 'h-36 w-full object-contain bg-slate-50 p-3';
-    image.addEventListener('error', () => {
-      image.remove();
-    });
-    card.append(image);
-  }
+  const image = document.createElement('img');
+  const imageUrl = catalogImageUrl(entry.certifiedDevice);
+  image.src = imageUrl;
+  image.alt =
+    imageUrl === NO_IMAGE_URL
+      ? '画像なし'
+      : deviceModel(entry.certifiedDevice) || entry.device || entry.title;
+  image.className = 'h-36 w-full object-contain bg-slate-50 p-3';
+  image.addEventListener('error', () => {
+    if (isPlaceholderImageUrl(image.src)) {
+      return;
+    }
+    image.src = NO_IMAGE_URL;
+    image.alt = '画像なし';
+  });
+  card.append(image);
 
   const body = document.createElement('div');
   body.className = 'flex flex-1 flex-col gap-2 p-4';

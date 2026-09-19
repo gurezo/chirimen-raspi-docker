@@ -10,6 +10,7 @@ export const DEVICE_DASHBOARD_URL =
 export const EXAMPLE_SERVER_PORT = 4173;
 export const EDITOR_PORT = 8080;
 export const EDITOR_WORKSPACE_FOLDER = '/home/coder/project';
+export const NO_IMAGE_URL = '/no_image.png';
 
 export type CatalogStatus = 'legacy' | 'ported' | 'verified';
 
@@ -175,6 +176,14 @@ export const deviceDescription = (device: CertifiedDevice | null): string =>
 
 export const deviceImageUrl = (device: CertifiedDevice | null): string =>
   asString(device?.meta?.image);
+
+export const catalogImageUrl = (device: CertifiedDevice | null): string => {
+  const url = deviceImageUrl(device);
+  return url === '' ? NO_IMAGE_URL : url;
+};
+
+export const isPlaceholderImageUrl = (src: string): boolean =>
+  src === NO_IMAGE_URL || src.endsWith(NO_IMAGE_URL);
 
 export type CategoryFilter =
   | 'all'
