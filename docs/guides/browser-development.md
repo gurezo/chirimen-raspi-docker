@@ -4,6 +4,8 @@
 
 関連:
 
+- 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
+- 子 Issue: [#240 Browser Editor → Workspace → Example Server の実行フローを明確化する](https://github.com/gurezo/chirimen-raspi-docker/issues/240)
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
@@ -17,7 +19,27 @@ GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tuto
 
 このガイドの手順だけで、Editor → Workspace → Example Server → Runtime の開発フローを再現できる。
 
-Web Demo（`:4200`）は Example の編集結果確認先ではない。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
+```text
+code-server :8080
+       ↓
+Workspace
+       ↓
+Edit / Save
+       ↓
+Example Server :4173
+       ↓
+Browser reload
+       ↓
+Browser Polyfill
+       ↓
+WebSocket
+       ↓
+chirimen-server :33330
+       ↓
+GPIO / I2C
+```
+
+Web Demo（`:4200`）はこの実行フローには入らない。Example の編集結果確認先ではなく、Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI である。Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](./development.md) を参照する。
 
 ## 概要
 
@@ -101,6 +123,27 @@ LAN の別マシンから開くときは `./scripts/start.sh --lan`。Internet �
 
 ## Workspace を開く
 
+保存先:
+
+```text
+Editor: /home/coder/project
+Host:   ./docs/examples
+```
+
+Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./docs/examples` は残る。
+
+```text
+Host ./docs/examples
+      │
+      ├─────────────────────┐
+      ↓                     ↓
+chirimen-editor       chirimen-examples
+/home/coder/project   /usr/share/nginx/html
+      │                     │
+      │ Edit / Save         │ Serve
+      └──────────────────→ :4173
+```
+
 workspace は bind mount `./docs/examples` → `/home/coder/project` である。monorepo 全体は mount しない。`package.json` / `node_modules` は無い。`pnpm` / `nx` は Editor では使わない。
 
 | ディレクトリ | Example |
@@ -121,8 +164,13 @@ workspace は bind mount `./docs/examples` → `/home/coder/project` である�
 
 ## Example を編集する
 
-1. Editor で `led-blink/` / `button/` / `i2c-scan/` のファイルを編集して保存する
-2. 別タブで HTML サンプルを開く（Compose `chirimen-examples` が起動済み）
+標準操作は `Edit → Save → Browser reload` である。静的ファイルのため hot reload は無い。
+
+1. Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` を編集して保存する
+2. 別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）
+3. 保存するたびに Example タブを reload する
+
+保存後に開く URL:
 
 ```text
 http://127.0.0.1:4173/led-blink/
@@ -132,7 +180,7 @@ http://127.0.0.1:4173/i2c-scan/
 
 Run Task **Serve examples**（[`tasks.json`](../examples/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
-静的ファイルのため hot reload は無い。保存後に Example タブを reload する。配線と期待結果は各 Example ガイドへ。Web Demo（`:4200`）は編集結果を表示しない。
+配線と期待結果は各 Example ガイドへ。Web Demo（`:4200`）は編集結果を表示しない。確認先は Example Server `:4173` である。
 
 ## Runtime に接続する
 

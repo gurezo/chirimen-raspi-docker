@@ -96,12 +96,16 @@ I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が
 ↓
 Browser で Editor を開く（http://127.0.0.1:8080）
 ↓
-Example を編集（docs/examples）
+Example を編集して保存
+  Editor: /home/coder/project
+  Host:   ./docs/examples
 ↓
 Example Server で確認する（http://127.0.0.1:4173/...）
 ↓
-保存後に Example タブを reload する
+保存後に Example タブを reload する（Edit → Save → Browser reload）
 ```
+
+保存先・共有 workspace・Runtime 接続の正本は [Browser Development Environment](./browser-development.md)。
 
 ```sh
 curl -fsS http://127.0.0.1:8080/healthz

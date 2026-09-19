@@ -480,12 +480,16 @@ Editor で `main.js` を保存したあと、Example の見た目や LED の動�
 
 ### 原因
 
-HTML サンプルは静的ファイルである。hot reload は無い。
+HTML サンプルは静的ファイルである。hot reload は無い。標準操作は `Edit → Save → Browser reload` である。Web Demo（`:4200`）は編集結果を表示しない。
+
+保存先は Editor `/home/coder/project` = host `./docs/examples` である。確認先は Example Server `:4173` である。
 
 ### 対処
 
 - Example を開いている Browser タブを reload する
 - 開いている URL が `http://127.0.0.1:4173/led-blink/` など、編集中のディレクトリと一致しているか確認する
+- `http://127.0.0.1:4200/` を開いていないか確認する（Web Demo は編集結果の確認先ではない）
+- 保存先が Editor `/home/coder/project`（host `./docs/examples`）であることを確認する
 - `polyfill.js` を変えた場合は host で `pnpm nx bundle browser-polyfill` したあと reload する
 
 ## 非 Pi 環境（macOS など）

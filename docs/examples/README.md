@@ -2,6 +2,15 @@
 
 Browser Editor（code-server）の workspace です。Phase 7 の HTML サンプルを編集します。
 
+保存先:
+
+```text
+Editor: /home/coder/project
+Host:   ./docs/examples
+```
+
+Editor（`:8080`）と Example Server（`:4173`）は同じ host `./docs/examples` を bind します。container 内だけには保存されません。
+
 GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../guides/browser-development.md)。
 
 Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
@@ -51,6 +60,6 @@ Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](..
 
 ## 変更の反映
 
-静的ファイルのため hot reload はありません。Editor で保存したあと、Example のタブを reload します。WebSocket 先は `ws://localhost:33330/` です。
+標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Web Demo（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。
 
 `polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。
