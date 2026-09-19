@@ -9,6 +9,7 @@
 - 前段: [#251](https://github.com/gurezo/chirimen-raspi-docker/issues/251)（[legacy-inventory.md](./legacy-inventory.md)）/ [#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)（[catalog-metadata.md](./catalog-metadata.md)）
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
 - 実機記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
+- 出典と責務: [catalog.md](./catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）
 
 この文書は **回路図の再利用ルールと互換性確認方法** が目的である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）、実機検証の記録（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [runtime-verification.md](./runtime-verification.md)）、実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。
 
