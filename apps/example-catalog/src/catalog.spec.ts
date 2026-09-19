@@ -5,12 +5,14 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   DEVICE_FETCH_WARNING,
   buildCatalogEntries,
+  canOpenRuntimeExample,
   deriveCatalogStatus,
   filterCatalogEntries,
   findCertifiedDevice,
   loadCertifiedDevices,
   parseDevicesPayload,
   readInventoryExamples,
+  runtimeExampleHref,
 } from './catalog.js';
 
 const inventoryPath = resolve(
@@ -196,5 +198,41 @@ describe('filterCatalogEntries', () => {
       'gpio-button',
       'i2c-detect',
     ]);
+  });
+});
+
+describe('runtime example links', () => {
+  const entries = buildCatalogEntries(readInventoryExamples(inventory), []);
+
+  it('allows run links only for ported examples with a runtime path', () => {
+    const blink = entries.find((entry) => entry.id === 'gpio-blink');
+    const unread = entries.find((entry) => entry.id === 'gpio-read-gpio-value');
+    expect(blink).toBeDefined();
+    expect(unread).toBeDefined();
+    expect(canOpenRuntimeExample(blink as (typeof entries)[number])).toBe(true);
+    expect(canOpenRuntimeExample(unread as (typeof entries)[number])).toBe(
+      false
+    );
+    expect(
+      canOpenRuntimeExample({
+        portingStatus: 'ported',
+        runtimeExamplePath: '',
+      })
+    ).toBe(false);
+    expect(
+      canOpenRuntimeExample({
+        portingStatus: 'legacy',
+        runtimeExamplePath: 'workspace/led-blink/',
+      })
+    ).toBe(false);
+  });
+
+  it('resolves workspace paths to the Example server URL', () => {
+    expect(runtimeExampleHref('workspace/led-blink/', '127.0.0.1')).toBe(
+      'http://127.0.0.1:4173/led-blink/'
+    );
+    expect(runtimeExampleHref('workspace/i2c-scan/', '192.168.0.10')).toBe(
+      'http://192.168.0.10:4173/i2c-scan/'
+    );
   });
 });

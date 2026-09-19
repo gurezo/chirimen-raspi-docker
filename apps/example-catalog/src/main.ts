@@ -8,7 +8,7 @@ import {
   type CatalogFilters,
 } from './catalog.js';
 import { CATALOG_TITLE } from './constants.js';
-import { renderCatalogCards, renderFilters } from './render.js';
+import { renderCatalogCards, renderFilters, renderHeaderLinks } from './render.js';
 import './styles.css';
 
 const root = document.getElementById('root');
@@ -22,6 +22,9 @@ if (root) {
   lead.className = 'mt-2 text-sm text-slate-600';
   lead.textContent =
     'Legacy CHIRIMEN Example と新 Runtime 向け Example の一覧です。';
+
+  const headerLinks = document.createElement('div');
+  renderHeaderLinks(headerLinks);
 
   const warning = document.createElement('p');
   warning.className =
@@ -40,7 +43,7 @@ if (root) {
 
   const main = document.createElement('main');
   main.className = 'mx-auto max-w-6xl px-4 py-8';
-  main.append(heading, lead, warning, filterBar, count, cards);
+  main.append(heading, lead, headerLinks, warning, filterBar, count, cards);
   root.append(main);
 
   const examples = readInventoryExamples(inventory);

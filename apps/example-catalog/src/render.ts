@@ -1,9 +1,12 @@
 import {
   CATEGORY_FILTERS,
+  DEVICE_DASHBOARD_URL,
   STATUS_FILTERS,
+  canOpenRuntimeExample,
   deviceDescription,
   deviceImageUrl,
   deviceModel,
+  runtimeExampleHref,
   type CatalogEntry,
   type CatalogFilters,
   type CatalogStatus,
@@ -23,6 +26,62 @@ const FILTER_BUTTON_BASE =
 const FILTER_BUTTON_ACTIVE = 'border-slate-900 bg-slate-900 text-white';
 const FILTER_BUTTON_INACTIVE =
   'border-slate-300 bg-white text-slate-700 hover:border-slate-500';
+
+const LINK_CLASS =
+  'inline-flex items-center rounded-md text-sm font-medium text-sky-700 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600';
+
+export const createExternalLink = (
+  href: string,
+  label: string
+): HTMLAnchorElement => {
+  const link = document.createElement('a');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.className = LINK_CLASS;
+  link.setAttribute('aria-label', `${label}（外部リンク）`);
+  link.append(document.createTextNode(label));
+  const mark = document.createElement('span');
+  mark.className = 'ml-1 text-xs font-normal text-slate-500 no-underline';
+  mark.textContent = '外部';
+  mark.setAttribute('aria-hidden', 'true');
+  link.append(mark);
+  return link;
+};
+
+export const renderHeaderLinks = (parent: HTMLElement): void => {
+  const nav = document.createElement('p');
+  nav.className = 'mt-3';
+  nav.append(createExternalLink(DEVICE_DASHBOARD_URL, 'Device Dashboard'));
+  parent.append(nav);
+};
+
+const renderCardLinks = (
+  parent: HTMLElement,
+  entry: CatalogEntry,
+  hostname: string
+): void => {
+  const actions = document.createElement('div');
+  actions.className = 'mt-auto flex flex-wrap gap-x-3 gap-y-2 pt-3';
+
+  if (entry.schematicUrl !== '') {
+    actions.append(createExternalLink(entry.schematicUrl, '回路図'));
+  }
+  if (entry.legacyUrl !== '') {
+    actions.append(createExternalLink(entry.legacyUrl, 'Legacy Example'));
+  }
+  if (canOpenRuntimeExample(entry)) {
+    const run = document.createElement('a');
+    run.href = runtimeExampleHref(entry.runtimeExamplePath, hostname);
+    run.className = `${LINK_CLASS} font-semibold`;
+    run.textContent = '実行';
+    actions.append(run);
+  }
+
+  if (actions.childElementCount > 0) {
+    parent.append(actions);
+  }
+};
 
 const createFilterButton = (
   label: string,
@@ -151,6 +210,7 @@ export const renderExampleCard = (entry: CatalogEntry): HTMLElement => {
   }
 
   appendPiModels(body, entry.supportedRaspberryPi);
+  renderCardLinks(body, entry, window.location.hostname || '127.0.0.1');
   card.append(body);
   return card;
 };

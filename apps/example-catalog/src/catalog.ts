@@ -4,6 +4,11 @@ export const DEVICES_JSON_URL =
 export const DEVICE_FETCH_WARNING =
   'Device metadata を取得できませんでした。Example 情報のみ表示します。';
 
+export const DEVICE_DASHBOARD_URL =
+  'https://github.com/gurezo/chirimen-device-dashboard';
+
+export const EXAMPLE_SERVER_PORT = 4173;
+
 export type CatalogStatus = 'legacy' | 'ported' | 'verified';
 
 export type InventoryExample = {
@@ -217,3 +222,19 @@ export const filterCatalogEntries = (
       filters.status === 'all' || entry.catalogStatus === filters.status;
     return categoryOk && statusOk;
   });
+
+export const canOpenRuntimeExample = (
+  example: Pick<InventoryExample, 'portingStatus' | 'runtimeExamplePath'>
+): boolean =>
+  example.portingStatus === 'ported' && example.runtimeExamplePath.trim() !== '';
+
+export const runtimeExampleHref = (
+  runtimeExamplePath: string,
+  hostname = '127.0.0.1',
+  port = EXAMPLE_SERVER_PORT
+): string => {
+  const withoutWorkspace = runtimeExamplePath.replace(/^workspace\//, '');
+  const trimmed = withoutWorkspace.replace(/^\/+/, '');
+  const path = trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+  return `http://${hostname}:${String(port)}/${path}`;
+};
