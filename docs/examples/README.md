@@ -1,65 +1,18 @@
-# CHIRIMEN Examples
+# CHIRIMEN Example 回路・検証仕様
 
-Browser Editor（code-server）の workspace です。Phase 7 の HTML サンプルを編集します。
+GPIO LED Blink / GPIO Input / I2C Scan の回路仕様と検証仕様です。GitHub Pages の Documentation 正本です。
 
-保存先:
+HTML サンプルの編集場所は [workspace/](../../workspace/) です。Browser Editor で保存すれば Example Server（`:4173`）で動きます。
 
-```text
-Editor: /home/coder/project
-Host:   ./docs/examples
-```
-
-Editor（`:8080`）と Example Server（`:4173`）は同じ host `./docs/examples` を bind します。container 内だけには保存されません。
-
-GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../guides/browser-development.md)。
-
-Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
-
-## 配置
-
-| ディレクトリ | 内容 |
+| 文書 | 内容 |
 | --- | --- |
-| `led-blink/` | GPIO LED Blink（BCM 26） |
-| `button/` | GPIO Input / onchange（BCM 5 + LED） |
-| `i2c-scan/` | I2C Scan（bus 1。ADT7410 expected `0x48`） |
+| [gpio-led-blink.md](./gpio-led-blink.md) | GPIO LED Blink 回路仕様（BCM 26 / 物理 pin 37 / LED + 330Ω） |
+| [gpio-input.md](./gpio-input.md) | GPIO Input 回路仕様（BCM 5 / 物理 pin 29 / タクトスイッチ + 10kΩ プルアップ） |
+| [i2c-scan.md](./i2c-scan.md) | I2C Scan 検証仕様（ADT7410 / `0x48` / I2C1） |
 
-回路仕様の markdown（`gpio-led-blink.md` など）も同じ workspace にあります。
+操作手順は各 Guide を正とします。
 
-## 起動
-
-1. Runtime + Editor + Examples + Web Demo を起動する（host で `./scripts/start.sh`）
-2. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
-3. 別 Browser タブで Example Server を開く
-
-Example の確認先:
-
-```text
-http://127.0.0.1:4173/led-blink/
-http://127.0.0.1:4173/button/
-http://127.0.0.1:4173/i2c-scan/
-```
-
-HTML サンプルは `./scripts/start.sh` で Compose が配信する。host だけで起動する場合:
-
-```sh
-python3 -m http.server 4173 --bind 0.0.0.0
-```
-
-## Runtime 確認（Web Demo）
-
-Web Demo はプロジェクトが提供する Runtime Demo / Diagnostic UI です。`docs/examples` の保存結果は反映されません。Terminal → Run Task → **Open Web Demo** は URL 案内です。
-
-```text
-http://127.0.0.1:4200/
-http://127.0.0.1:4200/#/gpio-output
-http://127.0.0.1:4200/#/gpio-input
-http://127.0.0.1:4200/#/i2c-scan
-```
-
-Web Demo 自体の開発（`pnpm nx serve web-demo`）は [Development Guide](../guides/development.md) を参照してください。
-
-## 変更の反映
-
-標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Web Demo（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。
-
-`polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。
+- [GPIO LED Blink](../guides/gpio-led-blink.md)
+- [GPIO Input](../guides/gpio-input.md)
+- [I2C Scan](../guides/i2c-scan.md)
+- [Browser Development Environment](../guides/browser-development.md)
