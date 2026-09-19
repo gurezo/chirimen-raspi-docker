@@ -7,9 +7,10 @@ Example Catalog が参照する metadata の責務を、Example 固有情報と 
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#252 Example Catalog metadata と chirimen-certified-devices 連携を設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/252)
 - 前段: [#251 Legacy CHIRIMEN Example の移植対象と metadata を整理する](https://github.com/gurezo/chirimen-raspi-docker/issues/251)（[legacy-inventory.md](./legacy-inventory.md)）
+- 回路図: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - Device 正本: [gurezo/chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json)
 
-この文書は **Catalog metadata の設計** が目的である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）、回路図の Pi 3 / 4 / 5 互換性ルール（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）、実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。
+この文書は **Catalog metadata の設計** が目的である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）、実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
 
 ## 責務分離
 
@@ -36,7 +37,7 @@ Example metadata             HTML / Vanilla JS
 | --- | --- | --- |
 | Example | [legacy-inventory.json](./legacy-inventory.json) | 題材、状態、回路図 URL、Runtime パス |
 | Device | `generated/devices.json` | 型番、画像、説明、ドライバ |
-| 回路図 | Example の `schematicUrl` | Device の `circuit` は使わない（#253） |
+| 回路図 | Example の `schematicUrl` | Device の `circuit` は使わない（[schematic-compatibility.md](./schematic-compatibility.md)） |
 | 実行コード | Example の `runtimeExamplePath` | Device の upstream Example は使わない |
 | Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | iframe せず外部リンク |
 
@@ -73,7 +74,7 @@ https://raw.githubusercontent.com/gurezo/chirimen-certified-devices/main/generat
 | `interface` | はい | `gpio` / `i2c` / `gpio+i2c` / `remote` / `camera` / `web-bluetooth` |
 | `notes` | はい | 補足。I2C address が必要な場合もここに置く |
 
-`supportedRaspberryPi` のピン互換の確認方法は #253。実機検証の記録は #257。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) に基づき `["3","4","5"]` とする。
+`supportedRaspberryPi` のピン互換の確認方法は [schematic-compatibility.md](./schematic-compatibility.md)。実機検証の記録は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)。既存の `gpio-blink` / `gpio-button` / `i2c-detect` だけ [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) に基づき `["3","4","5"]` とする。
 
 ## Join
 
@@ -147,7 +148,7 @@ Catalog は Issue が挙げた Device 項目のうち、**実在するフィー�
 | 項目 | 理由 |
 | --- | --- |
 | I2C address | `generated/devices.json` と `meta.schema.json` に無い。必要な値は Example の `notes` か Runtime 検証仕様（例: [i2c-scan.md](./i2c-scan.md) の `0x48`）に置く |
-| `meta.circuit` / `examples[].circuitUrl` | 回路図の正本は Example の `schematicUrl`（#253） |
+| `meta.circuit` / `examples[].circuitUrl` | 回路図の正本は Example の `schematicUrl`（[schematic-compatibility.md](./schematic-compatibility.md)） |
 | `meta.examples[]` の upstream 実行コード | Runtime コードの正本は `runtimeExamplePath` |
 | `meta.status` / `meta.verified` / platform の `primary` 等 | Catalog 状態は `portingStatus` / `verificationStatus` から導出する |
 | `meta.tag` | 参考情報。Catalog の filter は Example の `category` / `interface` を使う |

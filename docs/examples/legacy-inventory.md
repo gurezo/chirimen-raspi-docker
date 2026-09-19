@@ -8,8 +8,9 @@
 - 子 Issue: [#251 Legacy CHIRIMEN Example の移植対象と metadata を整理する](https://github.com/gurezo/chirimen-raspi-docker/issues/251)
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
 - Catalog metadata 設計: [catalog-metadata.md](./catalog-metadata.md)（[#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)）
+- 回路図の再利用と互換性確認: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 
-この文書は **移植候補の整理** が目的である。Catalog UI、回路図の Pi 3 / 4 / 5 互換性ルール、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。
+この文書は **移植候補の整理** が目的である。Catalog UI、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。回路図の Pi 3 / 4 / 5 互換性ルールは [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
 
 ## 出典
 
