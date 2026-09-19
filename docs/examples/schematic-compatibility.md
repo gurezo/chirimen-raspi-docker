@@ -123,3 +123,26 @@ Pi 3 B+ / 4 / 5 の 40-pin header は物理ピン配置が共通である。次�
 ```
 
 本 Issue ではルール定義のみ行う。
+
+## Catalog の Verified 表示
+
+`catalogStatus` は [legacy-inventory.md](./legacy-inventory.md) と同じ導出とする。
+
+```text
+legacy   = portingStatus が legacy
+ported   = portingStatus が ported かつ verificationStatus が unverified
+verified = portingStatus が ported かつ verificationStatus が verified
+```
+
+`supportedRaspberryPi` はピン互換の机上結果、`verificationStatus` は本リポジトリの実機結果である。Catalog UI（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）は次を守る。
+
+| 状況 | Catalog の振る舞い |
+| --- | --- |
+| `verificationStatus` が `unverified` | `Verified` バッジを出さない。回路図リンクがあっても同様 |
+| Legacy GC に回路図があるだけ | `verified` にしない |
+| 机上確認合格（`supportedRaspberryPi` が空でない） | ピン互換のモデルだけ案内する。`Verified` バッジは出さない |
+| `schematicUrl` が空 | 回路図リンクを出さない |
+| `supportedRaspberryPi` が `[]` | モデル互換を断言しない |
+| 出典切れで画像が読めない | カードは残す。`schematicUrl` は出典として残す |
+
+`verified` は本リポジトリの Raspberry Pi 3 / 4 / 5 実機検証を指す。Legacy GC 側の動作実績だけでは `verified` にしない。
