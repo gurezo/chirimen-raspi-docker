@@ -94,6 +94,16 @@ export default [
                                 "layer:domain",
                                 "layer:core"
                             ]
+                        },
+                        {
+                            sourceTag: "scope:catalog",
+                            onlyDependOnLibsWithTags: [],
+                            notDependOnLibsWithTags: [
+                                "scope:polyfill",
+                                "scope:hardware",
+                                "scope:runtime",
+                                "scope:demo"
+                            ]
                         }
                     ]
                 }

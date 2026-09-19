@@ -60,10 +60,13 @@ npx nx show projects
 npx nx build server
 npx nx serve server
 pnpm nx serve web-demo
+pnpm nx serve example-catalog
 npx nx graph
 ```
 
 `pnpm nx serve web-demo` は Web Demo 自体（`apps/web-demo`）を host で開発する手順です。Vite HMR で `http://localhost:4200/` が開きます。Browser Editor から Example を編集する手順ではありません。Example の確認先は `http://127.0.0.1:4173/` です（[Browser Development Environment](./browser-development.md)）。
+
+`pnpm nx serve example-catalog` は Example Catalog（`apps/example-catalog`）を host で開発する手順です。`http://localhost:4174/` が開きます。Compose の `chirimen-example-catalog` も同じ port `4174` を使うため、同時には使いません。
 
 Web Demo は Runtime Demo / Diagnostic UI です。次の疎通確認に使います。
 

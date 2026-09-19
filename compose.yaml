@@ -34,7 +34,7 @@ services:
   # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
   # injected by start.sh when set; empty PASSWORD= is never written here.
   # `docker compose up` / `./scripts/start.sh` start Runtime + Editor +
-  # Examples + Web Demo (#208). `./scripts/start.sh --32bit` starts
+  # Examples + Web Demo + Example Catalog (#208 / #254). `./scripts/start.sh --32bit` starts
   # chirimen-server only. Runtime only via Compose is
   # `docker compose up chirimen-server`.
   # Persistence (#176 / #241): bind workspace/ for Editor workspace;
@@ -96,6 +96,24 @@ services:
     image: chirimen-raspi-docker/web-demo:phase8
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200"
+    security_opt:
+      - no-new-privileges:true
+
+  # Example Catalog (nginx static of apps/example-catalog). Independent of
+  # Runtime, Editor, Examples, and Web Demo: no depends_on. This is not a
+  # Hardware Runtime. Do not add devices, privileged, or
+  # /sys/class/gpio / /sys/devices. Browser JS fetches Device metadata
+  # from chirimen-certified-devices and links ported Examples to :4173.
+  # Default host bind is 127.0.0.1 (#181). LAN is the same
+  # CHIRIMEN_PUBLISH_BIND / --lan as Editor. Host `pnpm nx serve
+  # example-catalog` also uses port 4174; stop this service first.
+  chirimen-example-catalog:
+    build:
+      context: .
+      dockerfile: docker/example-catalog/Dockerfile
+    image: chirimen-raspi-docker/example-catalog:phase8
+    ports:
+      - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4174:4174"
     security_opt:
       - no-new-privileges:true
 

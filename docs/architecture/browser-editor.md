@@ -258,6 +258,7 @@ Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確
 ./scripts/start.sh
   → Editor     http://127.0.0.1:8080     （書く）
   → Examples   http://127.0.0.1:4173/... （書いたものを動かす）
+  → Catalog    http://127.0.0.1:4174/    （Example を探す）
   → Web Demo   http://127.0.0.1:4200/    （Runtime を確認する）
   → Runtime    ws://localhost:33330/
 ```
@@ -330,9 +331,9 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 | LAN | `0.0.0.0` | password 必須 | HTTP。IP 直打ちでは webview が失敗しうる | `./scripts/start.sh --lan` または `CHIRIMEN_PUBLISH_BIND=0.0.0.0` |
 | Internet | Compose では出さない | reverse proxy + IdP を推奨 | HTTPS 必須 | 本リポジトリでは提供しない |
 
-対象 port は Editor `8080` / Example `4173` / Web Demo `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。`--32bit` では Editor 系を起動しないため `--lan` は無視する。
+対象 port は Editor `8080` / Example `4173` / Catalog `4174` / Web Demo `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。`--32bit` では Editor 系を起動しないため `--lan` は無視する。
 
-GPIO / I2C は Editor / Examples / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Web Demo と Examples は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
+GPIO / I2C は Editor / Examples / Catalog / Web Demo に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Web Demo と Examples と Catalog は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
 ## HTTPS / reverse proxy
 
@@ -422,7 +423,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |
-| 起動 | 既定は Runtime + Editor + Examples + Web Demo（`docker compose up` / `./scripts/start.sh`。#208）。LAN は `--lan`（#181）。`--32bit` は Runtime only |
+| 起動 | 既定は Runtime + Editor + Examples + Web Demo + Catalog（`docker compose up` / `./scripts/start.sh`。#208 / #254）。LAN は `--lan`（#181）。`--32bit` は Runtime only |
 | 永続化 | workspace は bind `workspace/`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
 | Example 編集 / serve | HTML は `workspace/`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Web Demo | Compose `chirimen-web-demo` が host `127.0.0.1:4200`（既定）で production build を静的配信する Runtime Demo / Diagnostic UI（#180）。Example の編集結果確認先ではない。LAN 時の WS 先はページの hostname。Editor に Node は入れない。HMR は host の `pnpm nx serve web-demo`（[Development Guide](../guides/development.md)） |
