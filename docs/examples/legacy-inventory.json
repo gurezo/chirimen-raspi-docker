@@ -32,9 +32,15 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/LEDblink",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/LEDblink/schematic.png",
       "device": "LED",
+      "deviceId": "led",
       "interface": "gpio",
       "portingStatus": "ported",
       "verificationStatus": "verified",
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
       "runtimeExamplePath": "workspace/led-blink/",
       "notes": "Legacy ディレクトリ名は LEDblink。本リポジトリでは workspace/led-blink/ と docs/examples/gpio-led-blink.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。"
     },
@@ -46,9 +52,15 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/button",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/button/schematic.png",
       "device": "tactile-switch",
+      "deviceId": "2pin",
       "interface": "gpio",
       "portingStatus": "ported",
       "verificationStatus": "verified",
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
       "runtimeExamplePath": "workspace/button/",
       "notes": "onchange でタクトスイッチ入力を読む。本リポジトリでは workspace/button/ と docs/examples/gpio-input.md。Pi 3 / 4 / 5 の Browser Development Flow で verified（#243）。"
     },
@@ -60,9 +72,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/readGpioValue",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/readGpioValue/schematic.png",
       "device": "tactile-switch",
+      "deviceId": "2pin",
       "interface": "gpio",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "read() によるポーリングでタクトスイッチ状態を読む。"
     },
@@ -74,9 +88,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/pirSensor",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/pirSensor/schematic.png",
       "device": "KP-IR412",
+      "deviceId": "KP-IR412",
       "interface": "gpio",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "人感センサー。ジェネリック HC-SR501 でも動作実績あり。"
     },
@@ -88,9 +104,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/MultiBlinkAll",
       "schematicUrl": "",
       "device": "LED",
+      "deviceId": "led",
       "interface": "gpio",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "LED 8 個の点滅。schematic.png は無い。"
     },
@@ -102,9 +120,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/buttonAll",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/gpio/buttonAll/buttonAll.png",
       "device": "tactile-switch",
+      "deviceId": "2pin",
       "interface": "gpio",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "多数ポートの入力。Pull Up / Pull Down の混在に注意。回路図ファイル名は buttonAll.png。"
     },
@@ -116,9 +136,15 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-detect",
       "schematicUrl": "",
       "device": "",
+      "deviceId": "",
       "interface": "i2c",
       "portingStatus": "ported",
       "verificationStatus": "verified",
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
       "runtimeExamplePath": "workspace/i2c-scan/",
       "notes": "ウェブ版 i2cdetect。本リポジトリでは workspace/i2c-scan/ と docs/examples/i2c-scan.md。ADT7410（0x48）を scan 対象にした検証は #116 / #243。i2c-adt7410 の温度読み取りとは別。"
     },
@@ -130,9 +156,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-SHT30",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-SHT30/schematic.png",
       "device": "SHT30",
+      "deviceId": "sht30-31",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "温度・湿度センサー。"
     },
@@ -144,9 +172,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-ADT7410",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-ADT7410/schematic.png",
       "device": "ADT7410",
+      "deviceId": "ADT7410",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "温度センサー。本リポジトリの I2C Scan は address 確認のみで、この温度読み取り Example とは別。"
     },
@@ -158,9 +188,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-grove-accelerometer",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-grove-accelerometer/schematic.png",
       "device": "ADXL345",
+      "deviceId": "grove-accelerometer-adxl345",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "Grove 3軸加速度センサー。チップは ADXL345。"
     },
@@ -172,9 +204,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-grove-gesture",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-grove-gesture/schematic.png",
       "device": "PAJ7620U2",
+      "deviceId": "grove-gesture-paj7620u2",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "Grove ジェスチャーセンサー。チップは PAJ7620U2。"
     },
@@ -186,9 +220,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-grove-light",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-grove-light/schematic.png",
       "device": "TSL2561",
+      "deviceId": "grove-light-tsl2561",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "Grove 光センサー。チップは TSL2561。"
     },
@@ -200,9 +236,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-grove-oledDisplay",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-grove-oledDisplay/schematic.png",
       "device": "SSD1308",
+      "deviceId": "grove-oleddisplay-ssd1308",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "Grove OLED。チップは SSD1308。SSD1306 向け回路図 SSD1306schematic.png もある。"
     },
@@ -214,9 +252,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-grove-touch",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-grove-touch/schematic.png",
       "device": "MPR121",
+      "deviceId": "grove-touch-mpr121",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "Grove タッチセンサー。チップは MPR121。"
     },
@@ -228,9 +268,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-PCA9685",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-PCA9685/schematic.png",
       "device": "PCA9685",
+      "deviceId": "PCA9685_MX1508",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "PWM / サーボドライバー。外部電源が必要。"
     },
@@ -242,9 +284,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-ADS1015",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-ADS1015/schematic.png",
       "device": "ADS1015",
+      "deviceId": "ADS1015",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "12bit ADC。可変抵抗器の値を表示する。"
     },
@@ -256,9 +300,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-GP2Y0E03",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-GP2Y0E03/schematic.png",
       "device": "GP2Y0E03",
+      "deviceId": "GP2Y0E03",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "赤外線測距センサー。ケーブル加工が必要な場合がある。"
     },
@@ -270,9 +316,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-S11059",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-S11059/schematic.png",
       "device": "S11059",
+      "deviceId": "S11059",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "RGB カラーセンサー。"
     },
@@ -284,9 +332,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-VEML6070",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-VEML6070/schematic.png",
       "device": "VEML6070",
+      "deviceId": "VEML6070",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "UV センサー。"
     },
@@ -298,9 +348,11 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-VL53L0X",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-VL53L0X/schematic.png",
       "device": "VL53L0X",
+      "deviceId": "VL53L0X",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
       "notes": "レーザー距離センサー。最長 2m。"
     },
@@ -312,11 +364,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-multi-sensors",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/i2c/i2c-multi-sensors/schematic.png",
       "device": "ADT7410",
+      "deviceId": "",
       "interface": "i2c",
       "portingStatus": "legacy",
       "verificationStatus": "unverified",
+      "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
-      "notes": "ADT7410 と Grove Light（TSL2561）の組み合わせ。Grove I2C ハブを利用。"
+      "notes": "ADT7410 と Grove Light（TSL2561）の組み合わせ。Grove I2C ハブを利用。 deviceId は未設定。候補は ADT7410 と grove-light-tsl2561 で一意に決まらない。"
     },
     {
       "id": "i2c-ads1115",
@@ -326,11 +380,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-ADS1115",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-ADS1115/schematic.png",
       "device": "ADS1115",
+      "deviceId": "ADS1115",
       "interface": "i2c",
-      "notes": "16bit ADC。公式な動作は未検証の Advanced Example。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "16bit ADC。公式な動作は未検証の Advanced Example。"
     },
     {
       "id": "i2c-arduino-stepping-motor",
@@ -340,11 +396,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-arduino-steppingMotor",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-arduino-steppingMotor/schematic.png",
       "device": "Arduino",
+      "deviceId": "",
       "interface": "i2c",
-      "notes": "Arduino を I2C デバイスとしてステッピングモータを制御する。外部電源とレベル変換が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "Arduino を I2C デバイスとしてステッピングモータを制御する。外部電源とレベル変換が必要。 認定デバイス未登録。"
     },
     {
       "id": "i2c-bme280",
@@ -354,11 +412,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-BME280",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-BME280/schematic.png",
       "device": "BME280",
+      "deviceId": "BME280",
       "interface": "i2c",
-      "notes": "温度・湿度・気圧。スレーブアドレス 0x76 / 0x77 に注意。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "温度・湿度・気圧。スレーブアドレス 0x76 / 0x77 に注意。"
     },
     {
       "id": "i2c-bmp180",
@@ -368,11 +428,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-BMP180",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-BMP180/schematic.png",
       "device": "BMP180",
+      "deviceId": "BMP180",
       "interface": "i2c",
-      "notes": "温度・気圧。BMP280 とは別デバイス。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "温度・気圧。BMP280 とは別デバイス。"
     },
     {
       "id": "i2c-bmp280",
@@ -382,11 +444,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-BMP280",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-BMP280/schematic.png",
       "device": "BMP280",
+      "deviceId": "BMP280",
       "interface": "i2c",
-      "notes": "温度・気圧。BMP180 とは別デバイス。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "温度・気圧。BMP180 とは別デバイス。"
     },
     {
       "id": "i2c-canzasi-blink",
@@ -396,11 +460,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-canzasi-blink",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-canzasi-blink/schematic.png",
       "device": "Canzasi",
+      "deviceId": "",
       "interface": "i2c",
-      "notes": "Arduino 経由の Canzasi。ボードは非売品で自作が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "Arduino 経由の Canzasi。ボードは非売品で自作が必要。 認定デバイス未登録。"
     },
     {
       "id": "i2c-mpu6050",
@@ -410,11 +476,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-MPU6050",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-MPU6050/schematic.png",
       "device": "MPU6050",
+      "deviceId": "MPU6050",
       "interface": "i2c",
-      "notes": "3軸ジャイロ + 3軸加速度。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "3軸ジャイロ + 3軸加速度。"
     },
     {
       "id": "i2c-mpu9250",
@@ -424,11 +492,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-MPU9250",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-MPU9250/schematic.png",
       "device": "MPU9250",
+      "deviceId": "MPU9250",
       "interface": "i2c",
-      "notes": "MPU6500 と AK8963 の複合センサー。初期化後に I2C スレーブが 2 つ現れる。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "MPU6500 と AK8963 の複合センサー。初期化後に I2C スレーブが 2 つ現れる。"
     },
     {
       "id": "gpio-hbridge",
@@ -438,11 +508,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/gpio-HBridge",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/gpio-HBridge/HBridge_TB6612FNG.png",
       "device": "TB6612FNG",
+      "deviceId": "TB6612FNG",
       "interface": "gpio",
-      "notes": "DC モータ正逆転。回路図は TB6612FNG / L298N / TA7291P。外部モータ電源が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "DC モータ正逆転。回路図は TB6612FNG / L298N / TA7291P。外部モータ電源が必要。"
     },
     {
       "id": "gpio-i2c-pwm-hbridge-1",
@@ -452,11 +524,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/gpio-i2c-PWMHBridge1",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/gpio-i2c-PWMHBridge1/PWMHBridge.png",
       "device": "PCA9685",
+      "deviceId": "PCA9685_MX1508",
       "interface": "gpio+i2c",
-      "notes": "H-Bridge + PCA9685 で速度制御。回路図ファイル名は PWMHBridge.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "H-Bridge + PCA9685 で速度制御。回路図ファイル名は PWMHBridge.png。"
     },
     {
       "id": "gpio-i2c-pwm-hbridge-2",
@@ -466,11 +540,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/gpio-i2c-PWMHBridge2",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/gpio-i2c-PWMHBridge2/PWMHBridge2.png",
       "device": "PCA9685",
+      "deviceId": "PCA9685_MX1508",
       "interface": "gpio+i2c",
-      "notes": "PWM 信号を 2 本使う速度制御。回路図ファイル名は PWMHBridge2.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "PWM 信号を 2 本使う速度制御。回路図ファイル名は PWMHBridge2.png。"
     },
     {
       "id": "i2c-neopixel-i2c",
@@ -480,11 +556,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-NEOPIXEL_I2C",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-NEOPIXEL_I2C/NEOPIXEL_I2C.png",
       "device": "ATTINY85",
+      "deviceId": "",
       "interface": "i2c",
-      "notes": "ATTINY85 を I2C コントローラにして NeoPixel を制御する。専用ボード回路図 NEOPIXEL_I2C_BRD.png もある。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "ATTINY85 を I2C コントローラにして NeoPixel を制御する。専用ボード回路図 NEOPIXEL_I2C_BRD.png もある。 deviceId は未設定。候補は neopixel-led。ATTINY85 は認定デバイス未登録。"
     },
     {
       "id": "i2c-pcf8591",
@@ -494,11 +572,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-PCF8591",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-PCF8591/schematic.png",
       "device": "PCF8591",
+      "deviceId": "PCF8591",
       "interface": "i2c",
-      "notes": "8bit AD/DA。基板上の可変抵抗・CDS・サーミスタ・LED をジャンパで使う。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "8bit AD/DA。基板上の可変抵抗・CDS・サーミスタ・LED をジャンパで使う。"
     },
     {
       "id": "chirimen-micro-bit",
@@ -508,11 +588,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen-micro-bit",
       "schematicUrl": "",
       "device": "micro:bit",
+      "deviceId": "",
       "interface": "web-bluetooth",
-      "notes": "WebBluetooth 経由。本 Runtime（WebSocket + chirimen-server）の対象外。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "WebBluetooth 経由。本 Runtime（WebSocket + chirimen-server）の対象外。 認定デバイス未登録。"
     },
     {
       "id": "i2c-amg8833",
@@ -522,11 +604,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-AMG8833",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-AMG8833/AMG8833.png",
       "device": "AMG8833",
+      "deviceId": "AMG8833",
       "interface": "i2c",
-      "notes": "サーモグラフィー。回路図ファイル名は AMG8833.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "サーモグラフィー。回路図ファイル名は AMG8833.png。"
     },
     {
       "id": "i2c-ads1115-load-cell",
@@ -536,11 +620,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-ADS1115",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-ADS1115/ADS1115_LoadCell.png",
       "device": "ADS1115",
+      "deviceId": "ADS1115",
       "interface": "i2c",
-      "notes": "ADS1115 経由のロードセル。ソースは i2c-ADS1115 ディレクトリ内。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "ADS1115 経由のロードセル。ソースは i2c-ADS1115 ディレクトリ内。"
     },
     {
       "id": "i2c-bh1750",
@@ -550,11 +636,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-BH1750",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-BH1750/BH1750schematic.png",
       "device": "BH1750",
+      "deviceId": "BH1750",
       "interface": "i2c",
-      "notes": "照度センサー。回路図ファイル名は BH1750schematic.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "照度センサー。回路図ファイル名は BH1750schematic.png。"
     },
     {
       "id": "i2c-tcs34725",
@@ -564,11 +652,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-TCS34725",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-TCS34725/TCS34725schematic.png",
       "device": "TCS34725",
+      "deviceId": "TCS34725",
       "interface": "i2c",
-      "notes": "色センサー。回路図ファイル名は TCS34725schematic.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "色センサー。回路図ファイル名は TCS34725schematic.png。"
     },
     {
       "id": "i2c-vl53l1x",
@@ -578,11 +668,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-VL53L1X",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-VL53L1X/VL53L1Xschematic.png",
       "device": "VL53L1X",
+      "deviceId": "VL53L1X",
       "interface": "i2c",
-      "notes": "レーザー距離センサー。VL53L0X より長距離（最長 4m）。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "レーザー距離センサー。VL53L0X より長距離（最長 4m）。"
     },
     {
       "id": "i2c-ina219",
@@ -592,11 +684,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-INA219",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-INA219/INA219schematic.png",
       "device": "INA219",
+      "deviceId": "INA219",
       "interface": "i2c",
-      "notes": "DC 電流・電圧・電力センサー。負荷と外部電源が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "DC 電流・電圧・電力センサー。負荷と外部電源が必要。"
     },
     {
       "id": "i2c-mlx90614",
@@ -606,11 +700,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-MLX90614",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-MLX90614/MLX90614schematic.png",
       "device": "MLX90614",
+      "deviceId": "MLX90614",
       "interface": "i2c",
-      "notes": "赤外線温度センサー。周囲温度も取得できる。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "赤外線温度センサー。周囲温度も取得できる。"
     },
     {
       "id": "i2c-apds9960",
@@ -620,11 +716,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-APDS9960",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-APDS9960/APDS9960schematic.png",
       "device": "APDS9960",
+      "deviceId": "APDS9960",
       "interface": "i2c",
-      "notes": "近接・環境光・ジェスチャー。デモが 2 系統ある。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "近接・環境光・ジェスチャー。デモが 2 系統ある。"
     },
     {
       "id": "i2c-seesaw",
@@ -634,11 +732,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-seesaw",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-seesaw/seesawschematic.png",
       "device": "seesaw",
+      "deviceId": "seesaw",
       "interface": "i2c",
-      "notes": "ATSAMD09 多機能ボード。この Example は NeoPixel 以外。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "ATSAMD09 多機能ボード。この Example は NeoPixel 以外。"
     },
     {
       "id": "i2c-seesaw-npix",
@@ -648,11 +748,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-seesaw",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-seesaw/seesawNpixschematic.png",
       "device": "seesaw",
+      "deviceId": "seesaw",
       "interface": "i2c",
-      "notes": "seesaw で NeoPixel を 2 個駆動する。ソースは i2c-seesaw ディレクトリ内。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "seesaw で NeoPixel を 2 個駆動する。ソースは i2c-seesaw ディレクトリ内。"
     },
     {
       "id": "i2c-ccs811",
@@ -662,11 +764,13 @@
       "legacySourceUrl": "",
       "schematicUrl": "",
       "device": "CCS811",
+      "deviceId": "CCS811",
       "interface": "i2c",
-      "notes": "公開ページにあるが gc/contrib/examples にディレクトリが無い。I2C baudrate を下げる host 設定が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "公開ページにあるが gc/contrib/examples にディレクトリが無い。I2C baudrate を下げる host 設定が必要。"
     },
     {
       "id": "i2c-bme680",
@@ -676,11 +780,13 @@
       "legacySourceUrl": "",
       "schematicUrl": "",
       "device": "BME680",
+      "deviceId": "BME680",
       "interface": "i2c",
-      "notes": "公開ページにあるが gc/contrib/examples にディレクトリが無い。アドレス 0x76 / 0x77 に注意。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "公開ページにあるが gc/contrib/examples にディレクトリが無い。アドレス 0x76 / 0x77 に注意。"
     },
     {
       "id": "gpio-a4988",
@@ -690,11 +796,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/gpio-A4988",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/gpio-A4988/a4988.png",
       "device": "A4988",
+      "deviceId": "A4988",
       "interface": "gpio",
-      "notes": "ステッピングモータ。停止中も加熱する。回路図ファイル名は a4988.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "ステッピングモータ。停止中も加熱する。回路図ファイル名は a4988.png。"
     },
     {
       "id": "i2c-htu21d",
@@ -704,11 +812,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HTU21D",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HTU21D/schematic.png",
       "device": "HTU21D",
+      "deviceId": "HTU21D",
       "interface": "i2c",
-      "notes": "温度・湿度複合センサー。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "温度・湿度複合センサー。"
     },
     {
       "id": "i2c-scd40",
@@ -718,11 +828,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-SCD40",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-SCD40/schematic.png",
       "device": "SCD40",
+      "deviceId": "SCD40",
       "interface": "i2c",
-      "notes": "CO2 センサー。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "CO2 センサー。"
     },
     {
       "id": "i2c-ht16k33",
@@ -732,11 +844,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HT16K33",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HT16K33/HT16K33schematic.png",
       "device": "HT16K33",
+      "deviceId": "",
       "interface": "i2c",
-      "notes": "LED マトリクス / 7seg ドライバの基本 Example。派生ディレクトリが別に存在する。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "LED マトリクス / 7seg ドライバの基本 Example。派生ディレクトリが別に存在する。 deviceId は未設定。候補は ht16k33-7-led / ht16k33-14-led / ht16k33-16x8led / ht16k33-8x8led。"
     },
     {
       "id": "i2c-ht16k33-led-7seg",
@@ -746,11 +860,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HT16K33_led_7seg",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HT16K33_led_7seg/schematic.png",
       "device": "HT16K33",
+      "deviceId": "ht16k33-7-led",
       "interface": "i2c",
-      "notes": "公開一覧には個別見出しが薄い。GitHub contrib の派生 Example。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "公開一覧には個別見出しが薄い。GitHub contrib の派生 Example。"
     },
     {
       "id": "i2c-ht16k33-led-14seg",
@@ -760,11 +876,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HT16K33_led_14seg",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HT16K33_led_14seg/schematic.png",
       "device": "HT16K33",
+      "deviceId": "ht16k33-14-led",
       "interface": "i2c",
-      "notes": "GitHub contrib の派生 Example。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "GitHub contrib の派生 Example。"
     },
     {
       "id": "i2c-ht16k33-led-16x8",
@@ -774,11 +892,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HT16K33_led_16x8",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HT16K33_led_16x8/schematic.png",
       "device": "HT16K33",
+      "deviceId": "ht16k33-16x8led",
       "interface": "i2c",
-      "notes": "GitHub contrib の派生 Example。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "GitHub contrib の派生 Example。"
     },
     {
       "id": "i2c-ht16k33-led-8x8aitendo",
@@ -788,11 +908,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/i2c-HT16K33_led_8x8aitendo",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-HT16K33_led_8x8aitendo/schematic.png",
       "device": "HT16K33",
+      "deviceId": "",
       "interface": "i2c",
-      "notes": "GitHub contrib の派生 Example。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "GitHub contrib の派生 Example。 deviceId は未設定。候補は ht16k33-8x8led と ht16k33-8x8led-1 で一意に決まらない。"
     },
     {
       "id": "others-camera",
@@ -802,11 +924,13 @@
       "legacySourceUrl": "",
       "schematicUrl": "",
       "device": "Raspberry Pi Camera",
+      "deviceId": "",
       "interface": "camera",
-      "notes": "CSI カメラ + getUserMedia。GPIO / I2C Runtime の対象外。ソースは remote-others-camera 側を参照。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "CSI カメラ + getUserMedia。GPIO / I2C Runtime の対象外。ソースは remote-others-camera 側を参照。 認定デバイス未登録。"
     },
     {
       "id": "remote-gpio-led",
@@ -816,11 +940,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-gpio-LED",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/remote-gpio-LED/schematic.png",
       "device": "LED",
+      "deviceId": "led",
       "interface": "remote",
-      "notes": "relayServer.js 依存。本 Runtime の対象外。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js 依存。本 Runtime の対象外。"
     },
     {
       "id": "remote-gpio-hbridge",
@@ -830,11 +956,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-gpio-HBridge",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/remote-gpio-HBridge/HBridge_TB6612FNG.png",
       "device": "TB6612FNG",
+      "deviceId": "TB6612FNG",
       "interface": "remote",
-      "notes": "relayServer.js 依存。回路図は TB6612FNG / L298N / TA7291P。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js 依存。回路図は TB6612FNG / L298N / TA7291P。"
     },
     {
       "id": "remote-gpio-sw",
@@ -844,11 +972,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-gpio-SW",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/remote-gpio-SW/schematic.png",
       "device": "tactile-switch",
+      "deviceId": "2pin",
       "interface": "remote",
-      "notes": "relayServer.js 依存。本 Runtime の対象外。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js 依存。本 Runtime の対象外。"
     },
     {
       "id": "remote-i2c-sht30",
@@ -858,11 +988,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-i2c-SHT30",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/remote-i2c-SHT30/SHT30schematic.png",
       "device": "SHT30",
+      "deviceId": "sht30-31",
       "interface": "remote",
-      "notes": "relayServer.js 依存。回路図ファイル名は SHT30schematic.png。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js 依存。回路図ファイル名は SHT30schematic.png。"
     },
     {
       "id": "remote-i2c-pca9685",
@@ -872,11 +1004,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-i2c-PCA9685",
       "schematicUrl": "https://www.chirimen.org/chirimen/gc/contrib/examples/remote-i2c-PCA9685/schematic.png",
       "device": "PCA9685",
+      "deviceId": "remote_PCA9685_MX1508",
       "interface": "remote",
-      "notes": "relayServer.js 依存。外部電源が必要。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js 依存。外部電源が必要。"
     },
     {
       "id": "remote-others-camera",
@@ -886,11 +1020,13 @@
       "legacySourceUrl": "https://github.com/chirimen-oh/chirimen/tree/master/gc/contrib/examples/remote-others-camera",
       "schematicUrl": "",
       "device": "Raspberry Pi Camera",
+      "deviceId": "",
       "interface": "remote",
-      "notes": "relayServer.js と CSI カメラに依存。回路図は無い。",
       "portingStatus": "",
       "verificationStatus": "",
-      "runtimeExamplePath": ""
+      "supportedRaspberryPi": [],
+      "runtimeExamplePath": "",
+      "notes": "relayServer.js と CSI カメラに依存。回路図は無い。 認定デバイス未登録。"
     }
   ]
 }
