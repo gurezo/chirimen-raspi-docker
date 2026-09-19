@@ -163,11 +163,15 @@
       "device": "SHT30",
       "deviceId": "sht30-31",
       "interface": "i2c",
-      "portingStatus": "legacy",
+      "portingStatus": "ported",
       "verificationStatus": "unverified",
-      "supportedRaspberryPi": [],
-      "runtimeExamplePath": "",
-      "notes": "温度・湿度センサー。"
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
+      "runtimeExamplePath": "workspace/sht30/",
+      "notes": "温度・湿度センサー。I2C1 / address 0x44。移植元 https://github.com/chirimen-oh/chirimen/tree/master/gc/i2c/i2c-SHT30 。実機 verified は #257。"
     },
     {
       "id": "i2c-adt7410",
