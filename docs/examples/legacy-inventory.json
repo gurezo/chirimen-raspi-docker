@@ -91,11 +91,15 @@
       "device": "KP-IR412",
       "deviceId": "KP-IR412",
       "interface": "gpio",
-      "portingStatus": "legacy",
+      "portingStatus": "ported",
       "verificationStatus": "unverified",
-      "supportedRaspberryPi": [],
-      "runtimeExamplePath": "",
-      "notes": "人感センサー。ジェネリック HC-SR501 でも動作実績あり。"
+      "supportedRaspberryPi": [
+        "3",
+        "4",
+        "5"
+      ],
+      "runtimeExamplePath": "workspace/pir-sensor/",
+      "notes": "人感センサー。GPIO BCM 12 / 物理 pin 32。3.3V ロジック前提。5V 出力モジュールはレベル変換なしで GPIO に入れない。ジェネリック HC-SR501 でも動作実績あり。移植元 https://github.com/chirimen-oh/chirimen/tree/master/gc/gpio/pirSensor 。実機 verified は #257。"
     },
     {
       "id": "gpio-multi-blink-all",
