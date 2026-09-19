@@ -4,15 +4,18 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it, vi } from 'vitest';
 import {
   DEVICE_FETCH_WARNING,
+  EDITOR_WORKSPACE_FOLDER,
   buildCatalogEntries,
   canOpenRuntimeExample,
   deriveCatalogStatus,
+  editorWorkspaceHref,
   filterCatalogEntries,
   findCertifiedDevice,
   loadCertifiedDevices,
   parseDevicesPayload,
   readInventoryExamples,
   runtimeExampleHref,
+  workspaceExampleDir,
 } from './catalog.js';
 
 const inventoryPath = resolve(
@@ -204,12 +207,20 @@ describe('filterCatalogEntries', () => {
 describe('runtime example links', () => {
   const entries = buildCatalogEntries(readInventoryExamples(inventory), []);
 
-  it('allows run links only for ported examples with a runtime path', () => {
+  it('allows run and edit links only for ported examples with a runtime path', () => {
     const blink = entries.find((entry) => entry.id === 'gpio-blink');
+    const button = entries.find((entry) => entry.id === 'gpio-button');
+    const scan = entries.find((entry) => entry.id === 'i2c-detect');
     const unread = entries.find((entry) => entry.id === 'gpio-read-gpio-value');
     expect(blink).toBeDefined();
+    expect(button).toBeDefined();
+    expect(scan).toBeDefined();
     expect(unread).toBeDefined();
     expect(canOpenRuntimeExample(blink as (typeof entries)[number])).toBe(true);
+    expect(canOpenRuntimeExample(button as (typeof entries)[number])).toBe(
+      true
+    );
+    expect(canOpenRuntimeExample(scan as (typeof entries)[number])).toBe(true);
     expect(canOpenRuntimeExample(unread as (typeof entries)[number])).toBe(
       false
     );
@@ -228,11 +239,21 @@ describe('runtime example links', () => {
   });
 
   it('resolves workspace paths to the Example server URL', () => {
+    expect(workspaceExampleDir('workspace/led-blink/')).toBe('led-blink/');
     expect(runtimeExampleHref('workspace/led-blink/', '127.0.0.1')).toBe(
       'http://127.0.0.1:4173/led-blink/'
     );
     expect(runtimeExampleHref('workspace/i2c-scan/', '192.168.0.10')).toBe(
       'http://192.168.0.10:4173/i2c-scan/'
+    );
+  });
+
+  it('opens the existing Editor workspace root, not a nested folder', () => {
+    expect(editorWorkspaceHref('127.0.0.1')).toBe(
+      `http://127.0.0.1:8080/?folder=${EDITOR_WORKSPACE_FOLDER}`
+    );
+    expect(editorWorkspaceHref('192.168.0.10')).toBe(
+      `http://192.168.0.10:8080/?folder=${EDITOR_WORKSPACE_FOLDER}`
     );
   });
 });
