@@ -160,7 +160,7 @@ python3 -m http.server 4173
 
 ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`docs/examples/i2c-scan/polyfill.js` へコピーされる）。
 
-Browser Editor から編集する場合は `./scripts/start.sh` のあと `http://127.0.0.1:4173/i2c-scan/` を開き、保存後に Example タブを reload する（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。手順は [Browser Development Environment](./browser-development.md) と [docs/examples/README.md](../examples/README.md)。
+Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/i2c-scan/`（Run Task **Serve examples** は URL 案内）。Web Demo（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Browser Development Environment](./browser-development.md)。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
