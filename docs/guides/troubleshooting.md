@@ -5,6 +5,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 関連:
 
 - [Getting Started](./getting-started.md)
+- [Runtime Diagnostics](./runtime-diagnostics.md)（doctor.sh / `/health` / Reference Examples）
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）

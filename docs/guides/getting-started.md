@@ -18,6 +18,7 @@ Raspberry Pi Setup（clone / I2C / Docker / 低スペックなら swap / doctor�
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)
 - [Troubleshooting](./troubleshooting.md)
+- [Runtime Diagnostics](./runtime-diagnostics.md)（doctor.sh / `/health` / Reference Examples）
 - [Architecture overview](../architecture/overview.md)
 - [Docker 構成](../architecture/docker.md)
 
@@ -116,7 +117,7 @@ curl -fsS http://127.0.0.1:4174/
 | Example を探す（Catalog） | `http://127.0.0.1:4174/`。ported は「実行」と「編集」。手順は [Browser Development Environment](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。metadata は [catalog-metadata.md](../examples/catalog-metadata.md) |
 | タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
-| Runtime の疎通を確認する（Web Demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。Web Demo 自体の開発は [Development Guide](./development.md) |
+| Runtime の疎通を確認する | [Runtime Diagnostics](./runtime-diagnostics.md)。Host は `doctor.sh`、Server は `GET /health`、Browser は GPIO LED Blink / GPIO Input / I2C Scan |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) |
 | Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
