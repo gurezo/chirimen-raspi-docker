@@ -67,4 +67,37 @@ Remote は `relayServer.js`、micro:bit は WebBluetooth、Camera は CSI / `get
 
 ## 一覧
 
-GPIO / I2C を優先して記録する。Advanced / Remote も落とさない。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
+GPIO / I2C を優先して記録する。Advanced / Remote は後続で追加する。個別 metadata は [legacy-inventory.json](./legacy-inventory.json) を正本とする。
+
+`catalogStatus` は `portingStatus` と `verificationStatus` から導出する。現時点の Basic GPIO / I2C はすべて `legacy` / `unverified`。
+
+### Basic GPIO
+
+| id | title | device | schematic | catalogStatus |
+| --- | --- | --- | --- | --- |
+| `gpio-blink` | GPIO-Blink | LED | あり | legacy |
+| `gpio-button` | GPIO-Button | tactile-switch | あり | legacy |
+| `gpio-read-gpio-value` | GPIO-readGpioValue | tactile-switch | あり | legacy |
+| `gpio-pir-sensor` | GPIO-pirSensor | KP-IR412 | あり | legacy |
+| `gpio-multi-blink-all` | GPIO-MultiBlinkAll | LED | なし | legacy |
+| `gpio-button-all` | GPIO-buttonAll | tactile-switch | あり（`buttonAll.png`） | legacy |
+
+### Basic I2C
+
+| id | title | device | schematic | catalogStatus |
+| --- | --- | --- | --- | --- |
+| `i2c-detect` | I2C-detect | （なし。scan のみ） | なし | legacy |
+| `i2c-sht30` | I2C-SHT30 | SHT30 | あり | legacy |
+| `i2c-adt7410` | I2C-ADT7410 | ADT7410 | あり | legacy |
+| `i2c-grove-accelerometer` | I2C-Grove-Accelerometer | ADXL345 | あり | legacy |
+| `i2c-grove-gesture` | I2C-Grove-Gesture | PAJ7620U2 | あり | legacy |
+| `i2c-grove-light` | I2C-Grove-Light | TSL2561 | あり | legacy |
+| `i2c-grove-oled-display` | I2C-Grove-OledDisplay | SSD1308 | あり | legacy |
+| `i2c-grove-touch` | I2C-Grove-Touch | MPR121 | あり | legacy |
+| `i2c-pca9685` | I2C-PCA9685 | PCA9685 | あり | legacy |
+| `i2c-ads1015` | I2C-ADS1015 | ADS1015 | あり | legacy |
+| `i2c-gp2y0e03` | I2C-GP2Y0E03 | GP2Y0E03 | あり | legacy |
+| `i2c-s11059` | I2C-S11059 | S11059 | あり | legacy |
+| `i2c-veml6070` | I2C-VEML6070 | VEML6070 | あり | legacy |
+| `i2c-vl53l0x` | I2C-VL53L0X | VL53L0X | あり | legacy |
+| `i2c-multi-sensors` | I2C-multi-sensors | ADT7410 | あり | legacy |
