@@ -6,8 +6,10 @@
 
 - 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
 - 子 Issue: [#242 Browser Development Documentation と navigation を新しい開発フローに合わせて更新する](https://github.com/gurezo/chirimen-raspi-docker/issues/242)
+- 子 Issue: [#243 Browser Development Flow を Raspberry Pi 実機で E2E 検証する](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#183 Browser Development Environment の利用ガイドを作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/183)
+- 実機検証結果: [Compatibility の Browser Development Flow 実機検証（#243）](../architecture/compatibility.md#browser-development-flow-実機検証243)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
 - [Getting Started](./getting-started.md)（最短起動）
@@ -281,6 +283,37 @@ Security:
 
 詳細は [Authentication](../architecture/browser-editor.md#authentication) と [Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
+## 実機 E2E 検証（#243）
+
+このガイドの `Learn → Edit → Save → Run → Verify` を Raspberry Pi 上で確認する。結果の正本は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)。`Supported` とは書かない。
+
+対象は可能な範囲で Raspberry Pi 3 B+ / 4 / 5 と Raspberry Pi OS Lite 64-bit。一次環境は Raspberry Pi 5（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) と同一機）。
+
+```sh
+./scripts/doctor.sh
+./scripts/start.sh
+curl http://localhost:33330/health
+```
+
+1. `http://127.0.0.1:8080` で Editor を開く
+2. Workspace の Example を編集・保存する
+3. `http://127.0.0.1:4173/led-blink/` 等を reload する
+4. 保存内容が反映されることを確認する
+5. GPIO / I2C の既存 Example を可能な範囲で実機確認する
+6. `http://127.0.0.1:4200/` を開く
+7. Web Demo を Runtime Demo / Diagnostic UI として確認する
+
+container 再起動後の保持:
+
+```sh
+docker compose down
+./scripts/start.sh
+```
+
+host `./workspace` の変更は残る。**`-v` は付けない。** Web Demo（`:4200`）は編集結果の確認先ではない。
+
+記録項目と機種別の結果は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243) を正本とする。GPIO / I2C の回路は各 Example ガイドへ。
+
 ## Troubleshooting
 
 汎用の切り分けは [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) を正とする。ここでは索引だけ書く。
@@ -298,5 +331,6 @@ Security:
 | LAN から届かない | [LAN から Editor / Web Demo に届かない](./troubleshooting.md#lan-から-editor-web-demo-に届かない) |
 | Microsoft Marketplace の拡張が入れられない | [Editor で Microsoft Marketplace の拡張が入れられない](./troubleshooting.md#editor-で-microsoft-marketplace-の拡張が入れられない) |
 | 保存しても Browser に反映されない | [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) |
+| 実機 E2E の記録を見る | [実機 E2E 検証（#243）](#実機-e2e-検証243)。結果は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243) |
 
 配線・LED / スイッチ / I2C Scan 固有の切り分けは各 Example ガイドへ。
