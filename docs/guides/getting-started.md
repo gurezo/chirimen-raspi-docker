@@ -85,7 +85,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
 
-## 4. Browser で Editor / Examples / Web Demo を開く
+## 4. Browser で Editor / Examples を開く
 
 最短フロー:
 
@@ -97,7 +97,9 @@ Browser で Editor を開く（http://127.0.0.1:8080）
 ↓
 Example を編集（docs/examples）
 ↓
-Web Demo を開く（http://127.0.0.1:4200/）
+Example Server で確認する（http://127.0.0.1:4173/...）
+↓
+保存後に Example タブを reload する
 ```
 
 ```sh
@@ -106,18 +108,26 @@ curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
-| 実行 | URL |
+| 役割 | URL |
 | --- | --- |
-| Editor | `http://127.0.0.1:8080` |
-| HTML サンプル | `http://127.0.0.1:4173/led-blink/` など |
-| Web Demo | `http://127.0.0.1:4200/` |
+| Editor（書く） | `http://127.0.0.1:8080` |
+| Example Server（書いたものを動かす） | `http://127.0.0.1:4173/led-blink/` など |
+| Web Demo（Runtime を確認する） | `http://127.0.0.1:4200/` |
 
 password、workspace、Extension、停止、更新、Security は [Browser Development Environment](./browser-development.md)。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
+
+Example の確認先:
 
 ```text
 http://127.0.0.1:4173/led-blink/
 http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
+```
+
+Web Demo は Example の編集結果確認先ではない。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通確認に使う。
+
+```text
+http://127.0.0.1:4200/
 http://127.0.0.1:4200/#/gpio-output
 http://127.0.0.1:4200/#/gpio-input
 http://127.0.0.1:4200/#/i2c-scan
@@ -127,13 +137,14 @@ http://127.0.0.1:4200/#/i2c-scan
 
 | やりたいこと | 参照 |
 | --- | --- |
-| LED を点滅させる | [GPIO LED Blink](./gpio-led-blink.md)。HTML サンプル（`docs/examples/led-blink/`）または web-demo の GPIO Output（GPIO LED Blink）。配線は [回路仕様](../examples/gpio-led-blink.md) |
-| タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`docs/examples/button/`）または web-demo の GPIO Input。配線は [回路仕様](../examples/gpio-input.md) |
-| I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`docs/examples/i2c-scan/`）または web-demo の I2C Scan（`#/i2c-scan`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
-| Browser から Runtime を試す（web-demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。host 開発は `pnpm nx serve web-demo` |
+| LED を点滅させる | [GPIO LED Blink](./gpio-led-blink.md)。HTML サンプル（`http://127.0.0.1:4173/led-blink/`）。配線は [回路仕様](../examples/gpio-led-blink.md) |
+| タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |
+| I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
+| Runtime の疎通を確認する（Web Demo） | `./scripts/start.sh` のあと `http://127.0.0.1:4200/`。[browser-polyfill.md](./browser-polyfill.md)。Web Demo 自体の開発は [Development Guide](./development.md) |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md) |
-| Browser Editor から Example / Web Demo を実行する | [Browser Development Environment](./browser-development.md) |
+| Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
+| Runtime を Web Demo で確認する | [browser-development.md の Runtime を Web Demo で確認する](./browser-development.md#runtime-を-web-demo-で確認する) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
 | Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
 | Browser Editor の Extension | [browser-development.md](./browser-development.md#extension-の導入-確認)。プリインストール・推奨しない |
