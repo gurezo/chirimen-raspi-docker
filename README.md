@@ -47,6 +47,7 @@ curl http://localhost:33330/health
 | Runtime を起動する | [Getting Started](docs/guides/getting-started.md) |
 | Browser から Example を書く | [Browser Development](docs/guides/browser-development.md) |
 | GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) / [GPIO Input](docs/guides/gpio-input.md) / [I2C Scan](docs/guides/i2c-scan.md) |
+| Example Catalog / Legacy 資産の出典を確認する | [catalog.md](docs/examples/catalog.md) |
 | 問題を調べる | [Troubleshooting](docs/guides/troubleshooting.md) |
 | 対応環境を確認する | [Compatibility](docs/architecture/compatibility.md)（Catalog / Runtime Example の機別実機は [runtime-verification.md](docs/examples/runtime-verification.md)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)） |
 | 内部設計を調べる | [Architecture](docs/architecture/overview.md) |

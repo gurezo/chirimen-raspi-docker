@@ -153,7 +153,7 @@ chirimen-raspi-docker/
 | --- | --- |
 | `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
 | `apps/web-demo` | Runtime Demo / Diagnostic UI（Browser Polyfill 組み込み済み。接続状態 UI、GPIO Output の LED Blink Start / Stop、GPIO Input の Start / Stop / Read / onchange realtime、I2C Scan の Scan / hex 一覧）。Example の編集結果確認先ではない |
-| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255） |
+| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。出典と責務は [catalog.md](../examples/catalog.md)。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |
@@ -191,6 +191,7 @@ npx nx mcp --help
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
 | [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。Example Catalog / Runtime Example は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [runtime-verification.md](../examples/runtime-verification.md)） |
+| [Example Catalog と Legacy 資産](../examples/catalog.md) | 出典・責務・status・Catalog 技術構成（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |

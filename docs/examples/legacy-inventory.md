@@ -10,6 +10,7 @@
 - Catalog metadata 設計: [catalog-metadata.md](./catalog-metadata.md)（[#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)）
 - 回路図の再利用と互換性確認: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - 実機検証の記録: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
+- 出典と責務: [catalog.md](./catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）
 
 この文書は **移植候補の整理** が目的である。Catalog UI、実行コードの移植は対象外。`deviceId` と certified-devices の join は [catalog-metadata.md](./catalog-metadata.md) を正本とする。回路図の Pi 3 / 4 / 5 互換性ルールは [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。実機結果は [runtime-verification.md](./runtime-verification.md) を正本とする。
 

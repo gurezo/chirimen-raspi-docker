@@ -9,6 +9,7 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 - 机上確認: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
 - Runtime 能力: [Compatibility](../architecture/compatibility.md)（[#97](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）
+- 出典と責務: [catalog.md](./catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）
 
 この文書は **Catalog / Runtime Example の機種別実機記録** が目的である。Runtime の GPIO / I2C backend 自体の記録は Compatibility を上書きしない。62 件すべての実機検証は対象外。`Supported` とは書かない。
 

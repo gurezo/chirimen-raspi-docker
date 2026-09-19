@@ -15,7 +15,7 @@ GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Pol
 
 Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
 
-Example Catalog（`:4174`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。
+Example Catalog（`:4174`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。出典・責務は [catalog.md](../docs/examples/catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）。
 
 回路・検証仕様の markdown は [docs/examples](../docs/examples/) にあります。
 
