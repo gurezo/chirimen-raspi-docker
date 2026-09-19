@@ -4,7 +4,7 @@ GPIO LED Blink / GPIO Input / I2C Scan の回路仕様と検証仕様です。Gi
 
 Legacy GC Example の移植候補と状態（`legacy` / `ported` / `verified`）は [legacy-inventory.md](./legacy-inventory.md) を正本とする。機械可読データは [legacy-inventory.json](./legacy-inventory.json)。Example と Device の責務分離は [catalog-metadata.md](./catalog-metadata.md)。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md)。
 
-HTML サンプルの編集場所は [workspace/](../../workspace/) です。Browser Editor で保存すれば Example Server（`:4173`）で動きます。Example Catalog（`:4174`）は題材の発見 UI です。
+HTML サンプルの編集場所は [workspace/](../../workspace/) です。Browser Editor で保存すれば Example Server（`:4173`）で動きます。Example Catalog（`:4174`）は題材の発見入口です。ported Example の「実行」は `:4173`、「編集」は Editor の既存 workspace ルートを開きます。
 
 | 文書 | 内容 |
 | --- | --- |

@@ -470,6 +470,9 @@ docker compose logs chirimen-editor
 - `curl -fsS http://127.0.0.1:4174/` が HTML を返すことを確認する
 - `docker compose ps` で `chirimen-example-catalog` が running か見る
 - host で Vite を使うときは Compose の catalog を止める: `docker compose stop chirimen-example-catalog`。手順は [Development Guide](./development.md)
+- Catalog の「実行」は Example Server `:4173`、「編集」は Editor `:8080/?folder=/home/coder/project` を別タブで開く。子ディレクトリを新しい workspace にはしない。legacy に実行 / 編集は出ない
+
+方針は [browser-development.md の Catalog で題材を探す](./browser-development.md#catalog-で題材を探す)。
 
 ## Web Demo（4200）が開かない
 

@@ -1,12 +1,16 @@
 import {
   CATEGORY_FILTERS,
   DEVICE_DASHBOARD_URL,
+  NO_IMAGE_URL,
   STATUS_FILTERS,
   canOpenRuntimeExample,
+  catalogImageUrl,
   deviceDescription,
-  deviceImageUrl,
   deviceModel,
+  editorWorkspaceHref,
+  isPlaceholderImageUrl,
   runtimeExampleHref,
+  workspaceExampleDir,
   type CatalogEntry,
   type CatalogFilters,
   type CatalogStatus,
@@ -49,6 +53,21 @@ export const createExternalLink = (
   return link;
 };
 
+const createServiceLink = (
+  href: string,
+  label: string,
+  ariaLabel: string
+): HTMLAnchorElement => {
+  const link = document.createElement('a');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.className = `${LINK_CLASS} font-semibold`;
+  link.textContent = label;
+  link.setAttribute('aria-label', ariaLabel);
+  return link;
+};
+
 export const renderHeaderLinks = (parent: HTMLElement): void => {
   const nav = document.createElement('p');
   nav.className = 'mt-3';
@@ -71,11 +90,21 @@ const renderCardLinks = (
     actions.append(createExternalLink(entry.legacyUrl, 'Legacy Example'));
   }
   if (canOpenRuntimeExample(entry)) {
-    const run = document.createElement('a');
-    run.href = runtimeExampleHref(entry.runtimeExamplePath, hostname);
-    run.className = `${LINK_CLASS} font-semibold`;
-    run.textContent = '実行';
-    actions.append(run);
+    const dir = workspaceExampleDir(entry.runtimeExamplePath).replace(/\/$/, '');
+    actions.append(
+      createServiceLink(
+        runtimeExampleHref(entry.runtimeExamplePath, hostname),
+        '実行',
+        `${dir} を実行する`
+      )
+    );
+    actions.append(
+      createServiceLink(
+        editorWorkspaceHref(hostname),
+        '編集',
+        `Editor で ${dir} を編集する`
+      )
+    );
   }
 
   if (actions.childElementCount > 0) {
@@ -154,17 +183,22 @@ export const renderExampleCard = (entry: CatalogEntry): HTMLElement => {
   card.dataset.exampleId = entry.id;
   card.dataset.status = entry.catalogStatus;
 
-  const imageUrl = deviceImageUrl(entry.certifiedDevice);
-  if (imageUrl !== '') {
-    const image = document.createElement('img');
-    image.src = imageUrl;
-    image.alt = deviceModel(entry.certifiedDevice) || entry.device || entry.title;
-    image.className = 'h-36 w-full object-contain bg-slate-50 p-3';
-    image.addEventListener('error', () => {
-      image.remove();
-    });
-    card.append(image);
-  }
+  const image = document.createElement('img');
+  const imageUrl = catalogImageUrl(entry.certifiedDevice);
+  image.src = imageUrl;
+  image.alt =
+    imageUrl === NO_IMAGE_URL
+      ? '画像なし'
+      : deviceModel(entry.certifiedDevice) || entry.device || entry.title;
+  image.className = 'h-36 w-full object-contain bg-slate-50 p-3';
+  image.addEventListener('error', () => {
+    if (isPlaceholderImageUrl(image.src)) {
+      return;
+    }
+    image.src = NO_IMAGE_URL;
+    image.alt = '画像なし';
+  });
+  card.append(image);
 
   const body = document.createElement('div');
   body.className = 'flex flex-1 flex-col gap-2 p-4';

@@ -15,6 +15,8 @@ GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Pol
 
 Web Demo（`:4200`）は Example の編集結果確認先ではありません。Runtime / Browser Polyfill / WebSocket / GPIO / I2C の疎通を確認する Diagnostic UI です。
 
+Example Catalog（`:4174`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。
+
 回路・検証仕様の markdown は [docs/examples](../docs/examples/) にあります。
 
 ## 配置
@@ -27,9 +29,10 @@ Web Demo（`:4200`）は Example の編集結果確認先ではありません�
 
 ## 起動
 
-1. Runtime + Editor + Examples + Web Demo を起動する（host で `./scripts/start.sh`）
-2. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
-3. 別 Browser タブで Example Server を開く
+1. Runtime + Editor + Examples + Web Demo + Catalog を起動する（host で `./scripts/start.sh`）
+2. 題材探し: `http://127.0.0.1:4174/`。Terminal → Run Task → **Open Example Catalog**（URL 案内）
+3. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
+4. 別 Browser タブで Example Server を開く。Catalog の「実行」でも同じ URL を開く
 
 Example の確認先:
 

@@ -8,6 +8,9 @@ export const DEVICE_DASHBOARD_URL =
   'https://github.com/gurezo/chirimen-device-dashboard';
 
 export const EXAMPLE_SERVER_PORT = 4173;
+export const EDITOR_PORT = 8080;
+export const EDITOR_WORKSPACE_FOLDER = '/home/coder/project';
+export const NO_IMAGE_URL = '/no_image.png';
 
 export type CatalogStatus = 'legacy' | 'ported' | 'verified';
 
@@ -174,6 +177,14 @@ export const deviceDescription = (device: CertifiedDevice | null): string =>
 export const deviceImageUrl = (device: CertifiedDevice | null): string =>
   asString(device?.meta?.image);
 
+export const catalogImageUrl = (device: CertifiedDevice | null): string => {
+  const url = deviceImageUrl(device);
+  return url === '' ? NO_IMAGE_URL : url;
+};
+
+export const isPlaceholderImageUrl = (src: string): boolean =>
+  src === NO_IMAGE_URL || src.endsWith(NO_IMAGE_URL);
+
 export type CategoryFilter =
   | 'all'
   | 'gpio'
@@ -228,13 +239,26 @@ export const canOpenRuntimeExample = (
 ): boolean =>
   example.portingStatus === 'ported' && example.runtimeExamplePath.trim() !== '';
 
+export const workspaceExampleDir = (runtimeExamplePath: string): string => {
+  const withoutWorkspace = runtimeExamplePath.replace(/^workspace\//, '');
+  const trimmed = withoutWorkspace.replace(/^\/+/, '');
+  if (trimmed === '') {
+    return '';
+  }
+  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+};
+
 export const runtimeExampleHref = (
   runtimeExamplePath: string,
   hostname = '127.0.0.1',
   port = EXAMPLE_SERVER_PORT
 ): string => {
-  const withoutWorkspace = runtimeExamplePath.replace(/^workspace\//, '');
-  const trimmed = withoutWorkspace.replace(/^\/+/, '');
-  const path = trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+  const path = workspaceExampleDir(runtimeExamplePath);
   return `http://${hostname}:${String(port)}/${path}`;
 };
+
+export const editorWorkspaceHref = (
+  hostname = '127.0.0.1',
+  port = EDITOR_PORT,
+  folder = EDITOR_WORKSPACE_FOLDER
+): string => `http://${hostname}:${String(port)}/?folder=${folder}`;

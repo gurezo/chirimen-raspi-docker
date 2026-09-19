@@ -256,9 +256,9 @@ Web Demo は Runtime Demo / Diagnostic UI である。Example の編集結果確
 
 ```text
 ./scripts/start.sh
-  → Editor     http://127.0.0.1:8080     （書く）
+  → Catalog    http://127.0.0.1:4174/    （Example を探す。ported は実行 / 編集）
+  → Editor     http://127.0.0.1:8080     （書く。workspace ルート）
   → Examples   http://127.0.0.1:4173/... （書いたものを動かす）
-  → Catalog    http://127.0.0.1:4174/    （Example を探す）
   → Web Demo   http://127.0.0.1:4200/    （Runtime を確認する）
   → Runtime    ws://localhost:33330/
 ```
