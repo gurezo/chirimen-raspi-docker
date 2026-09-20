@@ -21,6 +21,19 @@ CHIRIMEN Ready
 | `doctor.sh` | Host Setup **完了後**の読み取り専用診断。sudo 不要 | Host 設定（I2C / swap / Docker）を変えない。失敗時は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md) へ戻る |
 | `start.sh` | CHIRIMEN Runtime の起動（Compose）。存在する GPIO / I2C device だけを渡す | I2C 有効化、swap、Docker Engine のインストールはしない |
 
+`doctor.sh` の確認対象と失敗時の戻先:
+
+| 確認 | 失敗時 |
+| --- | --- |
+| Raspberry Pi / OS / architecture | 実機と Raspberry Pi OS Lite 64-bit を確認する |
+| Memory / Swap | `sudo ./setups/swap.sh` |
+| I2C / `/dev/i2c-*` | `sudo ./setups/enable-i2c.sh` |
+| Docker Engine | `./setups/docker.sh` |
+| Docker Compose | `./setups/docker-compose.sh` |
+| Host capability | [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md) |
+
+`[error]` が無ければ `./scripts/start.sh` へ進む。
+
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh

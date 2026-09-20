@@ -288,6 +288,6 @@ Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照�
 
 ## 次の段階（Getting Started Step 2）
 
-Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で **CHIRIMEN Setup**（`./scripts/doctor.sh` → `./scripts/start.sh`）へ進む。`doctor.sh` は Host 設定を変えない診断である。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。First Example は Step 3。
+Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。Host 全体の一括確認は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) の `./scripts/doctor.sh` である。確認対象は Raspberry Pi / OS / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker、Compose、Host capability。問題時は上の対応する setup script へ戻る。`doctor.sh` は Host 設定を変えない。`[error]` が無ければ `./scripts/start.sh`。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。First Example は Step 3。
 
 → [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)

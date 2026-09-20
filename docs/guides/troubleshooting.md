@@ -622,14 +622,23 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 
 ## doctor が exit 1 になる
 
-`[error]` の行を上から解消する。典型順:
+`[error]` の行を上から解消する。doctor は Host 設定を変えない。典型順:
 
-1. Raspberry Pi 実機か
-2. Docker / Compose / daemon
-3. `/dev/i2c-1`（`enable-i2c.sh`）— `i2c=unavailable` は error
-4. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
+1. Raspberry Pi / OS / architecture
+2. Memory / Swap（Pi 3 B+ 相当で Swap が 0 なら error）→ `sudo ./setups/swap.sh`
+3. Docker Engine → `./setups/docker.sh`。daemon / docker グループは `systemctl start docker` / `usermod`
+4. Docker Compose → `./setups/docker-compose.sh`
+5. `/dev/i2c-1`（`i2c=unavailable` は error）→ `sudo ./setups/enable-i2c.sh` → reboot → `--check`
+6. GPIO は `unavailable` / `gpiochip` unsupported でも `[warn]`（exit 0 可）。必要なら `/sys/class/gpio` と `/dev/gpiochip*` を確認
 
-解消後に Getting Started の Step 2 へ戻る: [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)
+| 問題 | 戻先 |
+| --- | --- |
+| Swap problem | `sudo ./setups/swap.sh` |
+| I2C unavailable | `sudo ./setups/enable-i2c.sh` |
+| Docker unavailable | `./setups/docker.sh` |
+| Compose unavailable | `./setups/docker-compose.sh` |
+
+解消後に Getting Started の Step 2 へ戻る: [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)。確認項目の正本は [Runtime Diagnostics](./runtime-diagnostics.md)。
 
 ## LED が点かない
 
