@@ -111,17 +111,48 @@ Host 上で Runtime を診断し、起動する。I2C / swap / Docker のイン�
 
 ### 実行コマンド
 
-clone したディレクトリで:
+clone したディレクトリで、先に `doctor.sh` で Host を確認し、`[error]` が無いときだけ `start.sh` へ進む。
+
+#### doctor.sh（Host 確認）
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
+```
+
+`doctor.sh` は読み取り専用である。sudo 不要。Host 設定（I2C / swap / Docker）は変えない。結果は `[ok]` / `[error]` / `[warn]`。`[error]` がある場合は exit 1。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。
+
+確認対象:
+
+| 項目 | 見るもの |
+| --- | --- |
+| Raspberry Pi / OS / architecture | 機種、`PRETTY_NAME`、`uname -m` |
+| Memory / Swap | `MemTotal` / `SwapTotal`。Pi 3 B+ 相当の低メモリで Swap が 0 なら `[error]` |
+| I2C / `/dev/i2c-*` | `/dev/i2c-1` が必須。他の `i2c-*` は参考表示 |
+| Docker Engine | `docker` コマンドと daemon |
+| Docker Compose | `docker compose`（無ければ legacy `docker-compose`） |
+| Host capability | `/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1` |
+
+問題があるときは対応する Raspberry Pi Setup へ戻る。doctor 自身は修復しない。
+
+| 問題 | 戻先 |
+| --- | --- |
+| Swap problem | `sudo ./setups/swap.sh` → `sudo ./setups/swap.sh --check` |
+| I2C unavailable | `sudo ./setups/enable-i2c.sh` → `sudo reboot` → `./setups/enable-i2c.sh --check` |
+| Docker unavailable | `./setups/docker.sh` |
+| Compose unavailable | `./setups/docker-compose.sh` |
+
+`[error]` が無ければ次の `start.sh` へ進む。`[warn]` だけなら起動はできるが、メッセージを読んでから進む。
+
+#### start.sh（Runtime 起動）
+
+```sh
 ./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
 ./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
 ./scripts/start.sh --32bit    # Runtime only（32-bit OS。サポート対象外）
 ```
 
-`doctor.sh` は読み取り専用である。`[error]` が無ければ `start.sh` へ進む。`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
 
 64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。Pi 3 B+ でメモリが厳しいときは起動後に `docker compose stop chirimen-editor`。Step 3 に Editor は必須ではない。
 
@@ -180,7 +211,7 @@ Editor（`:8080`）を使うときは、初回 `./scripts/start.sh` で決めた
 
 ### 失敗時
 
-- `doctor.sh` で `[error]` → Host 側の不足。[Step 1](#step-1-raspberry-pi-setup) と [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)
+- `doctor.sh` で `[error]` → Host 側の不足。上の戻先表と [Step 1](#step-1-raspberry-pi-setup)、[Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)
 - 起動しない / health が返らない → [Troubleshooting](./troubleshooting.md) と [Runtime Diagnostics](./runtime-diagnostics.md)
 
 ## Step 3: Run Your First Example
