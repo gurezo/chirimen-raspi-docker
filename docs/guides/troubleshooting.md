@@ -291,6 +291,33 @@ docker compose exec chirimen-editor id
 
 方針は [browser-editor.md の uid / gid](../architecture/browser-editor.md#uid--gid)。
 
+## Editor にログインできない / password を忘れた
+
+### 症状
+
+Browser で `http://127.0.0.1:8080` を開いても、セットアップで決めたと思っている password で入れない。
+
+### 原因
+
+- 初回の対話 `./scripts/start.sh` で決めた値と違う文字列を入力している
+- `.env` の `CHIRIMEN_EDITOR_PASSWORD` を後から変えたが、container が古い設定のまま
+- 非対話起動（CI / TTY なし）で `.env` が空のまま、named volume の `config.yaml` にランダム生成された
+- `docker compose down -v` で volume 上の `config.yaml` が消えた
+
+### 確認
+
+通常は `.env` を開いて `CHIRIMEN_EDITOR_PASSWORD` があることだけ確認する。値をチャットやログに貼らない。
+
+非対話で生成した場合、または `.env` が空の場合だけ `config.yaml` を読む。
+
+```sh
+docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
+```
+
+### 対処
+
+覚えられる password に直すときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。`.env` は Git に含めない。`auth: none` は使わない。
+
 ## Editor の password / 設定が消えた
 
 ### 症状
@@ -310,7 +337,7 @@ docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.y
 
 ### 対処
 
-設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は新しい `config.yaml` を読み直す。password を固定したいときは host の `.env`（gitignored）に `CHIRIMEN_EDITOR_PASSWORD` を置き、`./scripts/start.sh` で起動する。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `workspace/` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
+設定を残すときは `docker compose down`（**`-v` なし**）で container だけ削除する。消してしまった password は、対話の `./scripts/start.sh` で覚えられる値を `.env` に書き直すか、新しい `config.yaml` を読み直す。compose.yaml に `PASSWORD=` は書かない。Example の中身は host の `workspace/` を見る。ユーザーが任意に導入した Extension は named volume `chirimen-editor-local` が消えると無くなる。再インストールはユーザー判断である。
 
 ## LAN から Editor / Catalog に届かない
 

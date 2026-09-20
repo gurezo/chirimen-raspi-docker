@@ -60,6 +60,8 @@ chmod +x scripts/start.sh
 
 `start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。32-bit OS は `--32bit` で Runtime only になる。
 
+64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。
+
 ## 3. health check で確認する
 
 別ターミナルで:
@@ -103,6 +105,8 @@ curl -fsS http://127.0.0.1:4200/
 | 8080 | chirimen-editor | code-server / Edit |
 | 4173 | chirimen-examples | Edited Example execution |
 | 4200 | chirimen-example-catalog | Example Catalog（Web UI 入口） |
+
+Browser で `:8080` を開いたら、セットアップ（初回 `./scripts/start.sh`）で決めた password を入れる。`docker compose exec` で `config.yaml` を読む必要はない。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。
 
 確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor の既存 workspace ルートを開く。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
 

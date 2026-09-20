@@ -145,13 +145,9 @@ legacy は回路図の外部リンクのみである。実行 / 編集は出さ�
 
 Browser で `http://127.0.0.1:8080` を開く。既定の host bind は `127.0.0.1`（同一ホスト / SSH port forward）。
 
-Editor は password 認証である。初回 password は named volume `chirimen-editor-config` の `config.yaml` にある。
+Editor は password 認証である。初回の対話 `./scripts/start.sh` で決めた password を入れる。値は gitignored の `.env`（[`.env.example`](../../.env.example)）に `CHIRIMEN_EDITOR_PASSWORD` として残る。ログには平文を出さない。`auth: none` は使わない。`--lan` でも password は必須である。
 
-```sh
-docker compose exec chirimen-editor cat /home/coder/.config/code-server/config.yaml
-```
-
-任意で host の `.env`（gitignored。[`.env.example`](../../.env.example)）に `CHIRIMEN_EDITOR_PASSWORD` を置くと `./scripts/start.sh` が渡す。`auth: none` は使わない。
+`docker compose exec` で `config.yaml` を読む手順は通常不要である。password を忘れたときや非対話起動で volume 生成した場合の退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。
 
 LAN の別マシンから開くときは `./scripts/start.sh --lan`。Internet へは出さない。方針は [Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
@@ -278,8 +274,8 @@ Editor image は `codercom/code-server:<semver>` を pin する。`latest` は�
 
 Security:
 
-- 既定は password 認証。`auth: none` は使わない
-- 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない
+- 既定は password 認証。対話の初回 `start.sh` で `.env` へ決める（#269）。`auth: none` は使わない
+- 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない。`--lan` でも password 必須
 - HTTPS / reverse proxy は本リポジトリでは提供しない
 - GPIO / I2C device は `chirimen-server` のみ。Editor / Examples / Catalog には渡さない
 - 秘密情報は named volume または gitignored の `.env`。compose.yaml に `PASSWORD=` は書かない

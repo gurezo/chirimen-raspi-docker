@@ -30,7 +30,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 | `setups/swap.sh` | 低スペック機向けに swap を確保する。I2C 設定は変更しない |
 | `setups/disable-squeekboard.sh` | Raspberry Pi OS **Desktop** のスクリーンキーボード（Squeekboard）を Always Off にする任意手順。Lite の必須手順ではない。`--check` は設定変更なし・sudo 不要 |
 | `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない |
-| `scripts/start.sh` | 準備済み環境で Runtime を起動する。I2C 設定は変更しない（このページでは実行しない） |
+| `scripts/start.sh` | 準備済み環境で Runtime を起動する。I2C 設定は変更しない（このページでは実行しない）。初回の対話起動で Editor password を `.env` へ書く |
 
 ## 前提 OS
 
@@ -209,7 +209,7 @@ sudo reboot
 
 ## セットアップ後
 
-doctor で `[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。`start.sh` は I2C 設定を変更しない。
+doctor で `[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。`start.sh` は I2C 設定を変更しない。初回の対話 `start.sh` で Browser Editor の password を決める。
 
 ```sh
 ./scripts/doctor.sh
