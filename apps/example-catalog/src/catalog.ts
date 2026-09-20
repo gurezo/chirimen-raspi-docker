@@ -57,7 +57,6 @@ export type InventoryExample = {
   category: string;
   deviceId: string;
   device: string;
-  legacyUrl: string;
   legacySourceUrl: string;
   schematicUrl: string;
   runtimeExamplePath: string;
@@ -163,7 +162,6 @@ export const readInventoryExamples = (data: unknown): InventoryExample[] => {
         category: asString(item['category']),
         deviceId: asString(item['deviceId']),
         device: asString(item['device']),
-        legacyUrl: asString(item['legacyUrl']),
         legacySourceUrl: asString(item['legacySourceUrl']),
         schematicUrl: asString(item['schematicUrl']),
         runtimeExamplePath: asString(item['runtimeExamplePath']),
