@@ -30,6 +30,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | Runtime 接続不可 | [LAN から Example は開くが GPIO / I2C が動かない](#lan-から-example-は開くが-gpio-i2c-が動かない) / [Example は開くが GPIO / I2C が動かない](#example-は開くが-gpio-i2c-が動かない) |
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
 | 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
+| スクリーンキーボードが入力を妨げる | [Desktop でスクリーンキーボードが出る](#desktop-でスクリーンキーボードが出る) |
 
 ## device が無く GPIO / I2C が unavailable になる
 
@@ -353,6 +354,27 @@ HTML Example の既定 WebSocket 先は `ws://localhost:33330/` で、別マシ�
 - HTML Example は script の前に `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）
 - `curl http://<Pi の IP>:33330/health` で Runtime を確認する
 - Editor / Catalog container に GPIO / I2C device は渡していない
+
+## Desktop でスクリーンキーボードが出る
+
+### 症状
+
+Raspberry Pi OS Desktop で Browser Editor（`:8080`）や Catalog のテキスト欄にフォーカスすると、スクリーンキーボード（Squeekboard）が重なり、物理キーボードの操作を妨げる。
+
+### 原因
+
+Bookworm 以降の Desktop（Wayland）は Squeekboard を出すことがある。推奨 OS の Lite にはスクリーンキーボードが無い。
+
+### 対処
+
+Lite の必須手順ではない。Desktop を使う場合の任意手順である。
+
+```sh
+sudo ./setups/disable-squeekboard.sh
+./setups/disable-squeekboard.sh --check   # sudo 不要
+```
+
+残る場合は再ログインまたは reboot。手動は Control Centre → Display → On-screen keyboard → Disabled、または `raspi-config` → Display Options → D6 → S3 Always Off。手順の正本は [Raspberry Pi Setup](./raspberry-pi-setup.md#スクリーンキーボードdesktop-任意)。
 
 ## Editor を IP 直打ち HTTP で開くと webview が壊れる
 

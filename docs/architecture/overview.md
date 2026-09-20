@@ -123,8 +123,9 @@ chirimen-raspi-docker/
 │   ├── doctor.sh
 │   ├── start.sh
 │   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
-├── setups/                     # host OS 準備（Docker / Compose / swap / I2C）
+├── setups/                     # host OS 準備（Docker / Compose / swap / I2C。Desktop 任意で Squeekboard）
 │   ├── enable-i2c.sh
+│   ├── disable-squeekboard.sh  # Raspberry Pi OS Desktop のスクリーンキーボードを Always Off（#271）
 │   ├── docker.sh
 │   ├── docker-compose.sh
 │   ├── swap.sh

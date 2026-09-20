@@ -46,3 +46,14 @@ Raspberry Pi 3 B+（1GB）でビルドするときは、次の **両方** が必
 - **CPU ファン**: ビルド中の熱暴走（スロットル / 停止 / ハング）を防ぐために **必ず実装する**。特定メーカー / 型番は指定しない。電源投入前に装着する
 
 Pi 4 / 5 の swap / ファンは任意。メモリ不足や OOM が出る場合も `swap.sh` を提案する。
+
+## スクリーンキーボード（Desktop 任意）
+
+Raspberry Pi OS **Desktop** で Browser Editor / Catalog を使うときの任意手順。Lite の必須手順ではない。I2C / Docker / swap の設定は変更しない。
+
+```sh
+sudo ./setups/disable-squeekboard.sh
+./setups/disable-squeekboard.sh --check   # sudo 不要
+```
+
+Squeekboard を Always Off にする。`--check` は設定を変えない。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。

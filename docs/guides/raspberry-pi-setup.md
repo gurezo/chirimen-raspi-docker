@@ -19,7 +19,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap / I2C。Pi 3 B+ は 8GB swap と CPU ファン必須）
-- `setups/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
+- `setups/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `setups/disable-squeekboard.sh` / `scripts/doctor.sh` / `scripts/start.sh`
 
 ## スクリプトの責務
 
@@ -28,6 +28,7 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 | `setups/enable-i2c.sh` | ホスト I2C の有効化。`--check` は設定変更なし・sudo 不要で `/dev/i2c-1` を確認する |
 | `setups/docker.sh` / `setups/docker-compose.sh` | Docker / Compose のインストールのみ。I2C 設定は変更しない |
 | `setups/swap.sh` | 低スペック機向けに swap を確保する。I2C 設定は変更しない |
+| `setups/disable-squeekboard.sh` | Raspberry Pi OS **Desktop** のスクリーンキーボード（Squeekboard）を Always Off にする任意手順。Lite の必須手順ではない。`--check` は設定変更なし・sudo 不要 |
 | `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない |
 | `scripts/start.sh` | 準備済み環境で Runtime を起動する。I2C 設定は変更しない（このページでは実行しない） |
 
@@ -125,6 +126,24 @@ Raspberry Pi 3 B+ でビルドするときは、次の **両方** が必須で�
 Pi 4 / 5 の swap / ファンは任意。メモリ不足や OOM が出る場合も `swap.sh` を提案する。
 
 詳細は [setups/README.md](../../setups/README.md)。OOM や熱暴走の切り分けは [Troubleshooting](./troubleshooting.md)。
+
+## スクリーンキーボード（Desktop 任意）
+
+Raspberry Pi OS **Desktop**（Bookworm 以降・Wayland）では、テキスト欄にフォーカスするとスクリーンキーボード（Squeekboard）が出ることがある。物理キーボード付きで Browser Editor（`:8080`）や Catalog を使う場合の任意手順である。Lite にはスクリーンキーボードが無い。この節は上記の I2C / Docker / swap 必須手順ではない。
+
+```sh
+sudo ./setups/disable-squeekboard.sh
+./setups/disable-squeekboard.sh --check   # sudo 不要
+```
+
+`--check` は設定を変えず、現状だけ出す。sudo は不要。再実行しても設定を壊さない。反映は即時のことがある。残る場合は再ログインまたは reboot。
+
+手動:
+
+- GUI: Control Centre → Display → On-screen keyboard → Disabled
+- TUI: `sudo raspi-config` → Display Options → D6 Onscreen Keyboard → S3 Always Off
+
+対象は Bookworm 以降の Squeekboard だけである。古い X11 の `onboard` / `matchbox-keyboard` は対象外。Lite や `do_squeekboard` が無い環境では設定を変えずに終了する。
 
 ## GPIO
 
