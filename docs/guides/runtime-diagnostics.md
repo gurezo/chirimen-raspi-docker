@@ -19,7 +19,7 @@ Catalog は題材の発見入口であり、Hardware Runtime ではない。GPIO
 
 ## 責務
 
-`doctor.sh` は **CHIRIMEN Setup** の診断である。Host Setup 完了後に実行し、設定は変えない。失敗時は [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。
+`doctor.sh` は **CHIRIMEN Setup** の診断である。Host Setup 完了後に実行し、設定は変えない。失敗時は [Raspberry Pi Setup](./raspberry-pi-setup.md) の対応スクリプトへ戻る。`[error]` が無ければ [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で `./scripts/start.sh` へ進む。
 
 ```text
 Host / Docker → scripts/doctor.sh
@@ -33,19 +33,29 @@ Device        → Example Catalog / Runtime Examples
 
 | レイヤー | 確認するもの | 確認しないもの |
 | --- | --- | --- |
-| `./scripts/doctor.sh` | Raspberry Pi / Docker / Device mapping / Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
+| `./scripts/doctor.sh` | Raspberry Pi / OS / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker Engine、Docker Compose、Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
 | `GET /health`（`:33330`） | `chirimen-server` の起動状態 | GPIO / I2C の E2E、Browser からの疎通 |
 | GPIO LED Blink | Browser Polyfill / WebSocket / GPIO Output | Host の Docker インストール |
 | GPIO Input | Browser Polyfill / WebSocket / GPIO Input | I2C |
 | I2C Scan | Browser Polyfill / WebSocket / I2C Runtime / `/dev/i2c-1` | 個別 slave の読み書き（ADT7410 等は別 Example） |
 
-`doctor.sh` は sudo 不要である。結果は `[ok]` / `[error]` / `[warn]`。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。
+`doctor.sh` は sudo 不要である。結果は `[ok]` / `[error]` / `[warn]`。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。`swap.sh --check` は呼ばない（root が必要なため）。Memory / Swap は `/proc/meminfo` を読む。
+
+問題時の戻先（doctor は修復しない）:
+
+| 問題 | 戻先 |
+| --- | --- |
+| Swap problem | `sudo ./setups/swap.sh` → `sudo ./setups/swap.sh --check` |
+| I2C unavailable | `sudo ./setups/enable-i2c.sh` → `sudo reboot` → `./setups/enable-i2c.sh --check` |
+| Docker unavailable | `./setups/docker.sh` |
+| Compose unavailable | `./setups/docker-compose.sh` |
 
 - **GPIO `sysfs`**: `/sys/class/gpio` があり、現行 backend で利用可能
 - **GPIO `gpiochip`**: sysfs が無く `/dev/gpiochip*` のみ → `[warn]` + unsupported（backend 未実装）
 - **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
 - **I2C `available`**: `/dev/i2c-1` がある → `[ok] I2C: available (/dev/i2c-1)` と `i2c backend: i2c-dev`
 - **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable`。doctor 自身は設定を変えない。有効化は [Raspberry Pi Setup](./raspberry-pi-setup.md) の `enable-i2c.sh`
+- **Swap**: Pi 3 B+ 相当（RAM 約 1.5GB 以下）で SwapTotal=0 なら `[error]`。Pi 4 / 5 で 0 なら `[warn]`（任意）
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
 ## web-demo 機能の棚卸し
@@ -87,7 +97,7 @@ Device        → Example Catalog / Runtime Examples
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。不足があるときは [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
+`[error]` が無ければ次へ進む。不足があるときは上の戻先表と [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
 
 2. Runtime を起動し、プロセス生存を確認する。
 

@@ -2,7 +2,8 @@
 #
 # Pre-flight checks for chirimen-raspi-docker on Raspberry Pi host.
 # Read-only diagnostics; sudo is not required.
-# This script does not change I2C settings. Enable I2C with enable-i2c.sh.
+# This script does not change host settings (I2C / swap / Docker).
+# Enable I2C with enable-i2c.sh. Enable swap with swap.sh.
 # Hardware capability classification matches Server / Node Runtime
 # (detectHardwareCapabilities / classifyHardwareCapabilities).
 #
@@ -13,6 +14,8 @@ set -euo pipefail
 
 SYSFS_GPIO_PATH="/sys/class/gpio"
 I2C_DEVICE="/dev/i2c-1"
+# Pi 3 B+ class: RAM at or below this is treated as low-memory (kB).
+LOW_MEMORY_KIB=1572864
 
 ERROR_COUNT=0
 WARN_COUNT=0
@@ -23,6 +26,7 @@ IS_RASPBERRY_PI=0
 SYSFS_GPIO=0
 GPIOMEM_DEVICES=()
 GPIOCHIP_DEVICES=()
+I2C_DEVICES=()
 I2C_DEV=0
 
 # Classified backends (same names as HardwareCapabilities)
@@ -43,23 +47,32 @@ Usage: doctor.sh
 
   Check Raspberry Pi host prerequisites for chirimen-raspi-docker:
     - Raspberry Pi model
+    - OS
     - architecture
+    - Memory / Swap
     - Docker
     - Docker Compose
     - hardware capabilities (same criteria as Server startup):
         - /sys/class/gpio
         - /dev/gpiomem*
         - /dev/gpiochip*
-        - /dev/i2c-1
+        - /dev/i2c-1 (/dev/i2c-* listed for reference)
 
-  Diagnostics only: doctor.sh does not change I2C settings
-  (no raspi-config, no boot config). Enable I2C with:
-    sudo ./setups/enable-i2c.sh
-    sudo reboot
-    ./setups/enable-i2c.sh --check
+  Diagnostics only: doctor.sh does not change host settings
+  (no raspi-config, no boot config, no swap, no Docker install).
+
+  When a check fails, use the matching Raspberry Pi Setup script:
+    Swap problem        sudo ./setups/swap.sh
+    I2C unavailable     sudo ./setups/enable-i2c.sh
+                        sudo reboot
+                        ./setups/enable-i2c.sh --check
+    Docker unavailable  ./setups/docker.sh
+    Compose unavailable ./setups/docker-compose.sh
 
   Missing items are reported as [error] or [warn].
   Exit 0 when no errors; exit 1 when one or more errors are found.
+  After All checks passed, continue with:
+    ./scripts/start.sh
 
 Examples:
   chmod +x scripts/doctor.sh
@@ -110,6 +123,31 @@ check_pi_model() {
   record_error
 }
 
+check_os() {
+  local pretty=""
+  local arch
+  arch="$(uname -m)"
+  log "Checking OS..."
+
+  if [ -r /etc/os-release ]; then
+    pretty="$(. /etc/os-release && printf '%s' "${PRETTY_NAME:-}")"
+  fi
+
+  if [ -n "$pretty" ]; then
+    log "[ok] OS: $pretty"
+  else
+    log "[warn] OS: /etc/os-release PRETTY_NAME unavailable (standard: Raspberry Pi OS Lite 64-bit)"
+    record_warn
+  fi
+
+  case "$arch" in
+    armv7l | armhf | i686 | i386)
+      log "[warn] 32-bit OS/architecture ($arch); standard is Raspberry Pi OS Lite 64-bit"
+      record_warn
+      ;;
+  esac
+}
+
 check_architecture() {
   local arch
   arch="$(uname -m)"
@@ -126,12 +164,71 @@ check_architecture() {
   esac
 }
 
+meminfo_kib() {
+  local key="$1"
+  awk -v key="$key" '$1 == key ":" { print $2; exit }' /proc/meminfo 2>/dev/null
+}
+
+format_kib() {
+  local kib="$1"
+  awk -v kib="$kib" 'BEGIN {
+    if (kib >= 1048576) printf "%.1fG", kib / 1048576
+    else if (kib >= 1024) printf "%.1fM", kib / 1024
+    else printf "%skB", kib
+  }'
+}
+
+advise_swap() {
+  log "        enable swap on the host (doctor does not change swap):"
+  log "          sudo ./setups/swap.sh"
+  log "          sudo ./setups/swap.sh --check"
+}
+
+check_memory_swap() {
+  local mem_kib swap_kib
+  log "Checking Memory / Swap..."
+
+  if [ ! -r /proc/meminfo ]; then
+    log "[warn] /proc/meminfo unavailable"
+    record_warn
+    return 0
+  fi
+
+  mem_kib="$(meminfo_kib MemTotal)"
+  swap_kib="$(meminfo_kib SwapTotal)"
+  mem_kib="${mem_kib:-0}"
+  swap_kib="${swap_kib:-0}"
+
+  log "[ok] memory: $(format_kib "$mem_kib") (MemTotal)"
+  if [ "$swap_kib" -gt 0 ]; then
+    log "[ok] swap: $(format_kib "$swap_kib") (SwapTotal)"
+    return 0
+  fi
+
+  if [ "$IS_RASPBERRY_PI" -ne 1 ]; then
+    log "[ok] swap: 0 (not a Raspberry Pi host)"
+    return 0
+  fi
+
+  if [ "$mem_kib" -le "$LOW_MEMORY_KIB" ]; then
+    log "[error] swap: 0 (required on low-memory Pi such as 3 B+ before Docker builds)"
+    advise_swap
+    record_error
+    return 0
+  fi
+
+  log "[warn] swap: 0 (optional on Pi 4 / 5; enable if Docker builds OOM)"
+  advise_swap
+  record_warn
+}
+
 check_docker() {
   log "Checking Docker..."
 
   if ! command -v docker >/dev/null 2>&1; then
     log "[error] docker command not found"
-    log "        install Docker: https://docs.docker.com/engine/install/"
+    log "        install Docker Engine (doctor does not install Docker):"
+    log "          ./setups/docker.sh"
     record_error
     return 0
   fi
@@ -169,7 +266,8 @@ check_docker_compose() {
   fi
 
   log "[error] docker compose not found"
-  log "        install Docker Compose plugin or docker-compose"
+  log "        install Docker Compose (doctor does not install Compose):"
+  log "          ./setups/docker-compose.sh"
   record_error
 }
 
@@ -193,6 +291,7 @@ probe_hardware_paths() {
   SYSFS_GPIO=0
   GPIOMEM_DEVICES=()
   GPIOCHIP_DEVICES=()
+  I2C_DEVICES=()
   I2C_DEV=0
 
   if [ -e "$SYSFS_GPIO_PATH" ]; then
@@ -208,6 +307,11 @@ probe_hardware_paths() {
     [ -n "$device" ] || continue
     GPIOCHIP_DEVICES+=("$device")
   done < <(collect_dev_entries_matching "gpiochip")
+
+  while IFS= read -r device; do
+    [ -n "$device" ] || continue
+    I2C_DEVICES+=("$device")
+  done < <(collect_dev_entries_matching "i2c-")
 
   if [ -e "$I2C_DEVICE" ]; then
     I2C_DEV=1
@@ -293,7 +397,7 @@ check_hardware_capabilities() {
   else
     log "[error] I2C: unavailable ($I2C_DEVICE not found)"
     if [ "$IS_RASPBERRY_PI" -eq 1 ]; then
-      log "        enable I2C on the host, then reboot:"
+      log "        enable I2C on the host (doctor does not change I2C):"
       log "          sudo ./setups/enable-i2c.sh"
       log "          sudo reboot"
       log "          ./setups/enable-i2c.sh --check"
@@ -302,6 +406,13 @@ check_hardware_capabilities() {
     fi
     log "[error] i2c backend: unavailable"
     record_error
+  fi
+
+  if [ "${#I2C_DEVICES[@]}" -gt 0 ]; then
+    log "[ok] /dev/i2c-* found (${#I2C_DEVICES[@]}):"
+    list_path_details "${I2C_DEVICES[@]}"
+  else
+    log "[warn] no /dev/i2c-* devices found"
   fi
 
   # Same vocabulary as apps/server startup log
@@ -348,7 +459,11 @@ main() {
 
   check_pi_model
   log ""
+  check_os
+  log ""
   check_architecture
+  log ""
+  check_memory_swap
   log ""
   check_docker
   log ""
