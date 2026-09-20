@@ -1,44 +1,28 @@
 # setups
 
-Raspberry Pi host の Docker / Docker Compose / swap / I2C 環境構築。
+Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための script。標準 OS は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
-Docker の前に I2C を有効化する。`docker.sh` は I2C 設定を変更しない。低スペック機では `swap.sh` で swap を確保する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
-
-host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
-
-## I2C（Docker より前）
-
-```sh
-sudo ./setups/enable-i2c.sh
-sudo reboot
-./setups/enable-i2c.sh --check   # sudo 不要
+```text
+1. swap.sh
+2. enable-i2c.sh  → 必要なら reboot → --check
+3. disable-squeekboard.sh
+4. docker.sh      → スクリプトが reboot する
+5. docker-compose.sh
 ```
 
-`--check` は reboot 後に `/dev/i2c-1` を確認する。sudo は不要で、設定は変更しない。`docker.sh` は I2C 設定を変更しない。
+`docker.sh` は I2C 設定を変更しない。host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
 
-## Docker
+## 1. swap.sh
 
-```sh
-./setups/docker.sh
-```
-
-`docker.sh` はインストール完了後に reboot する。reboot 後に Compose を入れる。
+Docker image ビルド前に swap を確保する。Pi 3 B+ では必須。Pi 4 / 5 でも同じコマンドでよい。I2C 設定は変更しない。reboot は不要（即時有効）。
 
 ```sh
-./setups/docker-compose.sh
-```
-
-## 低スペック機の swap（swap.sh）
-
-RAM が少ないホスト（1GB 級。代表は Raspberry Pi 3 B+）では、Docker image ビルド前に `setups/swap.sh` で swap を確保する。`swap.sh` は I2C 設定を変更しない。
-
-```sh
-sudo ./setups/swap.sh          # 既定: 8G の /swapfile（idempotent）
+sudo ./setups/swap.sh          # 既定: 8G の /swapfile（同一サイズなら再実行しても作り直さない）
 sudo ./setups/swap.sh --check  # 有効化の確認
 free -h
 ```
 
-サイズを変える例: `sudo ./setups/swap.sh --size 8G`。`/etc/fstab` にも追記するので reboot 後も有効。Docker / `./scripts/start.sh` の**前**に実行する。
+サイズを変える例: `sudo ./setups/swap.sh --size 8G`。`/etc/fstab` にも追記するので reboot 後も有効。
 
 Raspberry Pi 3 B+（1GB）でビルドするときは、次の **両方** が必須である。片方だけでは足りない。
 
@@ -47,13 +31,45 @@ Raspberry Pi 3 B+（1GB）でビルドするときは、次の **両方** が必
 
 Pi 4 / 5 の swap / ファンは任意。メモリ不足や OOM が出る場合も `swap.sh` を提案する。
 
-## スクリーンキーボード（Desktop 任意）
+## 2. enable-i2c.sh
 
-Raspberry Pi OS **Desktop** で Browser Editor / Catalog を使うときの任意手順。Lite の必須手順ではない。I2C / Docker / swap の設定は変更しない。
+I2C Example と Runtime が `/dev/i2c-1` を使う。`/dev/i2c-1` が無いときは reboot が必要。既にあれば設定を触らない。
+
+```sh
+sudo ./setups/enable-i2c.sh
+sudo reboot
+./setups/enable-i2c.sh --check   # sudo 不要
+```
+
+`--check` は reboot 後に `/dev/i2c-1` を確認する。sudo は不要で、設定は変更しない。
+
+## 3. disable-squeekboard.sh
+
+標準順の3番。Desktop では Squeekboard を Always Off にする。**Lite では変更せず終わる**（実行してよい）。I2C / Docker / swap の設定は変更しない。
 
 ```sh
 sudo ./setups/disable-squeekboard.sh
 ./setups/disable-squeekboard.sh --check   # sudo 不要
 ```
 
-Squeekboard を Always Off にする。`--check` は設定を変えない。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
+`--check` は設定を変えない。reboot は通常不要。残る場合は再ログインまたは reboot。
+
+## 4. docker.sh
+
+Docker Engine を入れる。I2C 設定は変更しない。**スクリプト末尾が必ず reboot する。** reboot 後に Compose を入れる。
+
+```sh
+./setups/docker.sh
+```
+
+現行スクリプトのグループ追加先はユーザー `pi` である。ログイン名が違うときは reboot 後に `sudo usermod -aG docker "$USER"`。
+
+## 5. docker-compose.sh
+
+`docker.sh` の reboot 後に実行する。`/usr/local/bin/docker-compose` を置く。完了確認は `docker compose version` を主とし、無ければ `docker-compose --version`。
+
+```sh
+./setups/docker-compose.sh
+docker --version
+docker compose version
+```
