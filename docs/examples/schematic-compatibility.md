@@ -61,11 +61,10 @@ https://www.chirimen.org/chirimen/gc/contrib/examples/i2c-ADS1115/schematic.png
 
 ## 出典
 
-Catalog / Documentation は `schematicUrl` を出典として残す。表示する場合もリンク先は Legacy GC とする。
+Catalog / Documentation は `schematicUrl` を出典として残す。表示する場合もリンク先は回路図 PNG であり、旧 GC デモページではない。
 
 | 種別 | URL |
 | --- | --- |
-| Legacy Example 一覧 | https://www.chirimen.org/chirimen/gc/top/examples/ |
 | Legacy ソース | https://github.com/chirimen-oh/chirimen/tree/master/gc |
 
 出典切れ（HTTP 404 など）でも `schematicUrl` は残す。Catalog は画像が読めなくても Example カードを落とさない。

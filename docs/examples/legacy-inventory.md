@@ -1,6 +1,6 @@
 # Legacy CHIRIMEN Example 移植対象一覧
 
-[Legacy GC Examples](https://www.chirimen.org/chirimen/gc/top/examples/) を基準に、新 Runtime へ段階移植するための候補と metadata の正本です。
+[GitHub の Legacy GC ソース](https://github.com/chirimen-oh/chirimen/tree/master/gc) を基準に、新 Runtime へ段階移植するための候補と metadata の正本です。
 
 関連:
 
@@ -18,10 +18,9 @@
 
 | 種別 | URL |
 | --- | --- |
-| Legacy Example 一覧 | https://www.chirimen.org/chirimen/gc/top/examples/ |
 | Legacy ソース | https://github.com/chirimen-oh/chirimen/tree/master/gc |
 
-公開ページを基準にし、ソースパスと回路図の有無は `gc/gpio/` / `gc/i2c/` / `gc/contrib/examples/` で確認する。
+ソースパスと回路図の有無は `gc/gpio/` / `gc/i2c/` / `gc/contrib/examples/` で確認する。旧 GC デモページは利用者向けに案内しない。
 
 ## フィールド
 
@@ -32,7 +31,6 @@
 | `id` | kebab-case。Basic は Legacy ディレクトリ名に合わせる |
 | `title` | 表示名 |
 | `category` | `gpio` / `i2c` / `advanced` / `remote` / `other` |
-| `legacyUrl` | 公開デモ URL。ディレクトリが無い場合は一覧ページ |
 | `legacySourceUrl` | GitHub のソースディレクトリ。無ければ空 |
 | `schematicUrl` | 回路図画像 URL。無ければ空 |
 | `device` | 人間可読の部品名。Device 未解決時の表示用。Device 正本ではない |

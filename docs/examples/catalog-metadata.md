@@ -28,7 +28,7 @@ Example metadata             HTML / Vanilla JS
 │                            Tailwind CSS はスタイルのみ
 ├─ title / category
 ├─ deviceId
-├─ legacy URL
+├─ legacy source URL
 ├─ schematic URL
 ├─ runtime example path
 ├─ porting / verification
@@ -66,7 +66,6 @@ https://raw.githubusercontent.com/gurezo/chirimen-certified-devices/main/generat
 | `category` | はい | `gpio` / `i2c` / `advanced` / `remote` / `other` |
 | `deviceId` | はい | `generated/devices.json` の `devices[].id`。未解決は空文字 |
 | `device` | はい | 人間可読の部品名。Device 未解決時の表示用。Device 正本ではない |
-| `legacyUrl` | はい | Legacy GC の公開 URL。無ければ空 |
 | `legacySourceUrl` | はい | Legacy ソース URL。無ければ空 |
 | `schematicUrl` | はい | 回路図 URL。無ければ空。Device 側回路図は使わない |
 | `runtimeExamplePath` | はい | 本リポジトリの Runtime Example パス。未移植は空 |
