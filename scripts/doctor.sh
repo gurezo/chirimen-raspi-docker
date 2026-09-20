@@ -54,9 +54,9 @@ Usage: doctor.sh
 
   Diagnostics only: doctor.sh does not change I2C settings
   (no raspi-config, no boot config). Enable I2C with:
-    sudo ./scripts/enable-i2c.sh
+    sudo ./setups/enable-i2c.sh
     sudo reboot
-    ./scripts/enable-i2c.sh --check
+    ./setups/enable-i2c.sh --check
 
   Missing items are reported as [error] or [warn].
   Exit 0 when no errors; exit 1 when one or more errors are found.
@@ -294,9 +294,9 @@ check_hardware_capabilities() {
     log "[error] I2C: unavailable ($I2C_DEVICE not found)"
     if [ "$IS_RASPBERRY_PI" -eq 1 ]; then
       log "        enable I2C on the host, then reboot:"
-      log "          sudo ./scripts/enable-i2c.sh"
+      log "          sudo ./setups/enable-i2c.sh"
       log "          sudo reboot"
-      log "          ./scripts/enable-i2c.sh --check"
+      log "          ./setups/enable-i2c.sh --check"
     else
       log "        (Raspberry Pi device node; expected on Pi host)"
     fi
