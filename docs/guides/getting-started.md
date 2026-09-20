@@ -31,6 +31,7 @@ Raspberry Pi Setup（clone / swap.sh → enable-i2c.sh → disable-squeekboard.s
 - Docker と Docker Compose が利用できること
 - GPIO / I2C 用 device が host に存在すること
 - [Raspberry Pi Setup](./raspberry-pi-setup.md) の標準順で `sudo ./setups/swap.sh` を実行すること。Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須
+- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。詳細は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
