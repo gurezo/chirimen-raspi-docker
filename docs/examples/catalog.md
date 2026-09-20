@@ -22,8 +22,8 @@ Example Catalog と Legacy 資産の出典・責務・状態・技術構成を�
 Device metadata
   → chirimen-certified-devices（generated/devices.json）
 
-Legacy Example / schematic
-  → chirimen.org Legacy GC Examples
+回路図 (schematic)
+  → chirimen.org の `schematicUrl`（PNG）
 
 Runtime Example
   → chirimen-raspi-docker（workspace / runtimeExamplePath）
@@ -58,7 +58,7 @@ chirimen-device-dashboard
 | 責務 | 正本 | 本リポジトリの扱い |
 | --- | --- | --- |
 | Device metadata | [chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json) | Catalog が `deviceId` で参照する。`devices.json` はコピーしない |
-| Legacy Example / 回路図 | [Legacy GC Examples](https://www.chirimen.org/chirimen/gc/top/examples/) | Example の `legacyUrl` / `schematicUrl`。PNG はコピーしない |
+| 回路図 | Example の `schematicUrl`（chirimen.org の PNG） | PNG はコピーしない。旧 GC デモページは案内しない |
 | Runtime Example | 本リポジトリの [workspace/](../../workspace/) | `runtimeExamplePath`。ported の実行コードだけが対象 |
 | Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | Catalog ヘッダーの外部リンク。iframe しない |
 
@@ -74,18 +74,17 @@ Catalog が取得する URL:
 https://raw.githubusercontent.com/gurezo/chirimen-certified-devices/main/generated/devices.json
 ```
 
-### Legacy Example / schematic
+### 回路図 / schematic
 
-題材と回路図の出典は Legacy GC である。Catalog / Documentation は `schematicUrl` をリンクとして残し、画像ファイルは `docs/` や `workspace/` に置かない。Device 側の `meta.circuit` は使わない。Pi 3 / 4 / 5 のピン互換は机上確認（`supportedRaspberryPi`）であり、回路図があるだけでは `verified` にしない。詳細は [schematic-compatibility.md](./schematic-compatibility.md)。
+題材の回路図出典は Legacy GC の PNG である。Catalog / Documentation は `schematicUrl` をリンクとして残し、画像ファイルは `docs/` や `workspace/` に置かない。旧 GC デモページは案内しない。Device 側の `meta.circuit` は使わない。Pi 3 / 4 / 5 のピン互換は机上確認（`supportedRaspberryPi`）であり、回路図があるだけでは `verified` にしない。詳細は [schematic-compatibility.md](./schematic-compatibility.md)。
 
 | 種別 | URL |
 | --- | --- |
-| Legacy Example 一覧 | https://www.chirimen.org/chirimen/gc/top/examples/ |
 | Legacy ソース | https://github.com/chirimen-oh/chirimen/tree/master/gc |
 
 ### Runtime Example
 
-実行コードの責任範囲は本リポジトリである。Legacy GC のスクリプトや certified-devices の upstream Example は動かさない。ported Example だけ `workspace/<name>/` に HTML / JS を持ち、Catalog の「実行」は Example Server `:4173`、「編集」は Editor `:8080` の既存 workspace ルートを開く。未移植（`legacy`）は回路図と Legacy リンクのみ。配置は [workspace/README.md](../../workspace/README.md)。
+実行コードの責任範囲は本リポジトリである。Legacy GC のスクリプトや certified-devices の upstream Example は動かさない。ported Example だけ `workspace/<name>/` に HTML / JS を持ち、Catalog の「実行」は Example Server `:4173`、「編集」は Editor `:8080` の既存 workspace ルートを開く。未移植（`legacy`）は回路図のみ。旧 GC デモページは案内しない。配置は [workspace/README.md](../../workspace/README.md)。
 
 ### Device Dashboard
 
@@ -103,7 +102,7 @@ verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 �
 
 | 表示 | 意味 |
 | --- | --- |
-| `legacy` | 本 Runtime へ未移植。回路図 / Legacy Example の案内のみ |
+| `legacy` | 本 Runtime へ未移植。回路図の案内のみ。実行 / 編集は出さない |
 | `ported` | `workspace/` に実行コードがある。Pi 3 / 4 / 5 の実機が揃っていない、または 1 機種でも `failed` |
 | `verified` | 移植済みかつ Raspberry Pi 3 **かつ** 4 **かつ** 5 で本 Runtime の実機確認が通った |
 

@@ -57,7 +57,6 @@ export type InventoryExample = {
   category: string;
   deviceId: string;
   device: string;
-  legacyUrl: string;
   legacySourceUrl: string;
   schematicUrl: string;
   runtimeExamplePath: string;
@@ -163,7 +162,6 @@ export const readInventoryExamples = (data: unknown): InventoryExample[] => {
         category: asString(item['category']),
         deviceId: asString(item['deviceId']),
         device: asString(item['device']),
-        legacyUrl: asString(item['legacyUrl']),
         legacySourceUrl: asString(item['legacySourceUrl']),
         schematicUrl: asString(item['schematicUrl']),
         runtimeExamplePath: asString(item['runtimeExamplePath']),
@@ -332,6 +330,52 @@ export const editorWorkspaceHref = (
   port = EDITOR_PORT,
   folder = EDITOR_WORKSPACE_FOLDER
 ): string => `http://${hostname}:${String(port)}/?folder=${folder}`;
+
+export type CatalogCardActionKind = 'external' | 'service';
+
+export type CatalogCardAction = {
+  href: string;
+  label: string;
+  kind: CatalogCardActionKind;
+  ariaLabel: string;
+};
+
+export const catalogCardActions = (
+  entry: Pick<
+    InventoryExample,
+    'schematicUrl' | 'portingStatus' | 'runtimeExamplePath'
+  >,
+  hostname = '127.0.0.1'
+): CatalogCardAction[] => {
+  const actions: CatalogCardAction[] = [];
+  if (entry.schematicUrl !== '') {
+    actions.push({
+      href: entry.schematicUrl,
+      label: '回路図',
+      kind: 'external',
+      ariaLabel: '回路図（外部リンク）',
+    });
+  }
+  if (canOpenRuntimeExample(entry)) {
+    const dir = workspaceExampleDir(entry.runtimeExamplePath).replace(
+      /\/$/,
+      ''
+    );
+    actions.push({
+      href: runtimeExampleHref(entry.runtimeExamplePath, hostname),
+      label: '実行',
+      kind: 'service',
+      ariaLabel: `${dir} を実行する`,
+    });
+    actions.push({
+      href: editorWorkspaceHref(hostname),
+      label: '編集',
+      kind: 'service',
+      ariaLabel: `Editor で ${dir} を編集する`,
+    });
+  }
+  return actions;
+};
 
 export const runtimeHealthHref = (
   hostname = '127.0.0.1',

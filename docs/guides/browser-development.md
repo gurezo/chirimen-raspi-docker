@@ -41,7 +41,7 @@ Raspberry Pi GPIO / I2C
 
 Catalog（`:4200`）は題材の発見入口である。編集結果の確認先は Example Server `:4173`。Runtime / Browser Polyfill / GPIO / I2C の疎通は [Runtime Diagnostics](./runtime-diagnostics.md) で確認する。
 
-legacy Example は Catalog から旧 GC Example を参照するだけである。実行 / 編集リンクは出さない。Editor は `/home/coder/project`（host `./workspace`）を開く。子ディレクトリを新しい workspace にはしない。
+legacy Example は回路図があれば Catalog から回路図を案内するだけである。実行 / 編集リンクは出さない。旧 GC デモページは開かない。Editor は `/home/coder/project`（host `./workspace`）を開く。子ディレクトリを新しい workspace にはしない。
 
 ## 概要
 
@@ -139,7 +139,7 @@ Browser で `http://127.0.0.1:4200/` を開く。ported Example だけ「実行�
 - **実行**: Example Server（`:4173`）。URL は `legacy-inventory.json` の `runtimeExamplePath` から解決する
 - **編集**: Editor（`:8080/?folder=/home/coder/project`）。既存 workspace ルートを開く
 
-legacy は回路図 / Legacy Example の外部リンクのみである。Run Task **Open Example Catalog**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
+legacy は回路図の外部リンクのみである。実行 / 編集は出さない。旧 GC デモページは案内しない。Run Task **Open Example Catalog**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。サーバは起動しない。
 
 ## Editor を開く
 

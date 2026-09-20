@@ -95,7 +95,7 @@ host で `python3 -m http.server 4173` する従来手順も port `4173` を使�
 
 ### chirimen-example-catalog
 
-Example Catalog は Hardware Runtime ではない。Legacy Example の発見入口であり、実行コードそのものではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。ported Example の「実行」は Example Server `:4173`、「編集」は Editor の既存 workspace ルート `:8080/?folder=/home/coder/project` を指す（[#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Device Dashboard は iframe せず外部リンクにする（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
+Example Catalog は Hardware Runtime ではない。題材の発見入口であり、実行コードそのものではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。ported Example の「実行」は Example Server `:4173`、「編集」は Editor の既存 workspace ルート `:8080/?folder=/home/coder/project` を指す（[#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Device Dashboard は iframe せず外部リンクにする（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
 
 | 項目 | 値 |
 | --- | --- |

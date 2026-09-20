@@ -11,6 +11,7 @@ import {
   RUNTIME_HEALTH_PORT,
   buildCatalogEntries,
   canOpenRuntimeExample,
+  catalogCardActions,
   catalogImageUrl,
   deriveCatalogStatus,
   editorWorkspaceHref,
@@ -404,6 +405,89 @@ describe('runtime example links', () => {
     expect(RUNTIME_DIAGNOSTICS_DOC_URL).toContain(
       'docs/guides/runtime-diagnostics.md'
     );
+  });
+});
+
+describe('catalogCardActions', () => {
+  const entries = buildCatalogEntries(readInventoryExamples(inventory), []);
+  const isLegacyGcDemoHref = (href: string): boolean =>
+    /^https?:\/\/(www\.)?chirimen\.org\/.*\/$/.test(href) ||
+    href === 'https://chirimen.org/chirimen-micro-bit/';
+
+  it('keeps schematic links and never emits Legacy Example demo URLs', () => {
+    expect(entries.length).toBeGreaterThan(0);
+    for (const entry of entries) {
+      const actions = catalogCardActions(entry);
+      expect(actions.map((action) => action.label)).not.toContain(
+        'Legacy Example'
+      );
+      expect(actions.every((action) => !isLegacyGcDemoHref(action.href))).toBe(
+        true
+      );
+      if (entry.schematicUrl !== '') {
+        expect(actions).toContainEqual({
+          href: entry.schematicUrl,
+          label: '回路図',
+          kind: 'external',
+          ariaLabel: '回路図（外部リンク）',
+        });
+      } else {
+        expect(actions.every((action) => action.label !== '回路図')).toBe(true);
+      }
+    }
+  });
+
+  it('keeps run and edit links for ported examples with a runtime path', () => {
+    const blink = entries.find((entry) => entry.id === 'gpio-blink');
+    expect(blink).toBeDefined();
+    const actions = catalogCardActions(
+      blink as (typeof entries)[number],
+      '127.0.0.1'
+    );
+    expect(actions.map((action) => action.label)).toEqual([
+      '回路図',
+      '実行',
+      '編集',
+    ]);
+    expect(actions[1]).toMatchObject({
+      href: 'http://127.0.0.1:4173/led-blink/',
+      label: '実行',
+      kind: 'service',
+    });
+    expect(actions[2]).toMatchObject({
+      href: `http://127.0.0.1:8080/?folder=${EDITOR_WORKSPACE_FOLDER}`,
+      label: '編集',
+      kind: 'service',
+    });
+  });
+
+  it('shows only schematic for unported examples that have a circuit diagram', () => {
+    const unread = entries.find(
+      (entry) => entry.id === 'gpio-read-gpio-value'
+    );
+    expect(unread).toBeDefined();
+    expect(unread?.schematicUrl).not.toBe('');
+    const actions = catalogCardActions(unread as (typeof entries)[number]);
+    expect(actions).toEqual([
+      {
+        href: unread?.schematicUrl,
+        label: '回路図',
+        kind: 'external',
+        ariaLabel: '回路図（外部リンク）',
+      },
+    ]);
+  });
+
+  it('does not substitute a demo page when schematic is missing', () => {
+    const unportedWithoutSchematic = entries.find(
+      (entry) => entry.id === 'gpio-multi-blink-all'
+    );
+    expect(unportedWithoutSchematic).toBeDefined();
+    expect(unportedWithoutSchematic?.schematicUrl).toBe('');
+    expect(unportedWithoutSchematic?.portingStatus).not.toBe('ported');
+    expect(
+      catalogCardActions(unportedWithoutSchematic as (typeof entries)[number])
+    ).toEqual([]);
   });
 });
 

@@ -6,11 +6,10 @@ import {
   REFERENCE_EXAMPLES,
   RUNTIME_DIAGNOSTICS_DOC_URL,
   STATUS_FILTERS,
-  canOpenRuntimeExample,
+  catalogCardActions,
   catalogImageUrl,
   deviceDescription,
   deviceModel,
-  editorWorkspaceHref,
   isPlaceholderImageUrl,
   modelVerificationLabel,
   runtimeExampleHref,
@@ -147,28 +146,14 @@ const renderCardLinks = (
   const actions = document.createElement('div');
   actions.className = 'mt-auto flex flex-wrap gap-x-3 gap-y-2 pt-3';
 
-  if (entry.schematicUrl !== '') {
-    actions.append(createExternalLink(entry.schematicUrl, '回路図'));
-  }
-  if (entry.legacyUrl !== '') {
-    actions.append(createExternalLink(entry.legacyUrl, 'Legacy Example'));
-  }
-  if (canOpenRuntimeExample(entry)) {
-    const dir = workspaceExampleDir(entry.runtimeExamplePath).replace(/\/$/, '');
-    actions.append(
-      createServiceLink(
-        runtimeExampleHref(entry.runtimeExamplePath, hostname),
-        '実行',
-        `${dir} を実行する`
-      )
-    );
-    actions.append(
-      createServiceLink(
-        editorWorkspaceHref(hostname),
-        '編集',
-        `Editor で ${dir} を編集する`
-      )
-    );
+  for (const action of catalogCardActions(entry, hostname)) {
+    if (action.kind === 'external') {
+      actions.append(createExternalLink(action.href, action.label));
+    } else {
+      actions.append(
+        createServiceLink(action.href, action.label, action.ariaLabel)
+      );
+    }
   }
 
   if (actions.childElementCount > 0) {
