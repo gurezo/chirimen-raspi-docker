@@ -17,12 +17,12 @@ GPIO の host 確認
       ↓
 Raspberry Pi Setup 完了
       ↓
-CHIRIMEN Setup（Getting Started）: doctor.sh → start.sh
+Getting Started Step 2（CHIRIMEN Setup）: doctor.sh → start.sh
 ```
 
 関連:
 
-- [Getting Started](./getting-started.md)（このページのあと。**CHIRIMEN Setup**: `doctor.sh` → `start.sh`）
+- [Getting Started](./getting-started.md)（3段階の入口。このページのあとは **Step 2: CHIRIMEN Setup**）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ。環境構築はここではない）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
@@ -47,7 +47,7 @@ CHIRIMEN Setup（Getting Started）: doctor.sh → start.sh
 
 ### このページの対象外（CHIRIMEN Setup）
 
-`scripts/doctor.sh` と `scripts/start.sh` は Host 設定を変えない。Raspberry Pi Setup 完了後に [Getting Started](./getting-started.md) で実行する。
+`scripts/doctor.sh` と `scripts/start.sh` は Host 設定を変えない。Raspberry Pi Setup 完了後に [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で実行する。
 
 - `doctor.sh`: Host Setup 完了後の読み取り専用診断
 - `start.sh`: CHIRIMEN Runtime の起動
@@ -68,7 +68,7 @@ CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero の�
 
 ## Raspberry Pi Setup の完了状態
 
-次を満たせば Host 準備（Raspberry Pi Setup）は完了である。Runtime の診断と起動はこのページでは行わない。完了後は [Getting Started](./getting-started.md) の CHIRIMEN Setup へ進む。
+次を満たせば Host 準備（Raspberry Pi Setup）は完了である。Runtime の診断と起動はこのページでは行わない。完了後は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) へ進む。
 
 - リポジトリを clone 済み
 - `sudo ./setups/swap.sh --check` が通る（標準順で実行した場合）
@@ -257,7 +257,7 @@ docker compose version
 docker info
 ```
 
-`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は CHIRIMEN Setup の `./scripts/doctor.sh` である（[Getting Started](./getting-started.md)）。
+`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は CHIRIMEN Setup の `./scripts/doctor.sh` である（[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)）。
 
 ## GPIO
 
@@ -286,8 +286,8 @@ getent group gpio
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
-## 次の段階（CHIRIMEN Setup）
+## 次の段階（Getting Started Step 2）
 
-Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。[Getting Started](./getting-started.md) で **CHIRIMEN Setup**（`./scripts/doctor.sh` → `./scripts/start.sh`）へ進む。`doctor.sh` は Host 設定を変えない診断である。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。
+Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で **CHIRIMEN Setup**（`./scripts/doctor.sh` → `./scripts/start.sh`）へ進む。`doctor.sh` は Host 設定を変えない診断である。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。First Example は Step 3。
 
-→ [Getting Started](./getting-started.md)
+→ [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)
