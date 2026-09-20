@@ -2,12 +2,12 @@
 
 リポジトリをホスト上で開発するための Node.js / pnpm / Nx セットアップ。
 
-Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [Getting Started](./getting-started.md) を参照してください。
+Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host）と [Getting Started](./getting-started.md)（CHIRIMEN Setup）を参照してください。
 
 関連:
 
-- [Raspberry Pi Setup](./raspberry-pi-setup.md)
-- [Getting Started](./getting-started.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）
+- [Getting Started](./getting-started.md)（CHIRIMEN Setup）
 - [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する）
 - [Architecture overview](../architecture/overview.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
@@ -17,7 +17,7 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 このガイドはリポジトリ開発者向けです。
 
 ```text
-Runtime setup
+Raspberry Pi Setup / CHIRIMEN Setup（Runtime 利用）
     ↓
 Docker / Docker Compose
 

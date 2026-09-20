@@ -1,16 +1,24 @@
 # Getting Started
 
-clone と [Raspberry Pi Setup](./raspberry-pi-setup.md) を終えた利用者が、Raspberry Pi 上で CHIRIMEN Runtime を起動するまでの最短手順。
+[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host Setup）を終えた利用者が行う **CHIRIMEN Setup**。Host 上で `doctor.sh` による診断のあと `start.sh` で CHIRIMEN Runtime を起動する。I2C / swap / Docker のインストールはこのページでは行わない。
 
 推奨順:
 
 ```text
-Raspberry Pi Setup（clone / swap.sh → enable-i2c.sh → disable-squeekboard.sh → docker.sh → docker-compose.sh） → このページ（起動）
+Raspberry Pi Setup（setups/）完了
+        ↓
+このページ（CHIRIMEN Setup）
+        ├─ ./scripts/doctor.sh
+        └─ ./scripts/start.sh
+        ↓
+起動後の確認（health / Browser）
 ```
+
+Raspberry Pi Setup が未完了なら、先に [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。`setups/` と `scripts/` の役割は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。
 
 関連:
 
-- [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（このページの前。Host 構築）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
@@ -35,11 +43,15 @@ Raspberry Pi Setup（clone / swap.sh → enable-i2c.sh → disable-squeekboard.s
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-clone や swap / I2C / Docker / GPIO の準備がまだなら、先に [Raspberry Pi Setup](./raspberry-pi-setup.md) を完了する。
+clone や swap / I2C / Docker / GPIO の準備がまだなら、先に [Raspberry Pi Setup](./raspberry-pi-setup.md) を完了する。Host 構築コマンドはこのページでは再掲しない。
 
 開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
 
-## 1. host を診断する
+## CHIRIMEN Setup
+
+Host Setup 完了後の診断と Runtime 起動。設定（I2C / swap / Docker）は変えない。
+
+### 1. Host を診断する
 
 clone したディレクトリで:
 
@@ -48,9 +60,9 @@ chmod +x scripts/doctor.sh
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
+`doctor.sh` は読み取り専用である。`[error]` が無ければ次へ進む。I2C や GPIO の不足が出た場合は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。
 
-## 2. Runtime と Editor を起動する
+### 2. Runtime を起動する
 
 ```sh
 chmod +x scripts/start.sh
@@ -63,7 +75,11 @@ chmod +x scripts/start.sh
 
 64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。
 
-## 3. health check で確認する
+## 起動後の確認
+
+CHIRIMEN Setup のあとに Runtime が応答するかを見る。Host 構築コマンドは使わない。First Example の本導線は各 Example ガイドを参照する。
+
+### 3. health check で確認する
 
 別ターミナルで:
 
@@ -90,7 +106,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
 
-## 4. Browser で Editor / Examples を開く
+### 4. Browser で Editor / Examples を開く
 
 `Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
@@ -115,7 +131,7 @@ Browser で `:8080` を開いたら、セットアップ（初回 `./scripts/sta
 
 | やりたいこと | 参照 |
 | --- | --- |
-| GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](./chirimen-tutorial.md)。環境構築は Tutorial ではなくこのページと [Raspberry Pi Setup](./raspberry-pi-setup.md) |
+| GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](./chirimen-tutorial.md)。環境構築は Tutorial ではなく [Raspberry Pi Setup](./raspberry-pi-setup.md) とこのページ（CHIRIMEN Setup） |
 | LED を点滅させる | [GPIO LED Blink](./gpio-led-blink.md)。HTML サンプル（`http://127.0.0.1:4173/led-blink/`）。配線は [回路仕様](../examples/gpio-led-blink.md) |
 | Example を探す（Catalog） | `http://127.0.0.1:4200/`。ported は「実行」と「編集」。手順は [Browser Development Environment](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。metadata は [catalog-metadata.md](../examples/catalog-metadata.md) |
 | タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |

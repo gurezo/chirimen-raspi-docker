@@ -1,6 +1,6 @@
 # setups
 
-Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための script。標準 OS は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
+**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はしない。標準 OS は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
 ```text
 1. swap.sh
@@ -8,7 +8,15 @@ Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための script。
 3. disable-squeekboard.sh
 4. docker.sh      → スクリプトが reboot する
 5. docker-compose.sh
+      ↓
+Raspberry Pi Setup 完了
+      ↓
+./scripts/doctor.sh
+      ↓
+./scripts/start.sh
 ```
+
+完了後の診断と起動は **CHIRIMEN Setup** である。手順は [Getting Started](../docs/guides/getting-started.md)。`scripts/` の入口は [scripts/README.md](../scripts/README.md)。
 
 `docker.sh` は I2C 設定を変更しない。host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
 

@@ -6,10 +6,10 @@ Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整�
 
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#263 web-demo の機能を棚卸しし Example Catalog / Runtime Diagnostics へ統合した上で廃止する](https://github.com/gurezo/chirimen-raspi-docker/issues/263)
-- [Getting Started](./getting-started.md)
+- [Getting Started](./getting-started.md)（CHIRIMEN Setup: `doctor.sh` → `start.sh`）
 - [Troubleshooting](./troubleshooting.md)
 - [Browser Development Environment](./browser-development.md)
-- [Raspberry Pi Setup](./raspberry-pi-setup.md)（`doctor.sh`）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`doctor.sh` 失敗時の戻先）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
 - [I2C Scan](./i2c-scan.md)
@@ -18,6 +18,8 @@ Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整�
 Catalog は題材の発見入口であり、Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-server` `:33330` が行う。
 
 ## 責務
+
+`doctor.sh` は **CHIRIMEN Setup** の診断である。Host Setup 完了後に実行し、設定は変えない。失敗時は [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。
 
 ```text
 Host / Docker → scripts/doctor.sh
@@ -31,11 +33,20 @@ Device        → Example Catalog / Runtime Examples
 
 | レイヤー | 確認するもの | 確認しないもの |
 | --- | --- | --- |
-| `./scripts/doctor.sh` | Raspberry Pi / Docker / Device mapping / Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅 |
+| `./scripts/doctor.sh` | Raspberry Pi / Docker / Device mapping / Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
 | `GET /health`（`:33330`） | `chirimen-server` の起動状態 | GPIO / I2C の E2E、Browser からの疎通 |
 | GPIO LED Blink | Browser Polyfill / WebSocket / GPIO Output | Host の Docker インストール |
 | GPIO Input | Browser Polyfill / WebSocket / GPIO Input | I2C |
 | I2C Scan | Browser Polyfill / WebSocket / I2C Runtime / `/dev/i2c-1` | 個別 slave の読み書き（ADT7410 等は別 Example） |
+
+`doctor.sh` は sudo 不要である。結果は `[ok]` / `[error]` / `[warn]`。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。
+
+- **GPIO `sysfs`**: `/sys/class/gpio` があり、現行 backend で利用可能
+- **GPIO `gpiochip`**: sysfs が無く `/dev/gpiochip*` のみ → `[warn]` + unsupported（backend 未実装）
+- **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
+- **I2C `available`**: `/dev/i2c-1` がある → `[ok] I2C: available (/dev/i2c-1)` と `i2c backend: i2c-dev`
+- **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable`。doctor 自身は設定を変えない。有効化は [Raspberry Pi Setup](./raspberry-pi-setup.md) の `enable-i2c.sh`
+- **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
 ## web-demo 機能の棚卸し
 
@@ -70,13 +81,13 @@ Device        → Example Catalog / Runtime Examples
 
 ## 手順
 
-1. Host を診断する。
+1. CHIRIMEN Setup として Host を診断する。
 
 ```sh
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。不足があるときは [Raspberry Pi Setup](./raspberry-pi-setup.md)。
+`[error]` が無ければ次へ進む。不足があるときは [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started](./getting-started.md)。
 
 2. Runtime を起動し、プロセス生存を確認する。
 

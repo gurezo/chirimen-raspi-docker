@@ -13,8 +13,8 @@
 - 子 Issue: [#255 Example Catalog から Workspace Example を開く導線を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/255)
 - 実機検証結果: [Compatibility の Browser Development Flow 実機検証（#243）](../architecture/compatibility.md#browser-development-flow-実機検証243)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
-- [Raspberry Pi Setup](./raspberry-pi-setup.md)（clone と host 準備。このページの前）
-- [Getting Started](./getting-started.md)（最短起動）
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。このページの前）
+- [Getting Started](./getting-started.md)（CHIRIMEN Setup）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
@@ -89,7 +89,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 - Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
-- リポジトリを clone 済みであること。host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md)
+- リポジトリを clone 済みであること。Host 構築は [Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 

@@ -67,7 +67,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠は [�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。clone と host 準備は [Raspberry Pi Setup](./raspberry-pi-setup.md) を先に完了する。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host）のあと、[Getting Started](./getting-started.md) の CHIRIMEN Setup（`doctor.sh` → `start.sh`）を使う。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
