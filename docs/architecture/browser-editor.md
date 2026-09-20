@@ -6,7 +6,7 @@ Phase 8 で利用する Browser ベースの VS Code 系 Editor を記録する�
 
 - 親 Issue: [#172 Phase 8: Browser Development Environment](https://github.com/gurezo/chirimen-raspi-docker/issues/172)
 - 子 Issue: [#173 Browser Editor の技術選定を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/173)
-- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183) / [#201 プリインストール Extension 削除](https://github.com/gurezo/chirimen-raspi-docker/issues/201) / [#208 既定の全サーバー起動](https://github.com/gurezo/chirimen-raspi-docker/issues/208)
+- 後続: [#174 Docker image](https://github.com/gurezo/chirimen-raspi-docker/issues/174) / [#175 Compose](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#176 永続化](https://github.com/gurezo/chirimen-raspi-docker/issues/176) / [#177 optional service](https://github.com/gurezo/chirimen-raspi-docker/issues/177) / [#178 Extension](https://github.com/gurezo/chirimen-raspi-docker/issues/178) / [#179 Example 編集](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#180 Web Demo](https://github.com/gurezo/chirimen-raspi-docker/issues/180) / [#181 Security](https://github.com/gurezo/chirimen-raspi-docker/issues/181) / [#269 Editor password セットアップ](https://github.com/gurezo/chirimen-raspi-docker/issues/269) / [#183 利用ガイド](https://github.com/gurezo/chirimen-raspi-docker/issues/183) / [#201 プリインストール Extension 削除](https://github.com/gurezo/chirimen-raspi-docker/issues/201) / [#208 既定の全サーバー起動](https://github.com/gurezo/chirimen-raspi-docker/issues/208)
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)
 - 利用ガイド: [browser-development.md](../guides/browser-development.md)（#183）
@@ -298,7 +298,7 @@ Runtime 診断の正本は [Runtime Diagnostics](../guides/runtime-diagnostics.m
 
 ## Authentication
 
-既定は password 認証。Dockerfile は `--auth password` を付ける。`auth: none` は既定にもフラグにもしない。
+既定は password 認証。Dockerfile は `--auth password` を付ける。`auth: none` は既定にもフラグにもしない。対話の初回 `./scripts/start.sh` は覚えられる password を gitignored の `.env` へ書く（#269）。#181 の禁止（Internet / LAN の認証なし公開）は維持する。
 
 設定は named volume 上の `~/.config/code-server/config.yaml`。
 
@@ -313,11 +313,12 @@ cert: false
 
 | 項目 | 内容 |
 | --- | --- |
-| 既定 | `auth: password`。未設定なら初回起動時に password を生成して `config.yaml` へ書く |
-| 任意ピン | host の `CHIRIMEN_EDITOR_PASSWORD`。`./scripts/start.sh` が非空のときだけ container の `PASSWORD` に渡す |
+| 既定 | `auth: password`。対話の初回 `./scripts/start.sh` が覚えられる password を gitignored の `.env` へ書く（[#269](https://github.com/gurezo/chirimen-raspi-docker/issues/269)） |
+| 非対話 | CI / TTY なし / `CHIRIMEN_EDITOR_PASSWORD` または `CHIRIMEN_EDITOR_HASHED_PASSWORD` が非空のときは prompt しない。未設定なら初回起動時に password を生成して `config.yaml` へ書く |
+| ピン | host の `CHIRIMEN_EDITOR_PASSWORD`。`./scripts/start.sh` が非空のときだけ container の `PASSWORD` に渡す |
 | ハッシュ | `CHIRIMEN_EDITOR_HASHED_PASSWORD`（Argon2）。`PASSWORD` より優先。Compose YAML に書く場合は `$` を `$$` にする |
 | Git | password / `.env` / `config.yaml` は commit しない。[`.env.example`](../../.env.example) のみ。empty `PASSWORD=` を compose.yaml に書かない |
-| 無効化 | `auth: none` は本リポジトリでは使わない。SSH port forward 時の公式案内であっても既定にしない |
+| 無効化 | `auth: none` は本リポジトリでは使わない（#181）。SSH port forward 時の公式案内であっても既定にしない。`--lan` でも password 必須 |
 | レート制限 | 1分あたり2回、加えて1時間あたり12回 |
 | 外部 IdP | Pomerium / oauth2-proxy / Cloudflare Access 等の reverse proxy。[Guide](https://coder.com/docs/code-server/guide)。本リポジトリでは追加しない |
 
@@ -325,8 +326,8 @@ cert: false
 
 | 置き場 | 用途 |
 | --- | --- |
-| named volume `chirimen-editor-config` | 自動生成 password（`config.yaml`） |
-| host `.env`（gitignored） | 任意の `CHIRIMEN_EDITOR_PASSWORD` / `CHIRIMEN_EDITOR_HASHED_PASSWORD` / `CHIRIMEN_PUBLISH_BIND` |
+| host `.env`（gitignored） | セットアップで決めた `CHIRIMEN_EDITOR_PASSWORD` / 任意の `CHIRIMEN_EDITOR_HASHED_PASSWORD` / `CHIRIMEN_PUBLISH_BIND`（#269） |
+| named volume `chirimen-editor-config` | 非対話時の自動生成 password（`config.yaml`） |
 | Git | 置かない |
 
 ## Publish / bind（#181）
@@ -426,7 +427,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | 非対応 architecture | `arm32` / `armv7` / `armhf`。公式 image も現行 release 資産も無い。linuxserver の armhf は廃止済み |
 | 32-bit OS | サポート対象外。`Dockerfile.32bit` は削除しないが、Editor は出さない |
 | Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
-| 認証 | 既定は password（`--auth password`）。`auth: none` は使わない。詳細は [Authentication](#authentication)（#181） |
+| 認証 | 既定は password（`--auth password`）。対話の初回 `start.sh` が `.env` へ書く（#269）。`auth: none` は使わない。詳細は [Authentication](#authentication)（#181 / #269） |
 | HTTPS | 既定は HTTP + password + `127.0.0.1`。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま（#181） |
 | Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
@@ -436,7 +437,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Example 編集 / serve | HTML は `workspace/`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Example Catalog | Compose `chirimen-example-catalog` が host `127.0.0.1:4200`（既定）で production build を静的配信する Web UI 入口（#254 / #263）。Example の編集結果確認先ではない。HMR は host の `pnpm nx serve example-catalog`（[Development Guide](../guides/development.md)） |
 
-#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `workspace/` を静的配信する。#180 は当時 `chirimen-web-demo`（port `4200`）を固定した。#263 で web-demo を廃止し、Catalog を `:4200` の入口にした。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
+#174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `workspace/` を静的配信する。#180 は当時 `chirimen-web-demo`（port `4200`）を固定した。#263 で web-demo を廃止し、Catalog を `:4200` の入口にした。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。#269 は対話の初回 `start.sh` で覚えられる password を `.env` へ書く導線を足した（`auth: none` は引き続き使わない）。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
 ### Consequences
 

@@ -68,7 +68,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Extra packages | `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `chirimen-examples`）。Node / GPIO / I2C ツールは入れない |
 | Extensions / user-data | named volume `chirimen-editor-local` → `/home/coder/.local` |
 | Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む。Git に置かない） |
-| Auth | Dockerfile `--auth password`。任意ピンは `CHIRIMEN_EDITOR_PASSWORD` / `CHIRIMEN_EDITOR_HASHED_PASSWORD`（start.sh が非空のときだけ渡す）。`auth: none` は使わない |
+| Auth | Dockerfile `--auth password`。対話の初回 `start.sh` が `.env` の `CHIRIMEN_EDITOR_PASSWORD` を書く（#269）。非空のときだけ container へ渡す。`auth: none` は使わない |
 | User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
 | Architecture | `linux/amd64`, `linux/arm64`。32-bit OS はサポート対象外 |
 | Network | Compose default。`depends_on` なし。`no-new-privileges` / `cap_drop: ALL` は付けない（公式 entrypoint の `fixuid` が setuid を必要とする） |
@@ -207,7 +207,7 @@ docker run --rm --name chirimen-editor \
 
 `--device` や `/sys/class/gpio` は付けない。
 
-Browser で `http://127.0.0.1:8080` を開く。初回 password は `config.yaml` に生成される。
+Browser で `http://127.0.0.1:8080` を開く。通常手順の password は初回 `./scripts/start.sh` で `.env` に決めた値である（#269）。image 単独の `docker run` では `config.yaml` に生成される。これは通常手順ではない。
 
 ```sh
 docker exec chirimen-editor cat /home/coder/.config/code-server/config.yaml

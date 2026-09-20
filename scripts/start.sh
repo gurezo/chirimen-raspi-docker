@@ -59,6 +59,10 @@ Usage: start.sh [--32bit] [--lan] [docker compose up options...]
   127.0.0.1:8080, password auth), chirimen-examples
   (http://127.0.0.1:4173/), and chirimen-example-catalog
   (http://127.0.0.1:4200/).
+  On an interactive TTY, the first 64-bit start prompts for an Editor
+  password and writes it to gitignored .env. Non-interactive runs
+  (CI / no TTY / already set) skip the prompt. Unset then generates
+  a password into the editor config volume. auth: none is not used.
   --32bit starts Runtime only: the official Editor image has no armv7
   build.
 
@@ -206,6 +210,119 @@ load_repo_env() {
   fi
 }
 
+editor_auth_is_set() {
+  [ -n "${CHIRIMEN_EDITOR_PASSWORD:-}" ] || [ -n "${CHIRIMEN_EDITOR_HASHED_PASSWORD:-}" ]
+}
+
+is_interactive_setup() {
+  [ -t 0 ] && [ -t 1 ] && [ -z "${CI:-}" ]
+}
+
+# Quote a value for a POSIX .env assignment that load_repo_env sources.
+# Single quotes; a literal ' becomes '\'' (end quote, escaped quote, reopen).
+env_single_quote() {
+  local value="$1"
+  local result="'"
+  local i
+  local c
+  local len="${#value}"
+
+  for ((i = 0; i < len; i++)); do
+    c="${value:i:1}"
+    if [ "$c" = "'" ]; then
+      result+="'\\''"
+    else
+      result+="$c"
+    fi
+  done
+  result+="'"
+  printf '%s' "$result"
+}
+
+# Write CHIRIMEN_EDITOR_PASSWORD into gitignored .env without printing it.
+# Copy .env.example when .env is missing. chmod 600. Do not commit .env.
+upsert_editor_password_env() {
+  local password="$1"
+  local env_file="${REPO_ROOT}/.env"
+  local example_file="${REPO_ROOT}/.env.example"
+  local quoted
+  local tmp
+  local line
+  local found=0
+
+  quoted="$(env_single_quote "$password")"
+
+  if [ ! -f "$env_file" ]; then
+    if [ -f "$example_file" ]; then
+      cp "$example_file" "$env_file"
+    else
+      printf '%s\n' '# Created by scripts/start.sh (#269). Do not commit.' >"$env_file"
+    fi
+  fi
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/chirimen-env.XXXXXX")"
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [[ "$line" =~ ^[[:space:]]*CHIRIMEN_EDITOR_PASSWORD= ]]; then
+      printf 'CHIRIMEN_EDITOR_PASSWORD=%s\n' "$quoted"
+      found=1
+    else
+      printf '%s\n' "$line"
+    fi
+  done <"$env_file" >"$tmp"
+
+  if [ "$found" -eq 0 ]; then
+    printf 'CHIRIMEN_EDITOR_PASSWORD=%s\n' "$quoted" >>"$tmp"
+  fi
+
+  mv "$tmp" "$env_file"
+  chmod 600 "$env_file"
+}
+
+# Interactive first-start: rememberable password into .env (#269).
+# Skip when 32-bit, already set, or non-interactive (CI / no TTY).
+# Never prints the password. auth: none is not offered.
+ensure_editor_password() {
+  local password
+  local confirm
+
+  if [ "$OS_BITS" -ne 64 ]; then
+    return 0
+  fi
+  if editor_auth_is_set; then
+    return 0
+  fi
+  if ! is_interactive_setup; then
+    return 0
+  fi
+
+  log "Browser Editor password is not set."
+  log "Choose a password you can remember. It is written to .env (gitignored)."
+  log "The value is not printed. Open :8080 with this password."
+  log ""
+
+  while true; do
+    printf 'Password: '
+    IFS= read -r -s password || true
+    printf '\n'
+    if [ -z "$password" ]; then
+      err "password must not be empty"
+      continue
+    fi
+    printf 'Confirm password: '
+    IFS= read -r -s confirm || true
+    printf '\n'
+    if [ "$password" != "$confirm" ]; then
+      err "passwords do not match"
+      continue
+    fi
+    break
+  done
+
+  upsert_editor_password_env "$password"
+  unset password confirm
+  load_repo_env
+}
+
 # Quote a value for a Compose YAML double-quoted string. $ becomes $$
 # so Compose interpolation does not eat password / argon2 hashes.
 compose_yaml_string() {
@@ -317,7 +434,11 @@ log_mapping_summary() {
     fi
   else
     log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
-    log "auth: password"
+    if editor_auth_is_set; then
+      log "auth: password is set in .env (value not shown)"
+    else
+      log "auth: password will be generated into the editor config volume"
+    fi
     if [ "$WANT_LAN" -eq 1 ]; then
       log "publish: 0.0.0.0 (LAN) 8080/4173/4200"
       log "examples: http://0.0.0.0:4173/ (no GPIO/I2C devices)"
@@ -417,6 +538,7 @@ main() {
   cd "$REPO_ROOT"
 
   load_repo_env
+  ensure_editor_password
   if [ "$WANT_LAN" -eq 1 ] && [ "$OS_BITS" -eq 64 ]; then
     export CHIRIMEN_PUBLISH_BIND=0.0.0.0
   fi
