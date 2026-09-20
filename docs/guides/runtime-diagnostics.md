@@ -6,7 +6,7 @@ Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整�
 
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#263 web-demo の機能を棚卸しし Example Catalog / Runtime Diagnostics へ統合した上で廃止する](https://github.com/gurezo/chirimen-raspi-docker/issues/263)
-- [Getting Started](./getting-started.md)（CHIRIMEN Setup: `doctor.sh` → `start.sh`）
+- [Getting Started](./getting-started.md)（3段階。CHIRIMEN Setup は Step 2: `doctor.sh` → `start.sh`）
 - [Troubleshooting](./troubleshooting.md)
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`doctor.sh` 失敗時の戻先）
@@ -87,7 +87,7 @@ Device        → Example Catalog / Runtime Examples
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。不足があるときは [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started](./getting-started.md)。
+`[error]` が無ければ次へ進む。不足があるときは [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
 
 2. Runtime を起動し、プロセス生存を確認する。
 

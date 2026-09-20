@@ -16,7 +16,7 @@ Raspberry Pi Setup 完了
 ./scripts/start.sh
 ```
 
-完了後の診断と起動は **CHIRIMEN Setup** である。手順は [Getting Started](../docs/guides/getting-started.md)。`scripts/` の入口は [scripts/README.md](../scripts/README.md)。
+完了後の診断と起動は **CHIRIMEN Setup** である。手順は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-chirimen-setup)。`scripts/` の入口は [scripts/README.md](../scripts/README.md)。
 
 `docker.sh` は I2C 設定を変更しない。host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
 

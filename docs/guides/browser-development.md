@@ -14,7 +14,7 @@
 - 実機検証結果: [Compatibility の Browser Development Flow 実機検証（#243）](../architecture/compatibility.md#browser-development-flow-実機検証243)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。このページの前）
-- [Getting Started](./getting-started.md)（CHIRIMEN Setup）
+- [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
@@ -106,7 +106,7 @@ Pi 3 B+ の基本体験に **code-server（Browser Editor `:8080`）は含めな
 
 GPIO / I2C / JavaScript / 回路の概念は [CHIRIMEN Tutorial](./chirimen-tutorial.md) で学び、このガイドでは Editor で書く。Tutorial の SD イメージや CodeSandbox は本リポジトリの Editor ではない。
 
-Tutorial の環境構築手順は本リポジトリの手順ではない。clone / Docker / Runtime は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [Getting Started](./getting-started.md) を正本とする。
+Tutorial の環境構築手順は本リポジトリの手順ではない。clone / Docker / Runtime は [Getting Started](./getting-started.md) を正本とする（Step 1 の詳細は [Raspberry Pi Setup](./raspberry-pi-setup.md)）。
 
 ## Runtime / Editor / Examples を起動する
 
@@ -132,7 +132,7 @@ curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
 
-`/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started](./getting-started.md)。
+`/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
 
 ## Catalog で題材を探す
 

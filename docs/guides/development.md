@@ -2,12 +2,12 @@
 
 リポジトリをホスト上で開発するための Node.js / pnpm / Nx セットアップ。
 
-Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host）と [Getting Started](./getting-started.md)（CHIRIMEN Setup）を参照してください。
+Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Getting Started](./getting-started.md) の3段階を参照してください。Host 構築の詳細は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
 関連:
 
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）
-- [Getting Started](./getting-started.md)（CHIRIMEN Setup）
+- [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
 - [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する）
 - [Architecture overview](../architecture/overview.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
@@ -72,4 +72,4 @@ docker compose stop chirimen-example-catalog
 pnpm nx serve example-catalog
 ```
 
-Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started](./getting-started.md) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
+Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。

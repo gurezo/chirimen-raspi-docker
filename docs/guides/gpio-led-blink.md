@@ -8,7 +8,7 @@
 - 子 Issue: [#108 LED Blink guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/108)
 - 回路仕様（正本）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
 - HTML サンプル: [workspace/led-blink/](../../workspace/led-blink/)
-- [Getting Started](./getting-started.md)
+- [Getting Started](./getting-started.md)（Step 3 の入口。Runtime 起動は Step 2）
 - [Browser Development Environment](./browser-development.md)
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / 回路を学ぶ）
@@ -67,7 +67,7 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠は [�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host）のあと、[Getting Started](./getting-started.md) の CHIRIMEN Setup（`doctor.sh` → `start.sh`）を使う。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（`doctor.sh` → `start.sh`）を使う。このガイドは Getting Started Step 3 の詳細正本である。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
@@ -91,7 +91,7 @@ curl http://localhost:33330/health
 }
 ```
 
-詳細は [Getting Started](./getting-started.md) を参照する。
+詳細は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) を参照する。
 
 ## Browser 起動
 
