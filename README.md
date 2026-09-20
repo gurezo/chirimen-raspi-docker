@@ -14,27 +14,22 @@ Recommended: Raspberry Pi OS Lite 64-bit
 
 ## Quick Start
 
-初めて使う場合は、先に [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md)（Host 構築）を完了してください。そのあと **CHIRIMEN Setup** で診断し、Runtime を起動します。
+初めて使う場合は [Getting Started](docs/guides/getting-started.md) の3段階に従ってください。
 
 ```text
-Raspberry Pi Setup（setups/）
-        ↓
-CHIRIMEN Setup
-        ├─ ./scripts/doctor.sh
-        └─ ./scripts/start.sh
-        ↓
-curl http://localhost:33330/health
+Getting Started
+├─ Step 1: Raspberry Pi Setup（setups/）
+├─ Step 2: CHIRIMEN Setup（doctor.sh → start.sh）
+└─ Step 3: First Example（Catalog / GPIO LED Blink）
 ```
 
-Raspberry Pi Setup が済んでいるなら:
+Raspberry Pi Setup が済んでいるなら Step 2 から:
 
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh
 curl http://localhost:33330/health
 ```
-
-手順の説明は [Getting Started](docs/guides/getting-started.md)（CHIRIMEN Setup）を参照してください。
 
 ## Documentation
 
@@ -43,8 +38,8 @@ curl http://localhost:33330/health
 | 目的 | Documentation |
 | --- | --- |
 | GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](docs/guides/chirimen-tutorial.md) |
-| 初めて使う（Host） | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
-| Runtime を診断・起動する（CHIRIMEN Setup） | [Getting Started](docs/guides/getting-started.md) |
+| 初めて使う（3段階） | [Getting Started](docs/guides/getting-started.md) |
+| Host 構築の詳細（Raspberry Pi Setup） | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
 | Browser から Example を書く | [Browser Development](docs/guides/browser-development.md) |
 | GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) / [GPIO Input](docs/guides/gpio-input.md) / [I2C Scan](docs/guides/i2c-scan.md) |
 | Example Catalog / Legacy 資産の出典を確認する | [catalog.md](docs/examples/catalog.md) |
