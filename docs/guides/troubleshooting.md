@@ -31,6 +31,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
 | 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | スクリーンキーボードが入力を妨げる | [Desktop でスクリーンキーボードが出る](#desktop-でスクリーンキーボードが出る) |
+| Pi 3 B+ でメモリ不足 / Editor が重い | [Pi 3 B+ で Docker ビルドが OOM / killed](#pi-3-b-で-docker-ビルドが-oom-killed) / [Pi 3 B+ で Editor が重い / メモリ不足](#pi-3-b-で-editor-が重い--メモリ不足) |
 
 ## device が無く GPIO / I2C が unavailable になる
 
@@ -202,17 +203,18 @@ NX   hashArray is not a function
 
 ### 原因
 
-Raspberry Pi 3 B+ は RAM 1GB である。**8GB swap が無いと Docker image をビルドできない**。CPU ファンだけでは足りない。
+Raspberry Pi 3 B+ は RAM 1GB である。サポート対象の下限であり、**8GB swap が無いと Docker image をビルドできない**。CPU ファンだけでは足りない。ルートに約 8GB の空きが無いと `/swapfile` を作れない。
 
 ### 対処
 
 ```sh
+df -h /
 sudo ./setups/swap.sh
 sudo ./setups/swap.sh --check
 free -h
 ```
 
-`./scripts/start.sh` の前に実行する。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
+`./scripts/start.sh` の前に実行する。`swap.sh` は `/swapfile` だけを扱い、OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は消さない。16GB microSD では OS + Docker image + 8GB swap で逼迫しうる。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
 
 ## Pi 3 B+ でビルド中に熱暴走 / ハングする
 
@@ -231,6 +233,34 @@ Docker image ビルドは CPU 負荷が高い。Pi 3 B+ では **CPU ファン�
 - CPU ファンを **必ず実装してから** ビルドする（熱暴走防止）
 - 電源投入前に装着する。特定メーカー / 型番は指定しない
 - 手順は [Raspberry Pi Setup](./raspberry-pi-setup.md)
+
+## Pi 3 B+ で Editor が重い / メモリ不足
+
+### 症状
+
+- Runtime / Catalog / Example Server は動くが、ホストが極端に遅い
+- `chirimen-editor` が Exited する。`dmesg` に OOM
+- `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect。`:4200` と `:33330` は応答する
+
+### 原因
+
+Pi 3 B+ の基本体験に **code-server（Browser Editor `:8080`）は含めない。** Catalog `:4200` と Example Server `:4173` で GPIO LED Blink / I2C Scan は成立する。既定の `./scripts/start.sh` は Editor も起動する。1GB RAM では Editor が OOM の原因になりうる。
+
+### 対処
+
+基本体験だけ続けるときは Editor を止める。
+
+```sh
+docker compose stop chirimen-editor
+```
+
+Compose を直接使う場合:
+
+```sh
+docker compose up chirimen-server chirimen-examples chirimen-example-catalog
+```
+
+8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。Swap 不足のビルド失敗は上記「OOM / killed」。正本は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)。
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
@@ -473,12 +503,13 @@ docker compose ps -a
 docker compose logs chirimen-editor
 ```
 
-`fixuid` / `NoNewPrivileges` のエラー、または container が `Exited` ならこの原因。`dmesg` に OOM があればメモリ不足。
+`fixuid` / `NoNewPrivileges` のエラー、または container が `Exited` ならこの原因。`dmesg` に OOM があればメモリ不足。[Pi 3 B+ で Editor が重い / メモリ不足](#pi-3-b-で-editor-が重い--メモリ不足) を先に見る。
 
 ### 対処
 
 - `compose.yaml` の `chirimen-editor` に `no-new-privileges` が無いことを確認する
 - container を再作成する: `./scripts/start.sh --force-recreate`
+- Pi 3 B+ で基本体験だけ続けるときは `docker compose stop chirimen-editor`（Editor は必須ではない）
 - 再確認: `curl -fsS http://127.0.0.1:8080/healthz`（HTTP 200。JSON の `expired` もプロセス生存）
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
