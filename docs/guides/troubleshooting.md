@@ -401,7 +401,7 @@ sudo ./setups/disable-squeekboard.sh
 ./setups/disable-squeekboard.sh --check   # sudo 不要
 ```
 
-残る場合は再ログインまたは reboot。手動は Control Centre → Display → On-screen keyboard → Disabled、または `raspi-config` → Display Options → D6 → S3 Always Off。手順の正本は [Raspberry Pi Setup](./raspberry-pi-setup.md#スクリーンキーボードdesktop-任意)。
+残る場合は再ログインまたは reboot。手動は Control Centre → Display → On-screen keyboard → Disabled、または `raspi-config` → Display Options → D6 → S3 Always Off。手順の正本は [Raspberry Pi Setup](./raspberry-pi-setup.md#3-disable-squeekboardsh)。
 
 ## Editor を IP 直打ち HTTP で開くと webview が壊れる
 
