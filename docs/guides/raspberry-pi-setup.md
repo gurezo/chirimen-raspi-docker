@@ -64,7 +64,7 @@ CHIRIMEN Setup の `doctor.sh` / `start.sh` は `docker compose` プラグイン
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero のセットアップは、このページの手順ではない。host 準備は clone したこのリポジトリの script を使う。GPIO / I2C の学習は [CHIRIMEN Tutorial](./chirimen-tutorial.md)。
+CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero のセットアップは、このページの手順ではない。Host 構築はこのリポジトリの `setups/` を使う。GPIO / I2C の学習は [CHIRIMEN Tutorial](./chirimen-tutorial.md)。
 
 ## Raspberry Pi Setup の完了状態
 

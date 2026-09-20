@@ -11,10 +11,13 @@ Wiki の設計意図と、実装後のリポジトリ構造をまとめる。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 上で、次の操作だけで CHIRIMEN 開発を始められる Runtime を提供する。
+Raspberry Pi 3 / 4 / 5 上で、CHIRIMEN 開発を始められる Runtime を提供する。Host 準備は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（`setups/`）。**CHIRIMEN Setup** の起動入口は `./scripts/start.sh` である。
 
 ```text
-git clone
+Raspberry Pi Setup（setups/）
+        ↓
+./scripts/doctor.sh
+        ↓
 ./scripts/start.sh
 ```
 
@@ -119,11 +122,12 @@ chirimen-raspi-docker/
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
-├── scripts/
-│   ├── doctor.sh
-│   ├── start.sh
+├── scripts/                    # CHIRIMEN Setup（doctor → start）。build-*.mjs は開発・ドキュメント用
+│   ├── README.md
+│   ├── doctor.sh               # Host Setup 完了後の読み取り専用診断
+│   ├── start.sh                # CHIRIMEN Runtime 起動
 │   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
-├── setups/                     # host OS 準備（swap → I2C → Squeekboard → Docker / Compose。Lite では Squeekboard は no-op）
+├── setups/                     # Raspberry Pi Setup / Host 構築（swap → I2C → Squeekboard → Docker / Compose。Lite では Squeekboard は no-op）
 │   ├── swap.sh
 │   ├── enable-i2c.sh
 │   ├── disable-squeekboard.sh  # 標準順の3番。Lite では変更せず終わる（#271 / #278）
@@ -163,12 +167,12 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
+- **Raspberry Pi Setup**（Host）は `setups/`。I2C 有効化は `setups/enable-i2c.sh`
+- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
-- host 事前確認は `scripts/doctor.sh`、I2C 有効化は `setups/enable-i2c.sh`
 
-詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
+詳細は [docker.md](./docker.md) と [Getting Started](../guides/getting-started.md) を参照。
 
 ## Nx MCP (Cursor)
 
@@ -193,8 +197,8 @@ npx nx mcp --help
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
-| [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | clone と Pi 上のセットアップ |
-| [Getting Started](../guides/getting-started.md) | 初回起動手順 |
+| [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | Host 構築（`setups/`） |
+| [Getting Started](../guides/getting-started.md) | CHIRIMEN Setup（`doctor.sh` → `start.sh`） |
 | [Browser Development Environment](../guides/browser-development.md) | Learn → Edit → Save → Run → Verify の正本（#242）。実機 E2E は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |

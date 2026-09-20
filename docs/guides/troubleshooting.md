@@ -1,13 +1,13 @@
 # Troubleshooting
 
-CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
+CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。まず **Raspberry Pi Setup（Host）の問題**か **CHIRIMEN Setup / Runtime の問題**かを切り分ける。
 
 関連:
 
-- [Getting Started](./getting-started.md)
+- [Getting Started](./getting-started.md)（CHIRIMEN Setup: `doctor.sh` → `start.sh`）
 - [Runtime Diagnostics](./runtime-diagnostics.md)（doctor.sh / `/health` / Reference Examples）
 - [Browser Development Environment](./browser-development.md)
-- [Raspberry Pi Setup](./raspberry-pi-setup.md)
+- [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`setups/`）
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
@@ -15,6 +15,17 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 - [Docker 構成](../architecture/docker.md)
 - [Browser Editor](../architecture/browser-editor.md)
+
+## Host と Runtime の切り分け
+
+| 症状の目安 | 見る場所 |
+| --- | --- |
+| swap / I2C 無効 / Docker 未導入 / `/dev/i2c-1` が host に無い | [Raspberry Pi Setup](./raspberry-pi-setup.md)（`setups/`） |
+| Host は揃っているが起動前に怪しい | `./scripts/doctor.sh`（設定は変えない。[Getting Started](./getting-started.md)） |
+| 起動しない / health が返らない / device mapping | `./scripts/start.sh` と [Runtime Diagnostics](./runtime-diagnostics.md) |
+| LED / I2C Example が動かない | [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md) |
+
+`doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。
 
 ## Browser Development の切り分け
 
