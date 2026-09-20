@@ -18,14 +18,14 @@ clone → I2C（enable-i2c.sh → 必要なら reboot → --check） → Docker 
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
-- [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap。Pi 3 B+ は 8GB swap と CPU ファン必須）
-- `scripts/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
+- [setups/README.md](../../setups/README.md)（host の Docker / Docker Compose / swap / I2C。Pi 3 B+ は 8GB swap と CPU ファン必須）
+- `setups/enable-i2c.sh` / `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` / `scripts/start.sh`
 
 ## スクリプトの責務
 
 | スクリプト | 責務 |
 | --- | --- |
-| `scripts/enable-i2c.sh` | ホスト I2C の有効化。`--check` は設定変更なし・sudo 不要で `/dev/i2c-1` を確認する |
+| `setups/enable-i2c.sh` | ホスト I2C の有効化。`--check` は設定変更なし・sudo 不要で `/dev/i2c-1` を確認する |
 | `setups/docker.sh` / `setups/docker-compose.sh` | Docker / Compose のインストールのみ。I2C 設定は変更しない |
 | `setups/swap.sh` | 低スペック機向けに swap を確保する。I2C 設定は変更しない |
 | `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない |
@@ -48,7 +48,7 @@ git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
 ```
 
-以降の `scripts/enable-i2c.sh` と `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` は、clone したディレクトリで実行する。
+以降の `setups/enable-i2c.sh` と `setups/docker.sh` / `setups/swap.sh` / `scripts/doctor.sh` は、clone したディレクトリで実行する。
 
 ## I2C
 
@@ -57,8 +57,8 @@ Docker セットアップの前に、ホストで I2C を有効化し `/dev/i2c-
 ### script で有効化する（推奨）
 
 ```sh
-chmod +x scripts/enable-i2c.sh
-sudo ./scripts/enable-i2c.sh
+chmod +x setups/enable-i2c.sh
+sudo ./setups/enable-i2c.sh
 sudo reboot
 ```
 
@@ -66,7 +66,7 @@ sudo reboot
 
 ```sh
 cd chirimen-raspi-docker
-./scripts/enable-i2c.sh --check
+./setups/enable-i2c.sh --check
 ```
 
 `--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要で、設定は変更しない。script は `raspi-config` で I2C を有効化し、必要なら boot config に `dtparam=i2c_arm=on` を追加する。**reboot が必要**。
@@ -181,9 +181,9 @@ chmod +x scripts/doctor.sh
 - **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable` とともに次を案内する（doctor 自身は設定を変えない）
 
 ```sh
-sudo ./scripts/enable-i2c.sh
+sudo ./setups/enable-i2c.sh
 sudo reboot
-./scripts/enable-i2c.sh --check
+./setups/enable-i2c.sh --check
 ```
 
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる

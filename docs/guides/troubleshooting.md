@@ -53,7 +53,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 | 原因 | 対処 |
 | --- | --- |
-| I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`scripts/enable-i2c.sh` → reboot → `--check`） |
+| I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`setups/enable-i2c.sh` → reboot → `--check`） |
 | GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
 | 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
@@ -71,7 +71,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 ### 対処
 
 1. host で I2C を有効化して reboot する（[Raspberry Pi Setup](./raspberry-pi-setup.md)）
-2. `./scripts/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
+2. `./setups/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
 3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
 Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
@@ -171,8 +171,8 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 ### 実機メモ（#97 / #98 / #99）
 
-- **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
-- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `scripts/enable-i2c.sh` 等で有効化する
+- **Pi 3 B+（#97）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `setups/enable-i2c.sh` 等で有効化する。A+ はスペック不足のため推奨環境外
+- **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `setups/enable-i2c.sh` 等で有効化する
 - **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow（Editor → Workspace → Example Server → Runtime）は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 
 ## 32-bit OS は非推奨

@@ -34,10 +34,10 @@ Tutorial の SD イメージや `/home/pi/Desktop/gc/` の手順は使わない�
 Raspberry Pi の I2C は初期状態で無効なことがある。host で有効化してから reboot する。
 
 ```sh
-chmod +x scripts/enable-i2c.sh
-sudo ./scripts/enable-i2c.sh
+chmod +x setups/enable-i2c.sh
+sudo ./setups/enable-i2c.sh
 sudo reboot
-./scripts/enable-i2c.sh --check
+./setups/enable-i2c.sh --check
 ```
 
 `--check` は reboot 後に `/dev/i2c-1` と `i2c` グループを確認する。sudo は不要。**reboot が必要**。詳細と手動手順（`raspi-config` / boot config）は [Raspberry Pi Setup](./raspberry-pi-setup.md) を参照する。I2C → Docker → Runtime の実機確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
@@ -194,7 +194,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 | 確認 | 対処 |
 | --- | --- |
-| I2C が無効 | `sudo ./scripts/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
+| I2C が無効 | `sudo ./setups/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | host に `/dev/i2c-1` が無い | `ls -l /dev/i2c-1` と `./scripts/doctor.sh` |
 | container に `/dev/i2c-1` が無い | `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1` |
 | Runtime が止まっている | `./scripts/start.sh` と `curl http://localhost:33330/health` |

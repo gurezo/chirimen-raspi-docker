@@ -10,7 +10,7 @@
 - Scan Example: [workspace/i2c-scan/](../../workspace/i2c-scan/)（`:4173/i2c-scan/`）。[#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - HTML サンプル: [workspace/i2c-scan/](../../workspace/i2c-scan/)（[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)）
 - 操作手順つきガイド: [i2c-scan.md](../guides/i2c-scan.md)（#117）
-- I2C 有効化: [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md)（`scripts/enable-i2c.sh`）
+- I2C 有効化: [raspberry-pi-setup.md](../guides/raspberry-pi-setup.md)（`setups/enable-i2c.sh`）
 - 参考: [chirimen-drivers `@chirimen/adt7410`](https://github.com/chirimen-oh/chirimen-drivers/tree/master/packages/adt7410)（address `0x48`。本仕様では scan のみ）
 
 本仕様の対象は **I2C Scan 自体** である。ADT7410 の温度読み取りなど、特定センサの機能 Example は追加しない。
@@ -131,7 +131,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 
 ## 確認手順
 
-1. I2C を有効化する: `sudo ./scripts/enable-i2c.sh` → reboot → `./scripts/enable-i2c.sh --check`（`--check` は sudo 不要）
+1. I2C を有効化する: `sudo ./setups/enable-i2c.sh` → reboot → `./setups/enable-i2c.sh --check`（`--check` は sudo 不要）
 2. host で `ls -l /dev/i2c-1`
 3. 上記のとおり ADT7410 を接続する
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）
