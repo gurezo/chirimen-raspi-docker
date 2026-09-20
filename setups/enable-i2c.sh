@@ -5,8 +5,8 @@
 # --check does not change settings and does not require sudo.
 #
 # Usage:
-#   sudo ./scripts/enable-i2c.sh          # enable I2C (idempotent)
-#   ./scripts/enable-i2c.sh --check       # verify /dev/i2c-1 after reboot
+#   sudo ./setups/enable-i2c.sh          # enable I2C (idempotent)
+#   ./setups/enable-i2c.sh --check       # verify /dev/i2c-1 after reboot
 #
 set -euo pipefail
 
@@ -29,9 +29,9 @@ Usage: enable-i2c.sh [--check]
   --check    Verify that /dev/i2c-1 is available after reboot (no sudo).
 
 Examples:
-  sudo ./scripts/enable-i2c.sh
+  sudo ./setups/enable-i2c.sh
   sudo reboot
-  ./scripts/enable-i2c.sh --check
+  ./setups/enable-i2c.sh --check
 EOF
 }
 

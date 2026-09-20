@@ -122,11 +122,12 @@ chirimen-raspi-docker/
 ├── scripts/
 │   ├── doctor.sh
 │   ├── start.sh
-│   ├── enable-i2c.sh
 │   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
-├── setups/                     # host の Docker / Docker Compose 環境構築
+├── setups/                     # host OS 準備（Docker / Compose / swap / I2C）
+│   ├── enable-i2c.sh
 │   ├── docker.sh
 │   ├── docker-compose.sh
+│   ├── swap.sh
 │   └── README.md
 ├── docs/
 │   ├── architecture/
@@ -164,7 +165,7 @@ chirimen-raspi-docker/
 - 推奨起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
-- host 事前確認は `scripts/doctor.sh`、I2C 有効化は `scripts/enable-i2c.sh`
+- host 事前確認は `scripts/doctor.sh`、I2C 有効化は `setups/enable-i2c.sh`
 
 詳細は [docker.md](./docker.md) と [guides](../guides/getting-started.md) を参照。
 

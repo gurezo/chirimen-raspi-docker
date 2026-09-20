@@ -129,7 +129,7 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
 | known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 5 verification」 |
 
-host 側の有効化・診断は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `scripts/enable-i2c.sh` を参照。
+host 側の有効化・診断は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `setups/enable-i2c.sh` を参照。
 
 ### I2C Scan 実機検証（#116）
 
@@ -139,7 +139,7 @@ host 側の有効化・診断は [Raspberry Pi Setup](../guides/raspberry-pi-set
 | --- | --- |
 | device | ADT7410。A0 / A1 = GND → address `0x48` |
 | I2C1 pins | Pi 3 / 4 / 5 で物理 pin 3 = SDA（BCM 2）、pin 5 = SCL（BCM 3）。モデルごとに配線を変えない |
-| host `/dev/i2c-1` | Pi 3 B+（#97）/ Pi 4（#98）/ Pi 5（#99）で確認済み。初期状態で無い場合は `scripts/enable-i2c.sh` |
+| host `/dev/i2c-1` | Pi 3 B+（#97）/ Pi 4（#98）/ Pi 5（#99）で確認済み。初期状態で無い場合は `setups/enable-i2c.sh` |
 | Runtime scan | Pi 5（#99、Raspbian OS 64-bit / `aarch64` / `6.18.34+rpt-rpi-2712`）で `requestI2CAccess` + port `1` scan 成功。slave 未接続時は空配列 |
 | Browser Scan | `:4173/i2c-scan/`。probe は Runtime `scanI2cPort` と同じ `open` + `writeByte(0x00)`（範囲 `0x03`–`0x77`）。[#114](https://github.com/gurezo/chirimen-raspi-docker/issues/114) / [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) |
 | expected | 配線後 Scan で hex 一覧に `0x48`。空配列は本検証では失敗 |
@@ -158,7 +158,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | Kernel version | `6.18.34+rpt-rpi-2712` |
 | Architecture | `aarch64` |
 | `/dev/i2c-1` | 有効化後に存在（`ls -l /dev/i2c-1`） |
-| enable-i2c.sh | `sudo ./scripts/enable-i2c.sh` → reboot。`--check` は sudo 不要で `[ok] /dev/i2c-1 exists`（#216） |
+| enable-i2c.sh | `sudo ./setups/enable-i2c.sh` → reboot。`--check` は sudo 不要で `[ok] /dev/i2c-1 exists`（#216） |
 | doctor.sh | All checks passed。`[ok] I2C: available (/dev/i2c-1)`。`[ capabilities ] gpio=sysfs i2c=i2c-dev`。設定は変更しない（#217） |
 | Docker startup | 既存導入済み。`./setups/docker.sh` は I2C 設定を変更しない（#218）。Compose は導入済み |
 | Runtime health | `./scripts/start.sh` の mapping は `i2c-1=yes`。`curl http://localhost:33330/health` は `{"name":"chirimen-raspi-docker-server","status":"ok","version":"0.0.1"}` |

@@ -1,10 +1,20 @@
 # setups
 
-Raspberry Pi host の Docker / Docker Compose / swap 環境構築。
+Raspberry Pi host の Docker / Docker Compose / swap / I2C 環境構築。
 
-Docker の前に [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md) の I2C（`scripts/enable-i2c.sh`）を完了する。`docker.sh` は I2C 設定を変更しない。低スペック機では `swap.sh` で swap を確保する。
+Docker の前に I2C を有効化する。`docker.sh` は I2C 設定を変更しない。低スペック機では `swap.sh` で swap を確保する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
 host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発は [Development Guide](../docs/guides/development.md) を参照してください。
+
+## I2C（Docker より前）
+
+```sh
+sudo ./setups/enable-i2c.sh
+sudo reboot
+./setups/enable-i2c.sh --check   # sudo 不要
+```
+
+`--check` は reboot 後に `/dev/i2c-1` を確認する。sudo は不要で、設定は変更しない。`docker.sh` は I2C 設定を変更しない。
 
 ## Docker
 

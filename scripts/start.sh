@@ -432,7 +432,7 @@ main() {
     log "warn: ${SYSFS_GPIO_PATH} not found on host; GPIO sysfs backend will be unavailable in the container"
   fi
   if [ "$I2C_DEV" -eq 0 ]; then
-    log "warn: ${I2C_DEVICE} not found on host; I2C will be unavailable (enable with scripts/enable-i2c.sh on Pi)"
+    log "warn: ${I2C_DEVICE} not found on host; I2C will be unavailable (enable with setups/enable-i2c.sh on Pi)"
   fi
 
   write_compose_override "$dockerfile" "$image"
