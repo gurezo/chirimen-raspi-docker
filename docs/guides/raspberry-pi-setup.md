@@ -1,6 +1,6 @@
 # Raspberry Pi Setup
 
-CHIRIMEN Runtime を Raspberry Pi 上で動かすための host 側セットアップ。`setups/*.sh` と `scripts/*` はリポジトリ内にあるため、**先に clone する**。標準 OS は **Raspberry Pi OS Lite 64-bit**。上から順に実行する。
+Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。標準 OS は **Raspberry Pi OS Lite 64-bit**。上から順に実行する。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこのページでは行わない。
 
 標準実行順:
 
@@ -13,14 +13,16 @@ clone
 4. docker.sh      → スクリプトが reboot する
 5. docker-compose.sh
       ↓
+GPIO の host 確認
+      ↓
 Raspberry Pi Setup 完了
       ↓
-GPIO 確認 → doctor → Getting Started（起動）
+CHIRIMEN Setup（Getting Started）: doctor.sh → start.sh
 ```
 
 関連:
 
-- [Getting Started](./getting-started.md)（このページのあと。Runtime の起動）
+- [Getting Started](./getting-started.md)（このページのあと。**CHIRIMEN Setup**: `doctor.sh` → `start.sh`）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ。環境構築はここではない）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリをホスト上で開発する場合）
@@ -29,9 +31,11 @@ GPIO 確認 → doctor → Getting Started（起動）
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [setups/README.md](../../setups/README.md)（同じ5コマンドの短縮手順。Pi 3 B+ は 8GB swap と CPU ファン必須。低メモリ注意は本ページの swap.sh 節）
-- `setups/swap.sh` / `setups/enable-i2c.sh` / `setups/disable-squeekboard.sh` / `setups/docker.sh` / `setups/docker-compose.sh` / `scripts/doctor.sh` / `scripts/start.sh`
+- `setups/swap.sh` / `setups/enable-i2c.sh` / `setups/disable-squeekboard.sh` / `setups/docker.sh` / `setups/docker-compose.sh`
 
 ## スクリプトの責務
+
+このページの対象は `setups/*.sh` だけである。Host 設定を変える。
 
 | 順 | スクリプト | なぜ実行するか | 変更する Host 設定 | reboot | 再実行 |
 | --- | --- | --- | --- | --- | --- |
@@ -39,11 +43,16 @@ GPIO 確認 → doctor → Getting Started（起動）
 | 2 | `setups/enable-i2c.sh` | I2C Example と Runtime が `/dev/i2c-1` を使うため | `raspi-config nonint do_i2c 0`、なければ boot config に `dtparam=i2c_arm=on` | `/dev/i2c-1` が無いときは **必要**。既にあれば不要 | `/dev/i2c-1` があれば設定を触らない。`--check` は sudo 不要で設定変更なし |
 | 3 | `setups/disable-squeekboard.sh` | Desktop で Browser Editor / Catalog を使うとき、スクリーンキーボードが出ないようにする。**Lite では変更せず終わる**（実行してよい） | Desktop なら `raspi-config nonint do_squeekboard S3`（Always Off）。I2C / Docker / swap は触らない | 通常不要。残る場合のみ再ログインまたは reboot | Lite / 非 Desktop / 既に Off なら変更せず終了。`--check` は sudo 不要 |
 | 4 | `setups/docker.sh` | Runtime を Compose で動かす Docker Engine を入れる | `apt` 更新、get.docker.com、`usermod -aG docker pi`。I2C は触らない | **スクリプト末尾が必ず `sudo reboot`** | 再実行しても apt / インストーラのあと reboot する |
-| 5 | `setups/docker-compose.sh` | `./scripts/start.sh` が Compose を使うため | `/usr/local/bin/docker-compose` を置く | 不要。**docker.sh の reboot 後** に実行する | 上書きインストール |
-| — | `scripts/doctor.sh` | Runtime 起動前の診断のみ。I2C 無効時は `enable-i2c.sh` を案内し、設定は変えない | なし | 不要 | 何度でも実行できる |
-| — | `scripts/start.sh` | 準備済み環境で Runtime を起動する（このページでは実行しない）。初回の対話起動で Editor password を `.env` へ書く | I2C 設定は変更しない | 不要 | — |
+| 5 | `setups/docker-compose.sh` | CHIRIMEN Setup の `./scripts/start.sh` が Compose を使うため | `/usr/local/bin/docker-compose` を置く | 不要。**docker.sh の reboot 後** に実行する | 上書きインストール |
 
-`start.sh` / `doctor.sh` は `docker compose` プラグインを優先する。`docker-compose.sh` は standalone の `docker-compose` を入れる現行スクリプトである。完了確認は `docker compose version` を主とし、無ければ `docker-compose --version`。
+### このページの対象外（CHIRIMEN Setup）
+
+`scripts/doctor.sh` と `scripts/start.sh` は Host 設定を変えない。Raspberry Pi Setup 完了後に [Getting Started](./getting-started.md) で実行する。
+
+- `doctor.sh`: Host Setup 完了後の読み取り専用診断
+- `start.sh`: CHIRIMEN Runtime の起動
+
+CHIRIMEN Setup の `doctor.sh` / `start.sh` は `docker compose` プラグインを優先する。`docker-compose.sh` は standalone の `docker-compose` を入れる現行スクリプトである。完了確認は `docker compose version` を主とし、無ければ `docker-compose --version`。
 
 ## 前提 OS
 
@@ -59,7 +68,7 @@ CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero の�
 
 ## Raspberry Pi Setup の完了状態
 
-次を満たせば Host 準備は完了である。Runtime の起動はこのページでは行わない。
+次を満たせば Host 準備（Raspberry Pi Setup）は完了である。Runtime の診断と起動はこのページでは行わない。完了後は [Getting Started](./getting-started.md) の CHIRIMEN Setup へ進む。
 
 - リポジトリを clone 済み
 - `sudo ./setups/swap.sh --check` が通る（標準順で実行した場合）
@@ -67,8 +76,7 @@ CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero の�
 - `./setups/disable-squeekboard.sh --check` を実行済み（Lite は `[info]` で変更なしでも完了）
 - `docker --version` / `docker info` が通る（`docker.sh` 後の reboot 済み）
 - `docker compose version` が通る（無ければ `docker-compose --version`）
-
-GPIO の host 確認はスクリプトではないが、既存の確認項目としてこのページで行う。そのあと `./scripts/doctor.sh` で `[error]` が無ければ [Getting Started](./getting-started.md) へ進む。
+- GPIO の host 確認（後述。`setups/*.sh` ではない）
 
 ## リポジトリを clone する
 
@@ -77,7 +85,7 @@ git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
 ```
 
-以降の `setups/*.sh` と `scripts/doctor.sh` は、clone したディレクトリで実行する。
+以降の `setups/*.sh` は、clone したディレクトリで実行する。
 
 ## 1. swap.sh
 
@@ -92,7 +100,7 @@ Raspberry Pi OS Lite 64-bit
         ↓
 Raspberry Pi Setup（同じ5コマンド）
         ↓
-doctor.sh
+CHIRIMEN Setup（doctor.sh → start.sh）
         ↓
 CHIRIMEN Runtime + Example Catalog
         ↓
@@ -249,11 +257,11 @@ docker compose version
 docker info
 ```
 
-`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。一括診断は後述の `doctor.sh` を使う。
+`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は CHIRIMEN Setup の `./scripts/doctor.sh` である（[Getting Started](./getting-started.md)）。
 
 ## GPIO
 
-setup script のあと、host の GPIO device を確認する。この節は `setups/*.sh` ではない。
+setup script のあと、host の GPIO device を確認する。この節は `setups/*.sh` ではない。**Host 側の完了確認**であり、CHIRIMEN Setup の `doctor.sh` ではない。
 
 ### host の確認
 
@@ -278,49 +286,8 @@ getent group gpio
 
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
-## 事前診断（doctor）
+## 次の段階（CHIRIMEN Setup）
 
-5つの setup script のあと、`./scripts/start.sh` の前に host の前提条件を一括確認できる。
-
-```sh
-chmod +x scripts/doctor.sh
-./scripts/doctor.sh
-```
-
-`scripts/doctor.sh` は sudo 不要の診断専用スクリプトである。I2C 設定は変更しない（`raspi-config` / boot config は触らない）。次を確認する。
-
-- Raspberry Pi model
-- architecture（推奨は `aarch64`。`armv7l` は 32-bit OS のためサポート対象外）
-- Docker（インストールと daemon 稼働）
-- Docker Compose
-- hardware capabilities（Server / Node Runtime と同じ判定基準）
-  - `/sys/class/gpio`
-  - `/dev/gpiomem*`
-  - `/dev/gpiochip*`
-  - `/dev/i2c-1`
-
-結果は `[ok]` / `[error]` / `[warn]` で表示される。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。
-
-- **GPIO `sysfs`**: `/sys/class/gpio` があり、現行 backend で利用可能
-- **GPIO `gpiochip`**: sysfs が無く `/dev/gpiochip*` のみ → `[warn]` + unsupported（backend 未実装）
-- **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
-- **I2C `available`**: `/dev/i2c-1` がある → `[ok] I2C: available (/dev/i2c-1)` と `i2c backend: i2c-dev`
-- **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable` とともに次を案内する（doctor 自身は設定を変えない）
-
-```sh
-sudo ./setups/enable-i2c.sh
-sudo reboot
-./setups/enable-i2c.sh --check
-```
-
-- **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
-
-## セットアップ後
-
-doctor で `[error]` が無ければ [Getting Started](./getting-started.md) の起動手順へ進む。Runtime の起動（`./scripts/start.sh`）はこのページでは行わない。`start.sh` は I2C 設定を変更しない。初回の対話 `start.sh` で Browser Editor の password を決める。
-
-```sh
-./scripts/doctor.sh
-```
+Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。[Getting Started](./getting-started.md) で **CHIRIMEN Setup**（`./scripts/doctor.sh` → `./scripts/start.sh`）へ進む。`doctor.sh` は Host 設定を変えない診断である。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。
 
 → [Getting Started](./getting-started.md)
