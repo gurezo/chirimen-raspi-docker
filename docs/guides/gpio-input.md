@@ -85,7 +85,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 `[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 期待する応答例:
@@ -157,7 +157,7 @@ Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サン�
 
 | 確認 | 対処 |
 | --- | --- |
-| Runtime が止まっている | `./scripts/start.sh` と `curl http://localhost:33330/health` |
+| Runtime が止まっている | `./scripts/start.sh` と `curl http://127.0.0.1:33330/health` |
 | ピン取り違え | 物理 pin 29（BCM 5）、pin 30（GND）、pin 17（3.3V）。5V ピン（2 / 4）は使わない |
 | 4 pin タクトの端子向き | 常時導通側ではなく、ボタンで切り替わる直交方向へつなぐ |
 | プルアップが無い | 外部 10kΩ を 3.3V と GPIO5 の間に入れる。内部プルアップには依存しない |

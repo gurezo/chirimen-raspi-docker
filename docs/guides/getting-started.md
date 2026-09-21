@@ -179,8 +179,10 @@ chmod +x scripts/doctor.sh scripts/start.sh
 別ターミナルで:
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
+
+アクセス元は Raspberry Pi 上の shell、または SSH port forward 先である。
 
 server の期待する応答例:
 

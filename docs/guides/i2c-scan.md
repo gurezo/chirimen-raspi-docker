@@ -129,7 +129,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 `[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 期待する応答例:
@@ -204,7 +204,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 | I2C が無効 | `sudo ./setups/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | host に `/dev/i2c-1` が無い | `ls -l /dev/i2c-1` と `./scripts/doctor.sh` |
 | container に `/dev/i2c-1` が無い | `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1` |
-| Runtime が止まっている | `./scripts/start.sh` と `curl http://localhost:33330/health` |
+| Runtime が止まっている | `./scripts/start.sh` と `curl http://127.0.0.1:33330/health` |
 | ピン取り違え | 物理 pin 1（3.3V）、pin 3（SDA）、pin 5（SCL）、pin 6（GND） |
 | A0 / A1 が GND でない | A0 / A1 を GND へ。上げると address が `0x48` 以外になる |
 | 5V 接続 | VDD / SDA / SCL を 5V ピン（2 / 4）へつながない |

@@ -28,7 +28,7 @@ Raspberry Pi Setup が済んでいるなら Step 2 から:
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 ## Documentation

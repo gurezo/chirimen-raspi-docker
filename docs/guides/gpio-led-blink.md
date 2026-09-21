@@ -78,7 +78,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 `[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 期待する応答例:
@@ -149,7 +149,7 @@ Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サン�
 
 | 確認 | 対処 |
 | --- | --- |
-| Runtime が止まっている | `./scripts/start.sh` と `curl http://localhost:33330/health` |
+| Runtime が止まっている | `./scripts/start.sh` と `curl http://127.0.0.1:33330/health` |
 | LED の極性 | アノード（長い足）が抵抗側、カソードが GND |
 | ピン取り違え | 物理 pin 37（BCM 26）と pin 39（GND）。5V ピン（2 / 4）は使わない |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |

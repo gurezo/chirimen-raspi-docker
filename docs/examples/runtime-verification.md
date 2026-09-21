@@ -75,7 +75,7 @@ notes
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 1. Catalog `http://127.0.0.1:4200/` を開き、対象カードの全体バッジと機種チップが inventory と一致するか見る
@@ -165,7 +165,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 | `i2c-adt7410` | ADT7410 `0x48` | — | unverified | 同上 |
 | `i2c-ads1115` | ADS1115 `0x48` | — | unverified | ADT7410 と同時接続しない |
 
-Catalog 表示（host `http://localhost:4200/`）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
+Catalog 表示（`http://127.0.0.1:4200/`。Pi 上または SSH port forward 先）: `gpio-blink` / `gpio-button` / `i2c-detect` は全体バッジ `verified` と `Pi 3 verified` / `Pi 4 verified` / `Pi 5 verified`。Phase 2 の 4 件は全体バッジ `ported` と `unverified` チップであり、未確認環境を `Verified` と出さない。
 
 ### Phase 2（PIR / SHT30 / ADT7410 / ADS1115）
 

@@ -126,11 +126,13 @@ chmod +x scripts/doctor.sh scripts/start.sh
 health:
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
+
+HTTP の確認 URL は Raspberry Pi 上、または SSH port forward 先の `127.0.0.1` である。`ws://localhost:33330/` の localhost は Browser が動いているマシンを指す。
 
 `/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
 
@@ -232,10 +234,10 @@ Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)
 | --- | --- | --- |
 | HTML Example | `ws://localhost:33330/` | script 前の `CHIRIMEN_WS_URL` |
 
-HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）。
+既定の `localhost` は Browser が動いているマシンを指す。HTML Example を別マシンから開くときは `CHIRIMEN_WS_URL` を Pi の IP へ向ける（[browser-polyfill.md](./browser-polyfill.md)）。
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 保存しても見た目や LED が変わらないときは [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない) を確認する。
@@ -251,7 +253,7 @@ http://127.0.0.1:4173/i2c-scan/
 ```
 
 ```sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 ## 停止 / バックアップ
@@ -293,7 +295,7 @@ Security:
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 ```
 
 1. `http://127.0.0.1:8080` で Editor を開く

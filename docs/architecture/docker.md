@@ -123,11 +123,13 @@ Runtime + Editor + Examples + Catalog:
 
 ```sh
 ./scripts/start.sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
+
+HTTP の確認 URL は Raspberry Pi 上、または SSH port forward 先の `127.0.0.1` である。
 
 LAN 公開（Editor / Example / Catalog のみ。Runtime `33330` は変えない）:
 

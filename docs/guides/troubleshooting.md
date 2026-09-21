@@ -149,7 +149,7 @@ docker compose exec chirimen-server sh -c 'mount | grep -E "sys|gpio"; ls -l /sy
 
 ### 症状
 
-`curl http://localhost:33330/health` は成功するが、I2C 操作ができない。
+`curl http://127.0.0.1:33330/health` は成功するが、I2C 操作ができない。
 
 ### 説明
 
@@ -501,7 +501,7 @@ Editor workspace は `workspace/` のみで、`eslint` / `node_modules` が無�
 
 ### 症状
 
-`./scripts/start.sh` のあと `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect になる。`http://127.0.0.1:4200/` と `http://localhost:33330/health` は応答する。
+`./scripts/start.sh` のあと `curl -fsS http://127.0.0.1:8080/healthz` が Failed to connect になる。`http://127.0.0.1:4200/` と `http://127.0.0.1:33330/health` は応答する。
 
 ### 原因
 
@@ -576,8 +576,8 @@ WebSocket 先は Browser から `ws://localhost:33330/` である。Catalog / Ex
 
 ### 対処
 
-- `curl http://localhost:33330/health` で Runtime を確認する
-- 接続先は `ws://localhost:33330/`（[browser-polyfill.md](./browser-polyfill.md)）
+- `curl http://127.0.0.1:33330/health` で Runtime を確認する（Pi 上、または SSH port forward 先）
+- 接続先は `ws://localhost:33330/`（Browser の localhost。[browser-polyfill.md](./browser-polyfill.md)）
 - Editor / Catalog container に GPIO / I2C device は渡していない
 - 切り分けは [Runtime Diagnostics](./runtime-diagnostics.md)
 
