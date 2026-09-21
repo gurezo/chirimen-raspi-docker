@@ -4,20 +4,24 @@
 
 関連:
 
-- 親 Issue: [#49 apps/web-demo を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/49)
 - 子 Issue: [#127 browser-polyfill を単一ファイル（IIFE/UMD）にバンドルする](https://github.com/gurezo/chirimen-raspi-docker/issues/127)
-- 子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
-- 子 Issue: [#103 Runtime 接続状態 UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/103)
-- 子 Issue: [#104 GPIO / I2C demo navigation を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/104)
 - 親 Issue: [#52 I2C Scan example を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/52)
 - 子 Issue: [#114 Browser から I2C Scan を呼び出す API flow を確定する](https://github.com/gurezo/chirimen-raspi-docker/issues/114)
 - 子 Issue: [#115 I2C Scan UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
 - [Getting Started](./getting-started.md)（Runtime の起動は Step 2）
+- [Runtime Diagnostics](./runtime-diagnostics.md)（現行の Runtime 確認。Host は `doctor.sh`、GPIO / I2C は `workspace/` Example）
 - [I2C Scan](./i2c-scan.md)
 - [Protocol](../architecture/protocol.md)
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
+
+当時の関連 Issue（`apps/web-demo` は [#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263) で廃止。現行手順ではない）:
+
+- 当時の親 Issue: [#49 apps/web-demo を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/49)
+- 当時の子 Issue: [#102 web-demo に Browser Polyfill を組み込む](https://github.com/gurezo/chirimen-raspi-docker/issues/102)
+- 当時の子 Issue: [#103 Runtime 接続状態 UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/103)
+- 当時の子 Issue: [#104 GPIO / I2C demo navigation を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/104)
 
 ## 成果物を生成する
 
