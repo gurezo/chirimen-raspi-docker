@@ -47,4 +47,5 @@
 
 - [ ] I ran tests locally (if available)
 - [ ] I updated docs/README if needed
+- [ ] Service / Port / Workspace / `apps/` を変えた場合は [Documentation checklist](../docs/guides/documentation-checklist.md) を確認した
 - [ ] I considered error handling where relevant
