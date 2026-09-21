@@ -38,6 +38,13 @@ chmod +x scripts/start.sh
 
 既定は Runtime + Editor + Examples + Catalog である（[#208](https://github.com/gurezo/chirimen-raspi-docker/issues/208) / [#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
 
+| Port | Service | Role |
+| --- | --- | --- |
+| 33330 | chirimen-server | Hardware Runtime / WebSocket |
+| 8080 | chirimen-editor | Browser Editor / code-server |
+| 4173 | chirimen-examples | Example Server / Runtime Examples |
+| 4200 | chirimen-example-catalog | Example Catalog |
+
 | 利用方法 | Compose | 推奨入口 |
 | --- | --- | --- |
 | Runtime + Editor + Examples + Catalog（既定） | `docker compose up` | `./scripts/start.sh` |

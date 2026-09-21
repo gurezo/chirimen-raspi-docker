@@ -211,9 +211,9 @@ curl -fsS http://127.0.0.1:4200/
 | Port | Service | Role |
 | --- | --- | --- |
 | 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | code-server / Edit（Pi 3 B+ の基本体験には含めない） |
-| 4173 | chirimen-examples | Edited Example execution |
-| 4200 | chirimen-example-catalog | Example Catalog（Web UI 入口） |
+| 8080 | chirimen-editor | Browser Editor / code-server |
+| 4173 | chirimen-examples | Example Server / Runtime Examples |
+| 4200 | chirimen-example-catalog | Example Catalog |
 
 Editor（`:8080`）を使うときは、初回 `./scripts/start.sh` で決めた password を入れる。`docker compose exec` で `config.yaml` を読む必要はない。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 

@@ -57,8 +57,8 @@ Catalog  = Example を探す
 | Port | Service | Role |
 | --- | --- | --- |
 | 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | code-server / Edit |
-| 4173 | chirimen-examples | Edited Example execution |
+| 8080 | chirimen-editor | Browser Editor / code-server |
+| 4173 | chirimen-examples | Example Server / Runtime Examples |
 | 4200 | chirimen-example-catalog | Example Catalog |
 
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
