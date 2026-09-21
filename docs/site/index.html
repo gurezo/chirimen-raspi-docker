@@ -158,9 +158,13 @@
         <h2>Browser Development Flow</h2>
         <p>Learn → Edit → Save → Run → Verify</p>
         <pre>Tutorial = 学ぶ
-Catalog  = Example を探す（:4200）。ported は実行 / 編集
-Editor   = 書く（:8080）
-Examples = 書いたものを動かす（:4173）</pre>
+Catalog  = Example を探す（:4200）
+           ├─ 実行 → Example Server（:4173）
+           └─ 編集 → Editor（:8080）→ workspace/
+Runtime  = chirimen-server（:33330）</pre>
+        <p>
+          Catalog（<code>:4200</code>）は題材の発見入口です。編集結果の確認先ではありません。
+        </p>
         <table>
           <thead>
             <tr>
