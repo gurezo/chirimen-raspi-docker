@@ -20,7 +20,7 @@ Recommended: Raspberry Pi OS Lite 64-bit
 Getting Started
 ├─ Step 1: Raspberry Pi Setup（setups/）
 ├─ Step 2: CHIRIMEN Setup（doctor.sh → start.sh）
-└─ Step 3: First Example（Catalog / GPIO LED Blink）
+└─ Step 3: First Example（Catalog :4200 → :4173 / GPIO LED Blink）
 ```
 
 Raspberry Pi Setup が済んでいるなら Step 2 から:
