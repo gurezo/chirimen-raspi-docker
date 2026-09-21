@@ -36,6 +36,8 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 | Runtime Example | `http://127.0.0.1:4173/` |
 | Runtime | `chirimen-server` `:33330` |
 
+対象環境は推奨要件である。機種別結果の OS / Kernel / Architecture は実測記録であり、推奨名へ書き換えない。
+
 32-bit OS は対象外。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 
 ## 対象 Example
@@ -107,7 +109,7 @@ Catalog 側:
 
 ## 機種別結果
 
-Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../architecture/compatibility.md) を上書きしない。ここは Catalog / Runtime Example の機別記録である。
+Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../architecture/compatibility.md) を上書きしない。ここは Catalog / Runtime Example の機別記録である。OS 列は当時の実測表記を保持する。
 
 回路図互換（40-pin header、BCM 番号、I2C1 の SDA 物理 pin 3 / SCL 物理 pin 5、センサ電源 3.3V、GPIO へ 5V を入れない）は 3 モデルで共通であり、各回路仕様の机上確認と一致する。
 

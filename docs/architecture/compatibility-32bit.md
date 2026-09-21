@@ -10,7 +10,7 @@
 
 ## Why 32-bit is not recommended
 
-推奨環境は Raspberry Pi 3 B+ / 4 / 5 の 64-bit OS である。32-bit OS では Runtime と Browser Editor を同じ手順では保証しない。`./scripts/start.sh --32bit` は Runtime only である。
+推奨環境は Raspberry Pi 3 B+ / 4 / 5 の **Raspberry Pi OS Lite 64-bit** である。32-bit OS では Runtime と Browser Editor を同じ手順では保証しない。`./scripts/start.sh --32bit` は Runtime only である。
 
 Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/arm/v7` が無いため、検証時は Node 22 / [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) を使った。
 
