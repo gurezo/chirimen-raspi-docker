@@ -238,18 +238,19 @@ health だけでは GPIO 操作は確認できない。Example Catalog で題材
 
 ### 実行コマンド
 
-配線・部品の正本は [GPIO LED Blink](./gpio-led-blink.md)。Browser で次を開く。
+配線・部品の正本は [GPIO LED Blink](./gpio-led-blink.md)。Browser で Example Catalog から始める。
 
 1. Example Catalog: `http://127.0.0.1:4200/`
-2. ported の「実行」、または直接 `http://127.0.0.1:4173/led-blink/`
+2. 実行: ported の「実行」、または直接 `http://127.0.0.1:4173/led-blink/`
+3. 編集（任意）: ported の「編集」→ Editor `:8080` → host `workspace/` に Save → Example タブを reload
 
-Catalog（`:4200`）は題材の発見入口である。実行結果の確認先は Example Server `:4173`。手順の詳細は [Catalog で題材を探す](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。
+Catalog（`:4200`）は題材の発見入口である。実行結果の確認先は Example Server `:4173`。編集の保存先は host `workspace/`。GPIO / I2C は Browser Polyfill が Runtime `:33330` へ接続して操作する。手順の詳細は [Catalog で題材を探す](./browser-development.md#catalog-で題材を探す)。出典・責務は [catalog.md](../examples/catalog.md)。
 
 Editor（`:8080`）での編集はこの Step の完了条件ではない。Pi 3 B+ では Catalog と Example Server だけでよい。編集する場合は [Browser Development Environment](./browser-development.md)。
 
 ### 実行する理由
 
-Step 2 の health は server の起動確認である。GPIO LED Blink まで進むと、Browser Polyfill → Runtime → 実 GPIO の経路が通ったことが分かる。
+Step 2 の health は server の起動確認である。GPIO LED Blink まで進むと、Browser Polyfill → Runtime `:33330` → 実 GPIO の経路が通ったことが分かる。
 
 ### 完了確認
 
@@ -282,7 +283,7 @@ Getting Started はここまでである。続けて試すなら:
 | Runtime の疎通を確認する | [Runtime Diagnostics](./runtime-diagnostics.md)。Host は `doctor.sh`、Server は `GET /health`、Browser は GPIO LED Blink / GPIO Input / I2C Scan |
 | 旧 `polyfill.js` 相当の script 読み込み | [browser-polyfill.md](./browser-polyfill.md) |
 | 起動失敗・Permission denied など | [Troubleshooting](./troubleshooting.md#browser-development-の切り分け) |
-| Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md) |
+| Browser Editor から Example を編集・実行する | [Browser Development Environment](./browser-development.md)（`:8080` → host `workspace/` → Save → `:4173`） |
 | Browser Development Flow の実機 E2E | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | Runtime を診断する | [Runtime Diagnostics](./runtime-diagnostics.md) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
