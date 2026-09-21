@@ -18,6 +18,20 @@ Getting Started
      └─ GPIO LED Blink
 ```
 
+Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
+
+```text
+Setup → doctor.sh → start.sh
+  ↓
+Example Catalog :4200
+  ├─ 実行 → Example Server :4173
+  └─ 編集 → Browser Editor :8080 → workspace/ → Save → :4173
+                                      ↓
+                               Browser Polyfill
+                                      ↓
+                            chirimen-server :33330
+```
+
 `setups/` は Host 構築、`scripts/` は診断と Runtime 起動。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
 関連:
@@ -203,7 +217,7 @@ curl -fsS http://127.0.0.1:4200/
 
 Editor（`:8080`）を使うときは、初回 `./scripts/start.sh` で決めた password を入れる。`docker compose exec` で `config.yaml` を読む必要はない。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
-確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor の既存 workspace ルートを開く。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
+確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor `:8080` から host `workspace/` を開く。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
 
 ### 次の Step
 
