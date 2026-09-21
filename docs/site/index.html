@@ -286,23 +286,14 @@ Runtime  = chirimen-server（:33330）</pre>
       <section id="use">
         <h2>使う</h2>
         <p>
-          書いた Example の確認先は Example Server（<code>:4173</code>）です。Catalog（<code>:4200</code>）は題材の発見入口です。ported の「実行」は Example Server、「編集」は Editor の既存 workspace ルートを開きます。
+          題材探しは Example Catalog（<code>:4200</code>）です。ported の「実行」は Example Server（<code>:4173</code>）、「編集」は Editor（<code>:8080</code>）から host <code>workspace/</code> へ保存します。<code>docs/examples</code> は回路仕様と出典であり、編集場所ではありません。
         </p>
         <ul>
           <li>
-            <a href="./examples/catalog.html">Example Catalog と Legacy 資産の出典・責務</a>
-          </li>
-          <li>
-            <a href="./examples/legacy-inventory.html">Legacy Example 移植対象一覧</a>
-          </li>
-          <li>
-            <a href="./examples/catalog-metadata.html">Example Catalog metadata</a>
-          </li>
-          <li>
-            <a href="./examples/schematic-compatibility.html">回路図の再利用と Pi 3 / 4 / 5 互換性</a>
-          </li>
-          <li>
-            <a href="./examples/runtime-verification.html">Example Catalog / Runtime Example 実機検証</a>
+            <a href="./guides/browser-development.html#workspace-を開く"
+              >Workspace を開く</a
+            >
+            （編集先 <code>workspace/</code>）
           </li>
           <li>
             <a href="./guides/gpio-led-blink.html">GPIO LED Blink</a>
@@ -322,6 +313,7 @@ Runtime  = chirimen-server（:33330）</pre>
           </li>
           <li>
             <a href="./guides/i2c-scan.html">I2C Scan</a>
+            （Runtime Example。確認先 <code>:4173/i2c-scan/</code>）
             <ul>
               <li>
                 <a href="./examples/i2c-scan.html">検証仕様</a>
@@ -330,6 +322,26 @@ Runtime  = chirimen-server（:33330）</pre>
           </li>
           <li>
             <a href="./guides/troubleshooting.html">Troubleshooting</a>
+          </li>
+          <li>
+            出典・仕様（編集場所ではありません）
+            <ul>
+              <li>
+                <a href="./examples/catalog.html">Example Catalog と Legacy 資産の出典・責務</a>
+              </li>
+              <li>
+                <a href="./examples/legacy-inventory.html">Legacy Example 移植対象一覧</a>
+              </li>
+              <li>
+                <a href="./examples/catalog-metadata.html">Example Catalog metadata</a>
+              </li>
+              <li>
+                <a href="./examples/schematic-compatibility.html">回路図の再利用と Pi 3 / 4 / 5 互換性</a>
+              </li>
+              <li>
+                <a href="./examples/runtime-verification.html">Example Catalog / Runtime Example 実機検証</a>
+              </li>
+            </ul>
           </li>
         </ul>
       </section>
