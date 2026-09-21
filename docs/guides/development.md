@@ -9,6 +9,7 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）
 - [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
 - [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する）
+- [Documentation checklist](./documentation-checklist.md)（Service / Port / Workspace / `apps/` 変更時）
 - [Architecture overview](../architecture/overview.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
 
@@ -73,3 +74,7 @@ pnpm nx serve example-catalog
 ```
 
 Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
+
+## Documentation の整合性
+
+`compose.yaml` の Service 名、Port、`apps/`、`workspace/`、Browser Development Flow を変えたときは [Documentation checklist](./documentation-checklist.md) で README / Getting Started / Browser Development の更新漏れを確認してください。
