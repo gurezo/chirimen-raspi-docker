@@ -38,6 +38,13 @@ chmod +x scripts/start.sh
 
 既定は Runtime + Editor + Examples + Catalog である（[#208](https://github.com/gurezo/chirimen-raspi-docker/issues/208) / [#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
 
+| Port | Service | Role |
+| --- | --- | --- |
+| 33330 | chirimen-server | Hardware Runtime / WebSocket |
+| 8080 | chirimen-editor | Browser Editor / code-server |
+| 4173 | chirimen-examples | Example Server / Runtime Examples |
+| 4200 | chirimen-example-catalog | Example Catalog |
+
 | 利用方法 | Compose | 推奨入口 |
 | --- | --- | --- |
 | Runtime + Editor + Examples + Catalog（既定） | `docker compose up` | `./scripts/start.sh` |
@@ -116,11 +123,13 @@ Runtime + Editor + Examples + Catalog:
 
 ```sh
 ./scripts/start.sh
-curl http://localhost:33330/health
+curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
 curl -fsS http://127.0.0.1:4200/
 ```
+
+HTTP の確認 URL は Raspberry Pi 上、または SSH port forward 先の `127.0.0.1` である。
 
 LAN 公開（Editor / Example / Catalog のみ。Runtime `33330` は変えない）:
 

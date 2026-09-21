@@ -63,7 +63,7 @@ pnpm nx serve example-catalog
 npx nx graph
 ```
 
-`pnpm nx serve example-catalog` は Example Catalog（`apps/example-catalog`）を host で開発する手順です。Vite で `http://localhost:4200/` が開きます。Compose の `chirimen-example-catalog` も同じ port `4200` を使うため、同時には使いません。Browser Editor から Example を編集する手順ではありません。Example の確認先は `http://127.0.0.1:4173/` です（[Browser Development Environment](./browser-development.md)）。
+`pnpm nx serve example-catalog` は Example Catalog（`apps/example-catalog`）を host で開発する手順です。開発マシン上の Browser から Vite の `http://localhost:4200/` が開きます。Compose 既定の Catalog URL は `http://127.0.0.1:4200/`（Raspberry Pi 上、または SSH port forward 先）です。Compose の `chirimen-example-catalog` も同じ port `4200` を使うため、同時には使いません。Browser Editor から Example を編集する手順ではありません。Example の確認先は `http://127.0.0.1:4173/` です（[Browser Development Environment](./browser-development.md)）。
 
 Compose の Catalog と host Vite を同時に使わないときは、先に止めます。
 
