@@ -121,7 +121,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
-`./scripts/start.sh --32bit` は Runtime only である。
+32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 
 health:
 

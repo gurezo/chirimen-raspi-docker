@@ -29,7 +29,6 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 chmod +x scripts/start.sh
 ./scripts/start.sh                    # Runtime + Browser Editor + Examples + Catalog（127.0.0.1）
 ./scripts/start.sh --lan              # 同上。Editor / Example / Catalog を LAN 公開
-./scripts/start.sh --32bit            # Runtime only（32-bit OS。サポート対象外）
 ```
 
 ## Compose サービス
@@ -49,7 +48,7 @@ chmod +x scripts/start.sh
 | --- | --- | --- |
 | Runtime + Editor + Examples + Catalog（既定） | `docker compose up` | `./scripts/start.sh` |
 | 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up` | `./scripts/start.sh --lan` |
-| Runtime only | `docker compose up chirimen-server` | `./scripts/start.sh --32bit`（32-bit OS。サポート対象外） |
+| Runtime only | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) |
 
 ### chirimen-server
 
@@ -251,7 +250,7 @@ stage 構成は 64-bit を正とする。32-bit 用ファイルは残すがサ�
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
 | 32-bit（`armv7l` など） | [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | `node:22-bookworm-slim` | サポート対象外。削除はしない |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。32-bit OS 向けの `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
