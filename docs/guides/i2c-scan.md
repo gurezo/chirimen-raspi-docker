@@ -152,16 +152,23 @@ docker compose exec chirimen-server ls -l /dev/i2c-1
 
 ## Scan 操作
 
-サンプルは同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
+サンプルは同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。主経路は Example Catalog から Example Server を開くことである（`./scripts/start.sh` 済み前提）。
+
+1. Example Catalog: `http://127.0.0.1:4200/`
+2. ported の「実行」、または直接 `http://127.0.0.1:4173/i2c-scan/`
+
+編集する場合は Catalog の「編集」で Editor `:8080` を開き、host `workspace/i2c-scan/` に Save する。標準操作は `Edit → Save → Browser reload` である。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。Run Task **Serve examples** は URL 案内である。
+
+`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/i2c-scan/polyfill.js` へコピーされる）。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。
+
+Compose の Example Server を使わないときの退避:
 
 ```sh
 cd workspace/i2c-scan
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。ページ表示と同時に走査が始まる（Scan ボタンは無い）。検出 address は hex 一覧になる。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/i2c-scan/polyfill.js` へコピーされる）。
-
-Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/i2c-scan/`（Run Task **Serve examples** は URL 案内）。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
+この場合の確認先は `http://localhost:4173/` である（subdirectory を document root にするためパスは `/`）。Compose 主経路は `http://127.0.0.1:4173/i2c-scan/`。
 
 走査は I2C bus 1（`ports.get(1)`）を `0x03`–`0x77` で `open` + `writeByte(0x00)` する。詳細は [browser-polyfill.md](./browser-polyfill.md)。
 
@@ -188,7 +195,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 
 ### `polyfill.js` が 404 になる
 
-`workspace/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Editor から配信しているときは `http://127.0.0.1:4173/i2c-scan/` を開いているかも見る。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
+`workspace/i2c-scan/polyfill.js` がディレクトリにあることを確認する。Compose 経由なら `http://127.0.0.1:4173/i2c-scan/` を開いているか見る。`python3 -m http.server` の退避を使うときはカレントディレクトリが `workspace/i2c-scan` であること。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### address が出ない / 空一覧になる
 

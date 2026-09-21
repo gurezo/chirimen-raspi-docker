@@ -111,7 +111,7 @@ cd workspace/led-blink
 python3 -m http.server 4173
 ```
 
-この場合の確認先は `http://localhost:4173/` である。Getting Started の主経路は `http://127.0.0.1:4173/led-blink/`。
+この場合の確認先は `http://localhost:4173/` である（subdirectory を document root にするためパスは `/`）。Compose 主経路は `http://127.0.0.1:4173/led-blink/`。
 
 `index.html` の読み込み順:
 

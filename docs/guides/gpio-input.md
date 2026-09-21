@@ -102,16 +102,23 @@ curl http://localhost:33330/health
 
 ## Browser 起動
 
-サンプルは旧 button と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。
+サンプルは旧 button と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。主経路は Example Catalog から Example Server を開くことである（`./scripts/start.sh` 済み前提）。
+
+1. Example Catalog: `http://127.0.0.1:4200/`
+2. ported の「実行」、または直接 `http://127.0.0.1:4173/button/`
+
+編集する場合は Catalog の「編集」で Editor `:8080` を開き、host `workspace/button/` に Save する。標準操作は `Edit → Save → Browser reload` である。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。Run Task **Serve examples** は URL 案内である。
+
+`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/button/polyfill.js` へコピーされる）。
+
+Compose の Example Server を使わないときの退避:
 
 ```sh
 cd workspace/button
 python3 -m http.server 4173
 ```
 
-ブラウザで `http://localhost:4173/` を開く。`polyfill.js` はサンプルに同梱する。polyfill を更新したらリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する（`workspace/button/polyfill.js` へコピーされる）。
-
-Browser Editor から編集する場合の標準操作は `Edit → Save → Browser reload` である。確認先は `http://127.0.0.1:4173/button/`（Run Task **Serve examples** は URL 案内）。Catalog（`:4200`）は編集結果を表示しない。保存先と共有 workspace は [Workspace を開く](./browser-development.md#workspace-を開く)。
+この場合の確認先は `http://localhost:4173/` である（subdirectory を document root にするためパスは `/`）。Compose 主経路は `http://127.0.0.1:4173/button/`。
 
 `index.html` の読み込み順:
 
@@ -125,7 +132,7 @@ Browser Editor から編集する場合の標準操作は `Edit → Save → Bro
 ## 操作手順
 
 1. 配線と Runtime 起動、Browser 起動を完了する
-2. `http://localhost:4173/` を Raspberry Pi 上のブラウザで開く
+2. Catalog から「実行」するか、`http://127.0.0.1:4173/button/` を Raspberry Pi 上のブラウザで開く
 3. ページ表示と同時に GPIO5 の `onchange` が有効になる（Start ボタンは無い）
 4. タクトスイッチを押すと GPIO26 の LED が点灯し、離すと消灯する
 5. タブを閉じると購読は止まる。サンプルは旧 button と同じくクライアントでは `unexport` しない。GPIO の解放はサーバが WebSocket 切断時に行う
@@ -144,7 +151,7 @@ Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サン�
 
 ### `polyfill.js` が 404 になる
 
-`workspace/button/polyfill.js` がディレクトリにあり、`python3 -m http.server` のカレントディレクトリが `workspace/button` であることを確認する。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
+`workspace/button/polyfill.js` がディレクトリにあることを確認する。Compose 経由なら `http://127.0.0.1:4173/button/` を開いているか見る。`python3 -m http.server` の退避を使うときはカレントディレクトリが `workspace/button` であること。欠けている場合はリポジトリのルートで `pnpm nx bundle browser-polyfill` を実行する。
 
 ### ページは開くが値が変わらない / LED が点かない
 
