@@ -1,6 +1,6 @@
 # Runtime Diagnostics
 
-Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整理した正本です。`apps/web-demo` の診断 UI は [#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263) で廃止し、次のレイヤーへ移します。
+Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整理した正本です。現行の確認は `doctor.sh`、`GET /health`、Reference Examples である。`apps/web-demo` の診断 UI は [#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263) で廃止し、これらのレイヤーへ移した。
 
 関連:
 
@@ -58,9 +58,9 @@ Device        → Example Catalog / Runtime Examples
 - **Swap**: Pi 3 B+ 相当（RAM 約 1.5GB 以下）で SwapTotal=0 なら `[error]`。Pi 4 / 5 で 0 なら `[warn]`（任意）
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
-## web-demo 機能の棚卸し
+## 歴史的経緯（#263 で廃止した web-demo）
 
-廃止する `apps/web-demo` が持っていた機能と、移行先です。
+これは現行の確認手順ではない。#263 で廃止した `apps/web-demo` が持っていた機能と、移行先の記録である。
 
 | 機能 | 分類 | 移行先 |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ Device        → Example Catalog / Runtime Examples
 | GPIO Output | Example で代替 | GPIO LED Blink `http://127.0.0.1:4173/led-blink/` |
 | GPIO Input | Example で代替 | GPIO Input `http://127.0.0.1:4173/button/` |
 | I2C Scan | Example で代替 | I2C Scan `http://127.0.0.1:4173/i2c-scan/` |
-| I2C Device 操作 | 不要（web-demo に無い） | 既存 ported Example（ADT7410 等） |
+| I2C Device 操作 | 不要（当時 web-demo に無かった） | 既存 ported Example（ADT7410 等） |
 | エラー表示 | Example / docs で代替 | Example ページ + [Troubleshooting](./troubleshooting.md) |
 | 診断ナビ（3 画面への導線） | Catalog へ移行 | Example Catalog の「Runtime 確認」 |
 | LAN の WS hostname 自動解決 | Example で代替 | 既存 `CHIRIMEN_WS_URL`（[browser-polyfill.md](./browser-polyfill.md)） |
