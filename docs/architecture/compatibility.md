@@ -27,7 +27,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 | Raspberry Pi 5 | Yes | Verified | Verified | Verified |
 | Raspberry Pi 3 A+ | — | — | — | Not verified / unsupported |
 
-Recommended: Raspberry Pi OS Lite 64-bit
+通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。
 
 `Supported` とは書かない。未検証項目も `Supported` と書かない。
 
@@ -57,7 +57,7 @@ primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す。初期状
 
 ## Verification Details
 
-Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspberry Pi OS 64-bit** である。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。以下の OS 列は実測記録であり、推奨名へ書き換えない。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
 
 - **Protocol E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。Browser の I2C Scan は下記「I2C Scan 実機検証（#116）」
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
@@ -154,7 +154,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | 項目 | 結果 |
 | --- | --- |
 | Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0 |
-| Raspberry Pi OS version | Raspbian OS 64-bit |
+| OS | Raspbian OS 64-bit |
 | Kernel version | `6.18.34+rpt-rpi-2712` |
 | Architecture | `aarch64` |
 | `/dev/i2c-1` | 有効化後に存在（`ls -l /dev/i2c-1`） |
@@ -173,7 +173,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | 項目 | 結果 |
 | --- | --- |
 | Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0（一次環境） |
-| Raspberry Pi OS | Raspbian OS 64-bit |
+| OS | Raspbian OS 64-bit |
 | Kernel | `6.18.34+rpt-rpi-2712` |
 | Architecture | `aarch64` |
 | Docker version | 既存導入済み（#219） |

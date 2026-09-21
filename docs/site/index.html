@@ -72,7 +72,7 @@
 
       ul,
       ol {
-        margin: 0;
+        margin: 0 0 0.75rem;
         padding-left: 1.25rem;
       }
 
@@ -209,33 +209,18 @@ Runtime  = chirimen-server（:33330）</pre>
 
       <section>
         <h2>推奨環境</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Raspberry Pi</th>
-              <th>OS</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Raspberry Pi 3 B+</td>
-              <td>Raspberry Pi OS 64-bit</td>
-              <td>Verified</td>
-            </tr>
-            <tr>
-              <td>Raspberry Pi 4</td>
-              <td>Raspberry Pi OS 64-bit</td>
-              <td>Verified</td>
-            </tr>
-            <tr>
-              <td>Raspberry Pi 5</td>
-              <td>Raspberry Pi OS 64-bit</td>
-              <td>Verified</td>
-            </tr>
-          </tbody>
-        </table>
+        <ul>
+          <li>Raspberry Pi 3 B+</li>
+          <li>Raspberry Pi 4</li>
+          <li>Raspberry Pi 5</li>
+        </ul>
+        <p>サポート対象は Raspberry Pi OS 64-bit。</p>
         <p class="recommended">Recommended: Raspberry Pi OS Lite 64-bit</p>
+        <p>
+          実機検証の正本は
+          <a href="./architecture/compatibility.html">Compatibility</a>
+          です。
+        </p>
         <blockquote>
           32-bit OS は非推奨です。
           <a href="./architecture/compatibility-32bit.html">詳細を見る</a>

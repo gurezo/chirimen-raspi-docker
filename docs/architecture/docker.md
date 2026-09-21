@@ -22,14 +22,13 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - Docker は配布・実行手段であり、中心の責務は Runtime / Protocol / Polyfill
 - 推奨入口は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping）
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
-- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。Recommended: Raspberry Pi OS Lite 64-bit
+- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外（`Dockerfile.32bit` は削除しない）
 
 ```sh
 chmod +x scripts/start.sh
 ./scripts/start.sh                    # Runtime + Browser Editor + Examples + Catalog（127.0.0.1）
 ./scripts/start.sh --lan              # 同上。Editor / Example / Catalog を LAN 公開
-./scripts/start.sh --32bit            # Runtime only（32-bit OS。サポート対象外）
 ```
 
 ## Compose サービス
@@ -49,7 +48,7 @@ chmod +x scripts/start.sh
 | --- | --- | --- |
 | Runtime + Editor + Examples + Catalog（既定） | `docker compose up` | `./scripts/start.sh` |
 | 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up` | `./scripts/start.sh --lan` |
-| Runtime only | `docker compose up chirimen-server` | `./scripts/start.sh --32bit`（32-bit OS。サポート対象外） |
+| Runtime only | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) |
 
 ### chirimen-server
 
@@ -251,7 +250,7 @@ stage 構成は 64-bit を正とする。32-bit 用ファイルは残すがサ�
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
 | 32-bit（`armv7l` など） | [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | `node:22-bookworm-slim` | サポート対象外。削除はしない |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。32-bit OS 向けの `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
@@ -289,7 +288,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility
 
-推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
+推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。通常の推奨環境は Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
 
 ## 非 Pi 環境での制限
 

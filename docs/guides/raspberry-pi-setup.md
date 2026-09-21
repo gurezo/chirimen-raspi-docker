@@ -1,6 +1,6 @@
 # Raspberry Pi Setup
 
-Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。標準 OS は **Raspberry Pi OS Lite 64-bit**。上から順に実行する。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこのページでは行わない。
+Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。推奨環境は **Raspberry Pi OS Lite 64-bit**。上から順に実行する。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこのページでは行わない。
 
 標準実行順:
 
@@ -58,7 +58,7 @@ CHIRIMEN Setup の `doctor.sh` / `start.sh` は `docker compose` プラグイン
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
-- **標準環境: Raspberry Pi OS Lite 64-bit**
+- **推奨環境: Raspberry Pi OS Lite 64-bit**
 - Pi 3 B+ / 4 / 5 は同じ5コマンド。差は swap の必要性（3 B+ は必須、4 / 5 は任意だが標準順では実行してよい）と、後述 GPIO 確認の `gpiomem` パス
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor）は必須ではない
 
@@ -207,7 +207,7 @@ getent group i2c
 
 標準順の3番である。Raspberry Pi OS **Desktop**（Bookworm 以降・Wayland）では、テキスト欄にフォーカスするとスクリーンキーボード（Squeekboard）が出ることがある。物理キーボード付きで Browser Editor（`:8080`）や Catalog を使うときに Always Off にする。
 
-**Lite が標準環境である。** Lite にはスクリーンキーボードが無い。スクリプトは Desktop を検出しなければ設定を変えずに終了する。Lite でもこの手順を実行してよい。
+**Lite が推奨環境である。** Lite にはスクリーンキーボードが無い。スクリプトは Desktop を検出しなければ設定を変えずに終了する。Lite でもこの手順を実行してよい。
 
 ```sh
 sudo ./setups/disable-squeekboard.sh

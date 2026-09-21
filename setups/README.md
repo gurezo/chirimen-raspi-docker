@@ -1,6 +1,6 @@
 # setups
 
-**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はしない。標準 OS は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
+**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
 ```text
 1. swap.sh

@@ -86,7 +86,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 前提:
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
-- Raspberry Pi OS 64-bit
+- サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
 - リポジトリを clone 済みであること。Host 構築は [Raspberry Pi Setup](./raspberry-pi-setup.md)
@@ -121,7 +121,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
-`./scripts/start.sh --32bit` は Runtime only である。
+32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 
 health:
 

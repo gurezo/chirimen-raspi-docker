@@ -8,7 +8,7 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 - Raspberry Pi 4
 - Raspberry Pi 5
 
-Recommended: Raspberry Pi OS Lite 64-bit
+サポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。[詳細を見る](docs/architecture/compatibility-32bit.md)
 
