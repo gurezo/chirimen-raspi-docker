@@ -51,7 +51,7 @@ Example Catalog :4200
 ## 前提
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
-- Raspberry Pi OS 64-bit
+- サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須。詳細は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`

@@ -22,7 +22,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - Docker は配布・実行手段であり、中心の責務は Runtime / Protocol / Polyfill
 - 推奨入口は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping）
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
-- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。Recommended: Raspberry Pi OS Lite 64-bit
+- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
 - 32-bit OS はサポート対象外（`Dockerfile.32bit` は削除しない）
 
 ```sh
@@ -289,7 +289,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility
 
-推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
+推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。通常の推奨環境は Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
 
 ## 非 Pi 環境での制限
 

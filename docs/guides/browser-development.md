@@ -86,7 +86,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 前提:
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
-- Raspberry Pi OS 64-bit
+- サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
 - リポジトリを clone 済みであること。Host 構築は [Raspberry Pi Setup](./raspberry-pi-setup.md)

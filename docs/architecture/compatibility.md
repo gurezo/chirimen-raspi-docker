@@ -27,7 +27,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 | Raspberry Pi 5 | Yes | Verified | Verified | Verified |
 | Raspberry Pi 3 A+ | — | — | — | Not verified / unsupported |
 
-Recommended: Raspberry Pi OS Lite 64-bit
+通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。
 
 `Supported` とは書かない。未検証項目も `Supported` と書かない。
 
