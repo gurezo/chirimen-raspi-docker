@@ -2,6 +2,8 @@
 
 **Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。上から順に実行する。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
+今後の `setups/setup.sh` 向けに、各 script の責務と呼び出し可否を整理した正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
+
 ```text
 1. swap.sh
 2. enable-i2c.sh  → 必要なら reboot → --check
