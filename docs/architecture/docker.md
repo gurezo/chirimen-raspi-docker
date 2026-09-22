@@ -25,7 +25,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
 - サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
 - Pi 3 B+ は **Runtime-only**（compose `up` / `down` のみ。on-device Docker build は Pi 4 / Pi 5 のみ。[Compatibility](./compatibility.md#development--docker-build-support)）
-- 32-bit OS はサポート対象外（`Dockerfile.32bit` は削除しない）
+- 32-bit OS はサポート対象外（`Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)）
 
 Runtime（beginner / 機種共通）:
 
@@ -71,7 +71,7 @@ chmod +x scripts/start.sh
 | 項目 | 値 |
 | --- | --- |
 | Service | `chirimen-server` |
-| Dockerfile | [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）。32-bit 用 [`Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) はサポート対象外 |
+| Dockerfile | [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）。唯一の supported path |
 | Image | `chirimen-raspi-docker/server:phase1` |
 | Port | `33330`（host / container） |
 | ENV | `HOST=0.0.0.0`, `PORT=33330` |
@@ -192,7 +192,7 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | `8080`（Editor）。`4173`（Example 静的サーバ。[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)） |
 | User | `coder`（UID 1000。root ではない）。実行時は `-u "$(id -u):$(id -g)"` と `DOCKER_USER`（`fixuid`） |
-| Architecture | `linux/amd64`, `linux/arm64`。`arm32` / `armv7` は非対応（`Dockerfile.32bit` は作らない） |
+| Architecture | `linux/amd64`, `linux/arm64`。`arm32` / `armv7` は非対応 |
 | Workspace | `/home/coder/project` |
 | Extensions / user-data | `/home/coder/.local` |
 | Config | `/home/coder/.config` |
@@ -263,20 +263,20 @@ docker image ls chirimen-raspi-docker/editor:4.132.0
 
 ## Dockerfile（multi-stage）
 
-stage 構成は 64-bit を正とする。32-bit 用ファイルは残すがサポート対象外である。
+stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/server/Dockerfile`](../../docker/server/Dockerfile) のみ。かつて存在した 32-bit 用 `Dockerfile.32bit`（Node 22 / `linux/arm/v7`）は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | OS | ファイル | ベース | 備考 |
 | --- | --- | --- | --- |
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
-| 32-bit（`armv7l` など） | [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | `node:22-bookworm-slim` | サポート対象外。削除はしない |
+| 32-bit（`armv7l` など） | （削除済み）`Dockerfile.32bit` | 当時 `node:22-bookworm-slim` | サポート対象外。Historical のみ |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。32-bit OS 向けの `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。当時の `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である（flag 削除は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340)）。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
 | `base` | 上記の Node slim image、corepack で pnpm を有効化 |
 | `deps` | native addon 用に `python3` / `make` / `g++` を入れ、`npm_config_nodedir=/usr/local` で lockfile から依存を install |
-| `build` | 64-bit: `pnpm nx build server`。32-bit 用 `Dockerfile.32bit` は `node scripts/build-server.mjs`（サポート対象外） |
+| `build` | `pnpm nx build server`（当時の 32-bit path は `node scripts/build-server.mjs`） |
 | `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js`（build tools は含めない） |
 
 `deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。pnpm は `nodedir` を渡さないため、未設定だと node-gyp が `nodejs.org` から Node headers を取得する。公式 Node image の `/usr/local` を `npm_config_nodedir` に指定し、その通信を避ける（Pi 上の Docker DNS で `EAI_AGAIN` になりやすい）。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
