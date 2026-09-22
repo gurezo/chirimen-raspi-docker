@@ -8,9 +8,9 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 - Raspberry Pi 4（Runtime / Development。Docker build Supported）
 - Raspberry Pi 5（Runtime / Development。Docker build Supported）
 
-サポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。モデル別ロールの正本は [Compatibility](docs/architecture/compatibility.md)。
+サポート対象は Raspberry Pi OS 64-bit。標準環境: Raspberry Pi OS 64-bit Desktop（Lite も可）。モデル別ロールの正本は [Compatibility](docs/architecture/compatibility.md)。
 
-> 32-bit OS は非推奨です。[詳細を見る](docs/architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](docs/architecture/compatibility-32bit.md)
 
 ## Quick Start
 
