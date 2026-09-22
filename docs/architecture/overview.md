@@ -84,7 +84,7 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility](./compatibility.md) を参照。
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。Pi 3 B+（RAM 1GB）は下限であり **Runtime-only**（基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan）。code-server（Browser Editor）は任意の高負荷機能とする。Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md)）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build（[Raspberry Pi Setup](../guides/raspberry-pi-setup.md#1-swapsh)）。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。Pi 3 B+（RAM 1GB）は下限であり **Runtime-only**（基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan）。code-server（Browser Editor）は任意の高負荷機能とする。Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md)）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build（[Raspberry Pi Setup](../guides/raspberry-pi-setup.md#development-only-swapsh)）。
 
 ### 対応
 

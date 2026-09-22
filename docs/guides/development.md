@@ -25,25 +25,25 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 
 | 目的 | 案内先 | 機種 |
 | --- | --- | --- |
-| Runtime 利用（compose `up` / `down`） | [Getting Started](./getting-started.md) | Pi 3 B+ / Pi 4 / Pi 5（Pi 3 B+ は **Runtime-only**） |
+| Runtime 利用（compose `up` / `down`） | [Getting Started](./getting-started.md) / `./setups/setup.sh` | Pi 3 B+ / Pi 4 / Pi 5（Pi 3 B+ は **Runtime-only**） |
 | Repository 開発（host の Node.js / pnpm / Nx） | 本ガイド | 開発マシン（macOS など）および Pi |
 | on-device Docker image build | 本ガイドの build 節 / [Compatibility](../architecture/compatibility.md#development--docker-build-support) | **Raspberry Pi 4 / Pi 5 のみ**（Pi 3 B+ は Unsupported） |
 
 ```text
-Raspberry Pi Setup / CHIRIMEN Setup（Runtime 利用）
+Beginner / Runtime
     ↓
-Docker / Docker Compose（up / down。Pi 3 B+ 含む）
+./setups/setup.sh → docker compose up / down（Pi 3 B+ 含む。build なし）
 
 Development setup（Repository 開発）
     ↓
 Node.js / pnpm / Nx
 
-Docker image build（on-device）
+Docker image build（on-device）+ swap.sh
     ↓
-Raspberry Pi 4 / Pi 5 のみ
+Raspberry Pi 4 / Pi 5 のみ（Development-only）
 ```
 
-正本のロール表は [Compatibility](../architecture/compatibility.md) である。
+正本のロール表は [Compatibility](../architecture/compatibility.md) である。`swap.sh` と Docker build は beginner / `setup.sh` からは呼ばない。
 
 ## 必要環境
 
@@ -98,6 +98,18 @@ Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./run
 ## Docker image build（Raspberry Pi 4 / Pi 5）
 
 on-device の Docker image build は **Raspberry Pi 4 / Pi 5** を対象とする。Pi 3 B+ は **Runtime-only** であり、次のコマンドは Unsupported である。正本は [Compatibility の Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)。根拠は [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) および [検証コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)。
+
+Beginner / Runtime 導線（`./setups/setup.sh` → `docker compose up -d`）とは別である。build 前に Host の Swap を確保する場合は **Development-only** の `swap.sh` を使う（`setup.sh` は呼ばない）。
+
+### swap.sh（Development-only・OOM 緩和）
+
+Pi 4 / Pi 5 で Docker build や高負荷開発中の OOM を緩和するため、任意だが推奨する。詳細は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)。
+
+```sh
+df -h /
+sudo ./setups/swap.sh
+sudo ./setups/swap.sh --check
+```
 
 対象コマンドの例:
 
