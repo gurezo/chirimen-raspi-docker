@@ -53,9 +53,9 @@ Raspberry Pi 4 / Pi 5 のみ（Development-only）
 - Docker / Docker Compose（Runtime 起動や image build をする場合）
   - **Docker build**（`docker build` / `compose build` / `up --build`）は **Raspberry Pi 4 / Pi 5** を対象とする
   - **Raspberry Pi 3 B+** は **Runtime-only**（compose `up` / `down`）。on-device の Docker build は Unsupported
-- Raspberry Pi 上で Runtime を動かす場合のサポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
+- Raspberry Pi 上で Runtime を動かす場合のサポート対象は Raspberry Pi OS 64-bit。標準環境: Raspberry Pi OS 64-bit Desktop（Lite も可）
 
-> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 
 ## Node.js のインストール
 

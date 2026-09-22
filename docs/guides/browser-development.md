@@ -89,11 +89,11 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）。**Pi 3 B+ は Runtime-only**
 - サポート対象は Raspberry Pi OS 64-bit
-- Recommended: Raspberry Pi OS Lite 64-bit
+- 標準環境: Raspberry Pi OS 64-bit Desktop（Lite も可）
 - Docker と Docker Compose
 - リポジトリを clone 済みであること。Host 構築は [Raspberry Pi Setup](./raspberry-pi-setup.md)
 
-> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 
 Docker build / `compose build` / `up --build` の対象は **Raspberry Pi 4 / Pi 5** のみである（[Compatibility](../architecture/compatibility.md) / [Development](./development.md)）。**Pi 3 B+ は Runtime-only** であり、on-device Docker build は Unsupported。`swap.sh` を Pi 3 B+ build の有効化手段としては案内しない。
 
@@ -124,7 +124,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 `start.sh` を使わず Compose だけだと Editor の uid が `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。Desktop 上の任意エディタで `workspace/` を編集する場合は beginner の `docker compose up -d` で足りる。
 
-32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
+32-bit OS は Unsupported。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する（現行の Getting Started / セットアップ手順ではない）。
 
 health:
 
@@ -295,7 +295,7 @@ Security:
 
 このガイドの `Learn → Edit → Save → Run → Verify` を Raspberry Pi 上で確認する。結果の正本は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)。`Supported` とは書かない。
 
-対象は可能な範囲で Raspberry Pi 3 B+ / 4 / 5 と Raspberry Pi OS Lite 64-bit。一次環境は Raspberry Pi 5（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) と同一機）。
+対象は可能な範囲で Raspberry Pi 3 B+ / 4 / 5 と Raspberry Pi OS 64-bit Desktop（Lite も可）。一次環境は Raspberry Pi 5（[#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) と同一機）。
 
 ```sh
 ./scripts/doctor.sh
