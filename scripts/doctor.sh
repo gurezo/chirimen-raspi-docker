@@ -71,8 +71,10 @@ Usage: doctor.sh
 
   Missing items are reported as [error] or [warn].
   Exit 0 when no errors; exit 1 when one or more errors are found.
-  After All checks passed, continue with:
-    ./scripts/start.sh
+  After All checks passed, continue with Getting Started Step 2:
+    Pi 4 / Pi 5:  ./scripts/start.sh
+    Pi 3 B+ (Runtime-only): ./scripts/start.sh --no-build
+  See docs/guides/getting-started.md
 
 Examples:
   chmod +x scripts/doctor.sh
@@ -430,12 +432,15 @@ print_summary() {
       log "$WARN_COUNT warning(s) reported; review messages above before starting Docker Compose."
     fi
     log "You can start with capability-aware mapping:"
-    log "  ./scripts/start.sh"
+    log "  Pi 4 / Pi 5:  ./scripts/start.sh"
+    log "  Pi 3 B+ (Runtime-only): ./scripts/start.sh --no-build"
+    log "  See docs/guides/getting-started.md"
     return 0
   fi
 
   log "Some checks failed ($ERROR_COUNT error(s), $WARN_COUNT warning(s))."
-  log "Fix the errors above before running ./scripts/start.sh."
+  log "Fix the errors above before running ./scripts/start.sh"
+  log "(Pi 3 B+ Runtime-only: ./scripts/start.sh --no-build)."
   return 1
 }
 
