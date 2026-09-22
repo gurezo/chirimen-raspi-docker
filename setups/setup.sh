@@ -3,7 +3,8 @@
 # Beginner Host setup orchestration for chirimen-raspi-docker.
 # Checks Runtime-required Host state and calls existing setups/*.sh
 # only when needed. Verifies workspace/ and runs doctor.sh as
-# Runtime readiness. Does not run swap.sh, Docker build, or start.sh.
+# Runtime readiness. Does not run swap.sh, Docker build, or start.sh
+# (those are Development-only on Pi 4 / Pi 5; Pi 3 B+ stays Runtime-only).
 #
 # Usage:
 #   ./setups/setup.sh
@@ -11,7 +12,7 @@
 # Related:
 #   docs/guides/setup-host-script-audit.md
 #   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot),
-#   #330 (workspace / Runtime readiness)
+#   #330 (workspace / Runtime readiness), #331 (Development-only separation)
 #
 set -euo pipefail
 
@@ -43,6 +44,8 @@ Usage: setup.sh
   workspace/ and Runtime readiness via doctor.sh.
 
   Does not run swap.sh, Docker build, or start.sh.
+  swap.sh and Docker build are Development-only (Pi 4 / Pi 5).
+  Does not trigger image build on Pi 3 B+ (Runtime-only).
   Does not require Node.js / npm / pnpm / Nx on the Host.
 
 Examples:
