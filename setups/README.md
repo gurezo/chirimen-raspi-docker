@@ -10,7 +10,7 @@
 ./setups/setup.sh
 ```
 
-`setup.sh` は状態を確認し、必要な既存 script（I2C / Squeekboard / Docker / Compose）だけを呼び出す orchestration script である。`swap.sh`・Docker build・`start.sh` は実行しない。Host に Node.js / pnpm / Nx は不要。完了後は `docker compose up -d` と `http://localhost:4200` を案内する。reboot が必要なら案内して終了し、reboot 後に同じコマンドを再実行する。
+`setup.sh` は状態を確認し、必要な既存 script（I2C / Squeekboard / Docker / Compose）だけを呼び出す orchestration script である。`swap.sh`・Docker build・`start.sh` は実行しない。Host に Node.js / pnpm / Nx は不要。完了後は `docker compose up -d` と `http://localhost:4200` を案内する。reboot が必要なら `sudo reboot` を案内して終了し、reboot 後に同じ `./setups/setup.sh` を再実行する（I2C の再開も同じ。単独実行時の `enable-i2c.sh --check` とは別導線）。
 
 各 script の責務と呼び出し可否の正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
 
@@ -63,6 +63,8 @@ Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan
 ## 2. enable-i2c.sh
 
 I2C Example と Runtime が `/dev/i2c-1` を使う。`/dev/i2c-1` が無いときは reboot が必要。既にあれば設定を触らない。
+
+初心者は本 script を単独で叩かず `./setups/setup.sh` を使う。`setup.sh` 経由で I2C の reboot が必要なときは、案内どおり `sudo reboot` のあと **同じ `./setups/setup.sh` を再実行**する（下記の `--check` は手動・診断用）。
 
 ```sh
 sudo ./setups/enable-i2c.sh
