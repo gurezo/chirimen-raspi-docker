@@ -14,25 +14,19 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 
 ## Quick Start
 
-初めて使う場合は [Getting Started](docs/guides/getting-started.md) の3段階に従ってください。機種別の build / Runtime 導線は Step 2 を正本とする。
-
-```text
-Getting Started
-├─ Step 1: Raspberry Pi Setup（setups/）
-├─ Step 2: CHIRIMEN Setup（doctor.sh → start.sh）
-└─ Step 3: First Example（Catalog :4200 → :4173 / GPIO LED Blink で環境確認）
-              └─ 続けて my-first-example（自作。Getting Started 内）
-```
-
-Raspberry Pi Setup が済んでいるなら Step 2 から（Pi 4 / Pi 5 の例。既定で `--build`）:
+初めて使う場合は [Getting Started](docs/guides/getting-started.md) に従ってください。入口は `./setups/setup.sh` の 1 つです。
 
 ```sh
-./scripts/doctor.sh
-./scripts/start.sh
-curl http://127.0.0.1:33330/health
+git clone https://github.com/gurezo/chirimen-raspi-docker.git
+cd chirimen-raspi-docker
+./setups/setup.sh
+# 必要なら sudo reboot のあと、同じ ./setups/setup.sh を再実行
+docker compose up -d
 ```
 
-Pi 3 B+（Runtime-only）では `./scripts/start.sh --no-build` を使う。詳細は [Getting Started](docs/guides/getting-started.md)。
+起動後の第一入口: [http://localhost:4200](http://localhost:4200)（Example Catalog）
+
+続けて [First Example（my-first-example）](docs/guides/getting-started.md#my-first-example-を作成する) で `workspace/` に HTML / JavaScript を作れます。Host に Node.js / npm / pnpm / Nx は不要です。詳細は [Getting Started](docs/guides/getting-started.md)。
 
 ## Documentation
 
@@ -41,7 +35,7 @@ Pi 3 B+（Runtime-only）では `./scripts/start.sh --no-build` を使う。詳�
 | 目的 | Documentation |
 | --- | --- |
 | GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](docs/guides/chirimen-tutorial.md) |
-| 初めて使う（3段階） | [Getting Started](docs/guides/getting-started.md) |
+| 初めて使う（setup.sh → compose up → Catalog） | [Getting Started](docs/guides/getting-started.md) |
 | Host 構築の詳細（Raspberry Pi Setup） | [Raspberry Pi Setup](docs/guides/raspberry-pi-setup.md) |
 | Browser から Example を書く | [Browser Development](docs/guides/browser-development.md)（編集先は `workspace/`） |
 | GPIO / I2C を試す | [Examples](https://gurezo.github.io/chirimen-raspi-docker/#use) / [GPIO LED Blink](docs/guides/gpio-led-blink.md) / [GPIO Input](docs/guides/gpio-input.md) / [I2C Scan](docs/guides/i2c-scan.md) |
