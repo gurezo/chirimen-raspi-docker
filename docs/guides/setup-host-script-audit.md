@@ -43,7 +43,7 @@
 | [`setups/swap.sh`](../../setups/swap.sh) | Development only | **呼ばない** |
 | [`scripts/doctor.sh`](../../scripts/doctor.sh) | Runtime required（検証） | Host 設定は変えない。readiness check として `setup.sh` から呼び出し済み（#330） |
 | [`scripts/start.sh`](../../scripts/start.sh) | Development / 上級者向け（起動補助） | Host `setup.sh` の範囲外。Runtime 操作の正本は `docker compose up -d`。完了案内で compose と `http://localhost:4200` を示す側 |
-| [`scripts/build-docs-site.mjs`](../../scripts/build-docs-site.mjs) / [`scripts/build-server.mjs`](../../scripts/build-server.mjs) | Development only | 呼ばない |
+| [`scripts/build-docs-site.mjs`](../../scripts/build-docs-site.mjs) | Development only | 呼ばない |
 | `workspace/` 準備 | Runtime required（検証） | 専用 Host script は無い。`setup.sh` が存在・書き込み可否を確認（#330） |
 | GPIO permission / device | docs 手確認 + `doctor.sh` probe | 専用 `setups/` script は無い。`doctor.sh` の probe を再利用する |
 
@@ -134,13 +134,13 @@ setup.sh（#328 / #329 / #330 / #331）
 | 分類 | **Development / 上級者向け（起動補助）** / Host `setup.sh` の範囲外 |
 | 備考 | 親 #326 / #333 の Runtime 操作は `docker compose up -d` → `localhost:4200`。`start.sh` は device mapping・LAN・on-device build 向け。`setup.sh` は起動そのものではなく案内まで |
 
-### `build-docs-site.mjs` / `build-server.mjs`
+### `build-docs-site.mjs`
 
 | 項目 | 内容 |
 | --- | --- |
-| 責務 | 公開 docs サイト生成 / 32-bit 向け server bundle |
+| 責務 | 公開 docs サイト生成 |
 | 分類 | **Development only** |
-| 備考 | Host 構築でも Runtime 起動でもない |
+| 備考 | Host 構築でも Runtime 起動でもない。旧 `build-server.mjs`（32-bit esbuild workaround）は [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) で削除済み。背景は [32-bit Compatibility](../architecture/compatibility-32bit.md) |
 
 ## 専用 script が無い領域
 

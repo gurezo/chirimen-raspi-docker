@@ -125,11 +125,11 @@ chirimen-raspi-docker/
 │   │   └── Dockerfile          # Vite production build + nginx（port 4200、#254 / #263）
 │   └── server/
 │       └── Dockerfile          # 64-bit（Node 24）。唯一の supported path
-├── scripts/                    # CHIRIMEN Setup（doctor / start）。build-*.mjs は開発・ドキュメント用
+├── scripts/                    # CHIRIMEN Setup（doctor / start）。build-docs-site.mjs は開発・ドキュメント用
 │   ├── README.md
 │   ├── doctor.sh               # Host Setup 完了後の読み取り専用診断（setup.sh からも呼ぶ）
 │   ├── start.sh                # Development / 上級者向け起動補助（capability-aware。既定 --build）
-│   └── build-server.mjs        # 旧 32-bit Docker 用 esbuild bundle（整理は #341）
+│   └── build-docs-site.mjs     # 公開 Documentation サイト生成
 ├── setups/                     # Raspberry Pi Setup / Host 構築（初心者入口は setup.sh。swap は Development-only）
 │   ├── setup.sh                # Beginner / Runtime Host orchestration
 │   ├── swap.sh                 # Development-only（Pi 4 / Pi 5 の build 向け）
