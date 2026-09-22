@@ -4,8 +4,11 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 
 関連:
 
-- 親 Issue: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
-- 子 Issue: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
+- 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する Documentation を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
+- 子 Issue: [#305 Compatibility に Runtime Support / Docker Build Support を分離して記載する](https://github.com/gurezo/chirimen-raspi-docker/issues/305)
+- 実機検証（Getting Started）: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
+- 親 Issue（歴史）: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
+- 子 Issue（歴史）: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
 - 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219) / [#243 Browser Development Flow](https://github.com/gurezo/chirimen-raspi-docker/issues/243) / [#257 Example Catalog / Runtime Example](https://github.com/gurezo/chirimen-raspi-docker/issues/257)
 - 32-bit 記録: [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
 - [overview.md](./overview.md)
@@ -45,7 +48,7 @@ compose `up` / `down` による Runtime 利用の対応。Pi 3 B+ は非対応�
 
 ## Development / Docker Build Support
 
-Docker image の build（`docker build` / `compose build` / `up --build`）の対応。Pi 3 B+ では高負荷・高温により安定した build が困難なため Unsupported とする。Build は Raspberry Pi 4 / Pi 5 を対象とする。
+Docker image の build（`docker build` / `compose build` / `up --build`）の対応。Pi 3 B+ では高負荷・高温により安定した build が困難なため Unsupported とする。Build は Raspberry Pi 4 / Pi 5 を対象とする。根拠は [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) および [検証コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)。
 
 | Model | Docker build / `compose build` / `up --build` | Status |
 | --- | --- | --- |
