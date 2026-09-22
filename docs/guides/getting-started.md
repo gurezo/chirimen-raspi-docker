@@ -32,10 +32,30 @@ Example Catalog :4200
                             chirimen-server :33330
 ```
 
+## workspace/（HTML / JavaScript の保存場所）
+
+host 側の `workspace/` は、既存の Runtime Example と、あなたが作る HTML + Vanilla JavaScript Example の作業領域である。container 内部の mount path よりも、「ここに保存すれば Example Server から実行できる」ことを優先する。
+
+リポジトリ（clone 先）からの相対パスで置く:
+
+```text
+<chirimen-raspi-docker の clone 先>/
+└── workspace/
+    └── my-first-example/   # 例（作成手順は #317）
+        ├── index.html
+        └── main.js
+```
+
+ホームディレクトリへ clone した場合の例は `~/chirimen-raspi-docker/workspace/` である。絶対パスは clone 先によって変わるため、固定パスとしては扱わない。
+
+`workspace/<subdir>/` に置いた内容は Example Server から `http://127.0.0.1:4173/<subdir>/` で配信される。同ディレクトリには `led-blink/` などの既存 Example もある。配置の正本は [workspace/README.md](../../workspace/README.md)。自作 Example の作成手順は [#317](https://github.com/gurezo/chirimen-raspi-docker/issues/317)、編集方法の詳細は [Browser Development Environment](./browser-development.md) を参照する。
+
 `setups/` は Host 構築、`scripts/` は診断と Runtime 起動。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
 関連:
 
+- 親 Issue: [#315 初心者が workspace に HTML / JavaScript を作成して CHIRIMEN を実行できる Getting Started を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/315)
+- 子 Issue: [#316 Getting Started に workspace の役割とユーザー作成 Example の保存場所を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/316)
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
 - 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
