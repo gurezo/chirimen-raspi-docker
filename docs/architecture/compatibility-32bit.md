@@ -1,12 +1,25 @@
-# 32-bit Compatibility
+# 32-bit Compatibility (Historical / Unsupported)
 
-← [Compatibility](./compatibility.md)
+← [Compatibility](./compatibility.md)（現行の 64-bit Support Policy）
 
-## Status
+```text
+Status: Historical / Unsupported
 
-32-bit Raspberry Pi OS は `chirimen-raspi-docker` の推奨環境ではありません。
+Raspberry Pi OS 32-bit is no longer supported by chirimen-raspi-docker.
 
-このページは過去の実機検証結果と技術的制約を記録するためのものです。Verified でも `Supported` / Recommended とは書かない。
+This document is retained as a technical record of previous
+compatibility testing and implementation decisions.
+```
+
+## この文書の位置づけ
+
+**このページは現行の Getting Started / セットアップ手順ではない。**
+
+- 現行のサポート対象・手順: [Getting Started](../guides/getting-started.md) / [Compatibility](./compatibility.md)
+- 標準環境: Raspberry Pi 3 B+ / 4 / 5 の **Raspberry Pi OS 64-bit**（Desktop を標準。Lite も可）
+- 本ページの役割: 過去の 32-bit 実機検証・architecture 判定・Node / Nx / esbuild workaround の技術記録
+
+Verified でも `Supported` / Recommended とは書かない。推測の新事実は追加しない。根拠は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) の実機検証記録と親 [#337](https://github.com/gurezo/chirimen-raspi-docker/issues/337) の方針である。
 
 ## Why 32-bit is not recommended
 
@@ -107,6 +120,7 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 ## Related Issues
 
 - 親 Issue: [#337 Raspberry Pi OS 32-bit をサポート対象外とし Runtime を 64-bit に一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/337)
+- 子 Issue: [#344 Raspberry Pi OS 32-bit の検証結果と support 終了背景を Historical Documentation として保存する](https://github.com/gurezo/chirimen-raspi-docker/issues/344)
 - 子 Issue: [#339 Dockerfile.32bit と arm/v7 Docker build path を削除する](https://github.com/gurezo/chirimen-raspi-docker/issues/339)
 - 親 Issue: [#224 Documentation を初見ユーザー向けに再構成する](https://github.com/gurezo/chirimen-raspi-docker/issues/224)
 - 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227)
