@@ -1,7 +1,6 @@
-# 64-bit OS (linux/arm64, linux/amd64).
-# Node 24 official images do not include linux/arm/v7; use Dockerfile.32bit
-# on 32-bit Raspberry Pi OS. Keep stages in sync except FROM and the
-# 32-bit build command (esbuild; Nx hasher is unreliable on armv7).
+# Supported path: 64-bit OS (linux/arm64, linux/amd64) with Node 24.
+# Raspberry Pi OS 32-bit / linux/arm/v7 is unsupported; see
+# docs/architecture/compatibility-32bit.md for Historical notes.
 FROM node:24-bookworm-slim AS base
 
 WORKDIR /workspace
