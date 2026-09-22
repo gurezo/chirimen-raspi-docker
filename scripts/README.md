@@ -38,7 +38,7 @@ device マッピング・LAN 公開・Pi 4 / Pi 5 の on-device build が必要�
 
 | 確認 | 失敗時 |
 | --- | --- |
-| Raspberry Pi / OS / architecture | 実機と Raspberry Pi OS Lite 64-bit を確認する |
+| Raspberry Pi / OS / architecture | 実機と Raspberry Pi OS 64-bit Desktop（Lite も可）を確認する |
 | Memory / Swap | `sudo ./setups/swap.sh`（任意。主用途は Pi 4 / Pi 5 の開発・Docker build。Runtime-only では必須ではない） |
 | I2C / `/dev/i2c-*` | `sudo ./setups/enable-i2c.sh` |
 | Docker Engine | `./setups/docker.sh` |

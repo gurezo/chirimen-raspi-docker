@@ -30,7 +30,7 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 | 項目 | 値 |
 | --- | --- |
 | Raspberry Pi | 3 B+ / 4 / 5 |
-| OS | Raspberry Pi OS Lite 64-bit |
+| OS | Raspberry Pi OS 64-bit Desktop（Lite も可） |
 | Architecture | `aarch64` |
 | Catalog | `http://127.0.0.1:4200/` |
 | Runtime Example | `http://127.0.0.1:4173/` |
@@ -38,7 +38,7 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 
 対象環境は推奨要件である。機種別結果の OS / Kernel / Architecture は実測記録であり、推奨名へ書き換えない。
 
-32-bit OS は対象外。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
+32-bit OS は Unsupported。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する（現行の検証手順ではない）。
 
 ## 対象 Example
 

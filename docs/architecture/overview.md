@@ -87,7 +87,7 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility](./compatibility.md) を参照。
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。Pi 3 B+（RAM 1GB）は下限であり **Runtime-only**（基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan）。code-server（Browser Editor）は任意の高負荷機能とする。Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md)）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build（[Raspberry Pi Setup](../guides/raspberry-pi-setup.md#development-only-swapsh)）。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。標準環境は **Raspberry Pi OS 64-bit Desktop**（Lite も可）。Pi 3 B+（RAM 1GB）は下限であり **Runtime-only**（基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan）。code-server（Browser Editor）は任意の高負荷機能とする。Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md)）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build（[Raspberry Pi Setup](../guides/raspberry-pi-setup.md#development-only-swapsh)）。
 
 ### 対応
 
@@ -98,7 +98,7 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 ### 未検証 / サポート対象外
 
 - Raspberry Pi 3 A+（ハードウェアスペック不足のためサポート対象外）
-- 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
+- 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](./compatibility-32bit.md)
 
 ### 非対応（現時点）
 
@@ -197,7 +197,7 @@ npx nx mcp --help
 | --- | --- |
 | [protocol.md](./protocol.md) | Protocol メッセージモデル・wire format・GPIO / I2C operations・[I2C Scan API flow](./protocol.md#i2c-scan-api-flow114) |
 | [docker.md](./docker.md) | Docker / Compose / device mount |
-| [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS はサポート対象外。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。Example Catalog / Runtime Example は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [runtime-verification.md](../examples/runtime-verification.md)） |
+| [Compatibility](./compatibility.md) | Compatibility（Pi 3 B+ / 4 / 5 の 64-bit 実機検証。32-bit OS は Unsupported。I2C Host Setup は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。Example Catalog / Runtime Example は [#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257) / [runtime-verification.md](../examples/runtime-verification.md)） |
 | [Example Catalog と Legacy 資産](../examples/catalog.md) | 出典・責務・status・Catalog 技術構成（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)） |
 | [browser-editor.md](./browser-editor.md) | Phase 8 Browser Editor 選定（code-server、arm64。image は #174。Compose は #175。既定起動は #208。初期設定は #178。Example 編集は #179。Extension は #201。利用ガイドは #183） |
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
