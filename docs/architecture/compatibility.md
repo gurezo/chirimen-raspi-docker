@@ -43,6 +43,16 @@ compose `up` / `down` による Runtime 利用の対応。Pi 3 B+ は非対応�
 | Raspberry Pi 4 | Supported | Runtime / Development |
 | Raspberry Pi 5 | Supported | Runtime / Development |
 
+## Development / Docker Build Support
+
+Docker image の build（`docker build` / `compose build` / `up --build`）の対応。Pi 3 B+ では高負荷・高温により安定した build が困難なため Unsupported とする。Build は Raspberry Pi 4 / Pi 5 を対象とする。
+
+| Model | Docker build / `compose build` / `up --build` | Status |
+| --- | --- | --- |
+| Raspberry Pi 3 B+ | Unsupported | Runtime-only（build 非対応） |
+| Raspberry Pi 4 | Supported | Build Supported |
+| Raspberry Pi 5 | Supported | Build Supported |
+
 ## Runtime / GPIO / I2C 共通仕様
 
 ### Runtime startup
