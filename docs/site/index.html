@@ -249,16 +249,21 @@ Runtime  = chirimen-server（:33330）</pre>
         <p>
           初めて利用する場合は
           <a href="./guides/getting-started.html">Getting Started</a>
-          の3段階（Raspberry Pi Setup → CHIRIMEN Setup → First Example）に従ってください。
-          Step 3 は Catalog から GPIO LED Blink で環境を確認し、続けて
+          に従ってください。入口は
+          <code>./setups/setup.sh</code>
+          →
+          <code>docker compose up -d</code>
+          →
+          <a href="http://localhost:4200">http://localhost:4200</a>
+          （Example Catalog）です。続けて
           <code>workspace/my-first-example</code>
           の自作 Example（Desktop または Browser Editor <code>:8080</code> → Example Server
-          <code>:4173</code>）へ進めます。
+          <code>:4173</code>）へ進めます。Host に Node.js / npm / pnpm / Nx は不要です。
         </p>
         <ol>
           <li>
             <a href="./guides/getting-started.html">Getting Started</a>
-            （3段階の入口）
+            （setup.sh → compose up → Catalog）
           </li>
           <li>
             <a href="./guides/raspberry-pi-setup.html">Raspberry Pi Setup</a>
