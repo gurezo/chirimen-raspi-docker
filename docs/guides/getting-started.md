@@ -36,6 +36,10 @@ Example Catalog :4200
 
 関連:
 
+- 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
+- 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
+- 実機検証: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
+- [Compatibility](../architecture/compatibility.md)（[Runtime Support](../architecture/compatibility.md#runtime-support) / [Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)）
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Step 1 の詳細正本。Host 構築）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する。任意）
@@ -53,8 +57,11 @@ Example Catalog :4200
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
-- Pi 3 B+ は **8GB swap と CPU ファンの両方** が必須。詳細は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)
-- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`
+- モデル別ロール（正本は [Compatibility](../architecture/compatibility.md)）:
+  - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
+  - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported）
+- Getting Started は GHCR / Prebuilt image を前提にしない。Pi 3 B+ では on-device の Docker build を案内しない
+- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
@@ -84,7 +91,7 @@ sudo ./setups/disable-squeekboard.sh
 
 | 順 | Script | 役割 |
 | --- | --- | --- |
-| 1 | `swap.sh` | Docker image ビルド前の Swap。Pi 3 B+ では必須 |
+| 1 | `swap.sh` | Host の Swap を確保する。低メモリ環境向け。Pi 3 B+ の Docker build 回避策としては案内しない（build は Pi 4 / Pi 5。詳細は [Compatibility](../architecture/compatibility.md)） |
 | 2 | `enable-i2c.sh` | `/dev/i2c-1` を使えるようにする。無いときは reboot 後に `--check` |
 | 3 | `disable-squeekboard.sh` | Desktop のスクリーンキーボードを Off。Lite では変更せず終わる |
 | 4 | `docker.sh` | Docker Engine。スクリプト末尾が reboot する |
@@ -160,12 +167,40 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 #### start.sh（Runtime 起動）
 
+機種により Docker build の扱いが異なる。正本は [Compatibility の Runtime Support / Development / Docker Build Support](../architecture/compatibility.md#runtime-support)。
+
+##### Raspberry Pi 3 B+（Runtime-only）
+
+Pi 3 B+ では on-device の Docker build は Unsupported である。`./scripts/start.sh` は引数なしだと `docker compose up --build` 相当になるため、**`--no-build` を付けて**起動する。`docker build` / `compose build` / `up --build` は案内しない。GHCR / Prebuilt image の手順もここでは書かない。
+
 ```sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh --no-build            # Runtime + Browser Editor + Examples + Catalog（build なし）
+./scripts/start.sh --lan --no-build      # 同上。Editor / Example / Catalog を LAN 公開
+```
+
+Compose を直接使う場合:
+
+```sh
+docker compose up
+docker compose down
+```
+
+`--build` は付けない。停止は `docker compose down`。
+
+##### Raspberry Pi 4 / Pi 5（Runtime / Development）
+
+Pi 4 / Pi 5 では Docker build が Supported である。引数なしの `./scripts/start.sh` は既定で `--build` を付けて起動する。
+
+```sh
+./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog（既定で --build）
 ./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。
+Compose を直接使う場合の例: `docker compose up`（必要なら `--build`）。開発・build の詳細は [Development](./development.md)。
+
+---
+
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で device マッピング手順は同一）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。
 
 64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。Pi 3 B+ でメモリが厳しいときは起動後に `docker compose stop chirimen-editor`。Step 3 に Editor は必須ではない。
 
