@@ -83,13 +83,13 @@ Browser と Node Runtime の間の通信契約は `libs/protocol` に集約す�
 
 OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の検証状態は [Compatibility](./compatibility.md) を参照。
 
-サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。Pi 3 B+（RAM 1GB）は下限であり、基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan である。code-server（Browser Editor）は任意の高負荷機能とする。Swap と低メモリ注意は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md#1-swapsh)。
+サポート対象は **Raspberry Pi 3 B+ / 4 / 5** の **Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。Pi 3 B+（RAM 1GB）は下限であり **Runtime-only**（基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan）。code-server（Browser Editor）は任意の高負荷機能とする。Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md)）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build（[Raspberry Pi Setup](../guides/raspberry-pi-setup.md#1-swapsh)）。
 
 ### 対応
 
-- Raspberry Pi 3 B+（Raspberry Pi OS 64-bit。8GB swap と CPU ファン必須。Editor は基本体験に含めない）
-- Raspberry Pi 4（Raspberry Pi OS 64-bit）
-- Raspberry Pi 5（Raspberry Pi OS 64-bit）
+- Raspberry Pi 3 B+（Raspberry Pi OS 64-bit。Runtime-only。Docker build は Unsupported。Editor は基本体験に含めない。低メモリ時の Swap は任意）
+- Raspberry Pi 4（Raspberry Pi OS 64-bit。Runtime / Development / Docker build）
+- Raspberry Pi 5（Raspberry Pi OS 64-bit。Runtime / Development / Docker build）
 
 ### 未検証 / サポート対象外
 

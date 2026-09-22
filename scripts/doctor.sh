@@ -211,13 +211,13 @@ check_memory_swap() {
   fi
 
   if [ "$mem_kib" -le "$LOW_MEMORY_KIB" ]; then
-    log "[error] swap: 0 (required on low-memory Pi such as 3 B+ before Docker builds)"
+    log "[warn] swap: 0 (optional on low-memory Pi; recommended for Pi 4 / 5 Docker builds, not a Pi 3 B+ build workaround)"
     advise_swap
-    record_error
+    record_warn
     return 0
   fi
 
-  log "[warn] swap: 0 (optional on Pi 4 / 5; enable if Docker builds OOM)"
+  log "[warn] swap: 0 (optional; enable on Pi 4 / 5 if Docker builds OOM)"
   advise_swap
   record_warn
 }

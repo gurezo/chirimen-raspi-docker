@@ -30,7 +30,7 @@ Getting Started Step 2（CHIRIMEN Setup）: doctor.sh → start.sh
 - [Troubleshooting](./troubleshooting.md)
 - [Docker 構成](../architecture/docker.md)
 - [Compatibility](../architecture/compatibility.md)（I2C Host Setup → Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
-- [setups/README.md](../../setups/README.md)（同じ5コマンドの短縮手順。Pi 3 B+ は 8GB swap と CPU ファン必須。低メモリ注意は本ページの swap.sh 節）
+- [setups/README.md](../../setups/README.md)（同じ5コマンドの短縮手順。swap.sh の主用途は Pi 4 / Pi 5 の開発・Docker build。詳細は本ページの swap.sh 節）
 - `setups/swap.sh` / `setups/enable-i2c.sh` / `setups/disable-squeekboard.sh` / `setups/docker.sh` / `setups/docker-compose.sh`
 
 ## スクリプトの責務
@@ -39,7 +39,7 @@ Getting Started Step 2（CHIRIMEN Setup）: doctor.sh → start.sh
 
 | 順 | スクリプト | なぜ実行するか | 変更する Host 設定 | reboot | 再実行 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `setups/swap.sh` | Docker image ビルド前にメモリ不足を避ける。Pi 3 B+ では必須。Pi 4 / 5 でも同じコマンドでよい | `/swapfile`（既定 8G）作成、`swapon`、`/etc/fstab` 追記。I2C と OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は触らない | 不要（即時有効。fstab で永続） | 同一サイズなら変更しない。サイズが違うときだけ `/swapfile` を作り直す。`--check` は変更なし |
+| 1 | `setups/swap.sh` | Pi 4 / Pi 5 の Source Development / Docker build 時の OOM 緩和。Runtime-only では必須ではない。標準順では実行してよい | `/swapfile`（既定 8G）作成、`swapon`、`/etc/fstab` 追記。I2C と OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は触らない | 不要（即時有効。fstab で永続） | 同一サイズなら変更しない。サイズが違うときだけ `/swapfile` を作り直す。`--check` は変更なし |
 | 2 | `setups/enable-i2c.sh` | I2C Example と Runtime が `/dev/i2c-1` を使うため | `raspi-config nonint do_i2c 0`、なければ boot config に `dtparam=i2c_arm=on` | `/dev/i2c-1` が無いときは **必要**。既にあれば不要 | `/dev/i2c-1` があれば設定を触らない。`--check` は sudo 不要で設定変更なし |
 | 3 | `setups/disable-squeekboard.sh` | Desktop で Browser Editor / Catalog を使うとき、スクリーンキーボードが出ないようにする。**Lite では変更せず終わる**（実行してよい） | Desktop なら `raspi-config nonint do_squeekboard S3`（Always Off）。I2C / Docker / swap は触らない | 通常不要。残る場合のみ再ログインまたは reboot | Lite / 非 Desktop / 既に Off なら変更せず終了。`--check` は sudo 不要 |
 | 4 | `setups/docker.sh` | Runtime を Compose で動かす Docker Engine を入れる | `apt` 更新、get.docker.com、`usermod -aG docker pi`。I2C は触らない | **スクリプト末尾が必ず `sudo reboot`** | 再実行しても apt / インストーラのあと reboot する |
@@ -59,8 +59,8 @@ CHIRIMEN Setup の `doctor.sh` / `start.sh` は `docker compose` プラグイン
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
 - **推奨環境: Raspberry Pi OS Lite 64-bit**
-- Pi 3 B+ / 4 / 5 は同じ5コマンド。差は swap の必要性（3 B+ は必須、4 / 5 は任意だが標準順では実行してよい）と、後述 GPIO 確認の `gpiomem` パス
-- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor）は必須ではない
+- Pi 3 B+ / 4 / 5 は同じ5コマンド。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build。Pi 3 B+ は Runtime-only で build 用 swap は必須ではない（標準順では実行してよい）。GPIO 確認の `gpiomem` パスは機種差あり
+- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor）は必須ではない。Docker build は Unsupported（[Compatibility](../architecture/compatibility.md)）
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
@@ -89,7 +89,11 @@ cd chirimen-raspi-docker
 
 ## 1. swap.sh
 
-Docker image ビルドの前に swap を確保する。Raspberry Pi 3 B+ はサポート対象の下限（RAM 1GB）であり、8GB swap が無いと image をビルドできない。Pi 4 / 5 の swap / ファンは任意だが、標準順では同じコマンドを実行してよい。`swap.sh` は I2C 設定を変更しない。
+`swap.sh` の主用途は **Raspberry Pi 4 / Pi 5** での Source Development / Docker build 時の OOM 緩和である。標準順では実行してよい。`swap.sh` は I2C 設定を変更しない。
+
+Docker build / `compose build` / `up --build` の対象機種は Pi 4 / Pi 5 のみである。手順は [Development](./development.md)。機種別の Supported / Unsupported は [Compatibility](../architecture/compatibility.md)。
+
+**Pi 3 B+ は Runtime-only** である。`swap.sh` を Pi 3 B+ の on-device Docker build を有効にする手段としては案内しない（build は Unsupported。swap の有無とは別のサポートポリシー）。Runtime-only 利用では build 用 swap は必須ではない。低メモリ時の任意緩和として実行してよい。
 
 Pi 3 B+ で成立させたい **基本体験** は次である。code-server（Browser Editor `:8080`）はここに含めない。
 
@@ -116,10 +120,7 @@ free -h
 
 既定は 8G の `/swapfile`。サイズを変える例: `sudo ./setups/swap.sh --size 8G`。`/etc/fstab` にも追記するので reboot 後も有効。**reboot は不要**（即時有効）。
 
-Raspberry Pi 3 B+ でビルドするときは、次の **両方** が必須である。片方だけでは足りない。
-
-- **8GB swap**: 無いと image をビルドできない
-- **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
+Pi 4 / Pi 5 で Docker build や開発中にメモリ不足・OOM が出る場合は `swap.sh` を実行する。CPU ファンは高負荷ビルド時の熱対策として任意だが推奨する。特定型番は指定しない。
 
 ### 既存 Swap を壊さない / 再実行
 
@@ -129,7 +130,7 @@ Raspberry Pi 3 B+ でビルドするときは、次の **両方** が必須で�
 - `--size` でサイズを変えたときだけ、既存 `/swapfile` を作り直す
 - `--check` は `/swapfile` が active か見るだけで、設定は変えない
 
-Pi 4 / 5 でも同じコマンドでよい。必須ではない。追加するだけで、既存の OS Swap を置き換えない。
+追加するだけで、既存の OS Swap を置き換えない。Runtime-only では必須ではない。
 
 ### ストレージ負荷
 
@@ -153,7 +154,7 @@ Compose を直接使う場合の Runtime + Examples + Catalog は次である。
 docker compose up chirimen-server chirimen-examples chirimen-example-catalog
 ```
 
-Pi 4 / 5 でメモリ不足や OOM が出る場合も `swap.sh` を提案する。OOM・熱暴走・Editor の切り分けは [Troubleshooting](./troubleshooting.md)。短縮手順は [setups/README.md](../../setups/README.md)。
+OOM・熱・Editor の切り分けは [Troubleshooting](./troubleshooting.md)。短縮手順は [setups/README.md](../../setups/README.md)。
 
 `docker.sh` の対象ユーザーは現行スクリプトどおり `pi` である。ログインユーザー名が違う環境でも `swap.sh` 自体は動く。Docker グループ追加の注意は手順 4 を参照する。
 

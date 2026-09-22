@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# Ensure a swap file on Raspberry Pi host (useful before Docker builds
-# on 1GB models such as Pi 3 B+). Idempotent. Requires root (sudo).
+# Ensure a swap file on Raspberry Pi host (for Pi 4 / Pi 5 Source
+# Development and Docker builds; optional on low-memory Runtime hosts).
+# Idempotent. Requires root (sudo). Not a workaround to enable Pi 3 B+
+# on-device Docker builds (Unsupported — see Compatibility).
 #
 # Usage:
 #   sudo ./setups/swap.sh              # create/enable 8G /swapfile
@@ -31,11 +33,14 @@ Usage: swap.sh [--size SIZE] [--check]
   --size     Swap file size for fallocate / dd (e.g. 8G, 2048M).
   --check    Verify that swap is active (no changes).
 
-Run before Docker image builds on low-memory hosts:
+Recommended before Docker image builds on Raspberry Pi 4 / Pi 5:
 
   sudo ./setups/swap.sh
   free -h
   ./scripts/start.sh
+
+Optional on low-memory Runtime hosts. Does not make Pi 3 B+ Docker
+build Supported.
 
 Examples:
   sudo ./setups/swap.sh
