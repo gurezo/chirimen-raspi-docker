@@ -5,6 +5,7 @@
 # only when needed. Verifies workspace/ and runs doctor.sh as
 # Runtime readiness. Does not run swap.sh, Docker build, or start.sh
 # (those are Development-only on Pi 4 / Pi 5; Pi 3 B+ stays Runtime-only).
+# Raspberry Pi OS 32-bit userland is Unsupported (exit 1); use 64-bit Desktop.
 #
 # Usage:
 #   ./setups/setup.sh
@@ -43,6 +44,11 @@ Usage: setup.sh
   Runs only the Host setup steps that are still needed, then checks
   workspace/ and Runtime readiness via doctor.sh.
 
+  Raspberry Pi OS 32-bit userland is Unsupported and stops immediately.
+  Supported environment: Raspberry Pi OS 64-bit Desktop.
+  See docs/architecture/compatibility.md and
+  docs/architecture/compatibility-32bit.md.
+
   Does not run swap.sh, Docker build, or start.sh.
   swap.sh and Docker build are Development-only (Pi 4 / Pi 5).
   Does not trigger image build on Pi 3 B+ (Runtime-only).
@@ -78,6 +84,43 @@ is_raspberry_pi_os() {
   return 1
 }
 
+# Userland bitness via getconf LONG_BIT (not uname -m alone).
+# Pi 4 / Pi 5 32-bit OS can report aarch64 with a 64-bit kernel.
+userland_bits() {
+  getconf LONG_BIT 2>/dev/null || true
+}
+
+is_unsupported_32bit_userland() {
+  local bits arch
+  bits="$(userland_bits)"
+  arch="$(uname -m)"
+
+  if [ "$bits" = "32" ]; then
+    return 0
+  fi
+
+  case "$arch" in
+    armv7l | armhf | i686 | i386)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+print_unsupported_32bit_message() {
+  err "Unsupported environment detected."
+  err ""
+  err "Raspberry Pi OS 32-bit is not supported."
+  err ""
+  err "Supported environment:"
+  err "  Raspberry Pi OS 64-bit Desktop"
+  err ""
+  err "See:"
+  err "  docs/architecture/compatibility.md"
+  err "  docs/architecture/compatibility-32bit.md"
+}
+
 require_environment() {
   if ! is_raspberry_pi; then
     err "this script is intended for Raspberry Pi only."
@@ -85,6 +128,10 @@ require_environment() {
   fi
   if ! is_raspberry_pi_os; then
     err "this script is intended for Raspberry Pi OS."
+    exit 1
+  fi
+  if is_unsupported_32bit_userland; then
+    print_unsupported_32bit_message
     exit 1
   fi
   log "Environment check: Raspberry Pi OS OK"

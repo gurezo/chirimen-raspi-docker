@@ -6,6 +6,7 @@
 # Enable I2C with enable-i2c.sh. Enable swap with swap.sh.
 # Hardware capability classification matches Server / Node Runtime
 # (detectHardwareCapabilities / classifyHardwareCapabilities).
+# Raspberry Pi OS 32-bit userland is Unsupported (exit 1); use 64-bit Desktop.
 #
 # Usage:
 #   ./scripts/doctor.sh
@@ -47,7 +48,7 @@ Usage: doctor.sh
 
   Check Raspberry Pi host prerequisites for chirimen-raspi-docker:
     - Raspberry Pi model
-    - OS
+    - OS / userland bitness (32-bit is Unsupported)
     - architecture
     - Memory / Swap
     - Docker
@@ -60,6 +61,11 @@ Usage: doctor.sh
 
   Diagnostics only: doctor.sh does not change host settings
   (no raspi-config, no boot config, no swap, no Docker install).
+
+  Raspberry Pi OS 32-bit userland is Unsupported and stops immediately.
+  Supported environment: Raspberry Pi OS 64-bit Desktop.
+  See docs/architecture/compatibility.md and
+  docs/architecture/compatibility-32bit.md.
 
   When a check fails, use the matching Raspberry Pi Setup script:
     Swap problem        sudo ./setups/swap.sh
@@ -125,10 +131,54 @@ check_pi_model() {
   record_error
 }
 
+# Userland bitness via getconf LONG_BIT (not uname -m alone).
+# Pi 4 / Pi 5 32-bit OS can report aarch64 with a 64-bit kernel.
+userland_bits() {
+  getconf LONG_BIT 2>/dev/null || true
+}
+
+is_unsupported_32bit_userland() {
+  local bits arch
+  bits="$(userland_bits)"
+  arch="$(uname -m)"
+
+  if [ "$bits" = "32" ]; then
+    return 0
+  fi
+
+  case "$arch" in
+    armv7l | armhf | i686 | i386)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+print_unsupported_32bit_message() {
+  log "[error] Unsupported environment detected."
+  log ""
+  log "Raspberry Pi OS 32-bit is not supported."
+  log ""
+  log "Supported environment:"
+  log "  Raspberry Pi OS 64-bit Desktop"
+  log ""
+  log "See:"
+  log "  docs/architecture/compatibility.md"
+  log "  docs/architecture/compatibility-32bit.md"
+}
+
+reject_unsupported_32bit_userland() {
+  if ! is_unsupported_32bit_userland; then
+    return 0
+  fi
+
+  print_unsupported_32bit_message
+  exit 1
+}
+
 check_os() {
   local pretty=""
-  local arch
-  arch="$(uname -m)"
   log "Checking OS..."
 
   if [ -r /etc/os-release ]; then
@@ -138,16 +188,20 @@ check_os() {
   if [ -n "$pretty" ]; then
     log "[ok] OS: $pretty"
   else
-    log "[warn] OS: /etc/os-release PRETTY_NAME unavailable (standard: Raspberry Pi OS Lite 64-bit)"
+    log "[warn] OS: /etc/os-release PRETTY_NAME unavailable (standard: Raspberry Pi OS 64-bit Desktop)"
     record_warn
   fi
 
-  case "$arch" in
-    armv7l | armhf | i686 | i386)
-      log "[warn] 32-bit OS/architecture ($arch); standard is Raspberry Pi OS Lite 64-bit"
-      record_warn
-      ;;
-  esac
+  reject_unsupported_32bit_userland
+
+  local bits
+  bits="$(userland_bits)"
+  if [ -n "$bits" ]; then
+    log "[ok] userland: ${bits}-bit (getconf LONG_BIT)"
+  else
+    log "[warn] userland: getconf LONG_BIT unavailable"
+    record_warn
+  fi
 }
 
 check_architecture() {
@@ -156,11 +210,11 @@ check_architecture() {
   log "Checking architecture..."
 
   case "$arch" in
-    aarch64 | armv7l)
+    aarch64)
       log "[ok] architecture: $arch"
       ;;
     *)
-      log "[warn] unexpected architecture: $arch (expected aarch64 or armv7l on Raspberry Pi)"
+      log "[warn] unexpected architecture: $arch (expected aarch64 on Raspberry Pi OS 64-bit)"
       record_warn
       ;;
   esac
