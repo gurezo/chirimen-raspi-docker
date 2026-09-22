@@ -265,7 +265,9 @@ cd chirimen-raspi-docker
 
 `setup.sh` は状態を確認し、必要な Host script（I2C / Squeekboard / Docker / Compose）だけを呼ぶ。`swap.sh`・Docker build・`start.sh` は実行しない。reboot が必要なら案内に従い、reboot 後に同じ `./setups/setup.sh` を再実行する。
 
-手動で個別実行する場合の Runtime Host 標準順（`swap.sh` なし）:
+#### Advanced / Manual Setup
+
+初心者は上記の `./setups/setup.sh` だけを使う。個別 script の判断は不要である。確認や上級者向けに手で実行する場合の Runtime Host 標準順（`swap.sh` なし）:
 
 ```sh
 sudo ./setups/enable-i2c.sh

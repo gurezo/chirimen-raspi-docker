@@ -11,13 +11,16 @@ Wiki の設計意図と、実装後のリポジトリ構造をまとめる。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 上で、CHIRIMEN 開発を始められる Runtime を提供する。Host 準備は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（`setups/`）。**CHIRIMEN Setup** の起動入口は `./scripts/start.sh` である（Pi 3 B+ は Runtime-only のため `--no-build`。詳細は [Getting Started](../guides/getting-started.md)）。
+Raspberry Pi 3 / 4 / 5 上で、CHIRIMEN 開発を始められる Runtime を提供する。Host 準備は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（`setups/`）。初心者の Runtime 操作は `docker compose up -d` / `down` である（詳細は [Getting Started](../guides/getting-started.md)）。`./scripts/start.sh` は Development / 上級者向け（device mapping・LAN・on-device build。Pi 3 B+ は `--no-build`）。
 
 ```text
-Raspberry Pi Setup（setups/）
+./setups/setup.sh               # Beginner / Runtime Host setup
         ↓
-./scripts/doctor.sh
+docker compose up -d            # Runtime 操作（Pi 3 / 4 / 5 共通。build なし）
         ↓
+http://localhost:4200
+
+Development / 上級者:
 ./scripts/start.sh              # Pi 4 / Pi 5（既定で --build）
   or --no-build                 # Pi 3 B+ Runtime-only
 ```
@@ -123,15 +126,16 @@ chirimen-raspi-docker/
 │   └── server/
 │       ├── Dockerfile          # 64-bit（Node 24）
 │       └── Dockerfile.32bit    # 32-bit（Node 22）。サポート対象外。削除はしない
-├── scripts/                    # CHIRIMEN Setup（doctor → start）。build-*.mjs は開発・ドキュメント用
+├── scripts/                    # CHIRIMEN Setup（doctor / start）。build-*.mjs は開発・ドキュメント用
 │   ├── README.md
-│   ├── doctor.sh               # Host Setup 完了後の読み取り専用診断
-│   ├── start.sh                # CHIRIMEN Runtime 起動
+│   ├── doctor.sh               # Host Setup 完了後の読み取り専用診断（setup.sh からも呼ぶ）
+│   ├── start.sh                # Development / 上級者向け起動補助（capability-aware。既定 --build）
 │   └── build-server.mjs        # 32-bit Docker 用 esbuild bundle
-├── setups/                     # Raspberry Pi Setup / Host 構築（swap → I2C → Squeekboard → Docker / Compose。Lite では Squeekboard は no-op）
-│   ├── swap.sh
+├── setups/                     # Raspberry Pi Setup / Host 構築（初心者入口は setup.sh。swap は Development-only）
+│   ├── setup.sh                # Beginner / Runtime Host orchestration
+│   ├── swap.sh                 # Development-only（Pi 4 / Pi 5 の build 向け）
 │   ├── enable-i2c.sh
-│   ├── disable-squeekboard.sh  # 標準順の3番。Lite では変更せず終わる（#271 / #278）
+│   ├── disable-squeekboard.sh  # Lite では変更せず終わる（#271 / #278）
 │   ├── docker.sh
 │   ├── docker-compose.sh
 │   └── README.md
@@ -168,8 +172,9 @@ chirimen-raspi-docker/
 
 ## Docker と scripts
 
-- **Raspberry Pi Setup**（Host）は `setups/`。I2C 有効化は `setups/enable-i2c.sh`
-- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。`--32bit` は Runtime only。サポート対象は 64-bit OS）
+- **Raspberry Pi Setup**（Host）の初心者入口は `setups/setup.sh`。I2C 有効化は必要時に `setups/enable-i2c.sh`
+- **Runtime 操作**は `docker compose up -d` / `down`（Pi 3 / 4 / 5 共通。build なし）。正本は [Getting Started](../guides/getting-started.md)
+- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。`scripts/start.sh` は Development / 上級者向け（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。`--32bit` は Runtime only。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
 

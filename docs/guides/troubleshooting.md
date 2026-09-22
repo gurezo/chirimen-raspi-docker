@@ -22,7 +22,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | --- | --- |
 | swap / I2C 無効 / Docker 未導入 / `/dev/i2c-1` が host に無い | [Raspberry Pi Setup](./raspberry-pi-setup.md)（`setups/`） |
 | Host は揃っているが起動前に怪しい | `./scripts/doctor.sh`（設定は変えない。[Getting Started の Step 2](./getting-started.md#step-2-start-runtime)） |
-| 起動しない / health が返らない / device mapping | `./scripts/start.sh` と [Runtime Diagnostics](./runtime-diagnostics.md) |
+| 起動しない / health が返らない | `docker compose up -d` と [Runtime Diagnostics](./runtime-diagnostics.md)。device mapping が必要なときだけ `./scripts/start.sh` |
 | LED / I2C Example が動かない | [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md) |
 
 `doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。
@@ -70,10 +70,10 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 | --- | --- |
 | I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`setups/enable-i2c.sh` → reboot → `--check`） |
 | GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
-| 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す。Pi 3 B+ は `--no-build`） |
+| device mapping が無い | Runtime はまず `docker compose up -d`。GPIO / I2C device を capability-aware に渡すときは `./scripts/start.sh`（Pi 3 B+ は `--no-build`） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
 
-`compose.yaml` に任意 device を固定列挙しない。`scripts/start.sh` が capability-aware に追加する。
+`compose.yaml` に任意 device を固定列挙しない。必要なときは `scripts/start.sh` が capability-aware に追加する。
 
 ## I2C が使えない / scan が空
 
@@ -87,7 +87,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 1. host で I2C を有効化して reboot する（[Raspberry Pi Setup](./raspberry-pi-setup.md)）
 2. `./setups/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
-3. `./scripts/start.sh` し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
+3. `docker compose up -d`（または device mapping が必要なら `./scripts/start.sh`。Pi 3 B+ は `--no-build`）し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
 
 Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
@@ -331,8 +331,8 @@ docker compose exec chirimen-editor id
 
 ### 対処
 
-- 推奨入口は `./scripts/start.sh`（host uid を Editor に渡す）
-- `docker compose up` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
+- Browser Editor で host uid を渡すときは `./scripts/start.sh`（Development / 上級者向け）
+- `docker compose up -d` を直接使う場合は `CHIRIMEN_EDITOR_UID` / `CHIRIMEN_EDITOR_GID` / `CHIRIMEN_EDITOR_USER` を host に合わせる
 - root では起動しない
 - GPIO / I2C の Permission denied はこの節ではなく上記「Permission denied（GPIO / I2C）」
 

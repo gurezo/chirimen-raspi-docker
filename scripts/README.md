@@ -32,7 +32,7 @@ device マッピング・LAN 公開・Pi 4 / Pi 5 の on-device build が必要�
 | Script | 役割 | やらないこと |
 | --- | --- | --- |
 | `doctor.sh` | Host Setup **完了後**の読み取り専用診断。sudo 不要。`setup.sh` からも呼ばれる | Host 設定（I2C / swap / Docker）を変えない。失敗時は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md) へ戻る |
-| `start.sh` | CHIRIMEN Runtime の起動補助（Compose）。存在する GPIO / I2C device だけを渡す。既定は `--build`（Pi 4 / Pi 5）。Pi 3 B+ は `--no-build` | I2C 有効化、swap、Docker Engine のインストールはしない。beginner 第一導線ではない |
+| `start.sh` | Development / 上級者向けの起動補助（Compose）。存在する GPIO / I2C device だけを渡す。既定は `--build`（Pi 4 / Pi 5）。Pi 3 B+ は `--no-build`。**Runtime 操作の正本は `docker compose up -d`** | I2C 有効化、swap、Docker Engine のインストールはしない。beginner 第一導線ではない |
 
 `doctor.sh` の確認対象と失敗時の戻先:
 

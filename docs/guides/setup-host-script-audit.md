@@ -42,7 +42,7 @@
 | [`setups/disable-squeekboard.sh`](../../setups/disable-squeekboard.sh) | Conditional | Desktop 向け。Lite では no-op のため呼び出し可 |
 | [`setups/swap.sh`](../../setups/swap.sh) | Development only | **呼ばない** |
 | [`scripts/doctor.sh`](../../scripts/doctor.sh) | Runtime required（検証） | Host 設定は変えない。readiness check として `setup.sh` から呼び出し済み（#330） |
-| [`scripts/start.sh`](../../scripts/start.sh) | Runtime required（起動） | Host `setup.sh` の範囲外。完了案内で `docker compose up -d` と `http://localhost:4200` を示す側 |
+| [`scripts/start.sh`](../../scripts/start.sh) | Development / 上級者向け（起動補助） | Host `setup.sh` の範囲外。Runtime 操作の正本は `docker compose up -d`。完了案内で compose と `http://localhost:4200` を示す側 |
 | [`scripts/build-docs-site.mjs`](../../scripts/build-docs-site.mjs) / [`scripts/build-server.mjs`](../../scripts/build-server.mjs) | Development only | 呼ばない |
 | `workspace/` 準備 | Runtime required（検証） | 専用 Host script は無い。`setup.sh` が存在・書き込み可否を確認（#330） |
 | GPIO permission / device | docs 手確認 + `doctor.sh` probe | 専用 `setups/` script は無い。`doctor.sh` の probe を再利用する |
@@ -128,11 +128,11 @@ setup.sh（#328 / #329 / #330 / #331）
 
 | 項目 | 内容 |
 | --- | --- |
-| 責務 | capability に応じた Compose 起動。存在する GPIO / I2C device だけを渡す。既定は build 相当、Pi 3 B+ は `--no-build` |
+| 責務 | capability に応じた Compose 起動補助。存在する GPIO / I2C device だけを渡す。既定は build 相当、Pi 3 B+ は `--no-build` |
 | 依存 | Docker Compose プラグイン、`compose.yaml` |
 | reboot | なし |
-| 分類 | **Runtime required（起動）** / Host `setup.sh` の範囲外 |
-| 備考 | 親 #326 の最終 UX は `docker compose up -d` → `localhost:4200`。`setup.sh` は起動そのものではなく案内まで |
+| 分類 | **Development / 上級者向け（起動補助）** / Host `setup.sh` の範囲外 |
+| 備考 | 親 #326 / #333 の Runtime 操作は `docker compose up -d` → `localhost:4200`。`start.sh` は device mapping・LAN・on-device build 向け。`setup.sh` は起動そのものではなく案内まで |
 
 ### `build-docs-site.mjs` / `build-server.mjs`
 
@@ -168,7 +168,18 @@ setup.sh（#328 / #329 / #330 / #331）
 | First Example Guide | Getting Started 内 my-first-example / `workspace/` |
 | `start.sh` / build | Development / 上級者向けへ降格 |
 
-Setup / Development / Compatibility の横断総点検は親 #326 の後続子 Issue [#333](https://github.com/gurezo/chirimen-raspi-docker/issues/333) で行う。
+Setup / Development / Compatibility の横断総点検は [#333](https://github.com/gurezo/chirimen-raspi-docker/issues/333) で実施する（下記）。
+
+## docs との整合（#333）
+
+| 項目 | 状態 |
+| --- | --- |
+| Runtime 操作 = `docker compose up/down` | overview / docker / compatibility / guides で反映 |
+| `setup.sh` = Beginner Host 入口 | Getting Started / setups / README と一致 |
+| `start.sh` = Development / 上級者向け | 分類を「Runtime required（起動）」から降格 |
+| `swap.sh` / Docker build = Development-only（Pi 4 / Pi 5） | #331 済みを維持 |
+| Pi 3 B+ = Runtime-only | Compatibility と一致 |
+| 個別 setup = Advanced / Manual Setup | Getting Started / raspberry-pi-setup / setups/README |
 
 ## 完了条件チェック（#327）
 
@@ -194,3 +205,12 @@ Setup / Development / Compatibility の横断総点検は親 #326 の後続子 I
 - [x] First Example Guide（my-first-example / `workspace/`）へ辿れる
 - [x] 第一導線に build command が無い
 - [x] Host Node/npm/pnpm/Nx を要求しない
+
+## 完了条件チェック（#333）
+
+- [x] README / Getting Started が一致
+- [x] Compatibility / build policy が一致
+- [x] Development Guide / swap の役割が一致
+- [x] 初心者に個別 setup の判断を要求しない（Advanced / Manual に分離）
+- [x] First Example / workspace Guide と接続
+- [x] Architecture / Troubleshooting が `start.sh` を Runtime 推奨入口としない

@@ -29,7 +29,7 @@ Development / Build（Pi 4 / Pi 5 のみ）
 
 各 script の責務と呼び出し可否の正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
 
-## 手動で実行する場合の標準順（Runtime Host）
+## Advanced / Manual Setup（Runtime Host）
 
 個別確認向け。初心者は上の `setup.sh` を使う（その場合、下記の `doctor.sh` も setup 経由で賄える）。`swap.sh` は含めない。
 
