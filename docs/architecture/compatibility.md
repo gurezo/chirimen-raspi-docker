@@ -61,14 +61,19 @@ Docker image の build（`docker build` / `compose build` / `up --build`）の�
 
 ### Runtime startup
 
-Pi 3 / 4 / 5 とも `./scripts/start.sh`（モデルごとの `compose.yaml` 手編集は不要）。引数なしは既定で `--build` 相当のため、対象は次のとおり。
+Pi 3 / 4 / 5 とも **Runtime 操作は同じ** `docker compose up -d` / `down`（モデルごとの `compose.yaml` 手編集は不要）。正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-start-runtime)。
 
-| Model | 推奨コマンド | 備考 |
+| Model | Runtime 操作 | 備考 |
 | --- | --- | --- |
-| Raspberry Pi 3 B+ | `./scripts/start.sh --no-build` | Runtime-only。on-device Docker build は Unsupported |
-| Raspberry Pi 4 / Pi 5 | `./scripts/start.sh` | 既定で `--build`。Development / Docker Build Supported |
+| Raspberry Pi 3 B+ | `docker compose up -d` | Runtime-only。on-device Docker build は Unsupported |
+| Raspberry Pi 4 / Pi 5 | `docker compose up -d` | Runtime。Development build は別導線 |
 
-機種別手順の正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-start-runtime)（beginner は `docker compose up -d`）。
+Development / 上級者向けに `./scripts/start.sh` を使う場合のみ、引数なしは既定で `--build` 相当のため次のとおり。
+
+| Model | Development コマンド | 備考 |
+| --- | --- | --- |
+| Raspberry Pi 3 B+ | `./scripts/start.sh --no-build` | Runtime-only。build なし |
+| Raspberry Pi 4 / Pi 5 | `./scripts/start.sh` | 既定で `--build`。Docker Build Supported |
 
 ### GPIO capability detection
 

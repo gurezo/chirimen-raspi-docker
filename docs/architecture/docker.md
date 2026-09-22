@@ -20,11 +20,21 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 
 - カスタム Raspberry Pi イメージは作成しない
 - Docker は配布・実行手段であり、中心の責務は Runtime / Protocol / Polyfill
-- 推奨入口は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping）
+- **Runtime 操作**の入口は `docker compose up -d` / `down`（初心者正本は [Getting Started](../guides/getting-started.md)）
+- Development / 上級者向けの起動補助は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping・LAN・on-device build）
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
 - サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
-- Pi 3 B+ は **Runtime-only**（`./scripts/start.sh --no-build`）。on-device Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md#development--docker-build-support)）
+- Pi 3 B+ は **Runtime-only**（compose `up` / `down` のみ。on-device Docker build は Pi 4 / Pi 5 のみ。[Compatibility](./compatibility.md#development--docker-build-support)）
 - 32-bit OS はサポート対象外（`Dockerfile.32bit` は削除しない）
+
+Runtime（beginner / 機種共通）:
+
+```sh
+docker compose up -d
+docker compose down
+```
+
+Development / 上級者（device mapping・LAN・build）:
 
 ```sh
 chmod +x scripts/start.sh
@@ -47,12 +57,14 @@ chmod +x scripts/start.sh
 | 4173 | chirimen-examples | Example Server / Runtime Examples |
 | 4200 | chirimen-example-catalog | Example Catalog |
 
-| 利用方法 | Compose | 推奨入口 |
-| --- | --- | --- |
-| Runtime + Editor + Examples + Catalog（既定。Pi 4 / Pi 5） | `docker compose up --build` | `./scripts/start.sh` |
-| 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` |
-| Runtime-only（Pi 3 B+。build なし） | `docker compose up` | `./scripts/start.sh --no-build` |
-| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) |
+| 利用方法 | Compose | 入口 | 区分 |
+| --- | --- | --- | --- |
+| Runtime + Editor + Examples + Catalog（Pi 3 / 4 / 5） | `docker compose up -d` | `docker compose up -d` | Runtime |
+| 停止 | `docker compose down` | `docker compose down` | Runtime |
+| Development（Pi 4 / Pi 5。既定で build） | `docker compose up --build` | `./scripts/start.sh` | Development |
+| 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` | Development |
+| Pi 3 B+ で start.sh を使う場合 | `docker compose up`（build なし） | `./scripts/start.sh --no-build` | Development / 上級者 |
+| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) | — |
 
 ### chirimen-server
 
@@ -122,11 +134,10 @@ host の `pnpm nx serve example-catalog` も port `4200` を使う。同時に�
 
 ### 起動と health check
 
-Runtime + Editor + Examples + Catalog（Pi 4 / Pi 5 の例。既定で `--build`。Pi 3 B+ は `--no-build`）:
+Runtime（beginner。Pi 3 / 4 / 5 共通）:
 
 ```sh
-./scripts/start.sh
-# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
+docker compose up -d
 curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/
@@ -135,13 +146,15 @@ curl -fsS http://127.0.0.1:4200/
 
 HTTP の確認 URL は Raspberry Pi 上、または SSH port forward 先の `127.0.0.1` である。
 
-LAN 公開（Editor / Example / Catalog のみ。Runtime `33330` は変えない）:
+Development / 上級者（device mapping・LAN・build。Pi 4 / Pi 5 の例。既定で `--build`。Pi 3 B+ は `--no-build`）:
 
 ```sh
-./scripts/start.sh --lan
+./scripts/start.sh
+# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
+./scripts/start.sh --lan         # Editor / Example / Catalog を LAN 公開（Runtime 33330 は変えない）
 ```
 
-`./scripts/start.sh` のあと Example の確認先は `http://127.0.0.1:4173/led-blink/` など（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Example Catalog は `http://127.0.0.1:4200/`（Run Task **Open Example Catalog**。ported の「実行」/「編集」は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Runtime 確認は [Runtime Diagnostics](../guides/runtime-diagnostics.md)。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179)。
+起動後の Example 確認先は `http://127.0.0.1:4173/led-blink/` など（Compose `chirimen-examples` が起動済み。Run Task **Serve examples** は URL 案内）。Example Catalog は `http://127.0.0.1:4200/`（Run Task **Open Example Catalog**。ported の「実行」/「編集」は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）。Runtime 確認は [Runtime Diagnostics](../guides/runtime-diagnostics.md)。手順は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179)。
 
 `/healthz` の `status` が `expired` でも HTTP 200 ならプロセスは生存している。server の期待する応答例:
 
@@ -168,7 +181,7 @@ curl -fsS http://127.0.0.1:4173/led-blink/
 
 ## Editor image（単独起動）
 
-推奨入口は Compose / `./scripts/start.sh`。本節は image 単独の build / `docker run`（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)）。選定の正本は [browser-editor.md](./browser-editor.md)。
+通常の入口は Runtime の `docker compose up -d`、または Development の `./scripts/start.sh`。本節は image 単独の build / `docker run`（[#174](https://github.com/gurezo/chirimen-raspi-docker/issues/174)）。選定の正本は [browser-editor.md](./browser-editor.md)。
 
 Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/class/gpio` は渡さない。
 
