@@ -213,7 +213,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | doctor.sh | All checks passed。`[ok] I2C: available (/dev/i2c-1)`。`[ capabilities ] gpio=sysfs i2c=i2c-dev`。設定は変更しない（#217） |
 | Docker startup | 既存導入済み。`./setups/docker.sh` は I2C 設定を変更しない（#218）。Compose は導入済み |
 | Runtime health | `./scripts/start.sh` の mapping は `i2c-1=yes`。`curl http://localhost:33330/health` は `{"name":"chirimen-raspi-docker-server","status":"ok","version":"0.0.1"}` |
-| I2C Runtime | `docker compose exec chirimen-server ls -l /dev/i2c-1` で device あり。`requestI2CAccess` + port `1` scan 成功（#99） |
+| I2C Runtime | `docker compose exec chirimen-runtime ls -l /dev/i2c-1` で device あり。`requestI2CAccess` + port `1` scan 成功（#99） |
 | Browser Scan | ADT7410 / `0x48` は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116) |
 | known limitations | 初期状態で `/dev/i2c-1` が無い場合あり。Docker 済みでは `docker.sh` は idempotent。`Supported` とは書かない |
 

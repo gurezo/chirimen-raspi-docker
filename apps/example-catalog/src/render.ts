@@ -127,7 +127,7 @@ export const renderRuntimeDiagnostics = (
     createServiceLink(
       runtimeHealthHref(hostname),
       'GET /health',
-      'chirimen-server の /health を開く'
+      'chirimen-runtime の /health を開く'
     )
   );
   docs.append(

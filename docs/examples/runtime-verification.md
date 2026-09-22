@@ -34,7 +34,7 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 | Architecture | `aarch64` |
 | Catalog | `http://127.0.0.1:4200/` |
 | Runtime Example | `http://127.0.0.1:4173/` |
-| Runtime | `chirimen-server` `:33330` |
+| Runtime | `chirimen-runtime` `:33330` |
 
 対象環境は推奨要件である。機種別結果の OS / Kernel / Architecture は実測記録であり、推奨名へ書き換えない。
 
@@ -87,7 +87,7 @@ curl http://127.0.0.1:33330/health
 
 推奨順（ピン衝突回避）: Blink → Button → PIR → I2C Scan + ADT7410 → SHT30 → ADT7410 を外して ADS1115。
 
-Browser は Pi 上の Chromium、または LAN のデスクトップブラウザ。Polyfill は各 Example が読み込む本リポジトリの bundle。Runtime は `chirimen-server` `:33330`。
+Browser は Pi 上の Chromium、または LAN のデスクトップブラウザ。Polyfill は各 Example が読み込む本リポジトリの bundle。Runtime は `chirimen-runtime` `:33330`。
 
 ## 合格条件
 
@@ -119,7 +119,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 | --- | --- |
 | Raspberry Pi model | Raspberry Pi 3 Model B+ |
 | OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-v8` / `aarch64` |
-| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。`gpio=sysfs` / `i2c=i2c-dev` |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-runtime` `:33330`。`gpio=sysfs` / `i2c=i2c-dev` |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
@@ -137,7 +137,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 | --- | --- |
 | Raspberry Pi model | Raspberry Pi 4 Model B Rev 1.4 |
 | OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-v8` / `aarch64` |
-| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev` |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-runtime` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev` |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
@@ -155,7 +155,7 @@ Runtime 能力（sysfs / i2c-dev / Protocol E2E）は [Compatibility](../archite
 | --- | --- |
 | Raspberry Pi model | Raspberry Pi 5 Model B Rev 1.0 |
 | OS / Kernel / Architecture | Raspbian OS 64-bit / `6.18.34+rpt-rpi-2712` / `aarch64` |
-| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-server` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev`。Browser Development Flow の一次環境（#243） |
+| Browser / Browser Polyfill / Runtime | Chromium または LAN ブラウザ。本リポジトリの polyfill bundle。`chirimen-runtime` `:33330`。doctor All checks passed。`gpio=sysfs` / `i2c=i2c-dev`。Browser Development Flow の一次環境（#243） |
 
 | Example | Device / schematic | GPIO / I2C result | status | notes |
 | --- | --- | --- | --- | --- |
