@@ -6,11 +6,12 @@
 
 - 親 Issue: [#326 初心者向け setup.sh を追加し CHIRIMEN 初期セットアップと Documentation の導線を一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/326)
 - 子 Issue: [#327 既存 Host setup script の責務と setup.sh からの呼び出し可否を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/327)
+- 子 Issue: [#331 swap.sh と Docker build setup を beginner flow から分離し Development-only として明記する](https://github.com/gurezo/chirimen-raspi-docker/issues/331)
 - 現行 Host 手順の正本: [Raspberry Pi Setup](./raspberry-pi-setup.md)
 - 現行入口: [Getting Started](./getting-started.md)
 - [`setups/README.md`](../../setups/README.md) / [`scripts/README.md`](../../scripts/README.md)
 
-このドキュメントは **分類の正本** である。`setups/setup.sh` 本体の実装、Getting Started の書き換え、標準実行順の改訂は後続 Issue の担当である。
+このドキュメントは **分類の正本** である。`setups/setup.sh` 本体の実装は #328 / #329 / #330、`swap.sh` / Docker build の Beginner からの分離と Host / Development docs の一致は **#331 で反映済み**。Getting Started 全体を `setup.sh` → `docker compose up` 中心へ寄せる作業と横断総点検は後続子 Issue の担当である。
 
 ## 分類定義
 
@@ -31,7 +32,7 @@
 
 ## 呼び出し可否の結論
 
-親 #326 の方針を正とする。現行 [Raspberry Pi Setup](./raspberry-pi-setup.md) / [`setups/README.md`](../../setups/README.md) は標準順で `swap.sh` を最初に実行する記述があるが、**初心者向け `setup.sh` では呼ばない**（差分の docs 整合は後続 Issue）。
+親 #326 の方針を正とする。[Raspberry Pi Setup](./raspberry-pi-setup.md) / [`setups/README.md`](../../setups/README.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup) は **#331** で beginner / Runtime から `swap.sh` と Docker build を外し、Development-only（Pi 4 / Pi 5）へ分離済みである。
 
 | Script / 対象 | 分類 | `setup.sh` からの扱い |
 | --- | --- | --- |
@@ -47,7 +48,7 @@
 | GPIO permission / device | docs 手確認 + `doctor.sh` probe | 専用 `setups/` script は無い。`doctor.sh` の probe を再利用する |
 
 ```text
-setup.sh（#328 / #329 / #330）
+setup.sh（#328 / #329 / #330 / #331）
   → enable-i2c.sh（必要時）→ [reboot] → --check
   → disable-squeekboard.sh（任意・Lite は no-op）
   → docker.sh → [reboot]
@@ -55,8 +56,8 @@ setup.sh（#328 / #329 / #330）
   → workspace/（存在・書き込み可否）
   → doctor.sh（Runtime readiness）
   → 案内: docker compose up -d / localhost:4200
-  ✗ swap.sh
-  ✗ Docker build
+  ✗ swap.sh（Development only・#331）
+  ✗ Docker build（Development only・#331）
   ✗ start.sh（範囲外）
   ✗ build-*.mjs
 ```
@@ -71,7 +72,7 @@ setup.sh（#328 / #329 / #330）
 | 依存 | root（sudo）。`fallocate` / `dd` / `mkswap` / `swapon`。他の repo script は呼ばない |
 | reboot | 不要（即時有効） |
 | 分類 | **Development only** |
-| 備考 | 主用途は Pi 4 / Pi 5 の Source Development / Docker build の OOM 緩和。Pi 3 B+ Runtime-only の必須ではない。親 #326 により `setup.sh` からは呼ばない |
+| 備考 | 主用途は Pi 4 / Pi 5 の Source Development / Docker build の OOM 緩和。Pi 3 B+ Runtime-only の必須ではない。親 #326 / #331 により `setup.sh` からは呼ばない。手順は [Raspberry Pi Setup の Development only: swap.sh](./raspberry-pi-setup.md#development-only-swapsh) / [Development](./development.md) |
 
 ### `enable-i2c.sh`
 
@@ -149,15 +150,16 @@ setup.sh（#328 / #329 / #330）
 | GPIO permission / device | [Raspberry Pi Setup の GPIO 節](./raspberry-pi-setup.md#gpio) が手確認。`doctor.sh` が probe | 新規 `setups/` script を増やさず `doctor.sh` を再利用 |
 | permission / device check 全般 | `doctor.sh` と docs | オーケストレータは診断結果の解釈に留め、設定変更は既存 `setups/` に委譲 |
 
-## 現行 docs との差分（後続で整合）
+## docs との整合（#331）
 
-| 現行（標準順） | 本監査（`setup.sh`） |
+| 項目 | 状態 |
 | --- | --- |
-| 1. `swap.sh` を実行してよい | **呼ばない**（Development only） |
-| 2–5. I2C → squeekboard → docker → compose | 呼び出す（compose は Conditional） |
-| 完了後に `doctor.sh` → `start.sh` | doctor は `setup.sh` から readiness として呼び出し済み（#330）。start は範囲外で `docker compose up -d` 案内へ寄せる（後続 docs Issue） |
+| beginner / Runtime 標準順に `swap.sh` を含めない | [Raspberry Pi Setup](./raspberry-pi-setup.md) / [`setups/README.md`](../../setups/README.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup) で反映済み |
+| `swap.sh` / Docker build = Development only（Pi 4 / Pi 5） | [Development](./development.md) / [Compatibility](../architecture/compatibility.md) と一致 |
+| `setup.sh` 完了案内は `docker compose up -d`（build なし） | 実装済み。Getting Started Step 2 の全面寄せは後続 docs Issue |
+| Runtime 完了条件から `swap.sh --check` 必須を外す | #331 で反映済み |
 
-Getting Started / raspberry-pi-setup / setups README の初心者導線書き換えは、親 #326 の後続子 Issue（Getting Started / Documentation alignment）で行う。
+Getting Started 全体を `setup.sh` → `docker compose up` 中心へ変更する作業と、Setup / Development / Compatibility の横断総点検は親 #326 の後続子 Issue で行う。
 
 ## 完了条件チェック（#327）
 
@@ -166,3 +168,11 @@ Getting Started / raspberry-pi-setup / setups README の初心者導線書き換
 - [x] `setup.sh` から利用する処理を決定した
 - [x] 重複実装を避ける方針を明記した
 - [x] `swap.sh` = Development only を確認した
+
+## 完了条件チェック（#331）
+
+- [x] `setup.sh` が `swap.sh` を実行しない
+- [x] beginner Host 導線に build / `swap.sh` 必須が無い
+- [x] Pi 3 B+ = Runtime-only（案内が build を誘発しない）
+- [x] Pi 4 / Pi 5 Development（swap + build）が別導線として明記
+- [x] Host / Development / 監査 docs が実装と一致
