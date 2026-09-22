@@ -20,7 +20,8 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 Getting Started
 ├─ Step 1: Raspberry Pi Setup（setups/）
 ├─ Step 2: CHIRIMEN Setup（doctor.sh → start.sh）
-└─ Step 3: First Example（Catalog :4200 → :4173 / GPIO LED Blink）
+└─ Step 3: First Example（Catalog :4200 → :4173 / GPIO LED Blink で環境確認）
+              └─ 続けて my-first-example（自作。Getting Started 内）
 ```
 
 Raspberry Pi Setup が済んでいるなら Step 2 から（Pi 4 / Pi 5 の例。既定で `--build`）:
