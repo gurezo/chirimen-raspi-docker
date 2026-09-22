@@ -50,9 +50,9 @@
 | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) | `arm32` / `armv7` is out of scope コメント | out of scope（文言は update 可） | #345 任意 | Editor が armv7 非対応である事実のメモ。削除対象のコードパスではない |
 | [`compose.yaml`](../../compose.yaml) | `chirimen-server` build コメント（`--32bit` → 旧 `Dockerfile.32bit`）；Examples/Catalog の `--32bit` Runtime-only コメント | update | #342 | override 用 env は無くコメントのみ。64-bit 一本化時に削除・書き換え |
 | [`scripts/start.sh`](../../scripts/start.sh)（削除済み分岐） | 旧 `DOCKERFILE_32BIT` / `IMAGE_32BIT` / `OS_BITS` / `set_os_bits` / `dockerfile_for_os_bits` / `image_for_os_bits` / `reject_32bit_machine_without_flag` / `--32bit` 引数 / 32-bit 時の Editor・Examples・Catalog skip / help・usage | delete（完了） | #340 | 64-bit 単一路線に簡素化済み。`--32bit` は removed flag error。`--no-build` / `--lan` は維持 |
-| [`scripts/build-server.mjs`](../../scripts/build-server.mjs) | esbuild で `apps/server` を bundle。呼び出し元だった `Dockerfile.32bit` は削除済み（`package.json` 未登録） | delete（#341 で最終確認） | #341 | 現状は 32-bit workaround 専用。他用途が無ければ削除。esbuild 導入理由は Historical |
+| `scripts/build-server.mjs`（削除済み） | esbuild で `apps/server` を bundle。呼び出し元だった `Dockerfile.32bit` は削除済み（`package.json` 未登録） | delete（完了） | #341 | 削除済み。32-bit workaround 専用で他用途なし。esbuild 導入理由は [compatibility-32bit.md](./compatibility-32bit.md) に Historical として保存 |
 | [`scripts/doctor.sh`](../../scripts/doctor.sh) | `armv7l` 等で `[warn] 32-bit OS/architecture`；`aarch64 \| armv7l` を期待 arch として列挙 | update | #343 | warn 継続ではなく Unsupported で停止・案内へ。`uname -m` のみ判定は不十分（Pi 4/5 32-bit userland は `aarch64`） |
-| [`scripts/README.md`](../../scripts/README.md) | `build-server.mjs` を「32-bit Docker 用」と記載 | update | #341 / #345 | スクリプト削除結果に合わせて更新 |
+| [`scripts/README.md`](../../scripts/README.md) | 旧 `build-server.mjs` 行 | update（完了） | #341 | スクリプト削除に合わせて行を除去済み |
 | [`setups/setup.sh`](../../setups/setup.sh) | 32-bit 検出なし | update（新規検出） | #343 | 現状未検出。32-bit userland を Unsupported として案内する実装を追加 |
 | `package.json` / Nx / CI | `build-server` / `Dockerfile.32bit` / `--32bit` 参照なし | out of scope | — | 追加の削除対象なし |
 
@@ -60,8 +60,8 @@
 
 | ファイル / 対象 | 該当箇所（概要） | 分類 | 担当 | メモ |
 | --- | --- | --- | --- | --- |
-| [`docs/architecture/docker.md`](./docker.md) | `Dockerfile.32bit` 残置方針、Runtime only 行、Architecture / stage 表、`--32bit` 説明、`build-server.mjs` | update（#339/#340 一部反映済み） | #345（残り） | 「削除はしない」と生きた `--32bit` 手順は撤廃済み。Support Policy 文言は #345 |
-| [`docs/architecture/overview.md`](./overview.md) | 非推奨リンク、ツリー上の旧 `Dockerfile.32bit` / `build-server.mjs`、`--32bit` Runtime only | update（#339/#340 一部反映済み） | #345 | ツリーから `Dockerfile.32bit` 行除去済み。生きた `--32bit` 言及も除去済み |
+| [`docs/architecture/docker.md`](./docker.md) | `Dockerfile.32bit` 残置方針、Runtime only 行、Architecture / stage 表、`--32bit` 説明、旧 `build-server.mjs` | update（#339/#340/#341 一部反映済み） | #345（残り） | 「削除はしない」と生きた `--32bit` 手順は撤廃済み。`build-server.mjs` は削除済み表記。Support Policy 文言は #345 |
+| [`docs/architecture/overview.md`](./overview.md) | 非推奨リンク、ツリー上の旧 `Dockerfile.32bit` / `build-server.mjs`、`--32bit` Runtime only | update（#339/#340/#341 一部反映済み） | #345 | ツリーから `Dockerfile.32bit` / `build-server.mjs` 行除去済み。生きた `--32bit` 言及も除去済み |
 | [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md) | ページ全体（Status / 制約 / Pi 3 B+・4・5 検証 / Known limitations） | preserve → Historical | #344 | 削除しない。#339 で Dockerfile 背景を過去形保存済み。Historical / Unsupported への本格再構成は #344 |
 | [`docs/architecture/compatibility.md`](./compatibility.md) | 32-bit リンク、非推奨 callout、各モデル known limitations、Editor の `--32bit` 言及 | update + preserve リンク | #345 / #344 | 「非推奨」→ Unsupported。検証へのポインタは Historical へ残す |
 | [`docs/architecture/browser-editor.md`](./browser-editor.md) | arm32/armv7 非対応表、`--32bit` / LAN、履歴上の `--32bit` | update + 一部 preserve | #345 / #344 | Editor 非対応の技術事実は残してよい。起動手順から `--32bit` を外す |
@@ -70,7 +70,7 @@
 | [`docs/guides/development.md`](../guides/development.md) | 32-bit 非推奨 callout | update | #345 | |
 | [`docs/guides/raspberry-pi-setup.md`](../guides/raspberry-pi-setup.md) | 32-bit 非推奨 callout | update | #345 | |
 | [`docs/guides/browser-development.md`](../guides/browser-development.md) | 非推奨 callout、32-bit は通常フローではない記述 | update | #345 | |
-| [`docs/guides/setup-host-script-audit.md`](../guides/setup-host-script-audit.md) | `build-server.mjs` を 32-bit 向けと記載 | update | #341 / #345 | スクリプト整理結果に追随 |
+| [`docs/guides/setup-host-script-audit.md`](../guides/setup-host-script-audit.md) | 旧 `build-server.mjs` 記載 | update（完了） | #341 | スクリプト削除に合わせて除去済み |
 | [`docs/examples/runtime-verification.md`](../examples/runtime-verification.md) | 32-bit は対象外 + compatibility-32bit リンク | update | #345 | リンク先を Historical 表記に合わせる |
 | [`docs/site/index.html`](../site/index.html) | 「32-bit OS は非推奨」+ compatibility-32bit リンク | update | #345 | サイト生成元と同期 |
 | [`README.md`](../../README.md) | 32-bit 非推奨 callout | update | #345 | |
@@ -111,7 +111,7 @@
   → #344 Historical 退避・再構成（削除前に知識を保存）
   → #339 Dockerfile.32bit / arm/v7 build 削除
   → #340 start.sh --32bit / OS_BITS 分岐削除
-  → #341 build-server.mjs 参照確認・整理
+  → #341 build-server.mjs 参照確認・削除（完了）
   → #342 compose.yaml コメント / 64-bit 一本化
   → #343 doctor.sh / setup.sh Unsupported 検出
   → #345 README / Getting Started / Compatibility 等 Support Policy
@@ -122,7 +122,7 @@
 | --- | --- |
 | #339 | **完了**: `Dockerfile.32bit` 削除、64-bit `Dockerfile` の 32-bit コメント整理、arm/v7 / Node 22 依存の除去。背景は `compatibility-32bit.md` に保存 |
 | #340 | **完了**: `start.sh` の `--32bit` / `OS_BITS*` / `*_for_os_bits` / `reject_32bit_*` / 32-bit service skip / help を削除し 64-bit path を簡素化。生きた `--32bit` 手順言及を architecture docs から除去 |
-| #341 | `build-server.mjs` の全参照確認。`Dockerfile.32bit` 専用なら削除。esbuild 理由は #344 |
+| #341 | **完了**: `build-server.mjs` の全参照確認のうえ削除（32-bit 専用・他用途なし）。esbuild 導入理由は `compatibility-32bit.md` に保存 |
 | #342 | `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path |
 | #343 | 32-bit userland 検出（`uname -m` のみに依存しない。候補 `getconf LONG_BIT`）。Unsupported メッセージ + Historical 導線。`setup.sh` にも同様 |
 | #344 | `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |

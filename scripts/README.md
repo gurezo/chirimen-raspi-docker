@@ -58,6 +58,5 @@ device マッピング・LAN 公開・Pi 4 / Pi 5 の on-device build が必要�
 | Script | 役割 |
 | --- | --- |
 | `build-docs-site.mjs` | 公開 Documentation サイトの生成 |
-| `build-server.mjs` | 32-bit Docker 用の server bundle（サポート対象外 OS 向け） |
 
 これらは Host 構築でも Runtime 起動でもない。
