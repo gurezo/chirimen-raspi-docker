@@ -11,6 +11,8 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - 親 Issue（歴史）: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue（歴史）: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
 - 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219) / [#243 Browser Development Flow](https://github.com/gurezo/chirimen-raspi-docker/issues/243) / [#257 Example Catalog / Runtime Example](https://github.com/gurezo/chirimen-raspi-docker/issues/257)
+- 親 Issue: [#337 Raspberry Pi OS 32-bit をサポート対象外とし Runtime を 64-bit に一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/337)
+- 子 Issue: [#345 README / Getting Started / Compatibility を 64-bit only Support Policy に更新する](https://github.com/gurezo/chirimen-raspi-docker/issues/345)
 - 32-bit 記録（Historical / Unsupported）: [32-bit Compatibility (Historical / Unsupported)](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) / [#344](https://github.com/gurezo/chirimen-raspi-docker/issues/344)）
 - 32-bit 削除前の棚卸し: [32-bit Removal Audit](./32bit-removal-audit.md)（[#338](https://github.com/gurezo/chirimen-raspi-docker/issues/338) / 親 [#337](https://github.com/gurezo/chirimen-raspi-docker/issues/337)）
 - [overview.md](./overview.md)
@@ -20,6 +22,18 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - [Browser Development Environment](../guides/browser-development.md)（#243）
 - [I2C Scan 検証仕様](../examples/i2c-scan.md)
 - [Example Catalog / Runtime Example 実機検証](../examples/runtime-verification.md)（#257）
+
+## Support Policy
+
+標準・サポート対象は **Raspberry Pi OS 64-bit Desktop** である（Lite 64-bit も可）。Raspberry Pi OS 32-bit は **Unsupported**。過去の検証結果は [32-bit Compatibility (Historical / Unsupported)](./compatibility-32bit.md) を参照する。
+
+| Raspberry Pi | Raspberry Pi OS 64-bit | Raspberry Pi OS 32-bit | Docker Build |
+| --- | --- | --- | --- |
+| Pi 3 B+ | Runtime Supported | Unsupported | Unsupported |
+| Pi 4 | Supported | Unsupported | Supported |
+| Pi 5 | Supported | Unsupported | Supported |
+
+Pi 3 B+ 自体はサポート対象として維持する（64-bit Runtime-only。on-device Docker build は Unsupported）。
 
 ## Supported / Verified Environment
 
@@ -32,11 +46,11 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 | Raspberry Pi 5 | Yes | Verified | Verified | Verified |
 | Raspberry Pi 3 A+ | — | — | — | Not verified / unsupported |
 
-通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。
+標準環境は **Raspberry Pi OS 64-bit Desktop**（Lite も可）。
 
 `Supported` とは書かない。未検証項目も `Supported` と書かない。
 
-> 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](./compatibility-32bit.md)
 
 ## Runtime Support
 
@@ -94,7 +108,7 @@ primary bus は `/dev/i2c-1` 想定。存在するときだけ渡す。初期状
 
 ## Verification Details
 
-Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspberry Pi OS 64-bit** である。通常の推奨環境は **Raspberry Pi OS Lite 64-bit**。以下の OS 列は実測記録であり、推奨名へ書き換えない。32-bit の記録は [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
+Raspberry Pi 3 / 4 / 5 の対応状態は、モデル名だけではなく Hardware Capability Detection と Runtime Backend の実機検証結果として記録する。**サポート対象は Raspberry Pi OS 64-bit** である。標準環境は **Raspberry Pi OS 64-bit Desktop**（Lite も可）。以下の OS 列は実測記録であり、推奨名へ書き換えない。32-bit の記録は [32-bit Compatibility (Historical / Unsupported)](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）。`Supported` とは書かない。未検証項目も `Supported` と書かない。
 
 - **Protocol E2E**: 実ブラウザ + polyfill UI ではなく、container 内 WebSocket クライアントによる protocol E2E。`Supported` とは書かない。Browser の I2C Scan は下記「I2C Scan 実機検証（#116）」
 - **I2C**: 初期状態で `/dev/i2c-1` が無い場合あり。有効化後に `i2c-dev`。既知 slave（ADT7410 / `0x48`）の Browser Scan は [#116](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
@@ -124,7 +138,7 @@ Raspberry Pi 3 Model B+（Raspbian OS 64-bit / `aarch64` / kernel `6.18.34+rpt-r
 | Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える |
 | volumes | — |
-| known limitations | Raspbian OS 32-bit の Runtime E2E は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 3 B+ verification」 |
+| known limitations | Raspbian OS 32-bit の Runtime E2E は [Historical: 32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 3 B+ verification」 |
 
 ### Raspberry Pi 4
 
@@ -144,7 +158,7 @@ Raspberry Pi 4 Model B Rev 1.4（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | Protocol E2E | Verified。接続、および `gpio.export` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | volumes | — |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 4 verification」 |
+| known limitations | Raspbian OS 32-bit は [Historical: 32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 4 verification」 |
 
 ### Raspberry Pi 5
 
@@ -164,7 +178,7 @@ Raspberry Pi 5 Model B Rev 1.0（Raspbian OS 64-bit / `aarch64` / kernel `6.18.3
 | Protocol E2E | Verified。接続、および `gpio.export` / `write` / `unexport` の request/response 成功 |
 | cleanup | 切断時の session cleanup で未 unexport pin が消える。`docker compose down` 後も残留なし |
 | volumes | `/sys/class/gpio` に加え `/sys/devices` が必要（無いと container 内で EROFS） |
-| known limitations | Raspbian OS 32-bit は [32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 5 verification」 |
+| known limitations | Raspbian OS 32-bit は [Historical: 32-bit Compatibility](./compatibility-32bit.md) の「Raspberry Pi 5 verification」 |
 
 host 側の有効化・診断は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) と `scripts/doctor.sh` / `setups/enable-i2c.sh` を参照。
 
@@ -223,7 +237,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | I2C result | i2c-dev / Verified。Browser Scan は ADT7410 / `0x48`（#116） |
 | Catalog result | `:4200` は Example Catalog（Web UI 入口）。`workspace/` の編集は反映されない（#238 / #263）。I2C Scan は `:4173/i2c-scan/`（#116） |
 | container 再起動後の保持 | `docker compose down`（`-v` なし）後も host `./workspace` は残る。named volume の password / 任意 Extension も残る |
-| known limitations | 一次環境は Pi 5。Pi 3 B+ / 4 の Editor 個別再測定は未実施（Runtime / GPIO / I2C は #97 / #98）。`./scripts/start.sh --32bit` は Runtime only。`Supported` とは書かない |
+| known limitations | 一次環境は Pi 5。Pi 3 B+ / 4 の Editor 個別再測定は未実施（Runtime / GPIO / I2C は #97 / #98）。旧 `--32bit` 経路（削除済み）は Runtime only だった。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。`Supported` とは書かない |
 
 ### Example Catalog / Runtime Example 実機検証（#257）
 

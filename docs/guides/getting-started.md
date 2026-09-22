@@ -234,14 +234,14 @@ http://127.0.0.1:4173/my-first-example/
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - サポート対象は Raspberry Pi OS 64-bit
-- Recommended: Raspberry Pi OS Lite 64-bit
+- 標準環境: Raspberry Pi OS 64-bit Desktop（Lite も可）
 - モデル別ロール（正本は [Compatibility](../architecture/compatibility.md)）:
   - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up -d` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
   - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported。Development 導線は [Development](./development.md)）
 - Getting Started の第一導線は `./setups/setup.sh` → `docker compose up -d` → `http://localhost:4200` である。Pi 3 B+ では on-device の Docker build を案内しない
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の任意 Swap / Pi 4・Pi 5 の build 用 Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（**Development-only**。beginner Step 1 では必須ではない）
 
-> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 
 clone や I2C / Docker / GPIO の準備は [Step 1](#step-1-raspberry-pi-setup) で行う。`swap.sh` と Docker build は beginner Step 1 に含めない（Pi 4 / Pi 5 の Development は [Development](./development.md)）。開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
 

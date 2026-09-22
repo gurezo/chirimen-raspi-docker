@@ -1,6 +1,6 @@
 # Raspberry Pi Setup
 
-Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。推奨環境は **Raspberry Pi OS Lite 64-bit**。Runtime の起動（`docker compose up -d`）はこのページでは行わない。
+Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。標準環境は **Raspberry Pi OS 64-bit Desktop**（Lite も可）。Runtime の起動（`docker compose up -d`）はこのページでは行わない。
 
 ## 導線の分離
 
@@ -91,11 +91,11 @@ Getting Started Step 2: docker compose up -d → http://localhost:4200
 
 - Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
 - Raspberry Pi OS 64-bit（Bookworm 想定。boot config は `/boot/firmware/config.txt`）
-- **推奨環境: Raspberry Pi OS Lite 64-bit**
+- **標準環境: Raspberry Pi OS 64-bit Desktop**（Lite も可）
 - Beginner / Runtime は Pi 3 B+ / 4 / 5 とも `./setups/setup.sh`（または上の手動 Runtime 標準順）。`swap.sh` の主用途は Pi 4 / Pi 5 の開発・Docker build。Pi 3 B+ は Runtime-only で build 用 swap は必須ではない。GPIO 確認の `gpiomem` パスは機種差あり
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor）は必須ではない。Docker build は Unsupported（[Compatibility](../architecture/compatibility.md)）
 
-> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 
 CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero のセットアップは、このページの手順ではない。Host 構築はこのリポジトリの `setups/` を使う。GPIO / I2C の学習は [CHIRIMEN Tutorial](./chirimen-tutorial.md)。
 
@@ -264,7 +264,7 @@ Pi 3 B+ で成立させたい **基本体験** は次である。code-server（B
 ```text
 Raspberry Pi 3 B+
         ↓
-Raspberry Pi OS Lite 64-bit
+Raspberry Pi OS 64-bit Desktop
         ↓
 ./setups/setup.sh（build / swap なし）
         ↓

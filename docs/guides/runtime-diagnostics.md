@@ -41,13 +41,13 @@ Device        → Example Catalog / Runtime Examples
 
 `doctor.sh` は sudo 不要である。結果は `[ok]` / `[error]` / `[warn]`。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。`swap.sh --check` は呼ばない（root が必要なため）。Memory / Swap は `/proc/meminfo` を読む。
 
-**32-bit userland（Unsupported）**: `getconf LONG_BIT` が `32`（主判定）、または `uname -m` が `armv7l` / `armhf` 等（補助）のとき、以降のチェックを行わず `[error]` で即 exit 1 する。`uname -m` のみでは判定しない（Pi 4 / Pi 5 の 32-bit OS は 64-bit kernel で `aarch64` になりうる）。推奨環境は Raspberry Pi OS 64-bit Desktop。[Compatibility](../architecture/compatibility.md) / [32-bit Compatibility](../architecture/compatibility-32bit.md)。`setups/setup.sh` も同じ判定で Host 変更前に停止する（[#343](https://github.com/gurezo/chirimen-raspi-docker/issues/343)）。
+**32-bit userland（Unsupported）**: `getconf LONG_BIT` が `32`（主判定）、または `uname -m` が `armv7l` / `armhf` 等（補助）のとき、以降のチェックを行わず `[error]` で即 exit 1 する。`uname -m` のみでは判定しない（Pi 4 / Pi 5 の 32-bit OS は 64-bit kernel で `aarch64` になりうる）。標準環境は Raspberry Pi OS 64-bit Desktop。[Compatibility](../architecture/compatibility.md) / [Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)。`setups/setup.sh` も同じ判定で Host 変更前に停止する（[#343](https://github.com/gurezo/chirimen-raspi-docker/issues/343)）。
 
 問題時の戻先（doctor は修復しない）:
 
 | 問題 | 戻先 |
 | --- | --- |
-| 32-bit userland（Unsupported） | Raspberry Pi OS 64-bit Desktop へ移行。詳細は [Compatibility](../architecture/compatibility.md) / [32-bit Compatibility](../architecture/compatibility-32bit.md) |
+| 32-bit userland（Unsupported） | Raspberry Pi OS 64-bit Desktop へ移行。詳細は [Compatibility](../architecture/compatibility.md) / [Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md) |
 | Swap problem | `sudo ./setups/swap.sh` → `sudo ./setups/swap.sh --check` |
 | I2C unavailable | `sudo ./setups/enable-i2c.sh` → `sudo reboot` → `./setups/enable-i2c.sh --check` |
 | Docker unavailable | `./setups/docker.sh` |

@@ -190,11 +190,11 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 - **Pi 4（#98）**: Raspbian OS 64-bit（`aarch64` / `6.18.34+rpt-rpi-v8`）で `/sys/class/gpio` が存在し `gpio=sysfs` / `i2c=i2c-dev` を確認済み。初期状態で `/dev/i2c-1` が無い場合は `setups/enable-i2c.sh` 等で有効化する
 - **Pi 5（#99）**: Model B Rev 1.0 では `/sys/class/gpio` が存在し `gpio=sysfs` で動作確認済み（kernel `2712`）。gpiochip 専用 backend は不要。container 内で `EROFS` になる場合は上記「GPIO export で EROFS」を参照（`/sys/devices` mount）。I2C Host Setup → Docker Runtime は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。Browser Development Flow（Editor → Workspace → Example Server → Runtime）は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)
 
-## 32-bit OS は非推奨
+## 32-bit OS は Unsupported
 
-> 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
+> 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 
-次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。host を Raspberry Pi OS Lite 64-bit に切り替えてから [Getting Started](./getting-started.md) を使う。
+次のようなエラーは 32-bit OS で起きうる。対処は旧 `--32bit` flag（削除済み）ではなく、**Raspberry Pi OS 64-bit Desktop**（Lite も可）への移行である。host を 64-bit に切り替えてから [Getting Started](./getting-started.md) を使う。過去の検証背景は Historical を参照する。
 
 ```text
 failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
@@ -408,7 +408,7 @@ docker compose port chirimen-editor 8080
 ### 対処
 
 - LAN が必要なら `./scripts/start.sh --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）
-- `--32bit` と `--lan` を同時に付けても Runtime `33330` の bind は変わらず、Editor 系も起動しない
+- 旧 `--32bit` flag（削除済み）は Editor 系を起動しなかった。現行は 64-bit の全サーバー起動のみ。詳細は [Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
 - Internet へは出さない。reverse proxy は本リポジトリでは提供しない
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
@@ -539,7 +539,7 @@ docker compose logs chirimen-editor
 
 ### 原因
 
-`--32bit` で Runtime only 起動している。または `chirimen-examples` image がまだ build されていない。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
+`chirimen-examples` が起動していない、または image がまだ build されていない。旧 `--32bit` 経路（削除済み）は Runtime only で Examples を起動しなかった（[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)）。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
 
 ### 対処
 
@@ -558,7 +558,7 @@ docker compose logs chirimen-editor
 
 ### 原因
 
-`--32bit` で Runtime only 起動している。または Catalog image がまだ build されていない。host の Vite と Compose `chirimen-example-catalog` が同じ port `4200` を使っている。
+`chirimen-example-catalog` が起動していない、または Catalog image がまだ build されていない。旧 `--32bit` 経路（削除済み）は Runtime only で Catalog を起動しなかった（[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)）。host の Vite と Compose `chirimen-example-catalog` が同じ port `4200` を使っている。
 
 ### 対処
 

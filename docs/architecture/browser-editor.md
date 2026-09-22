@@ -78,7 +78,7 @@ Raspberry Pi で利用する architecture は次の2系統である。サポー�
 | Architecture | 典型環境 | Runtime | Editor 調査結果 |
 | --- | --- | --- | --- |
 | `arm64`（`aarch64`） | Pi 3 / 4 / 5 の 64-bit OS | 64-bit Dockerfile（Node 24） | 公式 Docker image / GitHub release が対応 |
-| `arm32` / `armv7`（`armv7l`） | 32-bit OS（サポート対象外） | `Dockerfile.32bit`（Node 22）。サポート対象外 | 公式 Docker image / 現行 GitHub release に資産が無い |
+| `arm32` / `armv7`（`armv7l`） | 32-bit OS（Unsupported） | 当時 `Dockerfile.32bit`（Node 22）。削除済み。Historical のみ | 公式 Docker image / 現行 GitHub release に資産が無い |
 
 開発マシン（macOS の Docker Desktop など）は `amd64` で確認する想定。公式 image は `amd64` と `arm64` を出す。
 
@@ -340,7 +340,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 | LAN | `0.0.0.0` | password 必須 | HTTP。IP 直打ちでは webview が失敗しうる | `./scripts/start.sh --lan` または `CHIRIMEN_PUBLISH_BIND=0.0.0.0` |
 | Internet | Compose では出さない | reverse proxy + IdP を推奨 | HTTPS 必須 | 本リポジトリでは提供しない |
 
-対象 port は Editor `8080` / Example `4173` / Catalog `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。`--32bit` では Editor 系を起動しないため `--lan` は無視する。
+対象 port は Editor `8080` / Example `4173` / Catalog `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。旧 `--32bit`（削除済み）は Editor 系を起動しなかったため `--lan` は無視された。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
 GPIO / I2C は Editor / Examples / Catalog に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Examples と Catalog は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
@@ -425,14 +425,14 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | Version policy | semver タグで pin。初期ピンは `4.132.0`（調査時点の最新安定版。[v4.132.0](https://github.com/coder/code-server/releases/tag/v4.132.0)）。`latest` 禁止 |
 | 対応 architecture | `linux/arm64`（Raspberry Pi 上の Editor）、`linux/amd64`（開発確認） |
 | 非対応 architecture | `arm32` / `armv7` / `armhf`。公式 image も現行 release 資産も無い。linuxserver の armhf は廃止済み |
-| 32-bit OS | サポート対象外。`Dockerfile.32bit` は削除しないが、Editor は出さない |
+| 32-bit OS | Unsupported。当時の `Dockerfile.32bit` は削除済み。Editor は出さない（[Historical](./compatibility-32bit.md)） |
 | Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
 | 認証 | 既定は password（`--auth password`）。対話の初回 `start.sh` が `.env` へ書く（#269）。`auth: none` は使わない。詳細は [Authentication](#authentication)（#181 / #269） |
 | HTTPS | 既定は HTTP + password + `127.0.0.1`。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま（#181） |
 | Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |
-| 起動 | 既定は Runtime + Editor + Examples + Catalog（`docker compose up` / `./scripts/start.sh`。#208 / #254）。LAN は `--lan`（#181）。`--32bit` は Runtime only |
+| 起動 | 既定は Runtime + Editor + Examples + Catalog（`docker compose up` / `./scripts/start.sh`。#208 / #254）。LAN は `--lan`（#181）。旧 `--32bit`（削除済み）は Runtime only だった |
 | 永続化 | workspace は bind `workspace/`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
 | Example 編集 / serve | HTML は `workspace/`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
 | Example Catalog | Compose `chirimen-example-catalog` が host `127.0.0.1:4200`（既定）で production build を静的配信する Web UI 入口（#254 / #263）。Example の編集結果確認先ではない。HMR は host の `pnpm nx serve example-catalog`（[Development Guide](../guides/development.md)） |
@@ -442,7 +442,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 ### Consequences
 
 - 64-bit の Pi 3 / 4 / 5 と amd64 開発マシンから、Browser で VS Code 系 Editor を開ける道が決まる
-- 32-bit OS はサポート対象外。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。`--32bit` は Runtime only。#177 の optional profile は [#208](https://github.com/gurezo/chirimen-raspi-docker/issues/208) で既定の全サーバー起動へ戻した
+- 32-bit OS は Unsupported。Pi 3 B+ の 32-bit OS（`armv7l`）では Editor を提供しない。旧 `--32bit`（削除済み）は Runtime only だった（[Historical](./compatibility-32bit.md)）。#177 の optional profile は [#208](https://github.com/gurezo/chirimen-raspi-docker/issues/208) で既定の全サーバー起動へ戻した
 - プロジェクトは特定 Extension をプリインストール・推奨・必須にしない（#201）。Microsoft 独占拡張も期待しない
 - lint / test / build は host の `pnpm` / Nx。Editor workspace へ Nx は入れない（[#180](https://github.com/gurezo/chirimen-raspi-docker/issues/180)）
 - Editor image の extra package 例外は `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `docker/examples`）。Node は入れない。Catalog は別 image（`docker/example-catalog`）

@@ -23,9 +23,9 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - **Runtime 操作**の入口は `docker compose up -d` / `down`（初心者正本は [Getting Started](../guides/getting-started.md)）
 - Development / 上級者向けの起動補助は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping・LAN・on-device build）
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
-- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
+- サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。標準環境は Raspberry Pi OS 64-bit Desktop（Lite も可）
 - Pi 3 B+ は **Runtime-only**（compose `up` / `down` のみ。on-device Docker build は Pi 4 / Pi 5 のみ。[Compatibility](./compatibility.md#development--docker-build-support)）
-- 32-bit OS はサポート対象外（`Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)）
+- 32-bit OS は Unsupported（`Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)）
 
 Runtime（beginner / 機種共通）:
 
@@ -92,7 +92,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Config | named volume `chirimen-editor-config` → `/home/coder/.config`（password 含む。Git に置かない） |
 | Auth | Dockerfile `--auth password`。対話の初回 `start.sh` が `.env` の `CHIRIMEN_EDITOR_PASSWORD` を書く（#269）。非空のときだけ container へ渡す。`auth: none` は使わない |
 | User | `user` + `DOCKER_USER`（`fixuid`）。`start.sh` は host の uid/gid。Compose 直接は `CHIRIMEN_EDITOR_*`、未設定時は `1000` / `coder`。root 禁止 |
-| Architecture | `linux/amd64`, `linux/arm64`。32-bit OS はサポート対象外 |
+| Architecture | `linux/amd64`, `linux/arm64`。32-bit OS は Unsupported |
 | Network | Compose default。`depends_on` なし。`no-new-privileges` / `cap_drop: ALL` は付けない（公式 entrypoint の `fixuid` が setuid を必要とする） |
 | GPIO / I2C | 渡さない |
 
@@ -263,14 +263,14 @@ docker image ls chirimen-raspi-docker/editor:4.132.0
 
 ## Dockerfile（multi-stage）
 
-stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/server/Dockerfile`](../../docker/server/Dockerfile) のみ。かつて存在した 32-bit 用 `Dockerfile.32bit`（Node 22 / `linux/arm/v7`）は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)。
+stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/server/Dockerfile`](../../docker/server/Dockerfile) のみ。かつて存在した 32-bit 用 `Dockerfile.32bit`（Node 22 / `linux/arm/v7`）は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
 | OS | ファイル | ベース | 備考 |
 | --- | --- | --- | --- |
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
-| 32-bit（`armv7l` など） | （削除済み）`Dockerfile.32bit` | 当時 `node:22-bookworm-slim` | サポート対象外。Historical のみ |
+| 32-bit（`armv7l` など） | （削除済み）`Dockerfile.32bit` | 当時 `node:22-bookworm-slim` | Unsupported。Historical のみ |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。かつて存在した `./scripts/start.sh --32bit`（Runtime only）は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。かつて存在した `./scripts/start.sh --32bit`（Runtime only）は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
@@ -308,7 +308,7 @@ docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-
 
 ## Compatibility
 
-推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。通常の推奨環境は Raspberry Pi OS Lite 64-bit。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
+推奨環境と実機検証の正本は [Compatibility](./compatibility.md) である。サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit。標準環境は Raspberry Pi OS 64-bit Desktop（Lite も可）。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)。
 
 ## 非 Pi 環境での制限
 

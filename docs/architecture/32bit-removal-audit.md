@@ -60,21 +60,21 @@
 
 | ファイル / 対象 | 該当箇所（概要） | 分類 | 担当 | メモ |
 | --- | --- | --- | --- | --- |
-| [`docs/architecture/docker.md`](./docker.md) | `Dockerfile.32bit` 残置方針、Runtime only 行、Architecture / stage 表、`--32bit` 説明、旧 `build-server.mjs` | update（#339/#340/#341 一部反映済み） | #345（残り） | 「削除はしない」と生きた `--32bit` 手順は撤廃済み。`build-server.mjs` は削除済み表記。Support Policy 文言は #345 |
-| [`docs/architecture/overview.md`](./overview.md) | 非推奨リンク、ツリー上の旧 `Dockerfile.32bit` / `build-server.mjs`、`--32bit` Runtime only | update（#339/#340/#341 一部反映済み） | #345 | ツリーから `Dockerfile.32bit` / `build-server.mjs` 行除去済み。生きた `--32bit` 言及も除去済み |
+| [`docs/architecture/docker.md`](./docker.md) | `Dockerfile.32bit` 残置方針、Runtime only 行、Architecture / stage 表、`--32bit` 説明、旧 `build-server.mjs` | update（完了） | #345 | Desktop 標準・Unsupported 文言に更新。Historical リンク表記を揃え済み |
+| [`docs/architecture/overview.md`](./overview.md) | 非推奨リンク、ツリー上の旧 `Dockerfile.32bit` / `build-server.mjs`、`--32bit` Runtime only | update（完了） | #345 | Unsupported + Desktop 標準。Historical 参照に更新済み |
 | [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md) | ページ全体（Status / 制約 / Pi 3 B+・4・5 検証 / Known limitations） | preserve → Historical | #344 | **完了**: Historical / Unsupported として再構成。Test Matrix・support 終了理由・arch 知見を保持 |
 
-| [`docs/architecture/compatibility.md`](./compatibility.md) | 32-bit リンク、非推奨 callout、各モデル known limitations、Editor の `--32bit` 言及 | update + preserve リンク | #345 / #344 | 「非推奨」→ Unsupported。検証へのポインタは Historical へ残す |
-| [`docs/architecture/browser-editor.md`](./browser-editor.md) | arm32/armv7 非対応表、`--32bit` / LAN、履歴上の `--32bit` | update + 一部 preserve | #345 / #344 | Editor 非対応の技術事実は残してよい。起動手順から `--32bit` を外す |
-| [`docs/guides/getting-started.md`](../guides/getting-started.md) | 32-bit 非推奨 callout | update | #345 | 初心者導線から 32-bit 手順・非推奨表現を除去し Unsupported + Historical 参照へ |
-| [`docs/guides/troubleshooting.md`](../guides/troubleshooting.md) | 「32-bit OS は非推奨」節、`--32bit` と `--lan`、4173/4200 の `--32bit` 原因記述 | update | #345 | 移行案内は残しつつ `--32bit` 手順前提を削除 |
-| [`docs/guides/development.md`](../guides/development.md) | 32-bit 非推奨 callout | update | #345 | |
-| [`docs/guides/raspberry-pi-setup.md`](../guides/raspberry-pi-setup.md) | 32-bit 非推奨 callout | update | #345 | |
-| [`docs/guides/browser-development.md`](../guides/browser-development.md) | 非推奨 callout、32-bit は通常フローではない記述 | update | #345 | |
+| [`docs/architecture/compatibility.md`](./compatibility.md) | 32-bit リンク、非推奨 callout、各モデル known limitations、Editor の `--32bit` 言及 | update（完了） + preserve リンク | #345 / #344 | Support Policy / Matrix 追加。「非推奨」→ Unsupported。Desktop 標準。Historical ポインタ維持 |
+| [`docs/architecture/browser-editor.md`](./browser-editor.md) | arm32/armv7 非対応表、`--32bit` / LAN、履歴上の `--32bit` | update（完了） + 一部 preserve | #345 / #344 | 生きた `--32bit` / `Dockerfile.32bit` 残置表現を過去形化。Editor 非対応の技術事実は維持 |
+| [`docs/guides/getting-started.md`](../guides/getting-started.md) | 32-bit 非推奨 callout | update（完了） | #345 | Unsupported + Desktop 標準 + Historical 参照 |
+| [`docs/guides/troubleshooting.md`](../guides/troubleshooting.md) | 「32-bit OS は非推奨」節、`--32bit` と `--lan`、4173/4200 の `--32bit` 原因記述 | update（完了） | #345 | Unsupported 節へ。生きた `--32bit` 手順前提を削除 |
+| [`docs/guides/development.md`](../guides/development.md) | 32-bit 非推奨 callout | update（完了） | #345 | Unsupported + Desktop 標準 |
+| [`docs/guides/raspberry-pi-setup.md`](../guides/raspberry-pi-setup.md) | 32-bit 非推奨 callout | update（完了） | #345 | Unsupported + Desktop 標準 |
+| [`docs/guides/browser-development.md`](../guides/browser-development.md) | 非推奨 callout、32-bit は通常フローではない記述 | update（完了） | #345 | Unsupported + Historical 明示 |
 | [`docs/guides/setup-host-script-audit.md`](../guides/setup-host-script-audit.md) | 旧 `build-server.mjs` 記載 | update（完了） | #341 | スクリプト削除に合わせて除去済み |
-| [`docs/examples/runtime-verification.md`](../examples/runtime-verification.md) | 32-bit は対象外 + compatibility-32bit リンク | update | #345 | リンク先を Historical 表記に合わせる |
-| [`docs/site/index.html`](../site/index.html) | 「32-bit OS は非推奨」+ compatibility-32bit リンク | update | #345 | サイト生成元と同期 |
-| [`README.md`](../../README.md) | 32-bit 非推奨 callout | update | #345 | |
+| [`docs/examples/runtime-verification.md`](../examples/runtime-verification.md) | 32-bit は対象外 + compatibility-32bit リンク | update（完了） | #345 | Historical 表記・Desktop 標準に揃え済み |
+| [`docs/site/index.html`](../site/index.html) | 「32-bit OS は非推奨」+ compatibility-32bit リンク | update（完了） | #345 | Unsupported + Desktop 標準に同期 |
+| [`README.md`](../../README.md) | 32-bit 非推奨 callout | update（完了） | #345 | Unsupported + Desktop 標準 + Historical 参照 |
 
 ## Historical に残す情報（チェックリスト）
 
@@ -115,7 +115,7 @@
   → #341 build-server.mjs 参照確認・削除（完了）
   → #342 compose.yaml コメント / 64-bit 一本化（完了）
   → #343 doctor.sh / setup.sh Unsupported 検出（完了）
-  → #345 README / Getting Started / Compatibility 等 Support Policy
+  → #345 README / Getting Started / Compatibility 等 Support Policy（完了）
   → #346 Pi 3 B+ / 4 / 5 64-bit 回帰テスト
 ```
 
@@ -127,7 +127,7 @@
 | #342 | **完了**: `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path。override / profile / arm/v7 build option は元々無し |
 | #343 | **完了**: `doctor.sh` / `setup.sh` で 32-bit userland を `getconf LONG_BIT` 主判定（`uname -m` 補助）し Unsupported で即停止。Compatibility / compatibility-32bit 導線 |
 | #344 | **完了**: `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |
-| #345 | 「非推奨」→「Unsupported」。64-bit Desktop 標準。Pi 3 B+ 64-bit Runtime 維持。Current / Historical を区別 |
+| #345 | **完了**: 「非推奨」→「Unsupported」。64-bit Desktop 標準。Pi 3 B+ 64-bit Runtime 維持。Current / Historical を区別。Support Matrix を Compatibility に追加 |
 | #346 | 削除後の Pi 3 B+ / 4 / 5 64-bit 回帰（Runtime / 必要なら Development、GPIO / I2C、Catalog） |
 
 ## 完了条件（#338）
