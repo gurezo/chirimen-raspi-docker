@@ -25,11 +25,13 @@ Setup → doctor.sh → start.sh
   ↓
 Example Catalog :4200
   ├─ 実行 → Example Server :4173
-  └─ 編集 → Browser Editor :8080 → workspace/ → Save → :4173
-                                      ↓
-                               Browser Polyfill
-                                      ↓
-                            chirimen-server :33330
+  └─ 編集 → Desktop 任意エディタ または Browser Editor :8080
+              ↓
+           workspace/ → Save → :4173
+              ↓
+       Browser Polyfill
+              ↓
+    chirimen-server :33330
 ```
 
 ## workspace/（HTML / JavaScript の保存場所）
@@ -49,7 +51,35 @@ host 側の `workspace/` は、既存の Runtime Example と、あなたが作�
 
 ホームディレクトリへ clone した場合の例は `~/chirimen-raspi-docker/workspace/` である。絶対パスは clone 先によって変わるため、固定パスとしては扱わない。
 
-`workspace/<subdir>/` に置いた内容は Example Server から `http://127.0.0.1:4173/<subdir>/` で配信される。同ディレクトリには `led-blink/` などの既存 Example もある。配置の正本は [workspace/README.md](../../workspace/README.md)。編集方法の詳細は [Browser Development Environment](./browser-development.md) を参照する。
+`workspace/<subdir>/` に置いた内容は Example Server から `http://127.0.0.1:4173/<subdir>/` で配信される。同ディレクトリには `led-blink/` などの既存 Example もある。配置の正本は [workspace/README.md](../../workspace/README.md)。編集の2経路は次節を、Browser Editor の操作詳細は [Browser Development Environment](./browser-development.md) を参照する。
+
+### Example の編集方法（2経路）
+
+Example の編集は次のどちらでもよい。どちらも同じ host `workspace/` を編集する。Browser Editor は必須ではない。
+
+```text
+A. Raspberry Pi OS Desktop
+   ↓
+任意のエディタ
+   ↓
+workspace/
+
+B. Browser
+   ↓
+http://localhost:8080/
+   ↓
+Browser Editor
+   ↓
+workspace/
+
+        ↓
+Example Server :4173
+```
+
+- **A. Raspberry Pi OS Desktop**: clone 先の `workspace/` を、Desktop 上の任意のエディタ（テキストエディタなど）で直接編集できる。
+- **B. Browser Editor**: Browser で `http://localhost:8080/`（または `http://127.0.0.1:8080/`）を開き、同じ `workspace/` を編集できる。操作の詳細は [Browser Development Environment](./browser-development.md)。
+
+どちらから保存しても同じ Example が更新される。確認先は Example Server `:4173` である（保存後は Browser を reload する）。
 
 ### my-first-example を作成する
 
@@ -130,6 +160,7 @@ cp ../led-blink/polyfill.js .
 - 親 Issue: [#315 初心者が workspace に HTML / JavaScript を作成して CHIRIMEN を実行できる Getting Started を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/315)
 - 子 Issue: [#316 Getting Started に workspace の役割とユーザー作成 Example の保存場所を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/316)
 - 子 Issue: [#317 my-first-example を作成する初心者向け CHIRIMEN チュートリアルを追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/317)
+- 子 Issue: [#318 Raspberry Pi OS Desktop と Browser Editor の2種類の Example 編集方法を説明する](https://github.com/gurezo/chirimen-raspi-docker/issues/318)
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
 - 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
