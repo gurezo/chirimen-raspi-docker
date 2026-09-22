@@ -6,26 +6,43 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 
 関連:
 
+- 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
+- 子 Issue: [#307 Development Documentation に Docker build は Raspberry Pi 4 / Pi 5 対象と明記する](https://github.com/gurezo/chirimen-raspi-docker/issues/307)
+- 実機検証: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
+- [Compatibility](../architecture/compatibility.md)（[Runtime Support](../architecture/compatibility.md#runtime-support) / [Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)）
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）
 - [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
 - [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する）
 - [Documentation checklist](./documentation-checklist.md)（Service / Port / Workspace / `apps/` 変更時）
 - [Architecture overview](../architecture/overview.md)
+- [Docker 構成](../architecture/docker.md)
 - [Nx boundaries](../architecture/nx-boundaries.md)
 
 ## 対象
 
-このガイドはリポジトリ開発者向けです。
+このガイドはリポジトリ開発者向けです。次を区別する。
+
+| 目的 | 案内先 | 機種 |
+| --- | --- | --- |
+| Runtime 利用（compose `up` / `down`） | [Getting Started](./getting-started.md) | Pi 3 B+ / Pi 4 / Pi 5（Pi 3 B+ は **Runtime-only**） |
+| Repository 開発（host の Node.js / pnpm / Nx） | 本ガイド | 開発マシン（macOS など）および Pi |
+| on-device Docker image build | 本ガイドの build 節 / [Compatibility](../architecture/compatibility.md#development--docker-build-support) | **Raspberry Pi 4 / Pi 5 のみ**（Pi 3 B+ は Unsupported） |
 
 ```text
 Raspberry Pi Setup / CHIRIMEN Setup（Runtime 利用）
     ↓
-Docker / Docker Compose
+Docker / Docker Compose（up / down。Pi 3 B+ 含む）
 
-Development setup
+Development setup（Repository 開発）
     ↓
 Node.js / pnpm / Nx
+
+Docker image build（on-device）
+    ↓
+Raspberry Pi 4 / Pi 5 のみ
 ```
+
+正本のロール表は [Compatibility](../architecture/compatibility.md) である。
 
 ## 必要環境
 
@@ -33,6 +50,8 @@ Node.js / pnpm / Nx
 - pnpm v11.x（root `package.json` の `packageManager`）
 - Nx
 - Docker / Docker Compose（Runtime 起動や image build をする場合）
+  - **Docker build**（`docker build` / `compose build` / `up --build`）は **Raspberry Pi 4 / Pi 5** を対象とする
+  - **Raspberry Pi 3 B+** は **Runtime-only**（compose `up` / `down`）。on-device の Docker build は Unsupported
 - Raspberry Pi 上で Runtime を動かす場合のサポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
