@@ -33,7 +33,7 @@ Device        → Example Catalog / Runtime Examples
 
 | レイヤー | 確認するもの | 確認しないもの |
 | --- | --- | --- |
-| `./scripts/doctor.sh` | Raspberry Pi / OS / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker Engine、Docker Compose、Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
+| `./scripts/doctor.sh` | Raspberry Pi / OS / **userland bitness** / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker Engine、Docker Compose、Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
 | `GET /health`（`:33330`） | `chirimen-server` の起動状態 | GPIO / I2C の E2E、Browser からの疎通 |
 | GPIO LED Blink | Browser Polyfill / WebSocket / GPIO Output | Host の Docker インストール |
 | GPIO Input | Browser Polyfill / WebSocket / GPIO Input | I2C |
@@ -41,10 +41,13 @@ Device        → Example Catalog / Runtime Examples
 
 `doctor.sh` は sudo 不要である。結果は `[ok]` / `[error]` / `[warn]`。末尾に server startup と同じ語彙の `[ capabilities ] gpio=... i2c=...` が出る。`[error]` がある場合は exit 1。`swap.sh --check` は呼ばない（root が必要なため）。Memory / Swap は `/proc/meminfo` を読む。
 
+**32-bit userland（Unsupported）**: `getconf LONG_BIT` が `32`（主判定）、または `uname -m` が `armv7l` / `armhf` 等（補助）のとき、以降のチェックを行わず `[error]` で即 exit 1 する。`uname -m` のみでは判定しない（Pi 4 / Pi 5 の 32-bit OS は 64-bit kernel で `aarch64` になりうる）。推奨環境は Raspberry Pi OS 64-bit Desktop。[Compatibility](../architecture/compatibility.md) / [32-bit Compatibility](../architecture/compatibility-32bit.md)。`setups/setup.sh` も同じ判定で Host 変更前に停止する（[#343](https://github.com/gurezo/chirimen-raspi-docker/issues/343)）。
+
 問題時の戻先（doctor は修復しない）:
 
 | 問題 | 戻先 |
 | --- | --- |
+| 32-bit userland（Unsupported） | Raspberry Pi OS 64-bit Desktop へ移行。詳細は [Compatibility](../architecture/compatibility.md) / [32-bit Compatibility](../architecture/compatibility-32bit.md) |
 | Swap problem | `sudo ./setups/swap.sh` → `sudo ./setups/swap.sh --check` |
 | I2C unavailable | `sudo ./setups/enable-i2c.sh` → `sudo reboot` → `./setups/enable-i2c.sh --check` |
 | Docker unavailable | `./setups/docker.sh` |
@@ -57,6 +60,7 @@ Device        → Example Catalog / Runtime Examples
 - **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable`。doctor 自身は設定を変えない。有効化は [Raspberry Pi Setup](./raspberry-pi-setup.md) の `enable-i2c.sh`
 - **Swap**: SwapTotal=0 なら `[warn]`（任意）。主用途は Pi 4 / Pi 5 の Docker build。Runtime-only では必須ではない。Pi 3 B+ build の有効化手段ではない（[Compatibility](../architecture/compatibility.md)）
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
+- **32-bit userland**: Unsupported。上記のとおり即停止（warn ではない）
 
 ## 歴史的経緯（#263 で廃止した web-demo）
 
