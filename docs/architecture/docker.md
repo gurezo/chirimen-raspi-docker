@@ -46,16 +46,16 @@ chmod +x scripts/start.sh
 
 ## Compose サービス
 
-[`compose.yaml`](../../compose.yaml) は `chirimen-server`、`chirimen-editor`、`chirimen-examples`、`chirimen-example-catalog` を定義する（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254) / [#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263)）。`depends_on` は付けない。どれか一方だけ `docker compose restart` できる。Editor / Examples / Catalog に GPIO / I2C device は渡さない。
+[`compose.yaml`](../../compose.yaml) は `chirimen-runtime`、`chirimen-editor`、`chirimen-examples`、`chirimen-example-catalog` を定義する（[#175](https://github.com/gurezo/chirimen-raspi-docker/issues/175) / [#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179) / [#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254) / [#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263) / [#360](https://github.com/gurezo/chirimen-raspi-docker/issues/360)）。`depends_on` は付けない。どれか一方だけ `docker compose restart` できる。Editor / Examples / Catalog に GPIO / I2C device は渡さない。短い `name`（runtime / editor / example / catalog）は Port を覚えるための別名である。
 
 既定は Runtime + Editor + Examples + Catalog である（[#208](https://github.com/gurezo/chirimen-raspi-docker/issues/208) / [#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)）。
 
-| Port | Service | Role |
-| --- | --- | --- |
-| 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | Browser Editor / code-server |
-| 4173 | chirimen-examples | Example Server / Runtime Examples |
-| 4200 | chirimen-example-catalog | Example Catalog |
+| Port | Service | Role | name |
+| --- | --- | --- | --- |
+| 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
+| 8080 | chirimen-editor | Browser Editor / code-server | editor |
+| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 | 利用方法 | Compose | 入口 | 区分 |
 | --- | --- | --- | --- |
@@ -64,13 +64,14 @@ chmod +x scripts/start.sh
 | Development（Pi 4 / Pi 5。既定で build） | `docker compose up --build` | `./scripts/start.sh` | Development |
 | 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` | Development |
 | Pi 3 B+ で start.sh を使う場合 | `docker compose up`（build なし） | `./scripts/start.sh --no-build` | Development / 上級者 |
-| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。当時の 32-bit Runtime only は [32-bit Compatibility](./compatibility-32bit.md) | — |
+| Runtime only（単一サービス） | `docker compose up chirimen-runtime` | 通常フローではない。当時の 32-bit Runtime only は [32-bit Compatibility](./compatibility-32bit.md) | — |
 
-### chirimen-server
+### chirimen-runtime
 
 | 項目 | 値 |
 | --- | --- |
-| Service | `chirimen-server` |
+| Service | `chirimen-runtime` |
+| name | `runtime` |
 | Dockerfile | [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）。唯一の supported path |
 | Image | `chirimen-raspi-docker/server:phase1` |
 | Port | `33330`（host / container） |
@@ -83,6 +84,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | 項目 | 値 |
 | --- | --- |
 | Service | `chirimen-editor` |
+| name | `editor` |
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
@@ -105,6 +107,7 @@ HTML Examples は Hardware Runtime ではない。`devices` / `privileged` / `/s
 | 項目 | 値 |
 | --- | --- |
 | Service | `chirimen-examples` |
+| name | `example` |
 | Dockerfile | [`docker/examples/Dockerfile`](../../docker/examples/Dockerfile) |
 | Image | `chirimen-raspi-docker/examples:phase8` |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
@@ -122,6 +125,7 @@ Example Catalog は Hardware Runtime ではない。題材の発見入口であ�
 | 項目 | 値 |
 | --- | --- |
 | Service | `chirimen-example-catalog` |
+| name | `catalog` |
 | Dockerfile | [`docker/example-catalog/Dockerfile`](../../docker/example-catalog/Dockerfile) |
 | Image | `chirimen-raspi-docker/example-catalog:phase8` |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
@@ -171,7 +175,7 @@ Development / 上級者（device mapping・LAN・build。Pi 4 / Pi 5 の例。�
 ```sh
 docker compose restart chirimen-editor
 curl -fsS http://127.0.0.1:33330/health
-docker compose restart chirimen-server
+docker compose restart chirimen-runtime
 curl -fsS http://127.0.0.1:8080/healthz
 docker compose restart chirimen-example-catalog
 curl -fsS http://127.0.0.1:4200/
@@ -302,8 +306,8 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 container 内の確認例:
 
 ```sh
-docker compose exec chirimen-server ls -l /sys/class/gpio
-docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
+docker compose exec chirimen-runtime ls -l /sys/class/gpio
+docker compose exec chirimen-runtime ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
 ```
 
 ## Compatibility
