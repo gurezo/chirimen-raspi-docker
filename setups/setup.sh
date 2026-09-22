@@ -9,7 +9,7 @@
 #
 # Related:
 #   docs/guides/setup-host-script-audit.md
-#   Issues #326 (parent), #328 (this script)
+#   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot)
 #
 set -euo pipefail
 
@@ -124,6 +124,9 @@ print_reboot_and_rerun() {
   local reason="$1"
   log ""
   log "${reason}"
+  log "Reboot is required:"
+  log "  sudo reboot"
+  log ""
   log "After reboot, run again:"
   log "  ./setups/setup.sh"
   exit 0
@@ -147,7 +150,9 @@ run_enable_i2c_if_needed() {
 
   require_script "${ENABLE_I2C_SH}"
   log "I2C device missing; running enable-i2c.sh"
-  if ! sudo "${ENABLE_I2C_SH}"; then
+  # Pass CHIRIMEN_BEGINNER_SETUP so enable-i2c.sh leaves next-step
+  # guidance to this orchestrator (re-run setup.sh, not --check).
+  if ! sudo CHIRIMEN_BEGINNER_SETUP=1 "${ENABLE_I2C_SH}"; then
     print_failure_hint "enable-i2c.sh failed."
     exit 1
   fi
@@ -158,7 +163,7 @@ run_enable_i2c_if_needed() {
   fi
 
   print_reboot_and_rerun \
-    "I2C was enabled. Reboot is required before continuing."
+    "I2C was enabled or is configured, but ${I2C_DEVICE} is not available yet."
 }
 
 run_disable_squeekboard() {

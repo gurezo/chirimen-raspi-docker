@@ -139,10 +139,19 @@ show_i2c_state() {
   fi
 }
 
+is_beginner_setup() {
+  [ "${CHIRIMEN_BEGINNER_SETUP:-}" = "1" ]
+}
+
 advise_reboot() {
   log ""
-  log "I2C settings were updated. Reboot is required:"
+  log "Reboot is required:"
   log "  sudo reboot"
+  # When called from setups/setup.sh, the orchestrator prints the
+  # beginner next step (re-run setup.sh). Keep --check for standalone use.
+  if is_beginner_setup; then
+    return 0
+  fi
   log ""
   log "After reboot, verify with:"
   log "  $0 --check"
@@ -182,12 +191,7 @@ enable_i2c() {
   if raspi_config_available; then
     if raspi_config_i2c_enabled; then
       log "raspi-config reports I2C is enabled, but $I2C_DEVICE is missing."
-      log "A reboot is required:"
-      log "  sudo reboot"
-      log ""
-      log "After reboot, verify with:"
-      log "  $0 --check"
-      log "  ls -l $I2C_DEVICE"
+      advise_reboot
       return 0
     fi
 
