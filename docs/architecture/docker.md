@@ -185,18 +185,20 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 
 build context は `docker/editor`（リポジトリ全体は COPY しない）。
 
+**on-device / 実機での Docker build は Raspberry Pi 4 / Pi 5 を対象とする。** Raspberry Pi 3 B+ は **Runtime-only** であり、`docker build` / `compose build` / `up --build` は Unsupported である。正本は [Compatibility の Development / Docker Build Support](./compatibility.md#development--docker-build-support)。根拠は [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) および [検証コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)。開発手順の機種案内は [Development](../guides/development.md) を参照する。
+
 ```sh
 docker build -f docker/editor/Dockerfile -t chirimen-raspi-docker/editor:4.132.0 docker/editor
 ```
 
-Raspberry Pi 3 / 4 / 5 の 64-bit OS と同じ `linux/arm64` を明示する場合:
+`linux/arm64` を明示する場合（クロスビルドやアーキテクチャ指定。実機 on-device build の対象機種とは別）:
 
 ```sh
 docker buildx build --platform linux/arm64 \
   -f docker/editor/Dockerfile -t chirimen-raspi-docker/editor:4.132.0 --load docker/editor
 ```
 
-実機起動を `Supported` とは書かない。Pi 3 / 4 / 5 での Editor 検証は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)。
+実機起動を `Supported` とは書かない。Pi 3 / 4 / 5 での Editor 検証は [#182](https://github.com/gurezo/chirimen-raspi-docker/issues/182)（Runtime 起動の検証であり、Pi 3 B+ 上の Docker build を Supported とはしない）。
 
 ### start（`docker run`。Compose を使わない場合）
 
@@ -250,7 +252,7 @@ stage 構成は 64-bit を正とする。32-bit 用ファイルは残すがサ�
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
 | 32-bit（`armv7l` など） | [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | `node:22-bookworm-slim` | サポート対象外。削除はしない |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。32-bit OS 向けの `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。32-bit OS 向けの `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
