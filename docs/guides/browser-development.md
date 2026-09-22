@@ -36,7 +36,7 @@ Edit / Save
         ↓
 Example タブを Browser reload
         ↓
-chirimen-server :33330
+chirimen-runtime :33330
         ↓
 Raspberry Pi GPIO / I2C
 ```
@@ -56,14 +56,14 @@ Examples = 書いたものを動かす
 Catalog  = Example を探す
 ```
 
-| Port | Service | Role |
-| --- | --- | --- |
-| 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | Browser Editor / code-server |
-| 4173 | chirimen-examples | Example Server / Runtime Examples |
-| 4200 | chirimen-example-catalog | Example Catalog |
+| Port | Service | Role | name |
+| --- | --- | --- | --- |
+| 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
+| 8080 | chirimen-editor | Browser Editor / code-server | editor |
+| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
-Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
+Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-runtime` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
 
 編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
 
@@ -80,7 +80,7 @@ Workspace で Example を編集して保存（workspace）
 ↓
 保存後に Example タブを reload する
 ↓
-chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
+chirimen-runtime（ws://localhost:33330/）経由で GPIO / I2C を操作する
 ```
 
 方針の詳細は [browser-editor.md](../architecture/browser-editor.md)。
@@ -286,7 +286,7 @@ Security:
 - 既定は password 認証。対話の初回 `start.sh` で `.env` へ決める（#269）。`auth: none` は使わない
 - 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない。`--lan` でも password 必須
 - HTTPS / reverse proxy は本リポジトリでは提供しない
-- GPIO / I2C device は `chirimen-server` のみ。Editor / Examples / Catalog には渡さない
+- GPIO / I2C device は `chirimen-runtime` のみ。Editor / Examples / Catalog には渡さない
 - 秘密情報は named volume または gitignored の `.env`。compose.yaml に `PASSWORD=` は書かない
 
 詳細は [Authentication](../architecture/browser-editor.md#authentication) と [Publish / bind](../architecture/browser-editor.md#publish--bind181)。

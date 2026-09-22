@@ -87,7 +87,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 
 1. host で I2C を有効化して reboot する（[Raspberry Pi Setup](./raspberry-pi-setup.md)）
 2. `./setups/enable-i2c.sh --check`（sudo 不要。[#216](https://github.com/gurezo/chirimen-raspi-docker/issues/216)）
-3. `docker compose up -d`（または device mapping が必要なら `./scripts/start.sh`。Pi 3 B+ は `--no-build`）し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1`
+3. `docker compose up -d`（または device mapping が必要なら `./scripts/start.sh`。Pi 3 B+ は `--no-build`）し直し、`docker compose exec chirimen-runtime ls -l /dev/i2c-1`
 
 Pi 5 での I2C → Docker → Runtime 確認は [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219)。
 
@@ -105,8 +105,8 @@ slave が接続されていない場合、scan 結果が空になるのは正常
 ls -l /dev/gpiomem* /dev/i2c-1 /sys/class/gpio
 getent group gpio
 getent group i2c
-docker compose exec chirimen-server ls -l /sys/class/gpio
-docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/i2c-1 2>/dev/null || true
+docker compose exec chirimen-runtime ls -l /sys/class/gpio
+docker compose exec chirimen-runtime ls -l /dev/gpiomem* /dev/i2c-1 2>/dev/null || true
 ```
 
 ### 対処
@@ -134,7 +134,7 @@ container の `/sys` は通常 read-only。`/sys/class/gpio` だけを bind す�
 ### 確認
 
 ```sh
-docker compose exec chirimen-server sh -c 'mount | grep -E "sys|gpio"; ls -l /sys/class/gpio/gpio* 2>/dev/null | head'
+docker compose exec chirimen-runtime sh -c 'mount | grep -E "sys|gpio"; ls -l /sys/class/gpio/gpio* 2>/dev/null | head'
 ```
 
 `/sys` が `ro` で `/sys/class/gpio` だけが `rw`、かつ `gpioN` が `../../devices/...` を指していればこの症状。
@@ -274,7 +274,7 @@ docker compose stop chirimen-editor
 Compose を直接使う場合:
 
 ```sh
-docker compose up chirimen-server chirimen-examples chirimen-example-catalog
+docker compose up chirimen-runtime chirimen-examples chirimen-example-catalog
 ```
 
 8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。低メモリ時の任意の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（Runtime-only では必須ではない。Pi 3 B+ build の回避策ではない）。

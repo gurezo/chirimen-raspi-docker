@@ -161,7 +161,7 @@
 Catalog  = Example を探す（:4200）
            ├─ 実行 → Example Server（:4173）
            └─ 編集 → Editor（:8080）→ workspace/
-Runtime  = chirimen-server（:33330）</pre>
+Runtime  = chirimen-runtime / name: runtime（:33330）</pre>
         <p>
           Catalog（<code>:4200</code>）は題材の発見入口です。編集結果の確認先ではありません。
         </p>
@@ -171,28 +171,33 @@ Runtime  = chirimen-server（:33330）</pre>
               <th>Port</th>
               <th>Service</th>
               <th>Role</th>
+              <th>name</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>33330</td>
-              <td>chirimen-server</td>
+              <td>chirimen-runtime</td>
               <td>Hardware Runtime / WebSocket</td>
+              <td>runtime</td>
             </tr>
             <tr>
               <td>8080</td>
               <td>chirimen-editor</td>
               <td>Browser Editor / code-server</td>
+              <td>editor</td>
             </tr>
             <tr>
               <td>4173</td>
               <td>chirimen-examples</td>
               <td>Example Server / Runtime Examples</td>
+              <td>example</td>
             </tr>
             <tr>
               <td>4200</td>
               <td>chirimen-example-catalog</td>
               <td>Example Catalog</td>
+              <td>catalog</td>
             </tr>
           </tbody>
         </table>
