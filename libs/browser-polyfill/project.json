@@ -13,6 +13,7 @@
       "executor": "@nx/vite:build",
       "outputs": [
         "{workspaceRoot}/libs/browser-polyfill/dist/polyfill.js",
+        "{workspaceRoot}/workspace/my-first-example/polyfill.js",
         "{workspaceRoot}/workspace/led-blink/polyfill.js",
         "{workspaceRoot}/workspace/button/polyfill.js",
         "{workspaceRoot}/workspace/i2c-scan/polyfill.js",

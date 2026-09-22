@@ -7,6 +7,7 @@ import { defineConfig } from 'vite';
 const workspaceRoot = resolve(import.meta.dirname, '../..');
 const bundleOutFile = resolve(import.meta.dirname, 'dist/polyfill.js');
 const samplePolyfills = [
+  resolve(workspaceRoot, 'workspace/my-first-example/polyfill.js'),
   resolve(workspaceRoot, 'workspace/led-blink/polyfill.js'),
   resolve(workspaceRoot, 'workspace/button/polyfill.js'),
   resolve(workspaceRoot, 'workspace/i2c-scan/polyfill.js'),

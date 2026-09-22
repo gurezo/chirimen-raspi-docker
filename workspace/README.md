@@ -21,6 +21,7 @@ Example Catalog（`:4200`）は題材の発見入口です。ported Example の�
 
 | ディレクトリ | 内容 |
 | --- | --- |
+| `my-first-example/` | 初心者向け最初の自作 Example（BCM 26 LED Blink） |
 | `led-blink/` | GPIO LED Blink（BCM 26） |
 | `button/` | GPIO Input / onchange（BCM 5 + LED） |
 | `i2c-scan/` | I2C Scan（bus 1。ADT7410 expected `0x48`） |
@@ -39,6 +40,7 @@ Example Catalog（`:4200`）は題材の発見入口です。ported Example の�
 Example の確認先:
 
 ```text
+http://127.0.0.1:4173/my-first-example/
 http://127.0.0.1:4173/led-blink/
 http://127.0.0.1:4173/button/
 http://127.0.0.1:4173/i2c-scan/
