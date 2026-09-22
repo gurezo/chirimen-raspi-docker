@@ -173,7 +173,7 @@ chirimen-raspi-docker/
 
 - **Raspberry Pi Setup**（Host）の初心者入口は `setups/setup.sh`。I2C 有効化は必要時に `setups/enable-i2c.sh`
 - **Runtime 操作**は `docker compose up -d` / `down`（Pi 3 / 4 / 5 共通。build なし）。正本は [Getting Started](../guides/getting-started.md)
-- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。`scripts/start.sh` は Development / 上級者向け（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。`--32bit` は Runtime only。サポート対象は 64-bit OS）
+- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。`scripts/start.sh` は Development / 上級者向け（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
 

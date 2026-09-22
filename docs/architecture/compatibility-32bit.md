@@ -33,7 +33,7 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 - image tag は `chirimen-raspi-docker/server:phase1-32bit` だった
 
 - 32-bit 用 build は当時 [`scripts/build-server.mjs`](../../scripts/build-server.mjs)（esbuild bundle）。ファイル本体の整理は [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341)
-- 当時の `./scripts/start.sh --32bit` は Runtime only（flag 削除は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340)）
+- 当時の `./scripts/start.sh --32bit` は Runtime only（Editor / Examples / Catalog を起動しない）。flag は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み
 - Pi 4 / Pi 5 の 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる。当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた
 - Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
 
