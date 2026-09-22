@@ -42,7 +42,9 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
 | 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | スクリーンキーボードが入力を妨げる | [Desktop でスクリーンキーボードが出る](#desktop-でスクリーンキーボードが出る) |
-| Pi 3 B+ でメモリ不足 / Editor が重い | [Pi 3 B+ で Docker ビルドが OOM / killed](#pi-3-b-で-docker-ビルドが-oom-killed) / [Pi 3 B+ で Editor が重い / メモリ不足](#pi-3-b-で-editor-が重い--メモリ不足) |
+| Pi 3 B+ でメモリ不足 / Editor が重い | [Pi 3 B+ で Editor が重い / メモリ不足](#pi-3-b-で-editor-が重い--メモリ不足) |
+| Pi 3 B+ で on-device Docker build | [Pi 3 B+ の on-device Docker build は Unsupported](#pi-3-b-の-on-device-docker-build-は-unsupported) |
+| Pi 4 / Pi 5 でビルドが OOM / 熱 | [Pi 4 / Pi 5 で Docker ビルドが OOM / killed](#pi-4--pi-5-で-docker-ビルドが-oom-killed) |
 
 ## device が無く GPIO / I2C が unavailable になる
 
@@ -204,17 +206,37 @@ NX   Nx Daemon was not able to compute the project graph.
 NX   hashArray is not a function
 ```
 
-## Pi 3 B+ で Docker ビルドが OOM / killed
+## Pi 3 B+ の on-device Docker build は Unsupported
 
 ### 症状
 
-- `./scripts/start.sh` や `docker compose up --build` が途中で killed になる
-- `dmesg` に Out of memory が出る
-- container 内の `pnpm install` / `pnpm nx build` が落ちる
+- Pi 3 B+ 上で `docker compose build` / `up --build` / image build を試す
+- ビルド中に OOM / killed / 熱暴走 / ハングする
 
 ### 原因
 
-Raspberry Pi 3 B+ は RAM 1GB である。サポート対象の下限であり、**8GB swap が無いと Docker image をビルドできない**。CPU ファンだけでは足りない。ルートに約 8GB の空きが無いと `/swapfile` を作れない。
+Raspberry Pi 3 B+ の on-device Docker build は **Unsupported** である。Pi 3 B+ は Runtime-only（`docker compose up` / `down`）。build 不可は swap の有無とは別のサポートポリシーである。`swap.sh` を積んでも Pi 3 B+ build は Supported にならない。
+
+機種別の Supported / Unsupported は [Compatibility](../architecture/compatibility.md)。実機検証の経緯は [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283)。
+
+### 対処
+
+- Runtime 利用: [Getting Started](./getting-started.md) の Pi 3 B+ Runtime-only 導線（`--no-build` 等）
+- Source Development / Docker build: **Raspberry Pi 4 / Pi 5** で行う（[Development](./development.md)）
+- Pi 4 / Pi 5 での build OOM は次節
+
+## Pi 4 / Pi 5 で Docker ビルドが OOM / killed
+
+### 症状
+
+- Pi 4 / Pi 5 上で `./scripts/start.sh` や `docker compose up --build` が途中で killed になる
+- `dmesg` に Out of memory が出る
+- container 内の `pnpm install` / `pnpm nx build` が落ちる
+- ビルド中にホストが極端に遅くなる / 熱 throttle する
+
+### 原因
+
+Docker image ビルドはメモリ・CPU 負荷が高い。Pi 4 / Pi 5 でも OOM や熱 throttle が起きうる。ルートに約 8GB の空きが無いと `/swapfile` を作れない。
 
 ### 対処
 
@@ -225,25 +247,9 @@ sudo ./setups/swap.sh --check
 free -h
 ```
 
-`./scripts/start.sh` の前に実行する。`swap.sh` は `/swapfile` だけを扱い、OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は消さない。16GB microSD では OS + Docker image + 8GB swap で逼迫しうる。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。Pi 4 / 5 の swap は任意。
+`swap.sh` の主用途は Pi 4 / Pi 5 の Source Development / Docker build である。`/swapfile` だけを扱い、OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は消さない。16GB microSD では OS + Docker image + 8GB swap で逼迫しうる。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
 
-## Pi 3 B+ でビルド中に熱暴走 / ハングする
-
-### 症状
-
-- Docker image ビルド中にホストが止まる / 応答しない
-- 極端に遅くなる（thermal throttle）
-- 電源が落ちる
-
-### 原因
-
-Docker image ビルドは CPU 負荷が高い。Pi 3 B+ では **CPU ファンが無いと熱暴走する**。8GB swap だけでは足りない。
-
-### 対処
-
-- CPU ファンを **必ず実装してから** ビルドする（熱暴走防止）
-- 電源投入前に装着する。特定メーカー / 型番は指定しない
-- 手順は [Raspberry Pi Setup](./raspberry-pi-setup.md)
+高負荷ビルド時は CPU ファンの装着も推奨する（任意。特定型番は指定しない）。build 対象機種は [Compatibility](../architecture/compatibility.md) / [Development](./development.md)。
 
 ## Pi 3 B+ で Editor が重い / メモリ不足
 
@@ -271,7 +277,7 @@ Compose を直接使う場合:
 docker compose up chirimen-server chirimen-examples chirimen-example-catalog
 ```
 
-8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。Swap 不足のビルド失敗は上記「OOM / killed」。正本は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)。
+8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。低メモリ時の任意の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)（Runtime-only では必須ではない。Pi 3 B+ build の回避策ではない）。
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 
@@ -625,7 +631,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 `[error]` の行を上から解消する。doctor は Host 設定を変えない。典型順:
 
 1. Raspberry Pi / OS / architecture
-2. Memory / Swap（Pi 3 B+ 相当で Swap が 0 なら error）→ `sudo ./setups/swap.sh`
+2. Memory / Swap（SwapTotal=0 は `[warn]`。任意。主用途は Pi 4 / Pi 5 の Docker build）→ `sudo ./setups/swap.sh`
 3. Docker Engine → `./setups/docker.sh`。daemon / docker グループは `systemctl start docker` / `usermod`
 4. Docker Compose → `./setups/docker-compose.sh`
 5. `/dev/i2c-1`（`i2c=unavailable` は error）→ `sudo ./setups/enable-i2c.sh` → reboot → `--check`

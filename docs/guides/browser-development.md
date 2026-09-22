@@ -93,12 +93,9 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-**Raspberry Pi 3 B+ のビルド前提は次の両方である。片方だけでは足りない。**
+Docker build / `compose build` / `up --build` の対象は **Raspberry Pi 4 / Pi 5** のみである（[Compatibility](../architecture/compatibility.md) / [Development](./development.md)）。**Pi 3 B+ は Runtime-only** であり、on-device Docker build は Unsupported。`swap.sh` を Pi 3 B+ build の有効化手段としては案内しない。
 
-- **8GB swap**: 無いと Docker image をビルドできない。`sudo ./setups/swap.sh`（既定 8G）を `./scripts/start.sh` の前に実行する
-- **CPU ファン**: ビルド中の熱暴走（スロットル / 停止）を防ぐために **必ず実装する**。電源投入前に装着する。特定型番は指定しない
-
-Pi 4 / 5 の swap / ファンは任意。`Supported` とは書かない。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
+Pi 4 / Pi 5 で Docker build 時にメモリ不足や OOM が出る場合は `sudo ./setups/swap.sh`（既定 8G）を実行する。CPU ファンは高負荷ビルド時の熱対策として任意だが推奨する。手順は [Raspberry Pi Setup](./raspberry-pi-setup.md) と [setups/README.md](../../setups/README.md)。
 
 Pi 3 B+ の基本体験に **code-server（Browser Editor `:8080`）は含めない。** Catalog `:4200` と Example Server `:4173` で GPIO LED Blink / I2C Scan は成立する。このページの Editor 手順は任意の高負荷機能である。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。
 
@@ -323,8 +320,8 @@ host `./workspace` の変更は残る。**`-v` は付けない。** Catalog（`:
 
 | 症状 | 参照 |
 | --- | --- |
-| Pi 3 B+ の Docker ビルドが OOM / killed | [Pi 3 B+ で Docker ビルドが OOM / killed](./troubleshooting.md#pi-3-b-で-docker-ビルドが-oom-killed)（8GB swap） |
-| ビルド中に熱暴走 / ハング | [Pi 3 B+ でビルド中に熱暴走 / ハングする](./troubleshooting.md#pi-3-b-でビルド中に熱暴走-ハングする)（CPU ファン） |
+| Pi 3 B+ の on-device Docker build | [Pi 3 B+ の on-device Docker build は Unsupported](./troubleshooting.md#pi-3-b-の-on-device-docker-build-は-unsupported) |
+| Pi 4 / Pi 5 でビルドが OOM / 熱 | [Pi 4 / Pi 5 で Docker ビルドが OOM / killed](./troubleshooting.md#pi-4--pi-5-で-docker-ビルドが-oom-killed)（`swap.sh`） |
 | Pi 3 B+ で Editor が重い | [Pi 3 B+ で Editor が重い / メモリ不足](./troubleshooting.md#pi-3-b-で-editor-が重い--メモリ不足) |
 | Editor で保存できない | [Editor で Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) |
 | password / 設定が消えた | [Editor の password / 設定が消えた](./troubleshooting.md#editor-の-password-設定が消えた) |
