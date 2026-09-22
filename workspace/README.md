@@ -69,6 +69,6 @@ http://127.0.0.1:4173/i2c-scan/
 
 ## 変更の反映
 
-標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Catalog（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。
+標準操作は `Edit → Save → Browser reload` です。静的ファイルのため hot reload はありません。確認先は Example Server `:4173` です。Catalog（`:4200`）には保存結果は出ません。WebSocket 先は `ws://localhost:33330/` です。初心者向けの一連手順は [Getting Started の Example Server :4173 で実行・更新する](../docs/guides/getting-started.md#example-server-4173-で実行更新する)。
 
 `polyfill.js` を更新するときは host のリポジトリルートで `pnpm nx bundle browser-polyfill` を実行します。

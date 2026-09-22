@@ -201,7 +201,7 @@ workspace は bind mount `./workspace` → `/home/coder/project` である。mon
 
 ## Example を編集する
 
-標準操作は `Edit → Save → Browser reload` である。静的ファイルのため hot reload は無い。
+標準操作は `Edit → Save → Browser reload` である。静的ファイルのため hot reload は無い。初心者向けの一連手順（directory と URL の対応・保存 → reload・最低限のトラブル確認）は [Getting Started の Example Server :4173 で実行・更新する](./getting-started.md#example-server-4173-で実行更新する)。
 
 Editor（`:8080`）で `led-blink/` / `button/` / `i2c-scan/` / `pir-sensor/` / `adt7410/` / `sht30/` / `ads1115/` を開いて編集する。配線と期待結果は各 Example ガイドまたは回路仕様へ。
 

@@ -151,7 +151,46 @@ cp ../led-blink/polyfill.js .
 
 リポジトリには同じ内容の正本として [workspace/my-first-example/](../../workspace/my-first-example/) もある。
 
-5. Runtime 起動後（Step 2）、Browser で `http://127.0.0.1:4173/my-first-example/` を開く。ファイルを保存したあとは Browser を reload して確認する。
+5. Runtime 起動後（Step 2）、Browser で `http://127.0.0.1:4173/my-first-example/` を開く。ファイルを保存したあとは Browser を reload して確認する。詳細は次節。
+
+### Example Server :4173 で実行・更新する
+
+Example Server `:4173`（Compose サービス `chirimen-examples`）は、host の `workspace/` を静的ファイルとして配信する。確認先はここである。Catalog（`:4200`）は題材の発見入口であり、編集結果の確認先ではない。GPIO / I2C は Browser の Polyfill が Runtime `:33330` へ接続して操作する。Raspberry Pi 上で Runtime が起動済みなら、Docker build や Node.js / npm / pnpm / Nx は不要である。
+
+directory と URL の対応:
+
+```text
+workspace/my-first-example/
+  ↓
+http://127.0.0.1:4173/my-first-example/
+```
+
+一般形は `workspace/<subdir>/` → `http://127.0.0.1:4173/<subdir>/` である。
+
+基本フロー:
+
+```text
+1. docker compose up（または ./scripts/start.sh 済み）
+2. workspace に Example を作成（前節）
+3. Browser で http://127.0.0.1:4173/<example>/ を開く
+4. HTML / JavaScript を編集（Desktop 任意エディタまたは Browser Editor）
+5. 保存
+6. Browser を reload（hot reload は無い）
+7. 動作確認
+```
+
+最低限のトラブル確認:
+
+- `docker compose ps` で `chirimen-examples` と `chirimen-server` が running か見る
+- 開いている URL が編集中の `workspace/<subdir>/` と一致しているか確認する（Catalog `:4200` を見ていないか）
+- Browser の Developer Tools → Console に JavaScript error が出ていないか見る
+- Runtime: `curl http://127.0.0.1:33330/health`（詳細は [Runtime Diagnostics](./runtime-diagnostics.md)）
+
+詳細な切り分けは [Troubleshooting](./troubleshooting.md) の次を参照する。
+
+- [Example の静的サーバ（4173）が開かない](./troubleshooting.md#example-の静的サーバ4173が開かない)
+- [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない)
+- [Example は開くが GPIO / I2C が動かない](./troubleshooting.md#example-は開くが-gpio--i2c-が動かない)
 
 `setups/` は Host 構築、`scripts/` は診断と Runtime 起動。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
@@ -161,6 +200,7 @@ cp ../led-blink/polyfill.js .
 - 子 Issue: [#316 Getting Started に workspace の役割とユーザー作成 Example の保存場所を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/316)
 - 子 Issue: [#317 my-first-example を作成する初心者向け CHIRIMEN チュートリアルを追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/317)
 - 子 Issue: [#318 Raspberry Pi OS Desktop と Browser Editor の2種類の Example 編集方法を説明する](https://github.com/gurezo/chirimen-raspi-docker/issues/318)
+- 子 Issue: [#319 Example Server :4173 を使った自作 Example の実行・更新手順を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/319)
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
 - 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
@@ -439,6 +479,7 @@ Getting Started はここまでである。続けて試すなら:
 
 | やりたいこと | 参照 |
 | --- | --- |
+| 自作 Example を :4173 で実行・更新する | [Example Server :4173 で実行・更新する](#example-server-4173-で実行更新する)（保存 → reload） |
 | GPIO / I2C / JavaScript / 回路を学ぶ | [CHIRIMEN Tutorial](./chirimen-tutorial.md)。環境構築は Tutorial ではなくこのページの Step 1〜2 |
 | タクトスイッチの入力を確認する | [GPIO Input](./gpio-input.md)。HTML サンプル（`http://127.0.0.1:4173/button/`）。配線は [回路仕様](../examples/gpio-input.md) |
 | I2C bus の address を scan する | [I2C Scan](./i2c-scan.md)。HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）。検証用 slave は ADT7410（`0x48`）。配線は [検証仕様](../examples/i2c-scan.md) |
