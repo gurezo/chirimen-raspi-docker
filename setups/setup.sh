@@ -9,7 +9,8 @@
 #
 # Related:
 #   docs/guides/setup-host-script-audit.md
-#   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot)
+#   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot),
+#   #330 (workspace / Runtime readiness)
 #
 set -euo pipefail
 
@@ -237,17 +238,35 @@ run_docker_compose_if_needed() {
 }
 
 check_workspace() {
+  local workspace_dir="${REPO_ROOT}/workspace"
+  local owner mode
+
   log ""
   log "==> workspace"
 
-  if [ -d "${REPO_ROOT}/workspace" ]; then
-    log "workspace/ exists (keep as-is; deeper readiness is later work)"
-    return 0
+  if [ ! -d "${workspace_dir}" ]; then
+    print_failure_hint \
+      "workspace/ is missing. Re-clone the repository so workspace/ is present."
+    exit 1
   fi
 
-  log "workspace/ is missing."
-  log "Clone should include workspace/; continuing without creating it."
-  log "Deeper workspace / doctor checks are handled in a later issue."
+  if [ ! -w "${workspace_dir}" ]; then
+    owner="$(stat -c '%U:%G' "${workspace_dir}" 2>/dev/null \
+      || stat -f '%Su:%Sg' "${workspace_dir}" 2>/dev/null \
+      || printf 'unknown')"
+    mode="$(stat -c '%a' "${workspace_dir}" 2>/dev/null \
+      || stat -f '%Lp' "${workspace_dir}" 2>/dev/null \
+      || printf 'unknown')"
+    err "workspace/ is not writable by the current user ($(id -un))."
+    err "  path: ${workspace_dir}"
+    err "  owner: ${owner}"
+    err "  mode: ${mode}"
+    print_failure_hint \
+      "Make workspace/ editable by your user, then re-run."
+    exit 1
+  fi
+
+  log "workspace/ is available and writable by $(id -un)."
 }
 
 verify_i2c_after_resume() {
