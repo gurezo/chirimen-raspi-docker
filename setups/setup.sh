@@ -2,7 +2,8 @@
 #
 # Beginner Host setup orchestration for chirimen-raspi-docker.
 # Checks Runtime-required Host state and calls existing setups/*.sh
-# only when needed. Does not run swap.sh, Docker build, or start.sh.
+# only when needed. Verifies workspace/ and runs doctor.sh as
+# Runtime readiness. Does not run swap.sh, Docker build, or start.sh.
 #
 # Usage:
 #   ./setups/setup.sh
@@ -23,6 +24,7 @@ ENABLE_I2C_SH="${SCRIPT_DIR}/enable-i2c.sh"
 DISABLE_SQUEEKBOARD_SH="${SCRIPT_DIR}/disable-squeekboard.sh"
 DOCKER_SH="${SCRIPT_DIR}/docker.sh"
 DOCKER_COMPOSE_SH="${SCRIPT_DIR}/docker-compose.sh"
+DOCTOR_SH="${REPO_ROOT}/scripts/doctor.sh"
 
 log() {
   printf '%s\n' "$*"
@@ -37,7 +39,8 @@ usage() {
 Usage: setup.sh
 
   Beginner Host setup for CHIRIMEN Runtime on Raspberry Pi OS.
-  Runs only the Host setup steps that are still needed.
+  Runs only the Host setup steps that are still needed, then checks
+  workspace/ and Runtime readiness via doctor.sh.
 
   Does not run swap.sh, Docker build, or start.sh.
   Does not require Node.js / npm / pnpm / Nx on the Host.
@@ -269,6 +272,19 @@ check_workspace() {
   log "workspace/ is available and writable by $(id -un)."
 }
 
+run_runtime_readiness() {
+  log ""
+  log "==> Runtime readiness (doctor.sh)"
+
+  require_script "${DOCTOR_SH}"
+  # Pass CHIRIMEN_BEGINNER_SETUP so doctor leaves next-step guidance
+  # to this orchestrator (docker compose up -d, not start.sh).
+  if ! CHIRIMEN_BEGINNER_SETUP=1 "${DOCTOR_SH}"; then
+    print_failure_hint "doctor.sh reported Runtime readiness errors."
+    exit 1
+  fi
+}
+
 verify_i2c_after_resume() {
   if ! i2c_device_exists; then
     return 0
@@ -309,6 +325,7 @@ main() {
   run_docker_if_needed
   run_docker_compose_if_needed
   check_workspace
+  run_runtime_readiness
 
   print_success
 }
