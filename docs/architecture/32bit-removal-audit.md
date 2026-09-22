@@ -41,9 +41,20 @@
 
 ## Docker / scripts / compose（実装・設定）
 
+検索時点の実装・設定ヒット。`package.json` / Nx targets / GitHub Actions / `setups/` からは `Dockerfile.32bit`・`--32bit`・`build-server` の参照は見つからなかった。
+
 | ファイル / 対象 | 該当箇所（概要） | 分類 | 担当 | メモ |
 | --- | --- | --- | --- | --- |
-| （inventory 予定） | | | | |
+| [`docker/server/Dockerfile.32bit`](../../docker/server/Dockerfile.32bit) | ファイル全体。`node:22-bookworm-slim`、`RUN node scripts/build-server.mjs`、arm/v7 / Nx hasher コメント | delete | #339 | 32-bit 専用 path。導入理由（Node 24 に `linux/arm/v7` 無し、Nx native / WASM）は #344 へ |
+| [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | 先頭コメント（`Dockerfile.32bit` / armv7 / esbuild 同期注意） | update | #339 | 64-bit 本体は残す。32-bit 言及コメントのみ整理 |
+| [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) | `arm32` / `armv7` is out of scope コメント | out of scope（文言は update 可） | #345 任意 | Editor が armv7 非対応である事実のメモ。削除対象のコードパスではない |
+| [`compose.yaml`](../../compose.yaml) | `chirimen-server` build コメント（`--32bit` → `Dockerfile.32bit`）；Examples/Catalog の `--32bit` Runtime-only コメント | update | #342 | override 用 env は無くコメントのみ。64-bit 一本化時に削除・書き換え |
+| [`scripts/start.sh`](../../scripts/start.sh) | `DOCKERFILE_32BIT` / `IMAGE_32BIT` / `OS_BITS` / `set_os_bits` / `dockerfile_for_os_bits` / `image_for_os_bits` / `reject_32bit_machine_without_flag` / `--32bit` 引数 / 32-bit 時の Editor・Examples・Catalog skip / help・usage | delete | #340 | 32-bit 専用分岐の中心。`--no-build` / `--lan` / 64-bit 既定起動は維持 |
+| [`scripts/build-server.mjs`](../../scripts/build-server.mjs) | esbuild で `apps/server` を bundle。呼び出し元は `Dockerfile.32bit` のみ（`package.json` 未登録） | delete（#341 で最終確認） | #341 | 現状は 32-bit workaround 専用。他用途が無ければ削除。esbuild 導入理由は #344 |
+| [`scripts/doctor.sh`](../../scripts/doctor.sh) | `armv7l` 等で `[warn] 32-bit OS/architecture`；`aarch64 \| armv7l` を期待 arch として列挙 | update | #343 | warn 継続ではなく Unsupported で停止・案内へ。`uname -m` のみ判定は不十分（Pi 4/5 32-bit userland は `aarch64`） |
+| [`scripts/README.md`](../../scripts/README.md) | `build-server.mjs` を「32-bit Docker 用」と記載 | update | #341 / #345 | スクリプト削除結果に合わせて更新 |
+| [`setups/setup.sh`](../../setups/setup.sh) | 32-bit 検出なし | update（新規検出） | #343 | 現状未検出。32-bit userland を Unsupported として案内する実装を追加 |
+| `package.json` / Nx / CI | `build-server` / `Dockerfile.32bit` / `--32bit` 参照なし | out of scope | — | 追加の削除対象なし |
 
 ## Documentation / README / site
 
