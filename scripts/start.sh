@@ -53,7 +53,7 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
 
   Probe host hardware paths and start services with only the devices
   that exist on this host (capability-aware mapping).
-  Starts chirimen-server, chirimen-editor (code-server on
+  Starts chirimen-runtime, chirimen-editor (code-server on
   127.0.0.1:8080, password auth), chirimen-examples
   (http://127.0.0.1:4173/), and chirimen-example-catalog
   (http://127.0.0.1:4200/).
@@ -86,7 +86,7 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
     --32bit          32-bit Runtime path is removed; use 64-bit OS
     --arch 32|64     64-bit is the only supported path
 
-  Optionally maps when present (chirimen-server only):
+  Optionally maps when present (chirimen-runtime only):
     - /dev/gpiomem*
     - /dev/gpiochip*
     - /dev/i2c-1
@@ -303,7 +303,7 @@ write_compose_override() {
 
   {
     printf '%s\n' 'services:'
-    printf '%s\n' '  chirimen-server:'
+    printf '%s\n' '  chirimen-runtime:'
     printf '%s\n' "    image: ${image}"
     printf '%s\n' '    build:'
     printf '%s\n' '      context: .'

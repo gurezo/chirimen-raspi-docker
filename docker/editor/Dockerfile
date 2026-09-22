@@ -26,7 +26,7 @@ VOLUME ["/home/coder/project", "/home/coder/.local", "/home/coder/.config"]
 
 EXPOSE 8080 4173
 # 4173 is the Example static server (#179). python3 -m http.server in
-# the Editor terminal binds here. GPIO / I2C stay on chirimen-server.
+# the Editor terminal binds here. GPIO / I2C stay on chirimen-runtime.
 
 # /healthz is unauthenticated. HTTP 200 means the process is up even when
 # the JSON status is "expired" (no recent Browser session). Do not grep

@@ -71,12 +71,12 @@ Getting Started と Browser Development の Flow 図・Port 表が食い違っ�
 
 Port / Service / Role の詳細正本は [`compose.yaml`](../../compose.yaml) と [Docker 構成](../architecture/docker.md) である。案内を書くときは次と矛盾させない。
 
-| Port | Service | Role |
-| --- | --- | --- |
-| 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | Browser Editor / code-server |
-| 4173 | chirimen-examples | Example Server / Runtime Examples |
-| 4200 | chirimen-example-catalog | Example Catalog |
+| Port | Service | Role | name |
+| --- | --- | --- | --- |
+| 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
+| 8080 | chirimen-editor | Browser Editor / code-server | editor |
+| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 - 編集先は `workspace/`
 - `docs/examples` は回路仕様・出典であり、編集用 Workspace ではない

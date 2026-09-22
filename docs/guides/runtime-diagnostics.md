@@ -15,7 +15,7 @@ Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整�
 - [I2C Scan](./i2c-scan.md)
 - 実機記録: [runtime-verification.md](../examples/runtime-verification.md)
 
-Catalog は題材の発見入口であり、Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-server` `:33330` が行う。
+Catalog は題材の発見入口であり、Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-runtime` `:33330` が行う。
 
 ## 責務
 
@@ -34,7 +34,7 @@ Device        → Example Catalog / Runtime Examples
 | レイヤー | 確認するもの | 確認しないもの |
 | --- | --- | --- |
 | `./scripts/doctor.sh` | Raspberry Pi / OS / **userland bitness** / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker Engine、Docker Compose、Host capability（`/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1`） | WebSocket、Browser Polyfill、GPIO の点滅。Host 設定の変更 |
-| `GET /health`（`:33330`） | `chirimen-server` の起動状態 | GPIO / I2C の E2E、Browser からの疎通 |
+| `GET /health`（`:33330`） | `chirimen-runtime` の起動状態 | GPIO / I2C の E2E、Browser からの疎通 |
 | GPIO LED Blink | Browser Polyfill / WebSocket / GPIO Output | Host の Docker インストール |
 | GPIO Input | Browser Polyfill / WebSocket / GPIO Input | I2C |
 | I2C Scan | Browser Polyfill / WebSocket / I2C Runtime / `/dev/i2c-1` | 個別 slave の読み書き（ADT7410 等は別 Example） |
@@ -91,7 +91,7 @@ Device        → Example Catalog / Runtime Examples
 | GPIO Input | GPIO Input | `http://127.0.0.1:4173/button/` | [回路仕様](../examples/gpio-input.md) |
 | I2C Runtime | I2C Scan | `http://127.0.0.1:4173/i2c-scan/` | [検証仕様](../examples/i2c-scan.md)。検証用 slave は ADT7410（`0x48`） |
 
-これらで `Browser → Browser Polyfill → WebSocket → chirimen-server → GPIO/I2C` の基本経路を確認する。
+これらで `Browser → Browser Polyfill → WebSocket → chirimen-runtime → GPIO/I2C` の基本経路を確認する。
 
 ## 手順
 

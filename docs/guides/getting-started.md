@@ -40,7 +40,7 @@ Desktop 任意エディタ または Browser Editor :8080
   ↓
 Example Server :4173 → Save → Browser reload
   ↓
-Browser Polyfill → chirimen-server :33330 → GPIO / I2C
+Browser Polyfill → chirimen-runtime :33330 → GPIO / I2C
 ```
 
 ## workspace/（HTML / JavaScript の保存場所）
@@ -190,7 +190,7 @@ http://127.0.0.1:4173/my-first-example/
 
 最低限のトラブル確認:
 
-- `docker compose ps` で `chirimen-examples` と `chirimen-server` が running か見る
+- `docker compose ps` で `chirimen-examples` と `chirimen-runtime` が running か見る
 - 開いている URL が編集中の `workspace/<subdir>/` と一致しているか確認する（Catalog `:4200` を見ていないか）
 - Browser の Developer Tools → Console に JavaScript error が出ていないか見る
 - Runtime: `curl http://127.0.0.1:33330/health`（詳細は [Runtime Diagnostics](./runtime-diagnostics.md)）
@@ -387,12 +387,12 @@ server の期待する応答例:
 curl -fsS http://127.0.0.1:4173/led-blink/
 ```
 
-| Port | Service | Role |
-| --- | --- | --- |
-| 33330 | chirimen-server | Hardware Runtime / WebSocket |
-| 8080 | chirimen-editor | Browser Editor / code-server |
-| 4173 | chirimen-examples | Example Server / Runtime Examples |
-| 4200 | chirimen-example-catalog | Example Catalog |
+| Port | Service | Role | name |
+| --- | --- | --- | --- |
+| 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
+| 8080 | chirimen-editor | Browser Editor / code-server | editor |
+| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 Editor（`:8080`）を使うときは password が必要な場合がある。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 

@@ -45,7 +45,7 @@ Examples         HTML / Vanilla JS
                        ↓
                  Browser Polyfill
                        ↓
-                 chirimen-server :33330
+                 chirimen-runtime :33330
                        ↓
                  Raspberry Pi 3/4/5
 
@@ -62,7 +62,7 @@ chirimen-device-dashboard
 | Runtime Example | 本リポジトリの [workspace/](../../workspace/) | `runtimeExamplePath`。ported の実行コードだけが対象 |
 | Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | Catalog ヘッダーの外部リンク。iframe しない |
 
-Catalog は題材の発見入口である。Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-server` `:33330` が行う。
+Catalog は題材の発見入口である。Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-runtime` `:33330` が行う。
 
 ### Device metadata
 

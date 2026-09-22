@@ -20,7 +20,7 @@ Accepted（#173。image は #174。Compose は `compose.yaml` の `chirimen-edit
 
 旧 CHIRIMEN 環境にあった VS Code ベースの開発体験を、Docker / Browser ベースの本リポジトリ上で再構築する。
 
-最も重要なルールは、Editor を新しい Hardware Runtime にしないことである。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-server` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` を渡さない。
+最も重要なルールは、Editor を新しい Hardware Runtime にしないことである。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-runtime` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` を渡さない。
 
 ```text
 Browser
@@ -38,7 +38,7 @@ Browser
        WebSocket
           |
           v
-    chirimen-server
+    chirimen-runtime
           |
           v
       Node Runtime
@@ -49,7 +49,7 @@ Browser
 
 親 Issue の方針:
 
-- `chirimen-server` container に Editor を直接インストールしない
+- `chirimen-runtime` container に Editor を直接インストールしない
 - Editor は独立した Docker service とする
 - Editor が停止しても CHIRIMEN Runtime は動作可能とする
 - Runtime が停止しても Editor 自体は起動可能とする
@@ -342,7 +342,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 
 対象 port は Editor `8080` / Example `4173` / Catalog `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。旧 `--32bit`（削除済み）は Editor 系を起動しなかったため `--lan` は無視された。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
-GPIO / I2C は Editor / Examples / Catalog に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-server` のみ。Examples と Catalog は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
+GPIO / I2C は Editor / Examples / Catalog に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-runtime` のみ。Examples と Catalog は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
 ## HTTPS / reverse proxy
 

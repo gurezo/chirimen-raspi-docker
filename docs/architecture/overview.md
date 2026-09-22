@@ -144,7 +144,7 @@ chirimen-raspi-docker/
 │   ├── examples/               # GPIO / I2C Example 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117 / #256）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
-├── compose.yaml                # chirimen-server + chirimen-editor / chirimen-examples / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
+├── compose.yaml                # chirimen-runtime + chirimen-editor / chirimen-examples / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -174,7 +174,7 @@ chirimen-raspi-docker/
 - **Raspberry Pi Setup**（Host）の初心者入口は `setups/setup.sh`。I2C 有効化は必要時に `setups/enable-i2c.sh`
 - **Runtime 操作**は `docker compose up -d` / `down`（Pi 3 / 4 / 5 共通。build なし）。正本は [Getting Started](../guides/getting-started.md)
 - **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。`scripts/start.sh` は Development / 上級者向け（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。サポート対象は 64-bit OS）
-- ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
+- ベース定義は root の `compose.yaml`（`chirimen-runtime` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
 
 詳細は [docker.md](./docker.md) と [Getting Started](../guides/getting-started.md) を参照。

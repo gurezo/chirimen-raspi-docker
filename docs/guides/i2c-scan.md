@@ -143,7 +143,7 @@ curl http://127.0.0.1:33330/health
 container 内に I2C device が見えることも確認する。
 
 ```sh
-docker compose exec chirimen-server ls -l /dev/i2c-1
+docker compose exec chirimen-runtime ls -l /dev/i2c-1
 ```
 
 詳細は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) を参照する。Development / device mapping が必要なときの `start.sh` は [scripts/README.md](../../scripts/README.md)。
@@ -201,7 +201,7 @@ ADT7410 の温度レジスタは読まない。scan で address が分かれば�
 | --- | --- |
 | I2C が無効 | `sudo ./setups/enable-i2c.sh` → reboot → `--check`。[Raspberry Pi Setup](./raspberry-pi-setup.md) |
 | host に `/dev/i2c-1` が無い | `ls -l /dev/i2c-1` と `./scripts/doctor.sh` |
-| container に `/dev/i2c-1` が無い | `docker compose up -d`（device mapping が必要なら `./scripts/start.sh`。Pi 3 B+ は `--no-build`）し直し、`docker compose exec chirimen-server ls -l /dev/i2c-1` |
+| container に `/dev/i2c-1` が無い | `docker compose up -d`（device mapping が必要なら `./scripts/start.sh`。Pi 3 B+ は `--no-build`）し直し、`docker compose exec chirimen-runtime ls -l /dev/i2c-1` |
 | Runtime が止まっている | `docker compose up -d` と `curl http://127.0.0.1:33330/health` |
 | ピン取り違え | 物理 pin 1（3.3V）、pin 3（SDA）、pin 5（SCL）、pin 6（GND） |
 | A0 / A1 が GND でない | A0 / A1 を GND へ。上げると address が `0x48` 以外になる |

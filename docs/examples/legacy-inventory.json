@@ -753,7 +753,7 @@
       "verificationStatus": "",
       "supportedRaspberryPi": [],
       "runtimeExamplePath": "",
-      "notes": "WebBluetooth 経由。本 Runtime（WebSocket + chirimen-server）の対象外。 認定デバイス未登録。",
+      "notes": "WebBluetooth 経由。本 Runtime（WebSocket + chirimen-runtime）の対象外。 認定デバイス未登録。",
       "verificationByModel": {
         "3": "unverified",
         "4": "unverified",
