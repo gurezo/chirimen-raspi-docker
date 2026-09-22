@@ -210,14 +210,17 @@ Runtime  = chirimen-server（:33330）</pre>
       <section>
         <h2>推奨環境</h2>
         <ul>
-          <li>Raspberry Pi 3 B+</li>
-          <li>Raspberry Pi 4</li>
-          <li>Raspberry Pi 5</li>
+          <li>
+            Raspberry Pi 3 B+（Runtime-only。on-device Docker build は
+            Unsupported）
+          </li>
+          <li>Raspberry Pi 4（Runtime / Development。Docker build Supported）</li>
+          <li>Raspberry Pi 5（Runtime / Development。Docker build Supported）</li>
         </ul>
         <p>サポート対象は Raspberry Pi OS 64-bit。</p>
         <p class="recommended">Recommended: Raspberry Pi OS Lite 64-bit</p>
         <p>
-          実機検証の正本は
+          Runtime Support と Development / Docker Build Support の区別の正本は
           <a href="./architecture/compatibility.html">Compatibility</a>
           です。
         </p>
