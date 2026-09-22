@@ -40,7 +40,8 @@ Recommended before Docker image builds on Raspberry Pi 4 / Pi 5:
   ./scripts/start.sh
 
 Optional on low-memory Runtime hosts. Does not make Pi 3 B+ Docker
-build Supported.
+build Supported. On Pi 3 B+ (Runtime-only) use:
+  ./scripts/start.sh --no-build
 
 Examples:
   sudo ./setups/swap.sh

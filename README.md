@@ -4,17 +4,17 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 
 ## Supported Hardware / Recommended OS
 
-- Raspberry Pi 3 B+
-- Raspberry Pi 4
-- Raspberry Pi 5
+- Raspberry Pi 3 B+（**Runtime-only**。on-device Docker build は Unsupported）
+- Raspberry Pi 4（Runtime / Development。Docker build Supported）
+- Raspberry Pi 5（Runtime / Development。Docker build Supported）
 
-サポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit
+サポート対象は Raspberry Pi OS 64-bit。Recommended: Raspberry Pi OS Lite 64-bit。モデル別ロールの正本は [Compatibility](docs/architecture/compatibility.md)。
 
 > 32-bit OS は非推奨です。[詳細を見る](docs/architecture/compatibility-32bit.md)
 
 ## Quick Start
 
-初めて使う場合は [Getting Started](docs/guides/getting-started.md) の3段階に従ってください。
+初めて使う場合は [Getting Started](docs/guides/getting-started.md) の3段階に従ってください。機種別の build / Runtime 導線は Step 2 を正本とする。
 
 ```text
 Getting Started
@@ -23,13 +23,15 @@ Getting Started
 └─ Step 3: First Example（Catalog :4200 → :4173 / GPIO LED Blink）
 ```
 
-Raspberry Pi Setup が済んでいるなら Step 2 から:
+Raspberry Pi Setup が済んでいるなら Step 2 から（Pi 4 / Pi 5 の例。既定で `--build`）:
 
 ```sh
 ./scripts/doctor.sh
 ./scripts/start.sh
 curl http://127.0.0.1:33330/health
 ```
+
+Pi 3 B+（Runtime-only）では `./scripts/start.sh --no-build` を使う。詳細は [Getting Started](docs/guides/getting-started.md)。
 
 ## Documentation
 

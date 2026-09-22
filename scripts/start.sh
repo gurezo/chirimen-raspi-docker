@@ -10,8 +10,9 @@
 #   ./scripts/start.sh --lan
 #   ./scripts/start.sh --32bit
 #   ./scripts/start.sh --build
+#   ./scripts/start.sh --no-build
 #   ./scripts/start.sh -d
-#
+##
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,6 +40,11 @@ OS_BITS_SOURCE="default"
 # Runtime 33330).
 WANT_LAN=0
 
+# 1 when --no-build is passed. Skips the default auto --build.
+# Use on Raspberry Pi 3 B+ (Runtime-only); on-device Docker build
+# is Unsupported there. Pi 4 / Pi 5 may use the default --build.
+WANT_NO_BUILD=0
+
 OVERRIDE_FILE=""
 
 log() {
@@ -51,7 +57,7 @@ err() {
 
 usage() {
   cat <<'EOF'
-Usage: start.sh [--32bit] [--lan] [docker compose up options...]
+Usage: start.sh [--32bit] [--lan] [--no-build] [docker compose up options...]
 
   Probe host hardware paths and start services with only the devices
   that exist on this host (capability-aware mapping).
@@ -82,6 +88,10 @@ Usage: start.sh [--32bit] [--lan] [docker compose up options...]
                      on 0.0.0.0 (LAN). 64-bit only. Does
                      not change Runtime 33330. Password auth stays
                      required. Do not use this to publish on the Internet.
+    --no-build       do not pass --build to `docker compose up`.
+                     Use on Raspberry Pi 3 B+ (Runtime-only).
+                     On-device Docker build is Unsupported on Pi 3 B+.
+                     Pi 4 / Pi 5: omit this flag (default adds --build).
 
   Removed (error if passed):
     --editor         Editor / Examples / Catalog now start by default
@@ -94,16 +104,21 @@ Usage: start.sh [--32bit] [--lan] [docker compose up options...]
     - /dev/i2c-1
 
   Extra arguments are passed to `docker compose up` (default: --build).
-  If you pass any up options yourself, --build is not added automatically.
+  If you pass --no-build, or any up options yourself, --build is not
+  added automatically.
 
 Examples:
   chmod +x scripts/start.sh
   ./scripts/start.sh
   ./scripts/start.sh --lan
   ./scripts/start.sh --32bit
+  ./scripts/start.sh --no-build
+  ./scripts/start.sh --lan --no-build
   ./scripts/start.sh --build --force-recreate
 
-Same procedure on Raspberry Pi 3 / 4 / 5; no per-model compose edits.
+Runtime start is the same on Raspberry Pi 3 / 4 / 5 (no per-model
+compose edits). Default auto --build is for Pi 4 / Pi 5. On Pi 3 B+
+(Runtime-only) use --no-build. See docs/guides/getting-started.md.
 EOF
 }
 
@@ -510,6 +525,10 @@ main() {
         WANT_LAN=1
         shift
         ;;
+      --no-build)
+        WANT_NO_BUILD=1
+        shift
+        ;;
       *)
         up_args+=("$1")
         shift
@@ -529,7 +548,7 @@ main() {
     exit 1
   fi
 
-  if [ "${#up_args[@]}" -eq 0 ]; then
+  if [ "$WANT_NO_BUILD" -eq 0 ] && [ "${#up_args[@]}" -eq 0 ]; then
     up_args=(--build)
   fi
 

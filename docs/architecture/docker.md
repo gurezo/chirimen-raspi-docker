@@ -23,12 +23,15 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で�
 - 推奨入口は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping）
 - ベース定義は root の [`compose.yaml`](../../compose.yaml)
 - サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。通常の推奨環境は Raspberry Pi OS Lite 64-bit
+- Pi 3 B+ は **Runtime-only**（`./scripts/start.sh --no-build`）。on-device Docker build は Pi 4 / Pi 5 のみ（[Compatibility](./compatibility.md#development--docker-build-support)）
 - 32-bit OS はサポート対象外（`Dockerfile.32bit` は削除しない）
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh                    # Runtime + Browser Editor + Examples + Catalog（127.0.0.1）
+./scripts/start.sh                    # Pi 4 / Pi 5。既定で --build（Runtime + Editor + Examples + Catalog）
 ./scripts/start.sh --lan              # 同上。Editor / Example / Catalog を LAN 公開
+./scripts/start.sh --no-build         # Pi 3 B+ Runtime-only（build なし）
+./scripts/start.sh --lan --no-build   # Pi 3 B+。LAN 公開かつ build なし
 ```
 
 ## Compose サービス
@@ -46,9 +49,10 @@ chmod +x scripts/start.sh
 
 | 利用方法 | Compose | 推奨入口 |
 | --- | --- | --- |
-| Runtime + Editor + Examples + Catalog（既定） | `docker compose up` | `./scripts/start.sh` |
-| 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up` | `./scripts/start.sh --lan` |
-| Runtime only | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) |
+| Runtime + Editor + Examples + Catalog（既定。Pi 4 / Pi 5） | `docker compose up --build` | `./scripts/start.sh` |
+| 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` |
+| Runtime-only（Pi 3 B+。build なし） | `docker compose up` | `./scripts/start.sh --no-build` |
+| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) |
 
 ### chirimen-server
 
@@ -118,10 +122,11 @@ host の `pnpm nx serve example-catalog` も port `4200` を使う。同時に�
 
 ### 起動と health check
 
-Runtime + Editor + Examples + Catalog:
+Runtime + Editor + Examples + Catalog（Pi 4 / Pi 5 の例。既定で `--build`。Pi 3 B+ は `--no-build`）:
 
 ```sh
 ./scripts/start.sh
+# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
 curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/

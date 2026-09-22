@@ -135,7 +135,7 @@ slave 未接続時の空配列は Runtime 確認（[#99](https://github.com/gure
 2. host で `ls -l /dev/i2c-1`
 3. 上記のとおり ADT7410 を接続する
 4. expected address を host で確認する（任意: `sudo apt install i2c-tools` のあと `i2cdetect -y 1` で `48`）
-5. `./scripts/doctor.sh` → `./scripts/start.sh`
+5. `./scripts/doctor.sh` → `./scripts/start.sh`（Pi 3 B+ は `--no-build`）
 6. `docker compose exec chirimen-server ls -l /dev/i2c-1`
 7. HTML サンプル（`http://127.0.0.1:4173/i2c-scan/`）
 8. 走査結果の hex 一覧に `0x48` が出ることを確認する

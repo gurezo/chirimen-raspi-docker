@@ -99,10 +99,11 @@ Device        → Example Catalog / Runtime Examples
 
 `[error]` が無ければ次へ進む。不足があるときは上の戻先表と [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
 
-2. Runtime を起動し、プロセス生存を確認する。
+2. Runtime を起動し、プロセス生存を確認する。機種別コマンドは [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（Pi 3 B+ は `--no-build`）。
 
 ```sh
-./scripts/start.sh
+./scripts/start.sh            # Pi 4 / Pi 5
+# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
 curl -fsS http://127.0.0.1:33330/health
 ```
 

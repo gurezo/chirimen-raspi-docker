@@ -66,8 +66,9 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
 
 ```text
-./scripts/start.sh
-  （同等: docker compose up）
+./scripts/start.sh（Pi 4 / Pi 5。既定で --build）
+  or --no-build（Pi 3 B+ Runtime-only）
+  （同等: docker compose up [--build]）
 ↓
 Browser で Catalog を開く（http://127.0.0.1:4200/）
 ↓
@@ -85,7 +86,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 前提:
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）。**Pi 3 B+ は Runtime-only**
 - サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
@@ -107,16 +108,17 @@ Tutorial の環境構築手順は本リポジトリの手順ではない。clone
 
 ## Runtime / Editor / Examples を起動する
 
-推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。
+推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。引数なしは既定で `--build` 相当のため **Pi 4 / Pi 5** 向け。Pi 3 B+（Runtime-only）は `--no-build`（[Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)）。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh            # Pi 4 / Pi 5。Runtime + Browser Editor + Examples + Catalog（既定で --build）
 ./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
+./scripts/start.sh --no-build # Pi 3 B+ Runtime-only（build なし）
 ```
 
-同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
+同等の Compose 直接起動は、Pi 4 / Pi 5 なら `docker compose up --build`、Pi 3 B+ なら `docker compose up`（`--build` なし）。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
 32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 
@@ -291,7 +293,7 @@ Security:
 
 ```sh
 ./scripts/doctor.sh
-./scripts/start.sh
+./scripts/start.sh            # 一次環境 Pi 5。Pi 3 B+ は --no-build
 curl http://127.0.0.1:33330/health
 ```
 
@@ -307,7 +309,7 @@ container 再起動後の保持:
 
 ```sh
 docker compose down
-./scripts/start.sh
+./scripts/start.sh            # Pi 3 B+ は --no-build
 ```
 
 host `./workspace` の変更は残る。**`-v` は付けない。** Catalog（`:4200`）は編集結果の確認先ではない。

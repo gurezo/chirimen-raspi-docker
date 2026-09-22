@@ -6,6 +6,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する Documentation を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#305 Compatibility に Runtime Support / Docker Build Support を分離して記載する](https://github.com/gurezo/chirimen-raspi-docker/issues/305)
+- 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
 - 実機検証（Getting Started）: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
 - 親 Issue（歴史）: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue（歴史）: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
@@ -60,7 +61,14 @@ Docker image の build（`docker build` / `compose build` / `up --build`）の�
 
 ### Runtime startup
 
-Pi 3 / 4 / 5 とも `./scripts/start.sh`。モデルごとの `compose.yaml` 手編集は不要。
+Pi 3 / 4 / 5 とも `./scripts/start.sh`（モデルごとの `compose.yaml` 手編集は不要）。引数なしは既定で `--build` 相当のため、対象は次のとおり。
+
+| Model | 推奨コマンド | 備考 |
+| --- | --- | --- |
+| Raspberry Pi 3 B+ | `./scripts/start.sh --no-build` | Runtime-only。on-device Docker build は Unsupported |
+| Raspberry Pi 4 / Pi 5 | `./scripts/start.sh` | 既定で `--build`。Development / Docker Build Supported |
+
+機種別手順の正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-chirimen-setup)。
 
 ### GPIO capability detection
 

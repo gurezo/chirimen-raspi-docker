@@ -11,14 +11,15 @@ Wiki の設計意図と、実装後のリポジトリ構造をまとめる。
 
 ## 目的
 
-Raspberry Pi 3 / 4 / 5 上で、CHIRIMEN 開発を始められる Runtime を提供する。Host 準備は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（`setups/`）。**CHIRIMEN Setup** の起動入口は `./scripts/start.sh` である。
+Raspberry Pi 3 / 4 / 5 上で、CHIRIMEN 開発を始められる Runtime を提供する。Host 準備は [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（`setups/`）。**CHIRIMEN Setup** の起動入口は `./scripts/start.sh` である（Pi 3 B+ は Runtime-only のため `--no-build`。詳細は [Getting Started](../guides/getting-started.md)）。
 
 ```text
 Raspberry Pi Setup（setups/）
         ↓
 ./scripts/doctor.sh
         ↓
-./scripts/start.sh
+./scripts/start.sh              # Pi 4 / Pi 5（既定で --build）
+  or --no-build                 # Pi 3 B+ Runtime-only
 ```
 
 既存 CHIRIMEN の Web GPIO / Web I2C 風の開発体験を維持しつつ、実装を TypeScript / Nx / Docker ベースに再構築する。
@@ -168,7 +169,7 @@ chirimen-raspi-docker/
 ## Docker と scripts
 
 - **Raspberry Pi Setup**（Host）は `setups/`。I2C 有効化は `setups/enable-i2c.sh`
-- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動。`--32bit` は Runtime only。サポート対象は 64-bit OS）
+- **CHIRIMEN Setup** の診断は `scripts/doctor.sh`（Host 設定は変えない）。起動入口は `scripts/start.sh`（host に存在する GPIO / I2C device だけを capability-aware に渡す。既定は 64-bit の全サーバー起動＋`--build`。Pi 3 B+ は `--no-build`。`--32bit` は Runtime only。サポート対象は 64-bit OS）
 - ベース定義は root の `compose.yaml`（`chirimen-server` は `/sys/class/gpio` と `/sys/devices` を常時 mount。`chirimen-editor` / `chirimen-examples` / `chirimen-example-catalog` も既定で起動する。GPIO / I2C は渡さない）
 - GPIO / I2C は `privileged: true` を使わず device / volume mount で通す（Editor / Examples / Catalog には付けない）
 

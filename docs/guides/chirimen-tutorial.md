@@ -23,9 +23,9 @@ CHIRIMEN Tutorial
   GPIO / I2C / JavaScript / 回路を学ぶ
 
 chirimen-raspi-docker
-  Raspberry Pi 3 B+ / 4 / 5
+  Raspberry Pi 3 B+（Runtime-only）/ 4 / 5
   Docker Runtime
-  Browser Editor
+  Browser Editor（任意。Pi 3 B+ の基本体験には含めない）
   Example 実行環境
 ```
 
@@ -42,7 +42,7 @@ GPIO / I2C の概念は Tutorial、配線ピン・抵抗値・Runtime 操作は�
 
 ## 2 つの Tutorial の使い分け
 
-本リポジトリの対象は **Raspberry Pi 3 B+ / 4 / 5**。Pi Zero / CHIRIMEN Lite は対象外。
+本リポジトリの対象は **Raspberry Pi 3 B+ / 4 / 5**（Pi 3 B+ は Runtime-only。Docker build は Pi 4 / Pi 5。正本は [Compatibility](../architecture/compatibility.md)）。Pi Zero / CHIRIMEN Lite は対象外。
 
 | Tutorial | URL | 使う場面 |
 | --- | --- | --- |
