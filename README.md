@@ -50,7 +50,7 @@ curl http://127.0.0.1:33330/health
 
 ## Development
 
-リポジトリをホスト上で開発する場合は [Development Guide](docs/guides/development.md) を参照してください。Runtime 利用に host の Node.js は不要です。Service / Port / Workspace / `apps/` を変えたときは [Documentation checklist](docs/guides/documentation-checklist.md) で案内漏れを確認してください。
+リポジトリをホスト上で開発する場合は [Development Guide](docs/guides/development.md) を参照してください。Runtime 利用に host の Node.js は不要です。on-device の Docker build は Raspberry Pi 4 / Pi 5 向けです（Pi 3 B+ は Runtime-only。詳細は [Development Guide](docs/guides/development.md) / [Compatibility](docs/architecture/compatibility.md)）。Service / Port / Workspace / `apps/` を変えたときは [Documentation checklist](docs/guides/documentation-checklist.md) で案内漏れを確認してください。
 
 ## License
 
