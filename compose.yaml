@@ -2,8 +2,8 @@ services:
   chirimen-server:
     build:
       context: .
-      # Default is 64-bit (Node 24). scripts/start.sh --32bit overrides
-      # this to docker/server/Dockerfile.32bit.
+      # Supported path: Node 24 via docker/server/Dockerfile
+      # (linux/arm64, linux/amd64). Single Runtime path; no bitness override.
       dockerfile: docker/server/Dockerfile
     image: chirimen-raspi-docker/server:phase1
     environment:
@@ -34,9 +34,8 @@ services:
   # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
   # injected by start.sh when set; empty PASSWORD= is never written here.
   # `docker compose up` / `./scripts/start.sh` start Runtime + Editor +
-  # Examples + Example Catalog (#208 / #254 / #263). `./scripts/start.sh --32bit` starts
-  # chirimen-server only. Runtime only via Compose is
-  # `docker compose up chirimen-server`.
+  # Examples + Example Catalog (#208 / #254 / #263). Runtime only via
+  # Compose is `docker compose up chirimen-server`.
   # Persistence (#176 / #241): bind workspace/ for Editor workspace;
   # named volumes for settings / extensions. Host uid via user +
   # DOCKER_USER (fixuid).
