@@ -14,24 +14,24 @@ Getting Started
 │    ├─ doctor.sh
 │    └─ start.sh
 └─ Step 3: Run Your First Example
-     ├─ Example Catalog
-     └─ GPIO LED Blink
+     ├─ Example Catalog → GPIO LED Blink（環境確認）
+     └─ 続けて: my-first-example（自作）
 ```
 
-Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
+Step 3 は Catalog から `led-blink` を実行して **環境構築の成功を確認する**。そのあと [my-first-example を作成する](#my-first-example-を作成する) → Desktop または Browser Editor `:8080` → Example Server `:4173` → Runtime `:33330` が自作 Example の推奨導線である。Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
 
 ```text
 Setup → doctor.sh → start.sh
   ↓
-Example Catalog :4200
-  ├─ 実行 → Example Server :4173
-  └─ 編集 → Desktop 任意エディタ または Browser Editor :8080
-              ↓
-           workspace/ → Save → :4173
-              ↓
-       Browser Polyfill
-              ↓
-    chirimen-server :33330
+Step 3: Example Catalog :4200 → :4173/led-blink/（環境確認）
+  ↓
+Create your first example（workspace/my-first-example）
+  ↓
+Desktop 任意エディタ または Browser Editor :8080
+  ↓
+Example Server :4173 → Save → Browser reload
+  ↓
+Browser Polyfill → chirimen-server :33330 → GPIO / I2C
 ```
 
 ## workspace/（HTML / JavaScript の保存場所）
@@ -66,7 +66,7 @@ workspace/
 
 B. Browser
    ↓
-http://localhost:8080/
+http://127.0.0.1:8080/
    ↓
 Browser Editor
    ↓
@@ -77,7 +77,7 @@ Example Server :4173
 ```
 
 - **A. Raspberry Pi OS Desktop**: clone 先の `workspace/` を、Desktop 上の任意のエディタ（テキストエディタなど）で直接編集できる。
-- **B. Browser Editor**: Browser で `http://localhost:8080/`（または `http://127.0.0.1:8080/`）を開き、同じ `workspace/` を編集できる。操作の詳細は [Browser Development Environment](./browser-development.md)。
+- **B. Browser Editor**: Browser で `http://127.0.0.1:8080/`（または `http://localhost:8080/`）を開き、同じ `workspace/` を編集できる。操作の詳細は [Browser Development Environment](./browser-development.md)。
 
 どちらから保存しても同じ Example が更新される。確認先は Example Server `:4173` である（保存後は Browser を reload する）。
 
@@ -201,6 +201,7 @@ http://127.0.0.1:4173/my-first-example/
 - 子 Issue: [#317 my-first-example を作成する初心者向け CHIRIMEN チュートリアルを追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/317)
 - 子 Issue: [#318 Raspberry Pi OS Desktop と Browser Editor の2種類の Example 編集方法を説明する](https://github.com/gurezo/chirimen-raspi-docker/issues/318)
 - 子 Issue: [#319 Example Server :4173 を使った自作 Example の実行・更新手順を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/319)
+- 子 Issue: [#320 初心者向け Documentation の workspace / Editor / Example Server 導線を統一する](https://github.com/gurezo/chirimen-raspi-docker/issues/320)
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
 - 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
@@ -463,7 +464,13 @@ Step 2 の health は server の起動確認である。GPIO LED Blink まで進
 
 ### 次の Step
 
-Getting Started はここまでである。続けて試すなら:
+Getting Started の環境確認（Step 3）はここまでである。続けて自作 Example へ進むなら:
+
+- [my-first-example を作成する](#my-first-example-を作成する)
+- [Example の編集方法（2経路）](#example-の編集方法2経路)（Desktop または Browser Editor `:8080`）
+- [Example Server :4173 で実行・更新する](#example-server-4173-で実行更新する)（保存 → reload）
+
+さらに試すなら:
 
 - [I2C Scan](./i2c-scan.md)（HTML サンプル `http://127.0.0.1:4173/i2c-scan/`）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / 回路を学ぶ）

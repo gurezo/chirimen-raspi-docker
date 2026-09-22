@@ -22,8 +22,8 @@ Example Catalog（`:4200`）は題材の発見入口です。ported Example の�
 
 | ディレクトリ | 内容 |
 | --- | --- |
-| `my-first-example/` | 初心者向け最初の自作 Example（BCM 26 LED Blink） |
-| `led-blink/` | GPIO LED Blink（BCM 26） |
+| `my-first-example/` | 初心者向け最初の自作 Example（BCM 26 LED Blink）。環境確認（Catalog → `led-blink`）のあとの推奨導線は [Getting Started](../docs/guides/getting-started.md#my-first-example-を作成する) |
+| `led-blink/` | GPIO LED Blink（BCM 26）。Getting Started Step 3 の環境確認用 |
 | `button/` | GPIO Input / onchange（BCM 5 + LED） |
 | `i2c-scan/` | I2C Scan（bus 1。ADT7410 expected `0x48`） |
 | `pir-sensor/` | GPIO PIR Sensor（BCM 12。KP-IR412） |
