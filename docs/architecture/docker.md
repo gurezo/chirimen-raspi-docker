@@ -64,7 +64,7 @@ chmod +x scripts/start.sh
 | Development（Pi 4 / Pi 5。既定で build） | `docker compose up --build` | `./scripts/start.sh` | Development |
 | 同上 + LAN 公開（8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` | Development |
 | Pi 3 B+ で start.sh を使う場合 | `docker compose up`（build なし） | `./scripts/start.sh --no-build` | Development / 上級者 |
-| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。32-bit は [32-bit Compatibility](./compatibility-32bit.md) | — |
+| Runtime only（単一サービス） | `docker compose up chirimen-server` | 通常フローではない。当時の 32-bit Runtime only は [32-bit Compatibility](./compatibility-32bit.md) | — |
 
 ### chirimen-server
 
@@ -270,7 +270,7 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
 | 32-bit（`armv7l` など） | （削除済み）`Dockerfile.32bit` | 当時 `node:22-bookworm-slim` | サポート対象外。Historical のみ |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。当時の `./scripts/start.sh --32bit` は Runtime only であり、サポート対象外である（flag 削除は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340)）。詳細は [32-bit Compatibility](./compatibility-32bit.md)。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。かつて存在した `./scripts/start.sh --32bit`（Runtime only）は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み。背景は [32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
