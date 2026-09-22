@@ -238,7 +238,8 @@ check_i2c() {
     ls -l "$I2C_DEVICE"
     log ""
     log "I2C is ready. You can start with capability-aware mapping:"
-    log "  ./scripts/start.sh"
+    log "  Pi 4 / Pi 5:  ./scripts/start.sh"
+    log "  Pi 3 B+ (Runtime-only): ./scripts/start.sh --no-build"
     return 0
   fi
 

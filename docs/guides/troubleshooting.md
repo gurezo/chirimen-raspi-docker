@@ -70,7 +70,7 @@ ls -l /sys/class/gpio /dev/gpiomem* /dev/gpiochip* /dev/i2c-1
 | --- | --- |
 | I2C 未有効 | [Raspberry Pi Setup](./raspberry-pi-setup.md) の I2C 手順（`setups/enable-i2c.sh` → reboot → `--check`） |
 | GPIO sysfs 不足 | host で `/sys/class/gpio` を確認。無い場合は gpiochip のみになることがある（現状 unsupported） |
-| 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す） |
+| 推奨入口を使っていない | `./scripts/start.sh` を使う（存在する device だけを渡す。Pi 3 B+ は `--no-build`） |
 | 非 Pi 環境 | 下記「非 Pi 環境」を参照 |
 
 `compose.yaml` に任意 device を固定列挙しない。`scripts/start.sh` が capability-aware に追加する。

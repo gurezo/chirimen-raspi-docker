@@ -76,7 +76,7 @@ notes
 
 ```sh
 ./scripts/doctor.sh
-./scripts/start.sh
+./scripts/start.sh            # Pi 4 / Pi 5。Pi 3 B+ は --no-build
 curl http://127.0.0.1:33330/health
 ```
 

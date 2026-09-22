@@ -8,6 +8,7 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#307 Development Documentation に Docker build は Raspberry Pi 4 / Pi 5 対象と明記する](https://github.com/gurezo/chirimen-raspi-docker/issues/307)
+- 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
 - 実機検証: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
 - [Compatibility](../architecture/compatibility.md)（[Runtime Support](../architecture/compatibility.md#runtime-support) / [Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)）
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）

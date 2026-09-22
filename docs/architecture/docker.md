@@ -122,10 +122,11 @@ host の `pnpm nx serve example-catalog` も port `4200` を使う。同時に�
 
 ### 起動と health check
 
-Runtime + Editor + Examples + Catalog:
+Runtime + Editor + Examples + Catalog（Pi 4 / Pi 5 の例。既定で `--build`。Pi 3 B+ は `--no-build`）:
 
 ```sh
 ./scripts/start.sh
+# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
 curl http://127.0.0.1:33330/health
 curl -fsS http://127.0.0.1:8080/healthz
 curl -fsS http://127.0.0.1:4173/led-blink/

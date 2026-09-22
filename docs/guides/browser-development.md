@@ -66,8 +66,9 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
 
 ```text
-./scripts/start.sh
-  （同等: docker compose up）
+./scripts/start.sh（Pi 4 / Pi 5。既定で --build）
+  or --no-build（Pi 3 B+ Runtime-only）
+  （同等: docker compose up [--build]）
 ↓
 Browser で Catalog を開く（http://127.0.0.1:4200/）
 ↓
@@ -85,7 +86,7 @@ chirimen-server（ws://localhost:33330/）経由で GPIO / I2C を操作する
 
 前提:
 
-- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）
+- Raspberry Pi 3 B+ / 4 / 5（3 A+ はスペック不足のため推奨環境外。詳細は [Compatibility](../architecture/compatibility.md)）。**Pi 3 B+ は Runtime-only**
 - サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - Docker と Docker Compose
@@ -292,7 +293,7 @@ Security:
 
 ```sh
 ./scripts/doctor.sh
-./scripts/start.sh
+./scripts/start.sh            # 一次環境 Pi 5。Pi 3 B+ は --no-build
 curl http://127.0.0.1:33330/health
 ```
 
@@ -308,7 +309,7 @@ container 再起動後の保持:
 
 ```sh
 docker compose down
-./scripts/start.sh
+./scripts/start.sh            # Pi 3 B+ は --no-build
 ```
 
 host `./workspace` の変更は残る。**`-v` は付けない。** Catalog（`:4200`）は編集結果の確認先ではない。
