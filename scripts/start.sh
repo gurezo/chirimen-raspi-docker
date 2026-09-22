@@ -57,7 +57,7 @@ err() {
 
 usage() {
   cat <<'EOF'
-Usage: start.sh [--32bit] [--lan] [docker compose up options...]
+Usage: start.sh [--32bit] [--lan] [--no-build] [docker compose up options...]
 
   Probe host hardware paths and start services with only the devices
   that exist on this host (capability-aware mapping).
