@@ -2,6 +2,8 @@
 
 Raspberry Pi Setup（[`setups/`](../setups/README.md)）が完了したあとに使う script と、開発・ドキュメント用の補助 script。Host の I2C / swap / Docker インストールは [`setups/`](../setups/README.md) の担当である。
 
+今後の `setups/setup.sh` 向けに、`setups/` / `scripts/` の分類と呼び出し可否を整理した正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
+
 ## CHIRIMEN Setup
 
 Host Setup 完了後の診断と Runtime 起動。手順の正本は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-chirimen-setup)。
