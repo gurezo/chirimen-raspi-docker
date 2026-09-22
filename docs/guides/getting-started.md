@@ -108,7 +108,7 @@ CHIRIMEN Runtime は Docker Compose で動き、GPIO / I2C は Host の device �
 次を満たせば Step 1 は完了である。チェック項目の正本は [Raspberry Pi Setup の完了状態](./raspberry-pi-setup.md#raspberry-pi-setup-の完了状態)。
 
 - リポジトリを clone 済み
-- `sudo ./setups/swap.sh --check` が通る
+- `sudo ./setups/swap.sh --check` が通る（標準順で実行した場合。Runtime-only では必須ではない）
 - `./setups/enable-i2c.sh --check` で `/dev/i2c-1` がある
 - `./setups/disable-squeekboard.sh --check` を実行済み（Lite は変更なしでも完了）
 - `docker --version` / `docker compose version` が通る（無ければ `docker-compose --version`）
@@ -148,7 +148,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 | 項目 | 見るもの |
 | --- | --- |
 | Raspberry Pi / OS / architecture | 機種、`PRETTY_NAME`、`uname -m` |
-| Memory / Swap | `MemTotal` / `SwapTotal`。Pi 3 B+ 相当の低メモリで Swap が 0 なら `[error]` |
+| Memory / Swap | `MemTotal` / `SwapTotal`。SwapTotal=0 は `[warn]`（任意。主用途は Pi 4 / Pi 5 の Docker build。Runtime-only では必須ではない） |
 | I2C / `/dev/i2c-*` | `/dev/i2c-1` が必須。他の `i2c-*` は参考表示 |
 | Docker Engine | `docker` コマンドと daemon |
 | Docker Compose | `docker compose`（無ければ legacy `docker-compose`） |
