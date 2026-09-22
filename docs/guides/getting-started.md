@@ -41,14 +41,87 @@ host 側の `workspace/` は、既存の Runtime Example と、あなたが作�
 ```text
 <chirimen-raspi-docker の clone 先>/
 └── workspace/
-    └── my-first-example/   # 例（作成手順は #317）
+    └── my-first-example/
         ├── index.html
-        └── main.js
+        ├── main.js
+        └── polyfill.js
 ```
 
 ホームディレクトリへ clone した場合の例は `~/chirimen-raspi-docker/workspace/` である。絶対パスは clone 先によって変わるため、固定パスとしては扱わない。
 
-`workspace/<subdir>/` に置いた内容は Example Server から `http://127.0.0.1:4173/<subdir>/` で配信される。同ディレクトリには `led-blink/` などの既存 Example もある。配置の正本は [workspace/README.md](../../workspace/README.md)。自作 Example の作成手順は [#317](https://github.com/gurezo/chirimen-raspi-docker/issues/317)、編集方法の詳細は [Browser Development Environment](./browser-development.md) を参照する。
+`workspace/<subdir>/` に置いた内容は Example Server から `http://127.0.0.1:4173/<subdir>/` で配信される。同ディレクトリには `led-blink/` などの既存 Example もある。配置の正本は [workspace/README.md](../../workspace/README.md)。編集方法の詳細は [Browser Development Environment](./browser-development.md) を参照する。
+
+### my-first-example を作成する
+
+最初の自作 Example は HTML + Vanilla JavaScript だけである。Node.js / npm / pnpm / Nx や Docker build は不要である。
+
+1. clone 先の `workspace/` へ移動し、ディレクトリを作る。
+
+```bash
+cd <chirimen-raspi-docker の clone 先>/workspace
+mkdir my-first-example
+cd my-first-example
+```
+
+2. `index.html` を作成する（コピーして使える）。
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My First Example</title>
+    <style>
+      p {
+        color: blue;
+        text-align: center;
+        font-size: 24px;
+      }
+    </style>
+    <script src="./polyfill.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <p>LED→GPIO-26</p>
+  </body>
+</html>
+```
+
+3. `main.js` を作成する（コピーして使える）。GPIO 26 に LED を接続したときの最短 Blink である。
+
+```js
+async function main() {
+  const gpioAccess = await navigator.requestGPIOAccess();
+  const port = gpioAccess.ports.get(26);
+  await port.export("out");
+
+  while (true) {
+    await port.write(1);
+    await sleep(1000);
+    await port.write(0);
+    await sleep(1000);
+  }
+}
+
+function sleep(ms) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, ms);
+  });
+}
+
+main();
+```
+
+4. CHIRIMEN 用の `polyfill.js` を同じディレクトリへ置く。既存の `led-blink` からコピーすれば足りる（Node.js は不要）。
+
+```bash
+cp ../led-blink/polyfill.js .
+```
+
+リポジトリには同じ内容の正本として [workspace/my-first-example/](../../workspace/my-first-example/) もある。
+
+5. Runtime 起動後（Step 2）、Browser で `http://127.0.0.1:4173/my-first-example/` を開く。ファイルを保存したあとは Browser を reload して確認する。
 
 `setups/` は Host 構築、`scripts/` は診断と Runtime 起動。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
@@ -56,6 +129,7 @@ host 側の `workspace/` は、既存の Runtime Example と、あなたが作�
 
 - 親 Issue: [#315 初心者が workspace に HTML / JavaScript を作成して CHIRIMEN を実行できる Getting Started を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/315)
 - 子 Issue: [#316 Getting Started に workspace の役割とユーザー作成 Example の保存場所を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/316)
+- 子 Issue: [#317 my-first-example を作成する初心者向け CHIRIMEN チュートリアルを追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/317)
 - 親 Issue: [#304 Raspberry Pi 3 B+ を Runtime-only とし Docker build を Pi 4 / Pi 5 に限定する](https://github.com/gurezo/chirimen-raspi-docker/issues/304)
 - 子 Issue: [#306 Getting Started から Raspberry Pi 3 B+ の Docker build 導線を除外する](https://github.com/gurezo/chirimen-raspi-docker/issues/306)
 - 子 Issue: [#309 Documentation 全体の Raspberry Pi 3 B+ Docker build 記述を棚卸しする](https://github.com/gurezo/chirimen-raspi-docker/issues/309)
