@@ -11,7 +11,7 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 - 親 Issue（歴史）: [#6 Phase 6: CI, Documentation and Release](https://github.com/gurezo/chirimen-raspi-docker/issues/6)
 - 子 Issue（歴史）: [#196 docs/architecture/docker.md から Compatibility matrix を分離](https://github.com/gurezo/chirimen-raspi-docker/issues/196)
 - 実機検証: [#97 Pi 3 B+](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98 Pi 4](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99 Pi 5](https://github.com/gurezo/chirimen-raspi-docker/issues/99) / [#116 I2C Scan](https://github.com/gurezo/chirimen-raspi-docker/issues/116) / [#219 I2C Host Setup](https://github.com/gurezo/chirimen-raspi-docker/issues/219) / [#243 Browser Development Flow](https://github.com/gurezo/chirimen-raspi-docker/issues/243) / [#257 Example Catalog / Runtime Example](https://github.com/gurezo/chirimen-raspi-docker/issues/257)
-- 32-bit 記録: [32-bit Compatibility](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135)）
+- 32-bit 記録（Historical / Unsupported）: [32-bit Compatibility (Historical / Unsupported)](./compatibility-32bit.md)（[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) / [#344](https://github.com/gurezo/chirimen-raspi-docker/issues/344)）
 - 32-bit 削除前の棚卸し: [32-bit Removal Audit](./32bit-removal-audit.md)（[#338](https://github.com/gurezo/chirimen-raspi-docker/issues/338) / 親 [#337](https://github.com/gurezo/chirimen-raspi-docker/issues/337)）
 - [overview.md](./overview.md)
 - [docker.md](./docker.md)

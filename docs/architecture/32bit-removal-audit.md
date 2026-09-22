@@ -7,7 +7,7 @@
 - 親 Issue: [#337 Raspberry Pi OS 32-bit をサポート対象外とし Runtime を 64-bit に一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/337)
 - 子 Issue: [#338 32-bit 専用コード・設定・Documentation を Repository-wide audit する](https://github.com/gurezo/chirimen-raspi-docker/issues/338)
 - 後続: [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) Dockerfile.32bit 削除 / [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) start.sh `--32bit` 削除 / [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) build-server.mjs / [#342](https://github.com/gurezo/chirimen-raspi-docker/issues/342) compose / [#343](https://github.com/gurezo/chirimen-raspi-docker/issues/343) doctor/setup Unsupported / [#344](https://github.com/gurezo/chirimen-raspi-docker/issues/344) Historical Documentation / [#345](https://github.com/gurezo/chirimen-raspi-docker/issues/345) Support Policy docs / [#346](https://github.com/gurezo/chirimen-raspi-docker/issues/346) 64-bit 回帰
-- 現行 32-bit 記録: [32-bit Compatibility](./compatibility-32bit.md)
+- 現行 32-bit 記録: [32-bit Compatibility (Historical / Unsupported)](./compatibility-32bit.md)
 - 監査パターン先例: [Host setup script 棚卸し](../guides/setup-host-script-audit.md)
 
 このドキュメントは **分類の正本** である。本 Issue（#338）ではコード削除・起動分岐除去・Support Policy 文言の本格書き換えは行わない。実装は後続子 Issue が担当する。
@@ -62,7 +62,8 @@
 | --- | --- | --- | --- | --- |
 | [`docs/architecture/docker.md`](./docker.md) | `Dockerfile.32bit` 残置方針、Runtime only 行、Architecture / stage 表、`--32bit` 説明、旧 `build-server.mjs` | update（#339/#340/#341 一部反映済み） | #345（残り） | 「削除はしない」と生きた `--32bit` 手順は撤廃済み。`build-server.mjs` は削除済み表記。Support Policy 文言は #345 |
 | [`docs/architecture/overview.md`](./overview.md) | 非推奨リンク、ツリー上の旧 `Dockerfile.32bit` / `build-server.mjs`、`--32bit` Runtime only | update（#339/#340/#341 一部反映済み） | #345 | ツリーから `Dockerfile.32bit` / `build-server.mjs` 行除去済み。生きた `--32bit` 言及も除去済み |
-| [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md) | ページ全体（Status / 制約 / Pi 3 B+・4・5 検証 / Known limitations） | preserve → Historical | #344 | 削除しない。#339 で Dockerfile 背景を過去形保存済み。Historical / Unsupported への本格再構成は #344 |
+| [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md) | ページ全体（Status / 制約 / Pi 3 B+・4・5 検証 / Known limitations） | preserve → Historical | #344 | **完了**: Historical / Unsupported として再構成。Test Matrix・support 終了理由・arch 知見を保持 |
+
 | [`docs/architecture/compatibility.md`](./compatibility.md) | 32-bit リンク、非推奨 callout、各モデル known limitations、Editor の `--32bit` 言及 | update + preserve リンク | #345 / #344 | 「非推奨」→ Unsupported。検証へのポインタは Historical へ残す |
 | [`docs/architecture/browser-editor.md`](./browser-editor.md) | arm32/armv7 非対応表、`--32bit` / LAN、履歴上の `--32bit` | update + 一部 preserve | #345 / #344 | Editor 非対応の技術事実は残してよい。起動手順から `--32bit` を外す |
 | [`docs/guides/getting-started.md`](../guides/getting-started.md) | 32-bit 非推奨 callout | update | #345 | 初心者導線から 32-bit 手順・非推奨表現を除去し Unsupported + Historical 参照へ |
@@ -77,18 +78,18 @@
 
 ## Historical に残す情報（チェックリスト）
 
-現行正本候補: [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md)。#344 で Status: Historical / Unsupported を明示し、Getting Started と誤認しない導線にする。
+正本: [`docs/architecture/compatibility-32bit.md`](./compatibility-32bit.md)（Historical / Unsupported）。#344 で Status: Historical / Unsupported を明示し、Getting Started と誤認しない導線にした。
 
-- [ ] Pi 3 B+ / Pi 4 / Pi 5 の当時の Test Matrix（OS / kernel / architecture / GPIO / I2C / WebSocket / cleanup）
-- [ ] Pi 3 B+ 32-bit は `armv7l`、Pi 4 / Pi 5 32-bit OS は 32-bit userland でも `uname -m` が `aarch64`（64-bit kernel default）
-- [ ] `uname -m` だけでは userland bitness 判定が不十分だった事例
+- [x] Pi 3 B+ / Pi 4 / Pi 5 の当時の Test Matrix（OS / kernel / architecture / GPIO / I2C / WebSocket / cleanup）
+- [x] Pi 3 B+ 32-bit は `armv7l`、Pi 4 / Pi 5 32-bit OS は 32-bit userland でも `uname -m` が `aarch64`（64-bit kernel default）
+- [x] `uname -m` だけでは userland bitness 判定が不十分だった事例
 - [x] Node 24 公式 image に `linux/arm/v7` が無い制約と、検証時 Node 22 / `Dockerfile.32bit` の選択理由
 - [x] Nx native bindings / WASM fallback が arm/v7 で失敗した経緯
 - [x] `scripts/build-server.mjs`（esbuild）workaround の導入理由
 - [x] `--32bit` が Runtime only（Editor / Examples / Catalog skip）だった運用上の制約
-- [ ] GPIO / I2C / WebSocket / browser-polyfill / server の実機検証結果（Verified でも Supported ではない）
-- [ ] support 終了理由（64-bit Desktop 標準化、単一 Runtime path、保守コスト）
-- [ ] 関連 Issue / PR ポインタ（少なくとも #135, #167, #228, 親 #337）
+- [x] GPIO / I2C / WebSocket / browser-polyfill / server の実機検証結果（Verified でも Supported ではない。browser-polyfill / Editor は当時対象外と明記）
+- [x] support 終了理由（64-bit Desktop 標準化、単一 Runtime path、保守コスト）
+- [x] 関連 Issue / PR ポインタ（少なくとも #135, #167, #228, 親 #337、子 #344）
 ## 誤削除防止（out of scope）
 
 次は 32-bit 専用サポートコードではない。親 #337 の方針どおり **触らない / 誤って削除しない**。
@@ -108,9 +109,9 @@
 
 ```text
 #338 audit（本ドキュメント・削除しない）
-  → #344 Historical 退避・再構成（削除前に知識を保存）
-  → #339 Dockerfile.32bit / arm/v7 build 削除
-  → #340 start.sh --32bit / OS_BITS 分岐削除
+  → #344 Historical 退避・再構成（完了）
+  → #339 Dockerfile.32bit / arm/v7 build 削除（完了）
+  → #340 start.sh --32bit / OS_BITS 分岐削除（完了）
   → #341 build-server.mjs 参照確認・削除（完了）
   → #342 compose.yaml コメント / 64-bit 一本化（完了）
   → #343 doctor.sh / setup.sh Unsupported 検出（完了）
@@ -125,7 +126,7 @@
 | #341 | **完了**: `build-server.mjs` の全参照確認のうえ削除（32-bit 専用・他用途なし）。esbuild 導入理由は `compatibility-32bit.md` に保存 |
 | #342 | **完了**: `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path。override / profile / arm/v7 build option は元々無し |
 | #343 | **完了**: `doctor.sh` / `setup.sh` で 32-bit userland を `getconf LONG_BIT` 主判定（`uname -m` 補助）し Unsupported で即停止。Compatibility / compatibility-32bit 導線 |
-| #344 | `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |
+| #344 | **完了**: `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |
 | #345 | 「非推奨」→「Unsupported」。64-bit Desktop 標準。Pi 3 B+ 64-bit Runtime 維持。Current / Historical を区別 |
 | #346 | 削除後の Pi 3 B+ / 4 / 5 64-bit 回帰（Runtime / 必要なら Development、GPIO / I2C、Catalog） |
 
