@@ -47,6 +47,17 @@ README / Getting Started / Browser Development / TOP
 
 Getting Started と Browser Development の Flow 図・Port 表が食い違っていないことも確認する。
 
+## Runtime vs Development メッセージ
+
+親 [#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326) / [#333](https://github.com/gurezo/chirimen-raspi-docker/issues/333) の方針と矛盾していないか確認する。
+
+- [ ] Beginner Host 入口は `./setups/setup.sh` か
+- [ ] Runtime 操作は `docker compose up -d` / `down` か（`start.sh` を推奨入口と書いていないか）
+- [ ] `swap.sh` / Docker build は Development-only（Pi 4 / Pi 5）か
+- [ ] Pi 3 B+ は Runtime-only か
+- [ ] 個別 Host script は Advanced / Manual Setup に分離しているか
+- [ ] First Example / `workspace/` への接続が切れていないか
+
 ## 影響があれば確認する文書
 
 変更が届くときだけ見る。
