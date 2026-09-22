@@ -48,7 +48,7 @@
 | `docker/server/Dockerfile.32bit`（削除済み） | ファイル全体。`node:22-bookworm-slim`、`RUN node scripts/build-server.mjs`、arm/v7 / Nx hasher コメント | delete（完了） | #339 | 削除済み。導入理由は [compatibility-32bit.md](./compatibility-32bit.md) に Historical として保存 |
 | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | 先頭コメント（旧 `Dockerfile.32bit` / armv7 誘導） | update（完了） | #339 | 64-bit 唯一の supported path。コメント整理済み |
 | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) | `arm32` / `armv7` is out of scope コメント | out of scope（文言は update 可） | #345 任意 | Editor が armv7 非対応である事実のメモ。削除対象のコードパスではない |
-| [`compose.yaml`](../../compose.yaml) | `chirimen-server` build コメント（`--32bit` → 旧 `Dockerfile.32bit`）；Examples/Catalog の `--32bit` Runtime-only コメント | update | #342 | override 用 env は無くコメントのみ。64-bit 一本化時に削除・書き換え |
+| [`compose.yaml`](../../compose.yaml) | `chirimen-server` build コメント（旧 `--32bit` → 旧 `Dockerfile.32bit`）；Examples/Catalog の旧 `--32bit` Runtime-only コメント | update（完了） | #342 | コメント整理済み。override 用 env は無く、supported Runtime path は 64-bit のみ |
 | [`scripts/start.sh`](../../scripts/start.sh)（削除済み分岐） | 旧 `DOCKERFILE_32BIT` / `IMAGE_32BIT` / `OS_BITS` / `set_os_bits` / `dockerfile_for_os_bits` / `image_for_os_bits` / `reject_32bit_machine_without_flag` / `--32bit` 引数 / 32-bit 時の Editor・Examples・Catalog skip / help・usage | delete（完了） | #340 | 64-bit 単一路線に簡素化済み。`--32bit` は removed flag error。`--no-build` / `--lan` は維持 |
 | `scripts/build-server.mjs`（削除済み） | esbuild で `apps/server` を bundle。呼び出し元だった `Dockerfile.32bit` は削除済み（`package.json` 未登録） | delete（完了） | #341 | 削除済み。32-bit workaround 専用で他用途なし。esbuild 導入理由は [compatibility-32bit.md](./compatibility-32bit.md) に Historical として保存 |
 | [`scripts/doctor.sh`](../../scripts/doctor.sh) | `armv7l` 等で `[warn] 32-bit OS/architecture`；`aarch64 \| armv7l` を期待 arch として列挙 | update | #343 | warn 継続ではなく Unsupported で停止・案内へ。`uname -m` のみ判定は不十分（Pi 4/5 32-bit userland は `aarch64`） |
@@ -98,7 +98,7 @@
 | Pi 3 B+ の **64-bit** Runtime Supported（Runtime-only / Docker build Unsupported） | モデル自体はサポート維持。32-bit OS だけ Unsupported |
 | `linux/arm64` / `aarch64` 上の 64-bit Runtime・Editor・Catalog | 標準サポート path |
 | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) 本体（Node 24 multi-stage） | 64-bit 唯一の supported Dockerfile。コメント整理のみ |
-| [`compose.yaml`](../../compose.yaml) のサービス定義・port・volume | コメントの 32-bit 言及以外は現行 Runtime |
+| [`compose.yaml`](../../compose.yaml) のサービス定義・port・volume | コメントの 32-bit 言及は #342 で除去済み。定義本体は現行 Runtime |
 | `./scripts/start.sh` の `--no-build` / `--lan` / password / device mapping など 64-bit 向け機能 | bitness 分岐だけ削除 |
 | `doctor.sh` の GPIO / I2C / Docker / memory 等の readiness 検査 | 32-bit warn の扱いだけ #343 で変更 |
 | Editor が `arm32` / `armv7` 非対応である技術記述 | 事実として docs に残してよい（起動 flag とは別） |
@@ -112,7 +112,7 @@
   → #339 Dockerfile.32bit / arm/v7 build 削除
   → #340 start.sh --32bit / OS_BITS 分岐削除
   → #341 build-server.mjs 参照確認・削除（完了）
-  → #342 compose.yaml コメント / 64-bit 一本化
+  → #342 compose.yaml コメント / 64-bit 一本化（完了）
   → #343 doctor.sh / setup.sh Unsupported 検出
   → #345 README / Getting Started / Compatibility 等 Support Policy
   → #346 Pi 3 B+ / 4 / 5 64-bit 回帰テスト
@@ -123,7 +123,7 @@
 | #339 | **完了**: `Dockerfile.32bit` 削除、64-bit `Dockerfile` の 32-bit コメント整理、arm/v7 / Node 22 依存の除去。背景は `compatibility-32bit.md` に保存 |
 | #340 | **完了**: `start.sh` の `--32bit` / `OS_BITS*` / `*_for_os_bits` / `reject_32bit_*` / 32-bit service skip / help を削除し 64-bit path を簡素化。生きた `--32bit` 手順言及を architecture docs から除去 |
 | #341 | **完了**: `build-server.mjs` の全参照確認のうえ削除（32-bit 専用・他用途なし）。esbuild 導入理由は `compatibility-32bit.md` に保存 |
-| #342 | `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path |
+| #342 | **完了**: `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path。override / profile / arm/v7 build option は元々無し |
 | #343 | 32-bit userland 検出（`uname -m` のみに依存しない。候補 `getconf LONG_BIT`）。Unsupported メッセージ + Historical 導線。`setup.sh` にも同様 |
 | #344 | `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |
 | #345 | 「非推奨」→「Unsupported」。64-bit Desktop 標準。Pi 3 B+ 64-bit Runtime 維持。Current / Historical を区別 |
