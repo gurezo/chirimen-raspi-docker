@@ -30,9 +30,9 @@ cd chirimen-raspi-docker
 
 `setup.sh` は必要な Host script だけを呼び、`workspace/` と Runtime readiness（`doctor.sh`）を確認する。完了後に `docker compose up -d` と `http://localhost:4200` を案内する。詳細は [setups/README.md](../../setups/README.md)。
 
-### 手動の Runtime Host 標準順
+### Advanced / Manual Setup
 
-個別確認向け。`swap.sh` は含めない。
+個別確認向け。初心者は上の `setup.sh` を使う。`swap.sh` は含めない。
 
 ```text
 clone
@@ -190,7 +190,7 @@ sudo ./setups/disable-squeekboard.sh
 
 ## 3. docker.sh
 
-I2C 確認のあと、host に Docker Engine を入れる。Runtime の推奨起動入口は `./scripts/start.sh` のため Docker が必要である。`docker.sh` は I2C 設定を変更しない。
+I2C 確認のあと、host に Docker Engine を入れる。Runtime 操作は `docker compose up -d` / `down` のため Docker が必要である（正本は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)）。Development / 上級者向けの `./scripts/start.sh` も Docker を使う。`docker.sh` は I2C 設定を変更しない。
 
 ```sh
 ./setups/docker.sh
@@ -244,7 +244,7 @@ getent group gpio
 
 ### Pi 3 / 4 と 5
 
-- **同一手順**: `./scripts/start.sh` が存在する device だけを渡す。モデルごとの compose 手編集は不要
+- **同一手順**: Runtime は `docker compose up -d`（モデルごとの compose 手編集は不要）。Development / 上級者向けの `./scripts/start.sh` は存在する device だけを渡す
 - **`gpiomem`**: Pi 3 / 4 は `/dev/gpiomem`、Pi 5 は `/dev/gpiomem0`–`4`。いずれも任意（無くても sysfs があればよい）
 - **`gpiochip*`**: 存在すれば container にも渡る（backend は別 Issue）
 - 機種別の実機検証結果は [Compatibility](../architecture/compatibility.md) を参照する。Raspberry Pi 3 A+ はスペック不足のため推奨環境外。Browser Development Flow の一連は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)

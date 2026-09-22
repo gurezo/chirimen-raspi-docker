@@ -68,9 +68,8 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
 
 ```text
-./scripts/start.sh（Pi 4 / Pi 5。既定で --build）
-  or --no-build（Pi 3 B+ Runtime-only）
-  （同等: docker compose up [--build]）
+docker compose up -d
+  （Development / 上級者: ./scripts/start.sh。Pi 4 / Pi 5 は既定 --build。Pi 3 B+ は --no-build）
 ↓
 Browser で Catalog を開く（http://127.0.0.1:4200/）
 ↓
