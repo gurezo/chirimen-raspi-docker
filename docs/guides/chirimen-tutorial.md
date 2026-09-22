@@ -7,7 +7,7 @@ GPIO / I2C / JavaScript / 回路の基礎は既存 CHIRIMEN Tutorial で学び�
 - 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
 - 子 Issue: [#239 CHIRIMEN Tutorial への学習導線を Documentation に追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/239)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築の正本）
-- [Getting Started](./getting-started.md)（3段階。CHIRIMEN Setup は Step 2: `doctor.sh` → `start.sh`）
+- [Getting Started](./getting-started.md)（setup.sh → compose up → Catalog。Runtime 起動は Step 2）
 - [Browser Development Environment](./browser-development.md)（Editor で書く）
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [GPIO LED Blink](./gpio-led-blink.md)
@@ -70,7 +70,7 @@ Raspberry Pi Tutorial はハードウェア系統が近い。PiZero Tutorial は
 | やりたいこと | 正本 |
 | --- | --- |
 | Host 構築（Raspberry Pi Setup） | [Raspberry Pi Setup](./raspberry-pi-setup.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup) |
-| CHIRIMEN Setup（診断・起動） | [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup) |
+| Runtime 起動 | [Getting Started Step 2](./getting-started.md#step-2-start-runtime)（`docker compose up -d`） |
 | 最初の Example | [Getting Started Step 3](./getting-started.md#step-3-run-your-first-example) / [GPIO LED Blink](./gpio-led-blink.md) |
 | Example を書く | [Editor を開く](./browser-development.md#editor-を開く)（code-server `:8080`） |
 | 書いたものを動かす | [Example Server を開く](./browser-development.md#example-server-を開く)（`:4173`） |

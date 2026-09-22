@@ -10,7 +10,7 @@
 - 子 Issue: [#115 I2C Scan UI を実装する](https://github.com/gurezo/chirimen-raspi-docker/issues/115)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - 子 Issue: [#117 I2C Scan guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/117)
-- [Getting Started](./getting-started.md)（Runtime の起動は Step 2）
+- [Getting Started](./getting-started.md)（Runtime の起動は Step 2: `docker compose up -d`）
 - [Runtime Diagnostics](./runtime-diagnostics.md)（現行の Runtime 確認。Host は `doctor.sh`、GPIO / I2C は `workspace/` Example）
 - [I2C Scan](./i2c-scan.md)
 - [Protocol](../architecture/protocol.md)
@@ -57,7 +57,7 @@ workspace/ads1115/polyfill.js
 </script>
 ```
 
-本リポジトリの IIFE でも同じ形で使える。先に [Runtime を起動](./getting-started.md#step-2-chirimen-setup) し、生成した `polyfill.js` を HTML から読む。
+本リポジトリの IIFE でも同じ形で使える。先に [Runtime を起動](./getting-started.md#step-2-start-runtime) し、生成した `polyfill.js` を HTML から読む。
 
 ```html
 <script src="./polyfill.js"></script>

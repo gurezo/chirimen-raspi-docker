@@ -2,29 +2,37 @@
 
 Raspberry Pi Setup（[`setups/`](../setups/README.md)）が完了したあとに使う script と、開発・ドキュメント用の補助 script。Host の I2C / swap / Docker インストールは [`setups/`](../setups/README.md) の担当である。
 
-今後の `setups/setup.sh` 向けに、`setups/` / `scripts/` の分類と呼び出し可否を整理した正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
+`setups/` / `scripts/` の分類と呼び出し可否の正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
 
-## CHIRIMEN Setup
+## Beginner 起動（正本は Getting Started）
 
-Host Setup 完了後の診断と Runtime 起動。手順の正本は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-chirimen-setup)。
+初心者の第一導線は `./setups/setup.sh` のあと `docker compose up -d` → `http://localhost:4200` である。正本は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-start-runtime)。`setup.sh` は内部で `doctor.sh` を readiness として実行する。
 
 ```text
-Raspberry Pi Setup 完了
+./setups/setup.sh
         ↓
-./scripts/doctor.sh
+docker compose up -d
         ↓
-./scripts/start.sh（Pi 4 / Pi 5）
-  or --no-build（Pi 3 B+ Runtime-only）
-        ↓
-CHIRIMEN Ready
+http://localhost:4200
 ```
 
-機種別のコマンドは [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-chirimen-setup) を正本とする。`start.sh` 引数なしは既定で `--build` 相当のため、Pi 3 B+ では `--no-build` を付ける。
+## Development / 上級者向け（doctor.sh / start.sh）
+
+device マッピング・LAN 公開・Pi 4 / Pi 5 の on-device build が必要なときの補助。**beginner の第一導線ではない。**
+
+```text
+./scripts/doctor.sh（任意の再確認）
+        ↓
+./scripts/start.sh（Pi 4 / Pi 5。既定 --build）
+  or --no-build（Pi 3 B+ Runtime-only）
+```
+
+`start.sh` 引数なしは既定で `--build` 相当のため、Pi 3 B+ では `--no-build` を付ける。詳細は [Development](../docs/guides/development.md) / [Compatibility](../docs/architecture/compatibility.md)。
 
 | Script | 役割 | やらないこと |
 | --- | --- | --- |
-| `doctor.sh` | Host Setup **完了後**の読み取り専用診断。sudo 不要 | Host 設定（I2C / swap / Docker）を変えない。失敗時は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md) へ戻る |
-| `start.sh` | CHIRIMEN Runtime の起動（Compose）。存在する GPIO / I2C device だけを渡す。既定は `--build`（Pi 4 / Pi 5）。Pi 3 B+ は `--no-build` | I2C 有効化、swap、Docker Engine のインストールはしない |
+| `doctor.sh` | Host Setup **完了後**の読み取り専用診断。sudo 不要。`setup.sh` からも呼ばれる | Host 設定（I2C / swap / Docker）を変えない。失敗時は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md) へ戻る |
+| `start.sh` | CHIRIMEN Runtime の起動補助（Compose）。存在する GPIO / I2C device だけを渡す。既定は `--build`（Pi 4 / Pi 5）。Pi 3 B+ は `--no-build` | I2C 有効化、swap、Docker Engine のインストールはしない。beginner 第一導線ではない |
 
 `doctor.sh` の確認対象と失敗時の戻先:
 
@@ -37,7 +45,7 @@ CHIRIMEN Ready
 | Docker Compose | `./setups/docker-compose.sh` |
 | Host capability | [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md) |
 
-`[error]` が無ければ `./scripts/start.sh` へ進む（Pi 3 B+ は `--no-build`）。
+`[error]` があるときは Host 側の不足である。能力判定の読み方は [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md)。上級者向けの起動例:
 
 ```sh
 ./scripts/doctor.sh
@@ -45,9 +53,7 @@ CHIRIMEN Ready
 ./scripts/start.sh --no-build # Pi 3 B+（Runtime-only）
 ```
 
-`[error]` があるときは Host 側の不足である。能力判定の読み方は [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md)。
-
-## 開発・ドキュメント用（CHIRIMEN Setup ではない）
+## 開発・ドキュメント用（Runtime 起動ではない）
 
 | Script | 役割 |
 | --- | --- |

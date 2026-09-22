@@ -68,7 +68,7 @@ Pi 3 / 4 / 5 とも `./scripts/start.sh`（モデルごとの `compose.yaml` 手
 | Raspberry Pi 3 B+ | `./scripts/start.sh --no-build` | Runtime-only。on-device Docker build は Unsupported |
 | Raspberry Pi 4 / Pi 5 | `./scripts/start.sh` | 既定で `--build`。Development / Docker Build Supported |
 
-機種別手順の正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-chirimen-setup)。
+機種別手順の正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-start-runtime)（beginner は `docker compose up -d`）。
 
 ### GPIO capability detection
 

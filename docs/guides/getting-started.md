@@ -1,29 +1,38 @@
 # Getting Started
 
-初めて使う人が次に何をすればよいか迷わないための3段階。Host を構築し、Runtime を起動し、最初の Example まで進む。
+初めて使う人が次に何をすればよいか迷わないための3段階。Host を整え、Runtime を起動し、Example Catalog から最初の Example まで進む。Host に Node.js / npm / pnpm / Nx は不要である。Docker build コマンドも第一導線には出さない。
 
 ```text
 Getting Started
 ├─ Step 1: Raspberry Pi Setup
-│    ├─ Swap
-│    ├─ I2C
-│    ├─ Squeekboard
-│    ├─ Docker
-│    └─ Docker Compose
-├─ Step 2: CHIRIMEN Setup
-│    ├─ doctor.sh
-│    └─ start.sh
+│    └─ ./setups/setup.sh（必要なら reboot → 再実行）
+├─ Step 2: Start Runtime
+│    └─ docker compose up -d
 └─ Step 3: Run Your First Example
-     ├─ Example Catalog → GPIO LED Blink（環境確認）
-     └─ 続けて: my-first-example（自作）
+     ├─ Example Catalog :4200 → GPIO LED Blink（環境確認）
+     └─ 続けて: my-first-example（自作 / workspace/）
 ```
 
-Step 3 は Catalog から `led-blink` を実行して **環境構築の成功を確認する**。そのあと [my-first-example を作成する](#my-first-example-を作成する) → Desktop または Browser Editor `:8080` → Example Server `:4173` → Runtime `:33330` が自作 Example の推奨導線である。Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
+最短コマンド:
+
+```sh
+git clone https://github.com/gurezo/chirimen-raspi-docker.git
+cd chirimen-raspi-docker
+./setups/setup.sh
+# 必要なら sudo reboot のあと、同じ ./setups/setup.sh を再実行
+docker compose up -d
+```
+
+起動後の第一入口は `http://localhost:4200`（Example Catalog）である。
+
+Step 3 は Catalog から `led-blink` を実行して **環境構築の成功を確認する**。そのあと [my-first-example を作成する](#my-first-example-を作成する)（First Example Guide）→ Desktop または Browser Editor `:8080` → Example Server `:4173` → Runtime `:33330` が自作 Example の推奨導線である。Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
 
 ```text
-Setup → doctor.sh → start.sh
+./setups/setup.sh → docker compose up -d
   ↓
-Step 3: Example Catalog :4200 → :4173/led-blink/（環境確認）
+http://localhost:4200（第一入口）
+  ↓
+Step 3: Example Catalog → :4173/led-blink/（環境確認）
   ↓
 Create your first example（workspace/my-first-example）
   ↓
@@ -170,7 +179,7 @@ http://127.0.0.1:4173/my-first-example/
 基本フロー:
 
 ```text
-1. docker compose up（または ./scripts/start.sh 済み）
+1. docker compose up -d（Step 2）済み
 2. workspace に Example を作成（前節）
 3. Browser で http://127.0.0.1:4173/<example>/ を開く
 4. HTML / JavaScript を編集（Desktop 任意エディタまたは Browser Editor）
@@ -192,10 +201,12 @@ http://127.0.0.1:4173/my-first-example/
 - [Example を保存しても Browser に反映されない](./troubleshooting.md#example-を保存しても-browser-に反映されない)
 - [Example は開くが GPIO / I2C が動かない](./troubleshooting.md#example-は開くが-gpio--i2c-が動かない)
 
-`setups/` は Host 構築、`scripts/` は診断と Runtime 起動。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
+`setups/` は Host 構築（入口は `setup.sh`）、`scripts/` は診断と上級者向け起動補助。役割の入口は [setups/README.md](../../setups/README.md) と [scripts/README.md](../../scripts/README.md)。Host 構築の詳細正本は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
 関連:
 
+- 親 Issue: [#326 初心者向け setup.sh を追加し CHIRIMEN 初期セットアップと Documentation の導線を一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/326)
+- 子 Issue: [#332 Getting Started を setup.sh → docker compose up → Example Catalog の初心者向け導線へ変更する](https://github.com/gurezo/chirimen-raspi-docker/issues/332)
 - 親 Issue: [#315 初心者が workspace に HTML / JavaScript を作成して CHIRIMEN を実行できる Getting Started を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/315)
 - 子 Issue: [#316 Getting Started に workspace の役割とユーザー作成 Example の保存場所を追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/316)
 - 子 Issue: [#317 my-first-example を作成する初心者向け CHIRIMEN チュートリアルを追加する](https://github.com/gurezo/chirimen-raspi-docker/issues/317)
@@ -225,14 +236,14 @@ http://127.0.0.1:4173/my-first-example/
 - サポート対象は Raspberry Pi OS 64-bit
 - Recommended: Raspberry Pi OS Lite 64-bit
 - モデル別ロール（正本は [Compatibility](../architecture/compatibility.md)）:
-  - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
-  - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported）
-- Getting Started は GHCR / Prebuilt image を前提にしない。Pi 3 B+ では on-device の Docker build を案内しない
+  - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up -d` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
+  - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported。Development 導線は [Development](./development.md)）
+- Getting Started の第一導線は `./setups/setup.sh` → `docker compose up -d` → `http://localhost:4200` である。Pi 3 B+ では on-device の Docker build を案内しない
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の任意 Swap / Pi 4・Pi 5 の build 用 Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（**Development-only**。beginner Step 1 では必須ではない）
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-clone や I2C / Docker / GPIO の準備は [Step 1](#step-1-raspberry-pi-setup) で行う。`swap.sh` と Docker build は beginner Step 1 に含めない（Pi 4 / Pi 5 の Development は [Development](./development.md)）。開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
+clone や I2C / Docker / GPIO の準備は [Step 1](#step-1-raspberry-pi-setup) で行う。`swap.sh` と Docker build は beginner Step 1 に含めない（Pi 4 / Pi 5 の Development は [Development](./development.md)）。開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
 
 ## Step 1: Raspberry Pi Setup
 
@@ -240,7 +251,7 @@ Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。
 
 ### 目的
 
-`./setups/setup.sh`（または必要な `setups/*.sh`）で Host を整える。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこの Step では行わない。`swap.sh` と Docker build は含めない。
+`./setups/setup.sh`（または必要な `setups/*.sh`）で Host を整える。`setup.sh` は内部で Runtime readiness（`doctor.sh`）も確認する。起動（`docker compose up -d`）はこの Step では行わない。`swap.sh` と Docker build は含めない。
 
 ### 実行コマンド
 
@@ -277,7 +288,7 @@ GPIO の host 確認も Step 1 の完了に含む。手順は [Raspberry Pi Setu
 
 ### 実行する理由
 
-CHIRIMEN Runtime は Docker Compose で動き、GPIO / I2C は Host の device を使う。Host が揃っていないと Step 2 の `doctor.sh` が `[error]` になる。
+CHIRIMEN Runtime は Docker Compose で動き、GPIO / I2C は Host の device を使う。Host が揃っていないと `setup.sh` 内の readiness（`doctor.sh`）が `[error]` になる。
 
 ### 完了確認
 
@@ -293,103 +304,66 @@ CHIRIMEN Runtime は Docker Compose で動き、GPIO / I2C は Host の device �
 
 ### 次の Step
 
-→ [Step 2: CHIRIMEN Setup](#step-2-chirimen-setup)
+→ [Step 2: Start Runtime](#step-2-start-runtime)
 
 ### 失敗時
 
-Host 側の不足である。[Raspberry Pi Setup](./raspberry-pi-setup.md) の該当スクリプト節と、[Troubleshooting](./troubleshooting.md) の Host 切り分けを見る。`doctor.sh` / `start.sh` で Host 設定は変えない。
+Host 側の不足である。[Raspberry Pi Setup](./raspberry-pi-setup.md) の該当スクリプト節と、[Troubleshooting](./troubleshooting.md) の Host 切り分けを見る。`doctor.sh` は Host 設定を変えない（手動再実行は任意。通常は `setup.sh` 経由）。
 
-## Step 2: CHIRIMEN Setup
+<a id="step-2-chirimen-setup"></a>
 
-Host 上で Runtime を診断し、起動する。I2C / swap / Docker のインストールはしない。
+## Step 2: Start Runtime
+
+Host 上で CHIRIMEN Runtime を起動する。I2C / swap / Docker のインストールはしない。
 
 ### 目的
 
-構築済み Host が Runtime を起動できるかを確認し、CHIRIMEN Runtime を立ち上げる。
+Step 1 で整えた Host 上で Compose サービスを起動し、Example Catalog（`:4200`）を開ける状態にする。
 
 ### 実行コマンド
 
-clone したディレクトリで、先に `doctor.sh` で Host を確認し、`[error]` が無いときだけ `start.sh` へ進む。
-
-#### doctor.sh（Host 確認）
+clone したディレクトリで:
 
 ```sh
-chmod +x scripts/doctor.sh scripts/start.sh
+docker compose up -d
+```
+
+停止は `docker compose down`。第一入口は Browser で次を開く:
+
+```text
+http://localhost:4200
+```
+
+（同等: `http://127.0.0.1:4200/`）
+
+初心者向け第一導線では `docker build` / `compose build` / `up --build` / `./scripts/start.sh` の機種別 `--build` 分岐は使わない。Pi 3 B+ / 4 / 5 とも同じ `docker compose up -d` である。
+
+#### 任意: doctor.sh（手動の readiness 再確認）
+
+`./setups/setup.sh` は完了時に `scripts/doctor.sh` を readiness として実行済みである。手動で再確認したいときだけ:
+
+```sh
 ./scripts/doctor.sh
 ```
 
-`doctor.sh` は読み取り専用である。sudo 不要。Host 設定（I2C / swap / Docker）は変えない。結果は `[ok]` / `[error]` / `[warn]`。`[error]` がある場合は exit 1。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。
+読み取り専用。sudo 不要。Host 設定は変えない。結果の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。問題があるときは [Step 1](#step-1-raspberry-pi-setup) / [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。
 
-確認対象:
+#### Development / 上級者向け: start.sh
 
-| 項目 | 見るもの |
-| --- | --- |
-| Raspberry Pi / OS / architecture | 機種、`PRETTY_NAME`、`uname -m` |
-| Memory / Swap | `MemTotal` / `SwapTotal`。SwapTotal=0 は `[warn]`（任意。主用途は Pi 4 / Pi 5 の Docker build。Runtime-only では必須ではない） |
-| I2C / `/dev/i2c-*` | `/dev/i2c-1` が必須。他の `i2c-*` は参考表示 |
-| Docker Engine | `docker` コマンドと daemon |
-| Docker Compose | `docker compose`（無ければ legacy `docker-compose`） |
-| Host capability | `/sys/class/gpio`、`/dev/gpiomem*`、`/dev/gpiochip*`、`/dev/i2c-1` |
+device マッピングや LAN 公開、Pi 4 / Pi 5 での on-device Docker build が必要なときは `./scripts/start.sh` を使う（既定は `--build` 相当）。**beginner の第一導線ではない。** 詳細は [scripts/README.md](../../scripts/README.md)、[Development](./development.md)、[Compatibility](../architecture/compatibility.md#runtime-support)。
 
-問題があるときは対応する Raspberry Pi Setup へ戻る。doctor 自身は修復しない。
-
-| 問題 | 戻先 |
-| --- | --- |
-| Swap problem | `sudo ./setups/swap.sh` → `sudo ./setups/swap.sh --check` |
-| I2C unavailable | `sudo ./setups/enable-i2c.sh` → `sudo reboot` → `./setups/enable-i2c.sh --check` |
-| Docker unavailable | `./setups/docker.sh` |
-| Compose unavailable | `./setups/docker-compose.sh` |
-
-`[error]` が無ければ次の `start.sh` へ進む。`[warn]` だけなら起動はできるが、メッセージを読んでから進む。
-
-#### start.sh（Runtime 起動）
-
-機種により Docker build の扱いが異なる。正本は [Compatibility の Runtime Support / Development / Docker Build Support](../architecture/compatibility.md#runtime-support)。
-
-##### Raspberry Pi 3 B+（Runtime-only）
-
-Pi 3 B+ では on-device の Docker build は Unsupported である。`./scripts/start.sh` は引数なしだと `docker compose up --build` 相当になるため、**`--no-build` を付けて**起動する。`docker build` / `compose build` / `up --build` は案内しない。GHCR / Prebuilt image の手順もここでは書かない。
-
-```sh
-./scripts/start.sh --no-build            # Runtime + Browser Editor + Examples + Catalog（build なし）
-./scripts/start.sh --lan --no-build      # 同上。Editor / Example / Catalog を LAN 公開
-```
-
-Compose を直接使う場合:
-
-```sh
-docker compose up
-docker compose down
-```
-
-`--build` は付けない。停止は `docker compose down`。
-
-##### Raspberry Pi 4 / Pi 5（Runtime / Development）
-
-Pi 4 / Pi 5 では Docker build が Supported である。引数なしの `./scripts/start.sh` は既定で `--build` を付けて起動する。
-
-```sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog（既定で --build）
-./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
-```
-
-Compose を直接使う場合の例: `docker compose up`（必要なら `--build`）。開発・build の詳細は [Development](./development.md)。
-
----
-
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で device マッピング手順は同一）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。
-
-64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。Pi 3 B+ でメモリが厳しいときは起動後に `docker compose stop chirimen-editor`。Step 3 に Editor は必須ではない。
+Pi 3 B+ で `start.sh` を使う場合は必ず `--no-build`（on-device build は Unsupported）。
 
 ### 実行する理由
 
-`doctor.sh` は Host Setup 完了後の読み取り専用診断である。不足があれば Step 1 へ戻る。`start.sh` は存在する GPIO / I2C device だけを Compose に渡し、CHIRIMEN Runtime を起動する。
+`setup.sh` で Host と readiness を済ませたあと、Compose で Runtime / Catalog / Example Server / Editor を起動する。第一入口を Catalog `:4200` に固定し、coding 開始までの手順を短くする。
 
 ### 完了確認
 
 別ターミナルで:
 
 ```sh
+curl -fsS http://127.0.0.1:4200/
 curl http://127.0.0.1:33330/health
 ```
 
@@ -405,20 +379,10 @@ server の期待する応答例:
 }
 ```
 
-`status` が `ok` なら Step 2 は完了である。container 内で sysfs / device が見えることの確認例:
-
-```sh
-docker compose exec chirimen-server ls -l /sys/class/gpio
-docker compose exec chirimen-server ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c-1 2>/dev/null || true
-```
-
-I2C → Docker → Runtime のあと、`chirimen-server` から `/dev/i2c-1` が見えることは Raspberry Pi 5 で [#219](https://github.com/gurezo/chirimen-raspi-docker/issues/219) が確認済み。詳細は [Compatibility](../architecture/compatibility.md) の「I2C Host Setup → Docker Runtime 実機検証」。
-
-任意の疎通:
+`http://localhost:4200` が開き、`status` が `ok` なら Step 2 は完了である。任意の疎通:
 
 ```sh
 curl -fsS http://127.0.0.1:4173/led-blink/
-curl -fsS http://127.0.0.1:4200/
 ```
 
 | Port | Service | Role |
@@ -428,9 +392,9 @@ curl -fsS http://127.0.0.1:4200/
 | 4173 | chirimen-examples | Example Server / Runtime Examples |
 | 4200 | chirimen-example-catalog | Example Catalog |
 
-Editor（`:8080`）を使うときは、初回 `./scripts/start.sh` で決めた password を入れる。`docker compose exec` で `config.yaml` を読む必要はない。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
+Editor（`:8080`）を使うときは password が必要な場合がある。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
-確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor `:8080` から host `workspace/` を開く。Compose を uid なしで直接使うと保存時に Permission denied になることがある。
+確認先は Example Server `:4173` である。Catalog（`:4200`）は題材の発見入口である。ported の「実行」は `:4173`、「編集」は Editor `:8080` から host `workspace/` を開く。Pi 3 B+ でメモリが厳しいときは `docker compose stop chirimen-editor`。Step 3 に Editor は必須ではない。
 
 ### 次の Step
 
@@ -438,8 +402,8 @@ Editor（`:8080`）を使うときは、初回 `./scripts/start.sh` で決めた
 
 ### 失敗時
 
-- `doctor.sh` で `[error]` → Host 側の不足。上の戻先表と [Step 1](#step-1-raspberry-pi-setup)、[Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)
-- 起動しない / health が返らない → [Troubleshooting](./troubleshooting.md) と [Runtime Diagnostics](./runtime-diagnostics.md)
+- Catalog / health が開かない → [Troubleshooting](./troubleshooting.md) と [Runtime Diagnostics](./runtime-diagnostics.md)
+- Host 側の不足が疑わしい → `./scripts/doctor.sh`（任意）と [Step 1](#step-1-raspberry-pi-setup)、[Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 ## Step 3: Run Your First Example
 
@@ -451,9 +415,9 @@ health だけでは GPIO 操作は確認できない。Example Catalog で題材
 
 ### 実行コマンド
 
-配線・部品の正本は [GPIO LED Blink](./gpio-led-blink.md)。Browser で Example Catalog から始める。
+配線・部品の正本は [GPIO LED Blink](./gpio-led-blink.md)。Browser で Example Catalog（第一入口）から始める。
 
-1. Example Catalog: `http://127.0.0.1:4200/`
+1. Example Catalog: `http://localhost:4200/`（同等: `http://127.0.0.1:4200/`）
 2. 実行: ported の「実行」、または直接 `http://127.0.0.1:4173/led-blink/`
 3. 編集（任意）: ported の「編集」→ Editor `:8080` → host `workspace/` に Save → Example タブを reload
 
@@ -463,22 +427,23 @@ Editor（`:8080`）での編集はこの Step の完了条件ではない。Pi 3
 
 ### 実行する理由
 
-Step 2 の health は server の起動確認である。GPIO LED Blink まで進むと、Browser Polyfill → Runtime `:33330` → 実 GPIO の経路が通ったことが分かる。
+Step 2 で Catalog が開くことは起動確認である。GPIO LED Blink まで進むと、Browser Polyfill → Runtime `:33330` → 実 GPIO の経路が通ったことが分かる。
 
 ### 完了確認
 
-- Catalog（`http://127.0.0.1:4200/`）が開く
+- Catalog（`http://localhost:4200/`）が開く
 - GPIO LED Blink（`http://127.0.0.1:4173/led-blink/`）を開くと、GPIO26 の LED が **1 秒間隔**で点灯 / 消灯する
 
 配線がまだなら [GPIO LED Blink](./gpio-led-blink.md) の必要部品と配線を先に完了する。
 
 ### 次の Step
 
-Getting Started の環境確認（Step 3）はここまでである。続けて自作 Example へ進むなら:
+Getting Started の環境確認（Step 3）はここまでである。続けて自作 Example（First Example Guide）へ進むなら:
 
 - [my-first-example を作成する](#my-first-example-を作成する)
 - [Example の編集方法（2経路）](#example-の編集方法2経路)（Desktop または Browser Editor `:8080`）
 - [Example Server :4173 で実行・更新する](#example-server-4173-で実行更新する)（保存 → reload）
+- [workspace/README.md](../../workspace/README.md)
 
 さらに試すなら:
 
@@ -490,7 +455,7 @@ Getting Started の環境確認（Step 3）はここまでである。続けて�
 
 - LED が点かない / ページが開かない → [GPIO LED Blink の Troubleshooting](./gpio-led-blink.md#troubleshooting)
 - Catalog や Example Server が開かない → [Troubleshooting](./troubleshooting.md#browser-development-の切り分け)
-- GPIO / I2C が unavailable → [Step 2](#step-2-chirimen-setup) の `doctor.sh` と [Raspberry Pi Setup](./raspberry-pi-setup.md)
+- GPIO / I2C が unavailable → [Step 2](#step-2-start-runtime) の任意 `doctor.sh` と [Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 ## その先
 
@@ -507,16 +472,11 @@ Getting Started の環境確認（Step 3）はここまでである。続けて�
 | Browser Development Flow の実機 E2E | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | Runtime を診断する | [Runtime Diagnostics](./runtime-diagnostics.md) |
 | Browser Editor の workspace / 設定の永続化 | [browser-development.md](./browser-development.md#停止-バックアップ)。方針は [browser-editor.md](../architecture/browser-editor.md#workspace-volume) |
-| Browser Editor を LAN から開く | `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
+| Browser Editor を LAN から開く | Development / 上級者向けの `./scripts/start.sh --lan`。[browser-development.md](./browser-development.md#editor-を開く)。Internet 公開はしない |
 | Browser Editor の Extension | [browser-development.md](./browser-development.md#editor-を開く)。プリインストール・推奨しない |
 | 設計・依存境界を読む | [Architecture overview](../architecture/overview.md) |
 | Protocol / wire format | [protocol.md](../architecture/protocol.md) |
-| 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/)（ローカルは `pnpm docs:api`） |
+| 公開 API リファレンス | [API docs](https://gurezo.github.io/chirimen-raspi-docker/api/) |
+| リポジトリをホスト上で開発する（Node / pnpm / Nx） | [Development Guide](./development.md)（**beginner 第一導線外**） |
 
-ローカルで TypeScript を触る場合（Docker 以外）は [Development Guide](./development.md) を参照してください。
-
-```sh
-pnpm install
-npx nx build server
-npx nx serve server
-```
+Runtime 利用が終わったあとにリポジトリ開発へ進む場合だけ [Development Guide](./development.md) を参照する。Host に Node.js / npm / pnpm / Nx は Runtime には不要である。

@@ -1,6 +1,6 @@
 # Raspberry Pi Setup
 
-Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。推奨環境は **Raspberry Pi OS Lite 64-bit**。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこのページでは行わない。
+Raspberry Pi OS を CHIRIMEN Runtime が動く Host にするための **Raspberry Pi Setup**（Host Setup）。`setups/*.sh` はリポジトリ内にあるため、**先に clone する**。推奨環境は **Raspberry Pi OS Lite 64-bit**。Runtime の起動（`docker compose up -d`）はこのページでは行わない。
 
 ## 導線の分離
 
@@ -46,13 +46,12 @@ GPIO の host 確認
       ↓
 Raspberry Pi Setup 完了
       ↓
-Getting Started Step 2（CHIRIMEN Setup）: doctor.sh → start.sh
-  または beginner: docker compose up -d
+Getting Started Step 2: docker compose up -d → http://localhost:4200
 ```
 
 関連:
 
-- [Getting Started](./getting-started.md)（3段階の入口。このページのあとは **Step 2: CHIRIMEN Setup**）
+- [Getting Started](./getting-started.md)（入口。このページのあとは **Step 2: Start Runtime**）
 - [Host setup script 棚卸し](./setup-host-script-audit.md)（Runtime / Development 分類の正本）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ。環境構築はここではない）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
@@ -73,19 +72,20 @@ Getting Started Step 2（CHIRIMEN Setup）: doctor.sh → start.sh
 | 1 | `setups/enable-i2c.sh` | I2C Example と Runtime が `/dev/i2c-1` を使うため | `raspi-config nonint do_i2c 0`、なければ boot config に `dtparam=i2c_arm=on` | `/dev/i2c-1` が無いときは **必要**。既にあれば不要 | `/dev/i2c-1` があれば設定を触らない。`--check` は sudo 不要で設定変更なし |
 | 2 | `setups/disable-squeekboard.sh` | Desktop で Browser Editor / Catalog を使うとき、スクリーンキーボードが出ないようにする。**Lite では変更せず終わる**（実行してよい） | Desktop なら `raspi-config nonint do_squeekboard S3`（Always Off）。I2C / Docker / swap は触らない | 通常不要。残る場合のみ再ログインまたは reboot | Lite / 非 Desktop / 既に Off なら変更せず終了。`--check` は sudo 不要 |
 | 3 | `setups/docker.sh` | Runtime を Compose で動かす Docker Engine を入れる | `apt` 更新、get.docker.com、`usermod -aG docker pi`。I2C は触らない | **スクリプト末尾が必ず `sudo reboot`** | 再実行しても apt / インストーラのあと reboot する |
-| 4 | `setups/docker-compose.sh` | CHIRIMEN Setup の `./scripts/start.sh` が Compose を使うため | `/usr/local/bin/docker-compose` を置く | 不要。**docker.sh の reboot 後** に実行する | 上書きインストール |
+| 4 | `setups/docker-compose.sh` | beginner の `docker compose up -d` と上級者向け `start.sh` が Compose を使うため | `/usr/local/bin/docker-compose` を置く | 不要。**docker.sh の reboot 後** に実行する | 上書きインストール |
 | — | `setups/swap.sh` | **Development-only**。Pi 4 / Pi 5 の Source Development / Docker build 時の OOM 緩和。Runtime / beginner では必須ではない | `/swapfile`（既定 8G）作成、`swapon`、`/etc/fstab` 追記。I2C と OS 既定 Swap（`dphys-swapfile` / `/var/swap` / zram）は触らない | 不要（即時有効。fstab で永続） | 同一サイズなら変更しない。サイズが違うときだけ `/swapfile` を作り直す。`--check` は変更なし |
 
 `setups/setup.sh` は上記 1〜4 のうち必要なものだけを呼び出す orchestration である。`swap.sh` / Docker build / `start.sh` は呼ばない。
 
-### このページの対象外（CHIRIMEN Setup）
+### このページの対象外（Runtime 起動・診断）
 
-`scripts/doctor.sh` と `scripts/start.sh` は Host 設定を変えない。Raspberry Pi Setup 完了後に [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で実行する。
+`scripts/doctor.sh` と `scripts/start.sh` は Host 設定を変えない。
 
-- `doctor.sh`: Host Setup 完了後の読み取り専用診断（`setup.sh` からも readiness として呼ばれる）
-- `start.sh`: CHIRIMEN Runtime の起動
+- `doctor.sh`: Host Setup 完了後の読み取り専用診断（`setup.sh` からも readiness として呼ばれる。手動再実行は任意）
+- beginner 起動: [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) の `docker compose up -d`
+- `start.sh`: Development / 上級者向けの起動補助（既定 `--build`。詳細は [scripts/README.md](../../scripts/README.md)）
 
-CHIRIMEN Setup の `doctor.sh` / `start.sh` は `docker compose` プラグインを優先する。`docker-compose.sh` は standalone の `docker-compose` を入れる現行スクリプトである。完了確認は `docker compose version` を主とし、無ければ `docker-compose --version`。
+`doctor.sh` / `start.sh` は `docker compose` プラグインを優先する。`docker-compose.sh` は standalone の `docker-compose` を入れる現行スクリプトである。完了確認は `docker compose version` を主とし、無ければ `docker-compose --version`。
 
 ## 前提 OS
 
@@ -101,7 +101,7 @@ CHIRIMEN Tutorial の SD イメージ書き込み、CHIRIMEN Lite、Pi Zero の�
 
 ## Raspberry Pi Setup の完了状態
 
-次を満たせば Host 準備（Raspberry Pi Setup）は完了である。Runtime の診断と起動はこのページでは行わない。完了後は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) へ進む。
+次を満たせば Host 準備（Raspberry Pi Setup）は完了である。Runtime の起動はこのページでは行わない。完了後は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)（`docker compose up -d`）へ進む。
 
 - リポジトリを clone 済み
 - `./setups/enable-i2c.sh --check` で `/dev/i2c-1` がある（または `./setups/setup.sh` が完了している）
@@ -222,7 +222,7 @@ docker compose version
 docker info
 ```
 
-`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は CHIRIMEN Setup の `./scripts/doctor.sh` である（[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)）。
+`docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は `./scripts/doctor.sh` である（`setup.sh` 経由でも実行される。手動再確認は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)）。
 
 ## GPIO
 
@@ -324,6 +324,6 @@ OOM・熱・Editor の切り分けは [Troubleshooting](./troubleshooting.md)。
 
 ## 次の段階（Getting Started Step 2）
 
-Raspberry Pi Setup が完了したら、このページでは `doctor.sh` も `start.sh` も実行しない。Host 全体の一括確認は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) の `./scripts/doctor.sh` である（`./setups/setup.sh` 経由でも readiness として実行される）。確認対象は Raspberry Pi / OS / architecture、Memory / Swap、I2C、`/dev/i2c-*`、Docker、Compose、Host capability。問題時は上の対応する setup script へ戻る。`doctor.sh` は Host 設定を変えない。`[error]` が無ければ `./scripts/start.sh`、または beginner 案内どおり `docker compose up -d`。能力判定の読み方は [Runtime Diagnostics](./runtime-diagnostics.md)。First Example は Step 3。
+Raspberry Pi Setup が完了したら、このページでは起動コマンドを実行しない。beginner は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) で `docker compose up -d` を実行し、`http://localhost:4200` を開く。`setup.sh` 経由なら readiness（`doctor.sh`）は済みである。手動で再確認したいときだけ `./scripts/doctor.sh`（[Runtime Diagnostics](./runtime-diagnostics.md)）。Development / device mapping / LAN が必要なときは [scripts/README.md](../../scripts/README.md) の `start.sh`。First Example は Step 3。
 
-→ [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)
+→ [Getting Started Step 2](./getting-started.md#step-2-start-runtime)

@@ -4,7 +4,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 関連:
 
-- [Getting Started](./getting-started.md)（3段階。CHIRIMEN Setup は Step 2: `doctor.sh` → `start.sh`）
+- [Getting Started](./getting-started.md)（setup.sh → compose up → Catalog。Runtime 起動は Step 2）
 - [Runtime Diagnostics](./runtime-diagnostics.md)（doctor.sh / `/health` / Reference Examples）
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`setups/`）
@@ -21,7 +21,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | 症状の目安 | 見る場所 |
 | --- | --- |
 | swap / I2C 無効 / Docker 未導入 / `/dev/i2c-1` が host に無い | [Raspberry Pi Setup](./raspberry-pi-setup.md)（`setups/`） |
-| Host は揃っているが起動前に怪しい | `./scripts/doctor.sh`（設定は変えない。[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)） |
+| Host は揃っているが起動前に怪しい | `./scripts/doctor.sh`（設定は変えない。[Getting Started の Step 2](./getting-started.md#step-2-start-runtime)） |
 | 起動しない / health が返らない / device mapping | `./scripts/start.sh` と [Runtime Diagnostics](./runtime-diagnostics.md) |
 | LED / I2C Example が動かない | [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md) |
 
@@ -194,7 +194,7 @@ doctor の `[ capabilities ]` 行は server startup log と同じ backend 名に
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。host を Raspberry Pi OS Lite 64-bit に切り替えてから [Getting Started](./getting-started.md) の3段階を使う。
+次のようなエラーは 32-bit OS で起きうる。対処は `--32bit` ではなく、64-bit OS への移行である。host を Raspberry Pi OS Lite 64-bit に切り替えてから [Getting Started](./getting-started.md) を使う。
 
 ```text
 failed to resolve source metadata for docker.io/library/node:24-bookworm-slim:
@@ -644,7 +644,7 @@ GPIO / I2C の実機検証は Raspberry Pi 上で行う。
 | Docker unavailable | `./setups/docker.sh` |
 | Compose unavailable | `./setups/docker-compose.sh` |
 
-解消後に Getting Started の Step 2 へ戻る: [Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)。確認項目の正本は [Runtime Diagnostics](./runtime-diagnostics.md)。
+解消後に Getting Started の Step 2 へ戻る: [Getting Started Step 2](./getting-started.md#step-2-start-runtime)。確認項目の正本は [Runtime Diagnostics](./runtime-diagnostics.md)。
 
 ## LED が点かない
 

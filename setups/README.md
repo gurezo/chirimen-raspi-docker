@@ -1,13 +1,14 @@
 # setups
 
-**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。起動（`start.sh`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
+**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。起動（`docker compose up -d`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
 ## 導線の分離
 
 ```text
 Beginner / Runtime
   ./setups/setup.sh
-  docker compose up / down
+  docker compose up -d
+  http://localhost:4200
 
 Development / Build（Pi 4 / Pi 5 のみ）
   swap.sh
@@ -40,14 +41,11 @@ Development / Build（Pi 4 / Pi 5 のみ）
       ↓
 Raspberry Pi Setup 完了
       ↓
-./scripts/doctor.sh（setup.sh 経由でも実行される）
-      ↓
-docker compose up -d（beginner）
-  or ./scripts/start.sh（Pi 4 / Pi 5）
-  or --no-build（Pi 3 B+ Runtime-only）
+docker compose up -d（beginner / Getting Started Step 2）
+  → http://localhost:4200
 ```
 
-完了後の診断と起動は **CHIRIMEN Setup** である。機種別コマンドの正本は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-chirimen-setup)。`scripts/` の入口は [scripts/README.md](../scripts/README.md)。
+完了後の起動は [Getting Started の Step 2](../docs/guides/getting-started.md#step-2-start-runtime) を正本とする。`doctor.sh` の手動再実行や `start.sh`（Development / 上級者向け）は [scripts/README.md](../scripts/README.md)。
 
 `docker.sh` は I2C 設定を変更しない。host の Node.js / pnpm / Nx は Runtime には不要です。リポジトリ開発・on-device Docker build は [Development Guide](../docs/guides/development.md) を参照してください。
 

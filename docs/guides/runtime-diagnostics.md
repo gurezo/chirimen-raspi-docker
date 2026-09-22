@@ -6,7 +6,7 @@ Runtime / Browser Polyfill / GPIO / I2C の確認方法を、責務ごとに整�
 
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#263 web-demo の機能を棚卸しし Example Catalog / Runtime Diagnostics へ統合した上で廃止する](https://github.com/gurezo/chirimen-raspi-docker/issues/263)
-- [Getting Started](./getting-started.md)（3段階。CHIRIMEN Setup は Step 2: `doctor.sh` → `start.sh`）
+- [Getting Started](./getting-started.md)（setup.sh → compose up → Catalog。Runtime 起動は Step 2）
 - [Troubleshooting](./troubleshooting.md)
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`doctor.sh` 失敗時の戻先）
@@ -19,7 +19,7 @@ Catalog は題材の発見入口であり、Hardware Runtime ではない。GPIO
 
 ## 責務
 
-`doctor.sh` は **CHIRIMEN Setup** の診断である。Host Setup 完了後に実行し、設定は変えない。失敗時は [Raspberry Pi Setup](./raspberry-pi-setup.md) の対応スクリプトへ戻る。`[error]` が無ければ [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) で `./scripts/start.sh` へ進む。
+`doctor.sh` は Host Setup 完了後（および `setup.sh` 経由）の読み取り専用診断である。設定は変えない。失敗時は [Raspberry Pi Setup](./raspberry-pi-setup.md) の対応スクリプトへ戻る。`[error]` が無ければ beginner は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) で `docker compose up -d` へ進む（既に `setup.sh` 済みならそのまま起動してよい）。
 
 ```text
 Host / Docker → scripts/doctor.sh
@@ -97,9 +97,9 @@ Device        → Example Catalog / Runtime Examples
 ./scripts/doctor.sh
 ```
 
-`[error]` が無ければ次へ進む。不足があるときは上の戻先表と [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
+`[error]` が無ければ次へ進む。不足があるときは上の戻先表と [Raspberry Pi Setup](./raspberry-pi-setup.md) へ戻る。起動手順の正本は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)。
 
-2. Runtime を起動し、プロセス生存を確認する。機種別コマンドは [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（Pi 3 B+ は `--no-build`）。
+2. Runtime を起動し、プロセス生存を確認する。beginner は `docker compose up -d`（[Getting Started の Step 2](./getting-started.md#step-2-start-runtime)）。
 
 ```sh
 ./scripts/start.sh            # Pi 4 / Pi 5
