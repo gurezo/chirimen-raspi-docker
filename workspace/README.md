@@ -1,17 +1,18 @@
 # CHIRIMEN Examples
 
-Browser Editor（code-server）の workspace です。Phase 7 の HTML サンプルを編集します。
+host `./workspace` は Example の作業領域です。Raspberry Pi OS Desktop 上の任意エディタ、または Browser Editor（code-server）のどちらからでも同じディレクトリを編集できます。2経路の概要は [Getting Started の Example の編集方法（2経路）](../docs/guides/getting-started.md#example-の編集方法2経路)。Phase 7 の HTML サンプルをここに置きます。
 
 保存先:
 
 ```text
-Editor: /home/coder/project
-Host:   ./workspace
+Desktop 任意エディタ / Browser Editor: 同じ host ./workspace
+Editor（container）: /home/coder/project
+Host:                 ./workspace
 ```
 
-Editor（`:8080`）と Example Server（`:4173`）は同じ host `./workspace` を bind します。container 内だけには保存されません。`docker compose down` 後も host `./workspace` は残ります。
+Desktop の任意エディタ・Browser Editor（`:8080`）・Example Server（`:4173`）は同じ host `./workspace` を指します。Browser Editor 利用時は bind mount です。container 内だけには保存されません。`docker compose down` 後も host `./workspace` は残ります。
 
-GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。手順は [Browser Development Environment](../docs/guides/browser-development.md)。実機 E2E は [Compatibility](../docs/architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
+GPIO / I2C 操作は Editor ではなく、Browser の Example ページ → Polyfill → WebSocket → Runtime です。この workspace に `package.json` / `node_modules` は置きません。`pnpm` / `nx` は host で使います。Browser Editor の手順は [Browser Development Environment](../docs/guides/browser-development.md)。実機 E2E は [Compatibility](../docs/architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
 Example Catalog（`:4200`）は題材の発見入口です。ported Example の「実行」は Example Server、「編集」は Editor の既存 workspace ルート（`/home/coder/project`）を開きます。Terminal → Run Task → **Open Example Catalog** は URL 案内です。出典・責務は [catalog.md](../docs/examples/catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）。Runtime の確認は [Runtime Diagnostics](../docs/guides/runtime-diagnostics.md) です。
 

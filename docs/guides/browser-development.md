@@ -2,6 +2,8 @@
 
 初めて利用する人が Browser Editor を起動し、Example を編集・実行する手順。
 
+Raspberry Pi OS Desktop 上の任意のエディタでも、同じ host `workspace/` を直接編集できる。Browser Editor は必須ではない。2経路の概要は [Getting Started の Example の編集方法（2経路）](./getting-started.md#example-の編集方法2経路)。このページは Browser Editor 経路の詳細である。
+
 関連:
 
 - 親 Issue: [#237 Browser Development Flow を Tutorial → Editor → Workspace → Example Server に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/237)
@@ -169,7 +171,7 @@ Editor: /home/coder/project
 Host:   ./workspace
 ```
 
-Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./workspace` は残る。
+Editor と Example Server は同じ host directory を共有する。container 内だけには保存されない。`docker compose down` 後も host `./workspace` は残る。Desktop 上の任意エディタで編集する場合も、同じ host `./workspace` を指す。
 
 ```text
 Host ./workspace
