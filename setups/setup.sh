@@ -18,6 +18,11 @@ I2C_DEVICE="/dev/i2c-1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+ENABLE_I2C_SH="${SCRIPT_DIR}/enable-i2c.sh"
+DISABLE_SQUEEKBOARD_SH="${SCRIPT_DIR}/disable-squeekboard.sh"
+DOCKER_SH="${SCRIPT_DIR}/docker.sh"
+DOCKER_COMPOSE_SH="${SCRIPT_DIR}/docker-compose.sh"
+
 log() {
   printf '%s\n' "$*"
 }
@@ -78,6 +83,30 @@ require_environment() {
   log "Environment check: Raspberry Pi OS OK"
 }
 
+require_script() {
+  local path="$1"
+  if [ ! -f "$path" ]; then
+    err "required script not found: ${path}"
+    exit 1
+  fi
+  if [ ! -x "$path" ]; then
+    err "required script is not executable: ${path}"
+    exit 1
+  fi
+}
+
+i2c_device_exists() {
+  [ -e "$I2C_DEVICE" ]
+}
+
+docker_installed() {
+  command -v docker >/dev/null 2>&1
+}
+
+compose_plugin_available() {
+  docker compose version >/dev/null 2>&1
+}
+
 print_success() {
   cat <<'EOF'
 
@@ -107,6 +136,126 @@ print_failure_hint() {
   err "  ./setups/setup.sh"
 }
 
+run_enable_i2c_if_needed() {
+  log ""
+  log "==> Host hardware: I2C"
+
+  if i2c_device_exists; then
+    log "I2C enabled: ${I2C_DEVICE} present (skip enable-i2c.sh)"
+    return 0
+  fi
+
+  require_script "${ENABLE_I2C_SH}"
+  log "I2C device missing; running enable-i2c.sh"
+  if ! sudo "${ENABLE_I2C_SH}"; then
+    print_failure_hint "enable-i2c.sh failed."
+    exit 1
+  fi
+
+  if i2c_device_exists; then
+    log "I2C device is available after enable (no reboot required)."
+    return 0
+  fi
+
+  print_reboot_and_rerun \
+    "I2C was enabled. Reboot is required before continuing."
+}
+
+run_disable_squeekboard() {
+  log ""
+  log "==> Host hardware: Squeekboard"
+
+  require_script "${DISABLE_SQUEEKBOARD_SH}"
+  log "Running disable-squeekboard.sh (Lite is a no-op)"
+  if ! sudo "${DISABLE_SQUEEKBOARD_SH}"; then
+    print_failure_hint "disable-squeekboard.sh failed."
+    exit 1
+  fi
+}
+
+run_docker_if_needed() {
+  log ""
+  log "==> Docker"
+
+  if docker_installed; then
+    log "Docker installed (skip docker.sh)"
+    return 0
+  fi
+
+  require_script "${DOCKER_SH}"
+  log "Docker not found; running docker.sh"
+  log "Note: docker.sh reboots the Host when it finishes."
+  log "After reboot, run again:"
+  log "  ./setups/setup.sh"
+  # docker.sh ends with sudo reboot; if reboot is delayed, fall through.
+  "${DOCKER_SH}"
+  print_reboot_and_rerun \
+    "docker.sh finished. Reboot if the Host did not restart automatically."
+}
+
+run_docker_compose_if_needed() {
+  log ""
+  log "==> Docker Compose"
+
+  if ! docker_installed; then
+    print_failure_hint "Docker is required before Compose setup."
+    exit 1
+  fi
+
+  if compose_plugin_available; then
+    log "Docker Compose plugin available (skip docker-compose.sh)"
+    return 0
+  fi
+
+  require_script "${DOCKER_COMPOSE_SH}"
+  log "Compose plugin missing; running docker-compose.sh"
+  if ! "${DOCKER_COMPOSE_SH}"; then
+    print_failure_hint "docker-compose.sh failed."
+    exit 1
+  fi
+
+  if compose_plugin_available; then
+    log "Docker Compose plugin is now available."
+    return 0
+  fi
+
+  # Standalone docker-compose may still satisfy older docs; prefer plugin.
+  if command -v docker-compose >/dev/null 2>&1; then
+    log "standalone docker-compose is installed."
+    log "Prefer 'docker compose' when available after reboot or package update."
+    return 0
+  fi
+
+  print_failure_hint \
+    "Neither 'docker compose' nor 'docker-compose' is available."
+  exit 1
+}
+
+check_workspace() {
+  log ""
+  log "==> workspace"
+
+  if [ -d "${REPO_ROOT}/workspace" ]; then
+    log "workspace/ exists (keep as-is; deeper readiness is later work)"
+    return 0
+  fi
+
+  log "workspace/ is missing."
+  log "Clone should include workspace/; continuing without creating it."
+  log "Deeper workspace / doctor checks are handled in a later issue."
+}
+
+verify_i2c_after_resume() {
+  if ! i2c_device_exists; then
+    return 0
+  fi
+  require_script "${ENABLE_I2C_SH}"
+  if ! "${ENABLE_I2C_SH}" --check; then
+    print_failure_hint "enable-i2c.sh --check failed."
+    exit 1
+  fi
+}
+
 main() {
   if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
     usage
@@ -126,11 +275,17 @@ main() {
 
   require_environment
 
-  # Host hardware / Docker / Compose orchestration is wired in a follow-up
-  # commit for #328. Skeleton ends with success messaging for the happy path
-  # once later steps are complete.
-  log ""
-  log "Note: Host hardware and Docker steps are not wired yet in this skeleton."
+  # If I2C is already present (e.g. after reboot), confirm with --check.
+  if i2c_device_exists; then
+    verify_i2c_after_resume
+  fi
+
+  run_enable_i2c_if_needed
+  run_disable_squeekboard
+  run_docker_if_needed
+  run_docker_compose_if_needed
+  check_workspace
+
   print_success
 }
 
