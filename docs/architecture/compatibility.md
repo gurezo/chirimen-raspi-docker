@@ -33,6 +33,16 @@ Raspberry Pi 上の CHIRIMEN Runtime の対応状態を、モデル名だけで�
 
 > 32-bit OS は非推奨です。[詳細を見る](./compatibility-32bit.md)
 
+## Runtime Support
+
+compose `up` / `down` による Runtime 利用の対応。Pi 3 B+ は非対応ではなく **Runtime-only**（compose `up` / `down` 対応、Docker build 非対応）である。
+
+| Model | compose up/down | Role |
+| --- | --- | --- |
+| Raspberry Pi 3 B+ | Supported | Runtime-only |
+| Raspberry Pi 4 | Supported | Runtime / Development |
+| Raspberry Pi 5 | Supported | Runtime / Development |
+
 ## Runtime / GPIO / I2C 共通仕様
 
 ### Runtime startup
