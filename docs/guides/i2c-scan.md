@@ -118,12 +118,13 @@ Pi 3 / 4 / 5 で配線を変える必要はない。GPIO LED Blink（BCM 26 / �
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（`doctor.sh` → `start.sh`）を使う。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（`doctor.sh` → `start.sh`）を使う。image の用意と機種別コマンド（Pi 3 B+ は `--no-build`）は Step 2 を正本とする。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
-./scripts/start.sh
+./scripts/start.sh            # Pi 4 / Pi 5。既に image がある場合も可
+# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
 ```
 
 `[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。

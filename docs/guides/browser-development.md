@@ -107,16 +107,17 @@ Tutorial の環境構築手順は本リポジトリの手順ではない。clone
 
 ## Runtime / Editor / Examples を起動する
 
-推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。
+推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。引数なしは既定で `--build` 相当のため **Pi 4 / Pi 5** 向け。Pi 3 B+（Runtime-only）は `--no-build`（[Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)）。
 
 ```sh
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh            # Pi 4 / Pi 5。Runtime + Browser Editor + Examples + Catalog（既定で --build）
 ./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
+./scripts/start.sh --no-build # Pi 3 B+ Runtime-only（build なし）
 ```
 
-同等の Compose 直接起動は `docker compose up`。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
+同等の Compose 直接起動は、Pi 4 / Pi 5 なら `docker compose up --build`、Pi 3 B+ なら `docker compose up`（`--build` なし）。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
 
 32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 

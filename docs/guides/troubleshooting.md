@@ -283,7 +283,7 @@ docker compose up chirimen-server chirimen-examples chirimen-example-catalog
 
 ### 症状
 
-`./scripts/start.sh` や `docker compose up --build` で次のようなエラーになる。
+**Raspberry Pi 4 / Pi 5** 上で `./scripts/start.sh` や `docker compose up --build` で次のようなエラーになる（Pi 3 B+ の on-device Docker build は Unsupported。こちらには来ない）。
 
 ```text
 .../i2c-bus@... install$ node-gyp rebuild
@@ -304,13 +304,13 @@ gyp ERR! stack Error: getaddrinfo EAI_AGAIN nodejs.org
 
 ### 対処
 
-[`docker/server/Dockerfile`](../../docker/server/Dockerfile) の `deps` ステージに `python3` / `make` / `g++` と `npm_config_nodedir=/usr/local` が入っていること（現行 main）を確認し、再ビルドする。
+[`docker/server/Dockerfile`](../../docker/server/Dockerfile) の `deps` ステージに `python3` / `make` / `g++` と `npm_config_nodedir=/usr/local` が入っていること（現行 main）を確認し、**Pi 4 / Pi 5** で再ビルドする。
 
 ```sh
 ./scripts/start.sh --build --force-recreate
 ```
 
-`runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。
+`runtime` ステージは slim の `base` から作るため、最終 image に build tools は残らない。詳細は [Docker 構成](../architecture/docker.md)。Pi 3 B+ の on-device Docker build は Unsupported（[Pi 3 B+ の on-device Docker build は Unsupported](#pi-3-b-の-on-device-docker-build-は-unsupported)）。
 
 ## Editor で Example が保存できない（Permission denied）
 
