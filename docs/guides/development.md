@@ -2,7 +2,7 @@
 
 リポジトリをホスト上で開発するための Node.js / pnpm / Nx セットアップ。
 
-Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Getting Started](./getting-started.md) の3段階を参照してください。Host 構築の詳細は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
+Runtime 利用（`docker compose up -d`）には host の Node.js は不要です。Raspberry Pi 上で CHIRIMEN Runtime だけを動かす場合は [Getting Started](./getting-started.md) を参照してください。Host 構築の詳細は [Raspberry Pi Setup](./raspberry-pi-setup.md)。
 
 関連:
 
@@ -12,7 +12,7 @@ Runtime 利用（`./scripts/start.sh`）には host の Node.js は不要です�
 - 実機検証: [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) / [Pi 3 B+ の build 非推奨コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)
 - [Compatibility](../architecture/compatibility.md)（[Runtime Support](../architecture/compatibility.md#runtime-support) / [Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)）
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築）
-- [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
+- [Getting Started](./getting-started.md)（Runtime 利用。起動は Step 2: `docker compose up -d`）
 - [Browser Development Environment](./browser-development.md)（Browser Editor から Example を編集する）
 - [Documentation checklist](./documentation-checklist.md)（Service / Port / Workspace / `apps/` 変更時）
 - [Architecture overview](../architecture/overview.md)
@@ -93,7 +93,7 @@ docker compose stop chirimen-example-catalog
 pnpm nx serve example-catalog
 ```
 
-Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
+Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`docker compose up -d`、または Development 向けの `./scripts/start.sh` / `npx nx serve server`）を起動してください。操作手順は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
 
 ## Docker image build（Raspberry Pi 4 / Pi 5）
 
@@ -133,7 +133,7 @@ docker compose up --build
 
 ### Raspberry Pi 3 B+（Runtime-only）
 
-Pi 3 B+ では on-device の Docker build を案内しない。Runtime 利用は `./scripts/start.sh --no-build` または `docker compose up`（`--build` なし）。手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) を参照する。GHCR / Prebuilt image の手順はここでは書かない。
+Pi 3 B+ では on-device の Docker build を案内しない。Runtime 利用は `docker compose up -d`（または上級者向け `./scripts/start.sh --no-build`）。手順は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) を参照する。GHCR / Prebuilt image の手順はここでは書かない。
 
 ## Documentation の整合性
 

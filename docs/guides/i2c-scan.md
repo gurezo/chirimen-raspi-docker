@@ -9,7 +9,7 @@
 - HTML サンプル: [workspace/i2c-scan/](../../workspace/i2c-scan/)
 - 検証仕様（正本）: [i2c-scan.md](../examples/i2c-scan.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)
-- [Getting Started](./getting-started.md)（Runtime 起動は Step 2）
+- [Getting Started](./getting-started.md)（Runtime 起動は Step 2: `docker compose up -d`）
 - [Browser Development Environment](./browser-development.md)
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（I2C を学ぶ）
@@ -118,16 +118,13 @@ Pi 3 / 4 / 5 で配線を変える必要はない。GPIO LED Blink（BCM 26 / �
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（`doctor.sh` → `start.sh`）を使う。image の用意と機種別コマンド（Pi 3 B+ は `--no-build`）は Step 2 を正本とする。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-start-runtime) の `docker compose up -d` を使う。
 
 ```sh
-chmod +x scripts/doctor.sh scripts/start.sh
-./scripts/doctor.sh
-./scripts/start.sh            # Pi 4 / Pi 5。既に image がある場合も可
-# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
+docker compose up -d
 ```
 
-`[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。
+別ターミナルで health を確認する。
 
 ```sh
 curl http://127.0.0.1:33330/health
@@ -149,7 +146,7 @@ container 内に I2C device が見えることも確認する。
 docker compose exec chirimen-server ls -l /dev/i2c-1
 ```
 
-詳細は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) を参照する。
+詳細は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) を参照する。Development / device mapping が必要なときの `start.sh` は [scripts/README.md](../../scripts/README.md)。
 
 ## Scan 操作
 

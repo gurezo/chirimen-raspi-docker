@@ -199,7 +199,7 @@ npx nx mcp --help
 | [nx-boundaries.md](./nx-boundaries.md) | Nx tags と module boundaries |
 | [unit-test.md](./unit-test.md) | Vitest / Nx unit test 方針 |
 | [Raspberry Pi Setup](../guides/raspberry-pi-setup.md) | Host 構築（`setups/`） |
-| [Getting Started](../guides/getting-started.md) | 3段階（Raspberry Pi Setup → CHIRIMEN Setup → First Example） |
+| [Getting Started](../guides/getting-started.md) | setup.sh → docker compose up -d → Catalog :4200 → First Example |
 | [Browser Development Environment](../guides/browser-development.md) | Learn → Edit → Save → Run → Verify の正本（#242）。実機 E2E は [#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243) |
 | [GPIO LED Blink](../guides/gpio-led-blink.md) | 必要部品・配線・HTML サンプルでの点滅手順 |
 | [GPIO LED Blink 回路仕様](../examples/gpio-led-blink.md) | BCM 26 / 物理 pin 37 / LED + 330Ω |

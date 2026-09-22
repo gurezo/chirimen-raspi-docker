@@ -16,7 +16,7 @@ Raspberry Pi OS Desktop 上の任意のエディタでも、同じ host `workspa
 - 実機検証結果: [Compatibility の Browser Development Flow 実機検証（#243）](../architecture/compatibility.md#browser-development-flow-実機検証243)
 - 選定・永続化・認証の正本: [browser-editor.md](../architecture/browser-editor.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。このページの前）
-- [Getting Started](./getting-started.md)（3段階。Runtime 起動は Step 2）
+- [Getting Started](./getting-started.md)（Runtime 起動は Step 2: `docker compose up -d`）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ）
 - [workspace/README.md](../../workspace/README.md)
 - [Troubleshooting](./troubleshooting.md)
@@ -110,9 +110,12 @@ Tutorial の環境構築手順は本リポジトリの手順ではない。clone
 
 ## Runtime / Editor / Examples を起動する
 
-推奨入口は `./scripts/start.sh`（host の uid と GPIO / I2C device mapping を渡す）。引数なしは既定で `--build` 相当のため **Pi 4 / Pi 5** 向け。Pi 3 B+（Runtime-only）は `--no-build`（[Getting Started Step 2](./getting-started.md#step-2-chirimen-setup)）。
+beginner の第一導線は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) の `docker compose up -d` である。このページでは Browser Editor 利用向けに、uid / device mapping を渡す `./scripts/start.sh` を案内する（Development / 上級者向け。既定は `--build` 相当のため **Pi 4 / Pi 5**。Pi 3 B+ は `--no-build`）。
 
 ```sh
+docker compose up -d          # beginner（Getting Started Step 2）
+
+# 以下は Development / 上級者向け
 chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/doctor.sh
 ./scripts/start.sh            # Pi 4 / Pi 5。Runtime + Browser Editor + Examples + Catalog（既定で --build）
@@ -120,7 +123,7 @@ chmod +x scripts/doctor.sh scripts/start.sh
 ./scripts/start.sh --no-build # Pi 3 B+ Runtime-only（build なし）
 ```
 
-同等の Compose 直接起動は、Pi 4 / Pi 5 なら `docker compose up --build`、Pi 3 B+ なら `docker compose up`（`--build` なし）。uid を渡さないと Editor は `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。
+`start.sh` を使わず Compose だけだと Editor の uid が `1000` / `coder` になり、[Example が保存できない](./troubleshooting.md#editor-で-example-が保存できないpermission-denied) ことがある。Desktop 上の任意エディタで `workspace/` を編集する場合は beginner の `docker compose up -d` で足りる。
 
 32-bit OS は通常フローではない。[32-bit Compatibility](../architecture/compatibility-32bit.md) を参照する。
 
@@ -135,7 +138,7 @@ curl -fsS http://127.0.0.1:4200/
 
 HTTP の確認 URL は Raspberry Pi 上、または SSH port forward 先の `127.0.0.1` である。`ws://localhost:33330/` の localhost は Browser が動いているマシンを指す。
 
-`/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)。
+`/healthz` は JSON の `expired` でも HTTP 200 なら Editor プロセスは生存している。Runtime の応答例は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)。
 
 ## Catalog で題材を探す
 

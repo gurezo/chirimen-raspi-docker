@@ -33,8 +33,8 @@ Example Catalog（`:4200`）は題材の発見入口です。ported Example の�
 
 ## 起動
 
-1. Runtime + Editor + Examples + Catalog を起動する（host で `./scripts/start.sh`）
-2. 題材探し: `http://127.0.0.1:4200/`。Terminal → Run Task → **Open Example Catalog**（URL 案内）
+1. Runtime + Editor + Examples + Catalog を起動する（host で `docker compose up -d`。正本は [Getting Started Step 2](../docs/guides/getting-started.md#step-2-start-runtime)）
+2. 題材探し: `http://localhost:4200/`。Terminal → Run Task → **Open Example Catalog**（URL 案内）
 3. HTML サンプル: Compose が起動済み。Terminal → Run Task → **Serve examples**（URL 案内）
 4. 別 Browser タブで Example Server を開く。Catalog の「実行」でも同じ URL を開く
 
@@ -51,7 +51,7 @@ http://127.0.0.1:4173/sht30/
 http://127.0.0.1:4173/ads1115/
 ```
 
-HTML サンプルは `./scripts/start.sh` で Compose が配信する。host だけで起動する場合:
+HTML サンプルは `docker compose up -d` で Compose が配信する。host だけで起動する場合:
 
 ```sh
 python3 -m http.server 4173 --bind 0.0.0.0

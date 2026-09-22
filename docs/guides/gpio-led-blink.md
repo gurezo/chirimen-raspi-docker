@@ -8,7 +8,7 @@
 - 子 Issue: [#108 LED Blink guide を作成する](https://github.com/gurezo/chirimen-raspi-docker/issues/108)
 - 回路仕様（正本）: [gpio-led-blink.md](../examples/gpio-led-blink.md)
 - HTML サンプル: [workspace/led-blink/](../../workspace/led-blink/)
-- [Getting Started](./getting-started.md)（Step 3 の入口。Runtime 起動は Step 2）
+- [Getting Started](./getting-started.md)（Step 3 の入口。Runtime 起動は Step 2: `docker compose up -d`）
 - [Browser Development Environment](./browser-development.md)
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / 回路を学ぶ）
@@ -67,19 +67,17 @@ Pi 3 / 4 / 5 で配線を変える必要はない。ピン対応の根拠は [�
 
 ## Runtime 起動
 
-Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup)（`doctor.sh` → `start.sh`）を使う。このガイドは Getting Started Step 3 の詳細正本である。image の用意と機種別コマンド（Pi 3 B+ は `--no-build`）は Step 2 を正本とする。
+Raspberry Pi 上で CHIRIMEN Runtime を起動する。[Raspberry Pi Setup](./raspberry-pi-setup.md)（Host / Getting Started Step 1）のあと、[Getting Started の Step 2](./getting-started.md#step-2-start-runtime) の `docker compose up -d` を使う。このガイドは Getting Started Step 3 の詳細正本である。
 
 ```sh
-chmod +x scripts/doctor.sh scripts/start.sh
-./scripts/doctor.sh
-./scripts/start.sh            # Pi 4 / Pi 5。既に image がある場合も可
-# ./scripts/start.sh --no-build  # Pi 3 B+ Runtime-only
+docker compose up -d
 ```
 
-`[error]` が無ければ Runtime を起動する。別ターミナルで health を確認する。
+別ターミナルで health を確認する。
 
 ```sh
 curl http://127.0.0.1:33330/health
+curl -fsS http://127.0.0.1:4200/
 ```
 
 期待する応答例:
@@ -92,11 +90,11 @@ curl http://127.0.0.1:33330/health
 }
 ```
 
-詳細は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) を参照する。
+詳細は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) を参照する。Development / device mapping が必要なときの `start.sh` は [scripts/README.md](../../scripts/README.md)。
 
 ## Browser 起動
 
-サンプルは旧 LEDblink と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。主経路は Example Catalog から Example Server を開くことである（`./scripts/start.sh` 済み前提）。
+サンプルは旧 LEDblink と同じく、同じディレクトリの `polyfill.js` と `main.js` を HTML から読む。`file://` ではなく HTTP で開く（WebSocket 先は `ws://localhost:33330/`）。主経路は Example Catalog から Example Server を開くことである（`docker compose up -d` 済み前提）。
 
 1. Example Catalog: `http://127.0.0.1:4200/`
 2. ported の「実行」、または直接 `http://127.0.0.1:4173/led-blink/`
@@ -150,7 +148,7 @@ Runtime 確認は [Runtime Diagnostics](./runtime-diagnostics.md)。HTML サン�
 
 | 確認 | 対処 |
 | --- | --- |
-| Runtime が止まっている | `./scripts/start.sh` と `curl http://127.0.0.1:33330/health` |
+| Runtime が止まっている | `docker compose up -d` と `curl http://127.0.0.1:33330/health` |
 | LED の極性 | アノード（長い足）が抵抗側、カソードが GND |
 | ピン取り違え | 物理 pin 37（BCM 26）と pin 39（GND）。5V ピン（2 / 4）は使わない |
 | 非 Pi 環境 | macOS などでは実 GPIO が無い。Raspberry Pi 上で開く |

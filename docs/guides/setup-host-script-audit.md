@@ -11,7 +11,7 @@
 - 現行入口: [Getting Started](./getting-started.md)
 - [`setups/README.md`](../../setups/README.md) / [`scripts/README.md`](../../scripts/README.md)
 
-このドキュメントは **分類の正本** である。`setups/setup.sh` 本体の実装は #328 / #329 / #330、`swap.sh` / Docker build の Beginner からの分離と Host / Development docs の一致は **#331 で反映済み**。Getting Started 全体を `setup.sh` → `docker compose up` 中心へ寄せる作業と横断総点検は後続子 Issue の担当である。
+このドキュメントは **分類の正本** である。`setups/setup.sh` 本体の実装は #328 / #329 / #330、`swap.sh` / Docker build の Beginner からの分離と Host / Development docs の一致は **#331 で反映済み**。Getting Started を `setup.sh` → `docker compose up` 中心へ寄せる作業は **#332 で反映済み**。Setup / Development / Compatibility の横断総点検は [#333](https://github.com/gurezo/chirimen-raspi-docker/issues/333) の担当である。
 
 ## 分類定義
 
@@ -156,10 +156,19 @@ setup.sh（#328 / #329 / #330 / #331）
 | --- | --- |
 | beginner / Runtime 標準順に `swap.sh` を含めない | [Raspberry Pi Setup](./raspberry-pi-setup.md) / [`setups/README.md`](../../setups/README.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup) で反映済み |
 | `swap.sh` / Docker build = Development only（Pi 4 / Pi 5） | [Development](./development.md) / [Compatibility](../architecture/compatibility.md) と一致 |
-| `setup.sh` 完了案内は `docker compose up -d`（build なし） | 実装済み。Getting Started Step 2 の全面寄せは後続 docs Issue |
+| `setup.sh` 完了案内は `docker compose up -d`（build なし） | 実装済み。Getting Started Step 2 の全面寄せは **#332 で反映済み** |
 | Runtime 完了条件から `swap.sh --check` 必須を外す | #331 で反映済み |
+| Getting Started 第一導線を `setup.sh` → `compose up -d` → `:4200` に一本化 | [#332](https://github.com/gurezo/chirimen-raspi-docker/issues/332) で反映済み |
 
-Getting Started 全体を `setup.sh` → `docker compose up` 中心へ変更する作業と、Setup / Development / Compatibility の横断総点検は親 #326 の後続子 Issue で行う。
+## docs との整合（#332）
+
+| 項目 | 状態 |
+| --- | --- |
+| Getting Started / README / docs site の beginner 入口 | `setup.sh` → `docker compose up -d` → `localhost:4200` |
+| First Example Guide | Getting Started 内 my-first-example / `workspace/` |
+| `start.sh` / build | Development / 上級者向けへ降格 |
+
+Setup / Development / Compatibility の横断総点検は親 #326 の後続子 Issue [#333](https://github.com/gurezo/chirimen-raspi-docker/issues/333) で行う。
 
 ## 完了条件チェック（#327）
 
@@ -176,3 +185,12 @@ Getting Started 全体を `setup.sh` → `docker compose up` 中心へ変更す�
 - [x] Pi 3 B+ = Runtime-only（案内が build を誘発しない）
 - [x] Pi 4 / Pi 5 Development（swap + build）が別導線として明記
 - [x] Host / Development / 監査 docs が実装と一致
+
+## 完了条件チェック（#332）
+
+- [x] Getting Started の setup entry point が `./setups/setup.sh` の 1 つ
+- [x] `docker compose up -d` まで短い
+- [x] `localhost:4200` が第一入口
+- [x] First Example Guide（my-first-example / `workspace/`）へ辿れる
+- [x] 第一導線に build command が無い
+- [x] Host Node/npm/pnpm/Nx を要求しない
