@@ -91,7 +91,7 @@ sudo ./setups/disable-squeekboard.sh
 
 | 順 | Script | 役割 |
 | --- | --- | --- |
-| 1 | `swap.sh` | Docker image ビルド前の Swap。Pi 3 B+ では必須 |
+| 1 | `swap.sh` | Host の Swap を確保する。低メモリ環境向け。Pi 3 B+ の Docker build 回避策としては案内しない（build は Pi 4 / Pi 5。詳細は [Compatibility](../architecture/compatibility.md)） |
 | 2 | `enable-i2c.sh` | `/dev/i2c-1` を使えるようにする。無いときは reboot 後に `--check` |
 | 3 | `disable-squeekboard.sh` | Desktop のスクリーンキーボードを Off。Lite では変更せず終わる |
 | 4 | `docker.sh` | Docker Engine。スクリプト末尾が reboot する |
