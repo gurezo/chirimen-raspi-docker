@@ -21,15 +21,34 @@ compatibility testing and implementation decisions.
 
 Verified でも `Supported` / Recommended とは書かない。推測の新事実は追加しない。根拠は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) の実機検証記録と親 [#337](https://github.com/gurezo/chirimen-raspi-docker/issues/337) の方針である。
 
-## Why 32-bit is not recommended
+「32-bit は動かなかった」と単純化しない。過去に Runtime E2E で Verified した事実と、現在サポートしない方針は分けて記録する。
 
-推奨環境は Raspberry Pi 3 B+ / 4 / 5 の **Raspberry Pi OS Lite 64-bit** である。32-bit OS では Runtime と Browser Editor を同じ手順では保証しない。当時の `./scripts/start.sh --32bit` は Runtime only だった。
+## Why support ended
 
-Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/arm/v7` が無いため、検証時は Node 22 / 当時の `docker/server/Dockerfile.32bit` を使った。
+親 [#337](https://github.com/gurezo/chirimen-raspi-docker/issues/337) により、Raspberry Pi OS 32-bit はサポート対象外とし Runtime を 64-bit に一本化した。終了理由は次のとおり。
 
-新しい理由は推測で追加しない。根拠は [#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) の実機検証記録である。
+- **標準環境の一本化**: Raspberry Pi OS **64-bit Desktop** を標準・サポート対象とする（Lite 64-bit も可）
+- **単一 Runtime path**: `docker compose up` / `start.sh` が bitness を選ばない。`--32bit` / `Dockerfile.32bit` / arm/v7 build は削除済み（[#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) / [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340)）
+- **保守コスト**: Node 24 に `linux/arm/v7` が無い、Nx native / WASM fallback 失敗、esbuild 直呼び（`build-server.mjs`）など 32-bit 専用 workaround の維持が必要だった（[#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) で削除）
+- **Editor / full stack 非提供**: 当時の `--32bit` は Runtime only。Browser Editor / Examples / Catalog を同じ手順では保証しなかった
 
-## Runtime / Docker constraints
+32-bit 専用コードは削除し、本ドキュメントに検証結果と意思決定の背景を残す。
+
+## Architecture detection insights
+
+当時の OS bitness / architecture 判定で得た知見。現行の `doctor.sh` / `setup.sh` は 32-bit userland を Unsupported として即停止する（[#343](https://github.com/gurezo/chirimen-raspi-docker/issues/343)）。主判定は `getconf LONG_BIT`、補助が `uname -m`。
+
+| Model | 32-bit OS userland | `uname -m`（当時） | Kernel 系 | 意味 |
+| --- | --- | --- | --- | --- |
+| Pi 3 B+ | 32-bit | `armv7l` | `…-rpi-v7` | kernel も 32-bit 系。`armv7l` / arm/v7 Docker path が必要だった |
+| Pi 4 | 32-bit | `aarch64` | `…-rpi-v8` | **32-bit userland + 64-bit kernel（default）**。`uname -m` だけでは 32-bit OS と判定できない |
+| Pi 5 | 32-bit | `aarch64` | `…-rpi-v8` | Pi 4 と同様。64-bit OS の kernel `2712` とは別系統 |
+
+- `uname -m` **だけ**では userland bitness 判定が不十分だった（Pi 4 / Pi 5 の事例）
+- 当時の `start.sh` が `uname -m` ベースだと、Pi 4 / Pi 5 32-bit OS で 64-bit 用 `Dockerfile`（Node 24）を選びえた
+- Pi 3 B+ 32-bit は真の `armv7l` のため Node 22 / `Dockerfile.32bit` 経路が必要だった
+
+## Runtime / Docker / Node / Nx / esbuild（Historical）
 
 現行の supported path は 64-bit のみである。32-bit 用 `Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。以下は検証当時の構成記録である。
 
@@ -47,8 +66,31 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 
 - 32-bit 用 build は当時 `scripts/build-server.mjs`（esbuild 直呼び bundle）。スクリプト本体は [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) で削除済み。64-bit の現行 build は `pnpm nx build server`（`@nx/esbuild:esbuild`）
 - 当時の `./scripts/start.sh --32bit` は Runtime only（Editor / Examples / Catalog を起動しない）。flag は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み
-- Pi 4 / Pi 5 の 32-bit OS は 32-bit userland でも **64-bit kernel が default** のため、`uname -m` は `aarch64` になる。当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた
 - Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
+
+## Test Matrix（当時）
+
+[#135](https://github.com/gurezo/chirimen-raspi-docker/issues/135) 時点の Runtime E2E 横断一覧。詳細は直後の機種別表を参照。Status はすべて **Verified（Unsupported）**。`Supported` とは書かない。
+
+| Model | OS | Kernel | Architecture (`uname -m`) | GPIO | I2C | WebSocket | cleanup | server image |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Pi 3 B+ | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v7` | `armv7l` | Verified | Verified | Verified | Verified | `phase1-32bit`（esbuild） |
+| Pi 4 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | Verified | Verified | Verified | Verified | — |
+| Pi 5 | Raspbian OS 32-bit | `6.18.34+rpt-rpi-v8` | `aarch64` | Verified | Verified | Verified | Verified | `phase1-32bit`（`--32bit` / esbuild） |
+
+### Hardware Runtime 検証範囲
+
+当時の `--32bit` 経路で確認した範囲と、対象外だった範囲を分ける。
+
+| 対象 | 結果 | 備考 |
+| --- | --- | --- |
+| server（Runtime container） | Verified | `chirimen-raspi-docker/server:phase1-32bit` 等。WebSocket GPIO/I2C |
+| GPIO | Verified | `gpio.export`（port `26` / `out`）。sysfs backend |
+| I2C | Verified | `/dev/i2c-1` → `i2c-dev` |
+| WebSocket | Verified | 接続および `gpio.export` request/response |
+| session cleanup | Verified | 切断時の未 unexport 除去。`compose down` 後の残留なし |
+| browser-polyfill | 当時対象外 | `--32bit` は Runtime only。Browser / polyfill 経路は同じ手順では検証していない |
+| Browser Editor / Examples / Catalog | 当時対象外 | `--32bit` では起動しなかった |
 
 ## Raspberry Pi 3 B+ verification
 
@@ -111,19 +153,24 @@ Pi 3 B+ 32-bit は `armv7l` である。Node 24 公式 Docker image に `linux/a
 
 ## Known limitations
 
-- 32-bit OS はサポート対象外。Verified でも `Supported` / Recommended とは書かない
+- 32-bit OS は **Historical / Unsupported**。Verified でも `Supported` / Recommended とは書かない
 - Runtime と Browser Editor を同じ手順では保証しない。当時の `./scripts/start.sh --32bit` は Runtime only だった
 - Pi 3 B+ 32-bit は `armv7l`。Node 24 公式 Docker image に `linux/arm/v7` が無いため、検証時は Node 22 / `Dockerfile.32bit` を使った（当該ファイルは [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み）
 - Pi 4 / Pi 5 の 32-bit OS は `uname -m` が `aarch64` のため、当時の `start.sh` は 64-bit 用 Dockerfile（Node 24）を選びえた
 - Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
+- browser-polyfill / Editor 経路は当時の 32-bit Runtime path では検証対象外
 
 ## Related Issues
 
 - 親 Issue: [#337 Raspberry Pi OS 32-bit をサポート対象外とし Runtime を 64-bit に一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/337)
 - 子 Issue: [#344 Raspberry Pi OS 32-bit の検証結果と support 終了背景を Historical Documentation として保存する](https://github.com/gurezo/chirimen-raspi-docker/issues/344)
 - 子 Issue: [#339 Dockerfile.32bit と arm/v7 Docker build path を削除する](https://github.com/gurezo/chirimen-raspi-docker/issues/339)
+- 子 Issue: [#340 `start.sh --32bit` と OS bitness 分岐を削除する](https://github.com/gurezo/chirimen-raspi-docker/issues/340)
+- 子 Issue: [#341 `build-server.mjs` の用途を確認し 32-bit 専用なら削除する](https://github.com/gurezo/chirimen-raspi-docker/issues/341)
+- 子 Issue: [#343 `doctor.sh` / `setup.sh` で 32-bit OS を Unsupported として検出する](https://github.com/gurezo/chirimen-raspi-docker/issues/343)
 - 親 Issue: [#224 Documentation を初見ユーザー向けに再構成する](https://github.com/gurezo/chirimen-raspi-docker/issues/224)
 - 子 Issue: [#227 Compatibility を 64-bit 推奨環境中心に再設計する](https://github.com/gurezo/chirimen-raspi-docker/issues/227)
 - 子 Issue: [#228 32-bit Compatibility を独立ページへ分離する](https://github.com/gurezo/chirimen-raspi-docker/issues/228)
 - 実機検証: [#135 32-bit](https://github.com/gurezo/chirimen-raspi-docker/issues/135)
 - native rebuild: [#167 nodedir](https://github.com/gurezo/chirimen-raspi-docker/pull/167)
+- 棚卸し: [32-bit Removal Audit](./32bit-removal-audit.md)（[#338](https://github.com/gurezo/chirimen-raspi-docker/issues/338)）
