@@ -55,7 +55,7 @@ Device        → Example Catalog / Runtime Examples
 - **GPIO `unavailable`**: GPIO interface が無い → `[warn]`
 - **I2C `available`**: `/dev/i2c-1` がある → `[ok] I2C: available (/dev/i2c-1)` と `i2c backend: i2c-dev`
 - **I2C `unavailable`**: `/dev/i2c-1` が無い → `[error] I2C: unavailable`。doctor 自身は設定を変えない。有効化は [Raspberry Pi Setup](./raspberry-pi-setup.md) の `enable-i2c.sh`
-- **Swap**: Pi 3 B+ 相当（RAM 約 1.5GB 以下）で SwapTotal=0 なら `[error]`。Pi 4 / 5 で 0 なら `[warn]`（任意）
+- **Swap**: SwapTotal=0 なら `[warn]`（任意）。主用途は Pi 4 / Pi 5 の Docker build。Runtime-only では必須ではない。Pi 3 B+ build の有効化手段ではない（[Compatibility](../architecture/compatibility.md)）
 - **非 Pi 環境**: Pi / device 関連が `[error]` / `[warn]` になる
 
 ## 歴史的経緯（#263 で廃止した web-demo）
