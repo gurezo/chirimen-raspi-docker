@@ -94,6 +94,34 @@ pnpm nx serve example-catalog
 
 Runtime / Browser Polyfill / GPIO / I2C の確認は [Runtime Diagnostics](./runtime-diagnostics.md) です。`navigator.requestGPIOAccess` / `requestI2CAccess` を使うには、先に Runtime（`./scripts/start.sh` または `npx nx serve server`）を起動してください。操作手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) と [browser-polyfill.md](./browser-polyfill.md) を参照してください。
 
+## Docker image build（Raspberry Pi 4 / Pi 5）
+
+on-device の Docker image build は **Raspberry Pi 4 / Pi 5** を対象とする。Pi 3 B+ は **Runtime-only** であり、次のコマンドは Unsupported である。正本は [Compatibility の Development / Docker Build Support](../architecture/compatibility.md#development--docker-build-support)。根拠は [#283](https://github.com/gurezo/chirimen-raspi-docker/issues/283) および [検証コメント](https://github.com/gurezo/chirimen-raspi-docker/issues/283#issuecomment-5762812796)。
+
+対象コマンドの例:
+
+```text
+docker build
+docker compose build
+docker compose up --build
+./scripts/start.sh（引数なし。既定で --build）
+```
+
+### Raspberry Pi 4 / Pi 5（Build Supported）
+
+```sh
+./scripts/start.sh            # 既定で --build
+./scripts/start.sh --lan
+docker compose build
+docker compose up --build
+```
+
+個別 image の `docker build` / `docker buildx` は [Docker 構成](../architecture/docker.md) を参照する。
+
+### Raspberry Pi 3 B+（Runtime-only）
+
+Pi 3 B+ では on-device の Docker build を案内しない。Runtime 利用は `./scripts/start.sh --no-build` または `docker compose up`（`--build` なし）。手順は [Getting Started の Step 2](./getting-started.md#step-2-chirimen-setup) を参照する。GHCR / Prebuilt image の手順はここでは書かない。
+
 ## Documentation の整合性
 
 `compose.yaml` の Service 名、Port、`apps/`、`workspace/`、Browser Development Flow を変えたときは [Documentation checklist](./documentation-checklist.md) で README / Getting Started / Browser Development の更新漏れを確認してください。
