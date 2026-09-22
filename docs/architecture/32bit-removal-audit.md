@@ -91,24 +91,47 @@
 - [ ] 関連 Issue / PR ポインタ（少なくとも #135, #167, #228, 親 #337）
 ## 誤削除防止（out of scope）
 
-- （#338 inventory で埋める）
+次は 32-bit 専用サポートコードではない。親 #337 の方針どおり **触らない / 誤って削除しない**。
+
+| 対象 | 理由 |
+| --- | --- |
+| Pi 3 B+ の **64-bit** Runtime Supported（Runtime-only / Docker build Unsupported） | モデル自体はサポート維持。32-bit OS だけ Unsupported |
+| `linux/arm64` / `aarch64` 上の 64-bit Runtime・Editor・Catalog | 標準サポート path |
+| [`docker/server/Dockerfile`](../../docker/server/Dockerfile) 本体（Node 24 multi-stage） | 64-bit 唯一の supported Dockerfile。コメント整理のみ |
+| [`compose.yaml`](../../compose.yaml) のサービス定義・port・volume | コメントの 32-bit 言及以外は現行 Runtime |
+| `./scripts/start.sh` の `--no-build` / `--lan` / password / device mapping など 64-bit 向け機能 | bitness 分岐だけ削除 |
+| `doctor.sh` の GPIO / I2C / Docker / memory 等の readiness 検査 | 32-bit warn の扱いだけ #343 で変更 |
+| Editor が `arm32` / `armv7` 非対応である技術記述 | 事実として docs に残してよい（起動 flag とは別） |
+| GHCR / 将来 prebuilt の **arm64** 配布方針 | 親 Issue と整合。arm/v7 配布は対象外 |
 
 ## 後続 Issue への引き継ぎ
 
+```text
+#338 audit（本ドキュメント・削除しない）
+  → #344 Historical 退避・再構成（削除前に知識を保存）
+  → #339 Dockerfile.32bit / arm/v7 build 削除
+  → #340 start.sh --32bit / OS_BITS 分岐削除
+  → #341 build-server.mjs 参照確認・整理
+  → #342 compose.yaml コメント / 64-bit 一本化
+  → #343 doctor.sh / setup.sh Unsupported 検出
+  → #345 README / Getting Started / Compatibility 等 Support Policy
+  → #346 Pi 3 B+ / 4 / 5 64-bit 回帰テスト
+```
+
 | Issue | 担当範囲（本監査からの導線） |
 | --- | --- |
-| #339 | Dockerfile.32bit / arm/v7 build path |
-| #340 | start.sh `--32bit` / OS bitness 分岐 |
-| #341 | build-server.mjs 参照確認・整理 |
-| #342 | compose.yaml 64-bit 一本化 |
-| #343 | doctor.sh / setup.sh Unsupported 検出 |
-| #344 | Historical Documentation 再構成 |
-| #345 | README / Getting Started / Compatibility Support Policy |
-| #346 | Pi 3 B+ / 4 / 5 64-bit 回帰テスト |
+| #339 | `Dockerfile.32bit` 削除、64-bit `Dockerfile` の 32-bit コメント整理、arm/v7 / Node 22 依存の除去。背景は #344 へ |
+| #340 | `start.sh` の `--32bit` / `OS_BITS*` / `*_for_os_bits` / `reject_32bit_*` / 32-bit service skip / help を削除し 64-bit path を簡素化 |
+| #341 | `build-server.mjs` の全参照確認。`Dockerfile.32bit` 専用なら削除。esbuild 理由は #344 |
+| #342 | `compose.yaml` の 32-bit コメント削除。beginner が bitness を選ばない単一 path |
+| #343 | 32-bit userland 検出（`uname -m` のみに依存しない。候補 `getconf LONG_BIT`）。Unsupported メッセージ + Historical 導線。`setup.sh` にも同様 |
+| #344 | `compatibility-32bit.md` を Historical / Unsupported に再構成。上記チェックリストを保持 |
+| #345 | 「非推奨」→「Unsupported」。64-bit Desktop 標準。Pi 3 B+ 64-bit Runtime 維持。Current / Historical を区別 |
+| #346 | 削除後の Pi 3 B+ / 4 / 5 64-bit 回帰（Runtime / 必要なら Development、GPIO / I2C、Catalog） |
 
 ## 完了条件（#338）
 
-- [ ] 32-bit 関連箇所一覧を作成
-- [ ] 削除 / 更新 / 保存に分類
-- [ ] Historical Documentation に残す情報を特定
-- [ ] 32-bit と無関係な ARM 対応を誤って削除しない旨を明記
+- [x] 32-bit 関連箇所一覧を作成
+- [x] 削除 / 更新 / 保存に分類
+- [x] Historical Documentation に残す情報を特定
+- [x] 32-bit と無関係な ARM 対応を誤って削除しない旨を明記
