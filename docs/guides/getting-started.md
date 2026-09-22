@@ -167,12 +167,40 @@ chmod +x scripts/doctor.sh scripts/start.sh
 
 #### start.sh（Runtime 起動）
 
+機種により Docker build の扱いが異なる。正本は [Compatibility の Runtime Support / Development / Docker Build Support](../architecture/compatibility.md#runtime-support)。
+
+##### Raspberry Pi 3 B+（Runtime-only）
+
+Pi 3 B+ では on-device の Docker build は Unsupported である。`./scripts/start.sh` は引数なしだと `docker compose up --build` 相当になるため、**`--no-build` を付けて**起動する。`docker build` / `compose build` / `up --build` は案内しない。GHCR / Prebuilt image の手順もここでは書かない。
+
 ```sh
-./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog
+./scripts/start.sh --no-build            # Runtime + Browser Editor + Examples + Catalog（build なし）
+./scripts/start.sh --lan --no-build      # 同上。Editor / Example / Catalog を LAN 公開
+```
+
+Compose を直接使う場合:
+
+```sh
+docker compose up
+docker compose down
+```
+
+`--build` は付けない。停止は `docker compose down`。
+
+##### Raspberry Pi 4 / Pi 5（Runtime / Development）
+
+Pi 4 / Pi 5 では Docker build が Supported である。引数なしの `./scripts/start.sh` は既定で `--build` を付けて起動する。
+
+```sh
+./scripts/start.sh            # Runtime + Browser Editor + Examples + Catalog（既定で --build）
 ./scripts/start.sh --lan      # 同上。Editor / Example / Catalog を LAN 公開
 ```
 
-`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で同一手順）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。Compose を直接使う場合は `docker compose up`。
+Compose を直接使う場合の例: `docker compose up`（必要なら `--build`）。開発・build の詳細は [Development](./development.md)。
+
+---
+
+`start.sh` は host の hardware path を探査し、存在する device だけを Compose に渡す（Pi 3 / 4 / 5 で device マッピング手順は同一）。I2C 設定は変更しない。server は default で `33330` 番 port を使用する。既定は 64-bit の全サーバー起動である。
 
 64-bit の初回対話起動では Browser Editor の password を決める。覚えておける文字列を 2 回入力する。gitignored の `.env` に `CHIRIMEN_EDITOR_PASSWORD` として書かれ、ログには平文を出さない。CI や TTY が無いとき、または既に password があるときは prompt しない。`.env` は Git に含めない。`auth: none` は使わない。LAN（`--lan`）でも password は必須である。Pi 3 B+ でメモリが厳しいときは起動後に `docker compose stop chirimen-editor`。Step 3 に Editor は必須ではない。
 
