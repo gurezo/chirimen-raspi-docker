@@ -277,7 +277,7 @@ Compose を直接使う場合:
 docker compose up chirimen-server chirimen-examples chirimen-example-catalog
 ```
 
-8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。低メモリ時の任意の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)（Runtime-only では必須ではない。Pi 3 B+ build の回避策ではない）。
+8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。低メモリ時の任意の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（Runtime-only では必須ではない。Pi 3 B+ build の回避策ではない）。
 
 ## Docker build が `i2c-bus` / `node-gyp` で失敗する
 

@@ -228,11 +228,11 @@ http://127.0.0.1:4173/my-first-example/
   - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
   - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported）
 - Getting Started は GHCR / Prebuilt image を前提にしない。Pi 3 B+ では on-device の Docker build を案内しない
-- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#1-swapsh)
+- Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の任意 Swap / Pi 4・Pi 5 の build 用 Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（**Development-only**。beginner Step 1 では必須ではない）
 
 > 32-bit OS は非推奨です。[詳細を見る](../architecture/compatibility-32bit.md)
 
-clone や swap / I2C / Docker / GPIO の準備は [Step 1](#step-1-raspberry-pi-setup) で行う。開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
+clone や I2C / Docker / GPIO の準備は [Step 1](#step-1-raspberry-pi-setup) で行う。`swap.sh` と Docker build は beginner Step 1 に含めない（Pi 4 / Pi 5 の Development は [Development](./development.md)）。開発マシン単体（macOS など）では GPIO / I2C device が無いことがある。`./scripts/start.sh` は存在する path だけを渡して起動を試みるが、実機機能の検証は Raspberry Pi 上で行う。詳細は [Troubleshooting](./troubleshooting.md) の「非 Pi 環境」を参照。
 
 ## Step 1: Raspberry Pi Setup
 
@@ -240,16 +240,23 @@ Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。
 
 ### 目的
 
-`setups/*.sh` で Host を整える。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこの Step では行わない。
+`./setups/setup.sh`（または必要な `setups/*.sh`）で Host を整える。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はこの Step では行わない。`swap.sh` と Docker build は含めない。
 
 ### 実行コマンド
 
-詳細・reboot の要否・再実行時の安全性は [Raspberry Pi Setup](./raspberry-pi-setup.md) が正本である。標準順:
+詳細・reboot の要否・再実行時の安全性は [Raspberry Pi Setup](./raspberry-pi-setup.md) が正本である。**beginner 向け**:
 
 ```sh
 git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker
-sudo ./setups/swap.sh
+./setups/setup.sh
+```
+
+`setup.sh` は状態を確認し、必要な Host script（I2C / Squeekboard / Docker / Compose）だけを呼ぶ。`swap.sh`・Docker build・`start.sh` は実行しない。reboot が必要なら案内に従い、reboot 後に同じ `./setups/setup.sh` を再実行する。
+
+手動で個別実行する場合の Runtime Host 標準順（`swap.sh` なし）:
+
+```sh
 sudo ./setups/enable-i2c.sh
 sudo ./setups/disable-squeekboard.sh
 ./setups/docker.sh
@@ -258,11 +265,13 @@ sudo ./setups/disable-squeekboard.sh
 
 | 順 | Script | 役割 |
 | --- | --- | --- |
-| 1 | `swap.sh` | Host の Swap を確保する。低メモリ環境向け。Pi 3 B+ の Docker build 回避策としては案内しない（build は Pi 4 / Pi 5。詳細は [Compatibility](../architecture/compatibility.md)） |
-| 2 | `enable-i2c.sh` | `/dev/i2c-1` を使えるようにする。無いときは reboot 後に `--check` |
-| 3 | `disable-squeekboard.sh` | Desktop のスクリーンキーボードを Off。Lite では変更せず終わる |
-| 4 | `docker.sh` | Docker Engine。スクリプト末尾が reboot する |
-| 5 | `docker-compose.sh` | Compose。`docker.sh` の reboot 後に実行する |
+| — | `setup.sh` | beginner 入口。必要な上記 script だけを呼ぶ |
+| 1 | `enable-i2c.sh` | `/dev/i2c-1` を使えるようにする。無いときは reboot 後に `--check`（または `setup.sh` 再実行） |
+| 2 | `disable-squeekboard.sh` | Desktop のスクリーンキーボードを Off。Lite では変更せず終わる |
+| 3 | `docker.sh` | Docker Engine。スクリプト末尾が reboot する |
+| 4 | `docker-compose.sh` | Compose。`docker.sh` の reboot 後に実行する |
+
+`swap.sh` は **Development-only**（Pi 4 / Pi 5 の Source Development / Docker build の OOM 緩和）。手順は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh) と [Development](./development.md)。
 
 GPIO の host 確認も Step 1 の完了に含む。手順は [Raspberry Pi Setup の GPIO](./raspberry-pi-setup.md#gpio)。
 
@@ -275,11 +284,12 @@ CHIRIMEN Runtime は Docker Compose で動き、GPIO / I2C は Host の device �
 次を満たせば Step 1 は完了である。チェック項目の正本は [Raspberry Pi Setup の完了状態](./raspberry-pi-setup.md#raspberry-pi-setup-の完了状態)。
 
 - リポジトリを clone 済み
-- `sudo ./setups/swap.sh --check` が通る（標準順で実行した場合。Runtime-only では必須ではない）
+- `./setups/setup.sh` が完了している、または手動で次を満たす
 - `./setups/enable-i2c.sh --check` で `/dev/i2c-1` がある
 - `./setups/disable-squeekboard.sh --check` を実行済み（Lite は変更なしでも完了）
 - `docker --version` / `docker compose version` が通る（無ければ `docker-compose --version`）
 - GPIO の host 確認（`/sys/class/gpio`）
+- `sudo ./setups/swap.sh --check` は **Runtime / beginner の完了条件ではない**
 
 ### 次の Step
 
