@@ -2,14 +2,16 @@
 #
 # Beginner Host setup orchestration for chirimen-raspi-docker.
 # Checks Runtime-required Host state and calls existing setups/*.sh
-# only when needed. Does not run swap.sh, Docker build, or start.sh.
+# only when needed. Verifies workspace/ and runs doctor.sh as
+# Runtime readiness. Does not run swap.sh, Docker build, or start.sh.
 #
 # Usage:
 #   ./setups/setup.sh
 #
 # Related:
 #   docs/guides/setup-host-script-audit.md
-#   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot)
+#   Issues #326 (parent), #328 (orchestration), #329 (I2C / reboot),
+#   #330 (workspace / Runtime readiness)
 #
 set -euo pipefail
 
@@ -22,6 +24,7 @@ ENABLE_I2C_SH="${SCRIPT_DIR}/enable-i2c.sh"
 DISABLE_SQUEEKBOARD_SH="${SCRIPT_DIR}/disable-squeekboard.sh"
 DOCKER_SH="${SCRIPT_DIR}/docker.sh"
 DOCKER_COMPOSE_SH="${SCRIPT_DIR}/docker-compose.sh"
+DOCTOR_SH="${REPO_ROOT}/scripts/doctor.sh"
 
 log() {
   printf '%s\n' "$*"
@@ -36,7 +39,8 @@ usage() {
 Usage: setup.sh
 
   Beginner Host setup for CHIRIMEN Runtime on Raspberry Pi OS.
-  Runs only the Host setup steps that are still needed.
+  Runs only the Host setup steps that are still needed, then checks
+  workspace/ and Runtime readiness via doctor.sh.
 
   Does not run swap.sh, Docker build, or start.sh.
   Does not require Node.js / npm / pnpm / Nx on the Host.
@@ -237,17 +241,48 @@ run_docker_compose_if_needed() {
 }
 
 check_workspace() {
+  local workspace_dir="${REPO_ROOT}/workspace"
+  local owner mode
+
   log ""
   log "==> workspace"
 
-  if [ -d "${REPO_ROOT}/workspace" ]; then
-    log "workspace/ exists (keep as-is; deeper readiness is later work)"
-    return 0
+  if [ ! -d "${workspace_dir}" ]; then
+    print_failure_hint \
+      "workspace/ is missing. Re-clone the repository so workspace/ is present."
+    exit 1
   fi
 
-  log "workspace/ is missing."
-  log "Clone should include workspace/; continuing without creating it."
-  log "Deeper workspace / doctor checks are handled in a later issue."
+  if [ ! -w "${workspace_dir}" ]; then
+    owner="$(stat -c '%U:%G' "${workspace_dir}" 2>/dev/null \
+      || stat -f '%Su:%Sg' "${workspace_dir}" 2>/dev/null \
+      || printf 'unknown')"
+    mode="$(stat -c '%a' "${workspace_dir}" 2>/dev/null \
+      || stat -f '%Lp' "${workspace_dir}" 2>/dev/null \
+      || printf 'unknown')"
+    err "workspace/ is not writable by the current user ($(id -un))."
+    err "  path: ${workspace_dir}"
+    err "  owner: ${owner}"
+    err "  mode: ${mode}"
+    print_failure_hint \
+      "Make workspace/ editable by your user, then re-run."
+    exit 1
+  fi
+
+  log "workspace/ is available and writable by $(id -un)."
+}
+
+run_runtime_readiness() {
+  log ""
+  log "==> Runtime readiness (doctor.sh)"
+
+  require_script "${DOCTOR_SH}"
+  # Pass CHIRIMEN_BEGINNER_SETUP so doctor leaves next-step guidance
+  # to this orchestrator (docker compose up -d, not start.sh).
+  if ! CHIRIMEN_BEGINNER_SETUP=1 "${DOCTOR_SH}"; then
+    print_failure_hint "doctor.sh reported Runtime readiness errors."
+    exit 1
+  fi
 }
 
 verify_i2c_after_resume() {
@@ -290,6 +325,7 @@ main() {
   run_docker_if_needed
   run_docker_compose_if_needed
   check_workspace
+  run_runtime_readiness
 
   print_success
 }

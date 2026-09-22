@@ -40,19 +40,20 @@
 | [`setups/docker-compose.sh`](../../setups/docker-compose.sh) | Conditional（Deprecated / duplicate 候補あり） | `docker compose version` が使えるならスキップ。無いときだけ呼び出す |
 | [`setups/disable-squeekboard.sh`](../../setups/disable-squeekboard.sh) | Conditional | Desktop 向け。Lite では no-op のため呼び出し可 |
 | [`setups/swap.sh`](../../setups/swap.sh) | Development only | **呼ばない** |
-| [`scripts/doctor.sh`](../../scripts/doctor.sh) | Runtime required（検証） | Host 設定は変えない。readiness check として呼び出し候補（後続 workspace / doctor Issue） |
+| [`scripts/doctor.sh`](../../scripts/doctor.sh) | Runtime required（検証） | Host 設定は変えない。readiness check として `setup.sh` から呼び出し済み（#330） |
 | [`scripts/start.sh`](../../scripts/start.sh) | Runtime required（起動） | Host `setup.sh` の範囲外。完了案内で `docker compose up -d` と `http://localhost:4200` を示す側 |
 | [`scripts/build-docs-site.mjs`](../../scripts/build-docs-site.mjs) / [`scripts/build-server.mjs`](../../scripts/build-server.mjs) | Development only | 呼ばない |
-| `workspace/` 準備 | Conditional / 後続 | 専用 Host script は無い。Compose bind-mount と後続 Issue で扱う |
+| `workspace/` 準備 | Runtime required（検証） | 専用 Host script は無い。`setup.sh` が存在・書き込み可否を確認（#330） |
 | GPIO permission / device | docs 手確認 + `doctor.sh` probe | 専用 `setups/` script は無い。`doctor.sh` の probe を再利用する |
 
 ```text
-setup.sh（後続 Issue）
+setup.sh（#328 / #329 / #330）
   → enable-i2c.sh（必要時）→ [reboot] → --check
   → disable-squeekboard.sh（任意・Lite は no-op）
   → docker.sh → [reboot]
   → docker-compose.sh（plugin が無ければ）
-  → doctor.sh（readiness・後続）
+  → workspace/（存在・書き込み可否）
+  → doctor.sh（Runtime readiness）
   → 案内: docker compose up -d / localhost:4200
   ✗ swap.sh
   ✗ Docker build
@@ -120,7 +121,7 @@ setup.sh（後続 Issue）
 | 依存 | sudo 不要。Docker CLI があれば利用。Host 設定は変えない |
 | reboot | なし（I2C 不足時に reboot を案内しうる） |
 | 分類 | **Runtime required（検証）** |
-| 備考 | `setup.sh` 本体の Host 変更フェーズには含めず、完了後の readiness check として後続 Issue で統合する |
+| 備考 | `setup.sh` 本体の Host 変更フェーズには含めず、完了後の readiness check として `setup.sh` から呼び出し済み（#330）。`CHIRIMEN_BEGINNER_SETUP=1` 時は次手順を `setup.sh` 案内に委ねる |
 
 ### `start.sh`
 
@@ -144,7 +145,7 @@ setup.sh（後続 Issue）
 
 | 領域 | 現状 | `setup.sh` への示唆 |
 | --- | --- | --- |
-| `workspace/` | [`workspace/README.md`](../../workspace/README.md)。Compose の bind-mount。Host 用 setup script は無い | 後続 Issue で利用準備を統合。新規に同等処理を二重実装しない |
+| `workspace/` | [`workspace/README.md`](../../workspace/README.md)。Compose の bind-mount。Host 用 setup script は無い | `setup.sh` が存在・書き込み可否を確認済み（#330）。新規に同等処理を二重実装しない |
 | GPIO permission / device | [Raspberry Pi Setup の GPIO 節](./raspberry-pi-setup.md#gpio) が手確認。`doctor.sh` が probe | 新規 `setups/` script を増やさず `doctor.sh` を再利用 |
 | permission / device check 全般 | `doctor.sh` と docs | オーケストレータは診断結果の解釈に留め、設定変更は既存 `setups/` に委譲 |
 
@@ -154,7 +155,7 @@ setup.sh（後続 Issue）
 | --- | --- |
 | 1. `swap.sh` を実行してよい | **呼ばない**（Development only） |
 | 2–5. I2C → squeekboard → docker → compose | 呼び出す（compose は Conditional） |
-| 完了後に `doctor.sh` → `start.sh` | doctor は readiness 候補。start は範囲外で `docker compose up -d` 案内へ寄せる（後続 docs Issue） |
+| 完了後に `doctor.sh` → `start.sh` | doctor は `setup.sh` から readiness として呼び出し済み（#330）。start は範囲外で `docker compose up -d` 案内へ寄せる（後続 docs Issue） |
 
 Getting Started / raspberry-pi-setup / setups README の初心者導線書き換えは、親 #326 の後続子 Issue（Getting Started / Documentation alignment）で行う。
 

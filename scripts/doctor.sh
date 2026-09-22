@@ -431,6 +431,12 @@ print_summary() {
     if [ "$WARN_COUNT" -gt 0 ]; then
       log "$WARN_COUNT warning(s) reported; review messages above before starting Docker Compose."
     fi
+    # When called from setups/setup.sh, the orchestrator prints the
+    # beginner next step (docker compose up -d). Keep start.sh for standalone.
+    if [ "${CHIRIMEN_BEGINNER_SETUP:-}" = "1" ]; then
+      log "Runtime readiness OK. Continuing beginner setup guidance from setup.sh."
+      return 0
+    fi
     log "You can start with capability-aware mapping:"
     log "  Pi 4 / Pi 5:  ./scripts/start.sh"
     log "  Pi 3 B+ (Runtime-only): ./scripts/start.sh --no-build"
@@ -439,6 +445,11 @@ print_summary() {
   fi
 
   log "Some checks failed ($ERROR_COUNT error(s), $WARN_COUNT warning(s))."
+  if [ "${CHIRIMEN_BEGINNER_SETUP:-}" = "1" ]; then
+    log "Fix the errors above, then re-run:"
+    log "  ./setups/setup.sh"
+    return 1
+  fi
   log "Fix the errors above before running ./scripts/start.sh"
   log "(Pi 3 B+ Runtime-only: ./scripts/start.sh --no-build)."
   return 1

@@ -1,6 +1,6 @@
 # setups
 
-**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。Runtime の診断（`doctor.sh`）と起動（`start.sh`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
+**Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。起動（`start.sh`）はしない。推奨環境は Raspberry Pi OS Lite 64-bit。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
 ## 初心者向け入口: setup.sh
 
@@ -10,13 +10,13 @@
 ./setups/setup.sh
 ```
 
-`setup.sh` は状態を確認し、必要な既存 script（I2C / Squeekboard / Docker / Compose）だけを呼び出す orchestration script である。`swap.sh`・Docker build・`start.sh` は実行しない。Host に Node.js / pnpm / Nx は不要。完了後は `docker compose up -d` と `http://localhost:4200` を案内する。reboot が必要なら `sudo reboot` を案内して終了し、reboot 後に同じ `./setups/setup.sh` を再実行する（I2C の再開も同じ。単独実行時の `enable-i2c.sh --check` とは別導線）。
+`setup.sh` は状態を確認し、必要な既存 script（I2C / Squeekboard / Docker / Compose）だけを呼び出したうえで、`workspace/` の利用準備（存在・書き込み可否）と Runtime readiness（`scripts/doctor.sh`）を確認する orchestration script である。`swap.sh`・Docker build・`start.sh` は実行しない。Host に Node.js / pnpm / Nx は不要。完了後は `docker compose up -d` と `http://localhost:4200` を案内する。reboot が必要なら `sudo reboot` を案内して終了し、reboot 後に同じ `./setups/setup.sh` を再実行する（I2C の再開も同じ。単独実行時の `enable-i2c.sh --check` とは別導線）。
 
 各 script の責務と呼び出し可否の正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
 
 ## 手動で実行する場合の標準順
 
-開発や個別確認向け。初心者は上の `setup.sh` を使う。
+開発や個別確認向け。初心者は上の `setup.sh` を使う（その場合、下記の `doctor.sh` も setup 経由で賄える）。
 
 ```text
 1. swap.sh（Development only。setup.sh からは呼ばない）
@@ -27,7 +27,7 @@
       ↓
 Raspberry Pi Setup 完了
       ↓
-./scripts/doctor.sh
+./scripts/doctor.sh（setup.sh 経由でも実行される）
       ↓
 ./scripts/start.sh（Pi 4 / Pi 5）
   or --no-build（Pi 3 B+ Runtime-only）
