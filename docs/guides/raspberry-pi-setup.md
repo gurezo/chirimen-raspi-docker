@@ -172,7 +172,7 @@ getent group i2c
 
 標準順の2番である。Raspberry Pi OS **Desktop**（Bookworm 以降・Wayland）では、テキスト欄にフォーカスするとスクリーンキーボード（Squeekboard）が出ることがある。物理キーボード付きで Browser Editor（`:8080`）や Catalog を使うときに Always Off にする。
 
-**Lite が推奨環境である。** Lite にはスクリーンキーボードが無い。スクリプトは Desktop を検出しなければ設定を変えずに終了する。Lite でもこの手順を実行してよい。
+標準環境は **Raspberry Pi OS 64-bit Desktop** である（Lite も可）。Lite にはスクリーンキーボードが無い。スクリプトは Desktop を検出しなければ設定を変えずに終了する。Lite でもこの手順を実行してよい。
 
 ```sh
 sudo ./setups/disable-squeekboard.sh
