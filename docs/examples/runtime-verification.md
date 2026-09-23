@@ -6,12 +6,38 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 
 - 親 Issue: [#250 Legacy CHIRIMEN Examples を活用した Example Catalog と Runtime 向け Example を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/250)
 - 子 Issue: [#257 Example Catalog と Runtime Example を Raspberry Pi 3/4/5 実機で検証する](https://github.com/gurezo/chirimen-raspi-docker/issues/257)
+- Host setup 手順の正本: [Raspberry Pi Setup](../guides/raspberry-pi-setup.md)（[#367](https://github.com/gurezo/chirimen-raspi-docker/issues/367)）。知見の引き継ぎ元: [#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326) / [#334](https://github.com/gurezo/chirimen-raspi-docker/issues/334)
 - 机上確認: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - 機械可読の正本: [legacy-inventory.json](./legacy-inventory.json)
 - Runtime 能力: [Compatibility](../architecture/compatibility.md)（[#97](https://github.com/gurezo/chirimen-raspi-docker/issues/97) / [#98](https://github.com/gurezo/chirimen-raspi-docker/issues/98) / [#99](https://github.com/gurezo/chirimen-raspi-docker/issues/99)）
 - 出典と責務: [catalog.md](./catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）
 
 この文書は **Catalog / Runtime Example の機種別実機記録** が目的である。Runtime の GPIO / I2C backend 自体の記録は Compatibility を上書きしない。62 件すべての実機検証は対象外。`Supported` とは書かない。
+
+## Host setup と Runtime test の分離
+
+[#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326) / [#334](https://github.com/gurezo/chirimen-raspi-docker/issues/334) の知見を引き継ぐ。**Runtime / Example の実機検証の前に Host setup を完了させる。** setup 不足と Runtime failure を混ぜない。
+
+```text
+Host Setup 完了（Raspberry Pi Setup）
+        ↓
+Environment Check（./scripts/doctor.sh）OK
+        ↓
+docker compose up -d
+        ↓
+Runtime / Hardware / Example test（本文書）
+```
+
+検証セッションごとに次を記録する（推測で埋めない）。
+
+| 記録項目 | 例 |
+| --- | --- |
+| OS / architecture | Raspberry Pi OS 64-bit Desktop、`getconf LONG_BIT` → `64`、`uname -m` → `aarch64` |
+| 実行した Host setup | `./setups/setup.sh` 完了、または Advanced 順（enable-i2c → disable-squeekboard → docker → docker-compose） |
+| Environment Check | `./scripts/doctor.sh` の結果（`[error]` が無いこと） |
+| 起動コマンド | beginner 正本は `docker compose up -d` |
+
+`doctor.sh` が `[error]` のまま Example を `failed` にしない。Host を直してから再検証する。切り分けは [Troubleshooting の Host と Runtime](../guides/troubleshooting.md#host-と-runtime-の切り分け)。
 
 ## 責務分離
 
@@ -61,6 +87,8 @@ Catalog の互換性表示と `verified` を、机上確認ではなく本 Runti
 ```text
 Raspberry Pi model
 OS / Kernel / Architecture
+Host setup 手順（setup.sh または Advanced 順）
+Environment Check（doctor.sh）結果
 Example / Device / schematic
 Browser / Browser Polyfill / Runtime
 GPIO / I2C result
@@ -68,17 +96,25 @@ verified / failed
 notes
 ```
 
-`verificationByModel` の値は `unverified` / `verified` / `failed`。推測で `verified` にしない。
+`verificationByModel` の値は `unverified` / `verified` / `failed`。推測で `verified` にしない。Host setup 未完了や `doctor.sh` の `[error]` は Example の `failed` にせず、Host 側として切り分ける。
 
 ## 手順
 
 各 Pi で同じ順。ADT7410 と ADS1115 はどちらも I2C `0x48` のため **同時接続しない**。
 
+前提: [Host setup と Runtime test の分離](#host-setup-と-runtime-test-の分離) どおり Host を整え、Environment Check を通す。
+
 ```sh
+# Host 未整備なら先に（初回のみ）
+./setups/setup.sh
+# 必要なら sudo reboot のあと、同じ ./setups/setup.sh を再実行
+
 ./scripts/doctor.sh
-./scripts/start.sh            # Pi 4 / Pi 5。Pi 3 B+ は --no-build
+docker compose up -d
 curl http://127.0.0.1:33330/health
 ```
+
+Development / device mapping / LAN が必要なときだけ `./scripts/start.sh` を使う（Pi 3 B+ は必ず `--no-build`。既定は `--build` 相当のため beginner 正本ではない）。詳細は [scripts/README.md](../../scripts/README.md)。
 
 1. Catalog `http://127.0.0.1:4200/` を開き、対象カードの全体バッジと機種チップが inventory と一致するか見る
 2. 回路図どおり配線する。40-pin / BCM / I2C1（SDA 物理 pin 3 / SCL 物理 pin 5）/ 3.3V を確認する。GPIO へ 5V を入れない
