@@ -5,7 +5,7 @@ export const DEVICE_FETCH_WARNING =
   'Device metadata を取得できませんでした。Example 情報のみ表示します。';
 
 export const DEVICE_DASHBOARD_URL =
-  'https://github.com/gurezo/chirimen-device-dashboard';
+  'https://chirimen-device-dashboard.web.app/';
 
 export const EXAMPLE_SERVER_PORT = 4173;
 export const EDITOR_PORT = 8080;
