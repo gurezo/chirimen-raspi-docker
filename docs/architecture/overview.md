@@ -57,7 +57,7 @@ Browser
   ↓
 libs/browser-polyfill
   ↓ WebSocket（libs/protocol の JSON メッセージ）
-apps/server
+apps/runtime
   ↓
 libs/node-runtime
   ↓
@@ -67,6 +67,8 @@ Raspberry Pi GPIO / I2C
 ```
 
 Browser と Node Runtime の間の通信契約は `libs/protocol` に集約する。`browser-polyfill` と `node-runtime` は直接依存しない。
+
+Nx application 名は責務ベースとする（[#363](https://github.com/gurezo/chirimen-raspi-docker/issues/363)）。現行は `apps/runtime` と `apps/catalog`。将来の到達イメージは `apps/{runtime,editor,examples,catalog}`（editor / examples は現状 Docker 側のみ）。詳細は [nx-boundaries.md](./nx-boundaries.md#naming-policyapps)。
 
 ## 技術スタック
 
@@ -109,13 +111,13 @@ OS / kernel / architecture / GPIO capability / Runtime backend / Browser E2E の
 ```text
 chirimen-raspi-docker/
 ├── apps/
-│   ├── server/                 # Express + WebSocket server
-│   └── example-catalog/        # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254 / #255 / #263）
+│   ├── runtime/                # Hardware Runtime（Express + WebSocket）。#363
+│   └── catalog/                # Example Catalog UI（HTML / Vanilla JS / Tailwind。#254 / #255 / #263 / #363）
 ├── libs/
 │   ├── core/                   # 共通エラー / 型
 │   ├── gpio/                   # Web GPIO 風 domain（型・契約）
 │   ├── i2c/                    # Web I2C 風 domain（型・契約）
-│   ├── protocol/               # Browser ↔ Server 通信契約
+│   ├── protocol/               # Browser ↔ Runtime 通信契約
 │   ├── node-runtime/           # node-web-gpio / node-web-i2c adapter
 │   └── browser-polyfill/       # navigator.request*Access polyfill
 ├── docker/
@@ -158,8 +160,8 @@ chirimen-raspi-docker/
 
 | Path | 責務 |
 | --- | --- |
-| `apps/server` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
-| `apps/example-catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。出典と責務は [catalog.md](../examples/catalog.md)。入口は `:4200`。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255 / #263） |
+| `apps/runtime` | Express / WebSocket の起動、protocol decode / encode、`node-runtime` への委譲、health check |
+| `apps/catalog` | Example Catalog UI（HTML / Vanilla JS / Tailwind。出典と責務は [catalog.md](../examples/catalog.md)。入口は `:4200`。`legacy-inventory.json` と certified-devices を表示。ported Example は `:4173` 実行と `:8080` 編集。iframe は使わない。#255 / #263 / #363） |
 | `libs/core` | 共通エラー（`ChirimenError` など）と共有型 |
 | `libs/gpio` | Web GPIO 風の抽象・型（実装は持たない） |
 | `libs/i2c` | Web I2C 風の抽象・型（CHIRIMEN 互換の raw byte API を含む） |

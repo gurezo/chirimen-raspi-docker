@@ -554,7 +554,7 @@ docker compose logs chirimen-editor
 
 ### 症状
 
-`http://127.0.0.1:4200/` に接続できない。または host の `pnpm nx serve example-catalog` が port 使用中で失敗する。
+`http://127.0.0.1:4200/` に接続できない。または host の `pnpm nx serve catalog` が port 使用中で失敗する。
 
 ### 原因
 
@@ -620,8 +620,8 @@ host に `/dev/gpiomem` や `/dev/i2c-1` が無い。GPIO / I2C は使えない�
 
 ```sh
 pnpm install
-npx nx build server
-npx nx serve server
+npx nx build runtime
+npx nx serve runtime
 ```
 
 GPIO / I2C の実機検証は Raspberry Pi 上で行う。

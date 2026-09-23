@@ -232,7 +232,7 @@ Editor workspace に載せる対象は HTML Example（GPIO LED Blink / GPIO Inpu
 | HTML / JS の編集 | Editor workspace（`workspace/`） |
 | `pnpm install` | しない（Example に依存は無い） |
 | `pnpm nx bundle browser-polyfill` | **host**。`polyfill.js` を各 HTML ディレクトリへコピーする |
-| `pnpm nx serve example-catalog` | **host / リポジトリ開発者向け**。Catalog の確認。port 4200。手順は [Development Guide](../guides/development.md) |
+| `pnpm nx serve catalog` | **host / リポジトリ開発者向け**。Catalog の確認。port 4200。手順は [Development Guide](../guides/development.md) |
 
 serve は Compose `chirimen-examples`（nginx。cwd 相当は bind `workspace/`）。`./scripts/start.sh` で Editor / Catalog と一緒に起動する。Run Task **Serve examples**（[`tasks.json`](../../workspace/.vscode/tasks.json)）は URL 案内のみ。Compose の host publish は既定 `127.0.0.1:4173:4173`。LAN は `CHIRIMEN_PUBLISH_BIND=0.0.0.0` または `./scripts/start.sh --lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。
 
@@ -286,7 +286,7 @@ hot reload:
 | --- | --- |
 | Compose `chirimen-example-catalog` | 無し。静的 production build。再 build は image 再 build。タブは reload |
 | Compose `chirimen-examples`（4173） | 無し。bind `workspace/`。保存後に Example タブを reload（#179） |
-| host `pnpm nx serve example-catalog` | 有り（Vite）。リポジトリ開発者向け。port 4200 が衝突するので Compose catalog を先に止める。手順は [Development Guide](../guides/development.md) |
+| host `pnpm nx serve catalog` | 有り（Vite）。リポジトリ開発者向け。port 4200 が衝突するので Compose catalog を先に止める。手順は [Development Guide](../guides/development.md) |
 
 WebSocket:
 
@@ -435,7 +435,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | 起動 | 既定は Runtime + Editor + Examples + Catalog（`docker compose up` / `./scripts/start.sh`。#208 / #254）。LAN は `--lan`（#181）。旧 `--32bit`（削除済み）は Runtime only だった |
 | 永続化 | workspace は bind `workspace/`。settings / extensions は named volume。uid は host（`start.sh`）または `1000`（Compose 直接）。root 禁止（#176） |
 | Example 編集 / serve | HTML は `workspace/`。Compose `chirimen-examples` が host `127.0.0.1:4173`（既定）で静的配信（#179）。LAN は `--lan` |
-| Example Catalog | Compose `chirimen-example-catalog` が host `127.0.0.1:4200`（既定）で production build を静的配信する Web UI 入口（#254 / #263）。Example の編集結果確認先ではない。HMR は host の `pnpm nx serve example-catalog`（[Development Guide](../guides/development.md)） |
+| Example Catalog | Compose `chirimen-example-catalog` が host `127.0.0.1:4200`（既定）で production build を静的配信する Web UI 入口（#254 / #263）。Example の編集結果確認先ではない。HMR は host の `pnpm nx serve catalog`（[Development Guide](../guides/development.md)） |
 
 #174 は [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) で `codercom/code-server:4.132.0` をベースにした。#175 は [`compose.yaml`](../../compose.yaml) に `chirimen-editor` を追加した。#176 は workspace bind と settings named volume、host uid を固定した。#177 は `profiles: [editor]` で opt-in にした。#208 は profile を外し、既定を全サーバー起動にした（`--editor` / `--64bit` を廃止。32-bit は `--32bit`）。#178 は Example `.vscode` の初期設定を固定し、image へのプリインストールはしない。#201 は recommendation も含め Extension をユーザー管理へ移した。#179 は Example の配置、port `4173`、I2C Scan HTML を固定した。Compose `chirimen-examples` が `workspace/` を静的配信する。#180 は当時 `chirimen-web-demo`（port `4200`）を固定した。#263 で web-demo を廃止し、Catalog を `:4200` の入口にした。#181 は既定 bind `127.0.0.1`、password 認証、LAN は `--lan`、秘密情報は Git 外、GPIO / I2C を渡さないことを固定した。#269 は対話の初回 `start.sh` で覚えられる password を `.env` へ書く導線を足した（`auth: none` は引き続き使わない）。Editor に `no-new-privileges` は付けない（公式 `fixuid` が setuid を必要とする）。tag を上げるときは本表と Dockerfile を同じ PR で更新する。
 
