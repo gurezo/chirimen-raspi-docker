@@ -78,6 +78,8 @@ Port / Service / Role の詳細正本は [`compose.yaml`](../../compose.yaml) �
 | 4173 | chirimen-examples | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
+短い `name` は Port の別名であり、`chirimen-gateway`（`:80`）が `http://localhost/{name}` を既存 Port へ 302 する（TLS / 中身の reverse proxy ではない）。
+
 - 編集先は `workspace/`
 - `docs/examples` は回路仕様・出典であり、編集用 Workspace ではない
 - Web Demo / `chirimen-web-demo` / `nx serve web-demo` を通常利用フローとして案内しない

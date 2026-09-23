@@ -163,7 +163,8 @@ Catalog  = Example を探す（:4200）
            └─ 編集 → Editor（:8080）→ workspace/
 Runtime  = chirimen-runtime / name: runtime（:33330）</pre>
         <p>
-          Catalog（<code>:4200</code>）は題材の発見入口です。編集結果の確認先ではありません。
+          Catalog（<code>:4200</code>）は題材の発見入口です。編集結果の確認先ではありません。覚えやすい入口は
+          <code>http://localhost/catalog</code>（gateway が <code>:4200</code> へ 302）です。
         </p>
         <table>
           <thead>
@@ -264,6 +265,8 @@ Runtime  = chirimen-runtime / name: runtime（:33330）</pre>
           <code>docker compose up -d</code>
           →
           <a href="http://localhost:4200">http://localhost:4200</a>
+          （同等:
+          <a href="http://localhost/catalog">http://localhost/catalog</a>）
           （Example Catalog）です。続けて
           <code>workspace/my-first-example</code>
           の自作 Example（Desktop または Browser Editor <code>:8080</code> → Example Server

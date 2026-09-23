@@ -34,8 +34,8 @@ services:
   # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
   # injected by start.sh when set; empty PASSWORD= is never written here.
   # `docker compose up` / `./scripts/start.sh` start Runtime + Editor +
-  # Examples + Example Catalog (#208 / #254 / #263). Runtime only via
-  # Compose is `docker compose up chirimen-runtime`.
+  # Examples + Example Catalog + Gateway (#208 / #254 / #263 / #360).
+  # Runtime only via Compose is `docker compose up chirimen-runtime`.
   # Persistence (#176 / #241): bind workspace/ for Editor workspace;
   # named volumes for settings / extensions. Host uid via user +
   # DOCKER_USER (fixuid).
@@ -95,6 +95,21 @@ services:
     image: chirimen-raspi-docker/example-catalog:phase8
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200"
+    security_opt:
+      - no-new-privileges:true
+
+  # Name-path redirect gateway (#360). Independent of Runtime / Editor /
+  # Examples / Catalog: no depends_on. Not a Hardware Runtime and not TLS
+  # termination. GET /catalog|/editor|/example|/runtime 302 to the existing
+  # ports. Default host bind is 127.0.0.1 (#181). LAN is the same
+  # CHIRIMEN_PUBLISH_BIND / --lan as Editor.
+  chirimen-gateway:
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+    image: chirimen-raspi-docker/gateway:phase8
+    ports:
+      - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:80:80"
     security_opt:
       - no-new-privileges:true
 
