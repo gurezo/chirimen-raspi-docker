@@ -340,7 +340,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 | LAN | `0.0.0.0` | password 必須 | HTTP。IP 直打ちでは webview が失敗しうる | `./scripts/start.sh --lan` または `CHIRIMEN_PUBLISH_BIND=0.0.0.0` |
 | Internet | Compose では出さない | reverse proxy + IdP を推奨 | HTTPS 必須 | 本リポジトリでは提供しない |
 
-対象 port は Editor `8080` / Example `4173` / Catalog `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。旧 `--32bit`（削除済み）は Editor 系を起動しなかったため `--lan` は無視された。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
+対象 port は Editor `8080` / Example `4173` / Catalog `4200` / Gateway `80`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。旧 `--32bit`（削除済み）は Editor 系を起動しなかったため `--lan` は無視された。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
 GPIO / I2C は Editor / Examples / Catalog / Gateway に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-runtime` のみ。Examples / Catalog / Gateway は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
