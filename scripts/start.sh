@@ -55,8 +55,9 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
   that exist on this host (capability-aware mapping).
   Starts chirimen-runtime, chirimen-editor (code-server on
   127.0.0.1:8080, password auth), chirimen-examples
-  (http://127.0.0.1:4173/), and chirimen-example-catalog
-  (http://127.0.0.1:4200/).
+  (http://127.0.0.1:4173/), chirimen-example-catalog
+  (http://127.0.0.1:4200/), and chirimen-gateway
+  (http://127.0.0.1/catalog → :4200, and /editor /example /runtime).
   On an interactive TTY, the first start prompts for an Editor
   password and writes it to gitignored .env. Non-interactive runs
   (CI / no TTY / already set) skip the prompt. Unset then generates
@@ -65,16 +66,16 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
-    - Editor, Examples, and Example Catalog without GPIO / I2C
+    - Editor, Examples, Example Catalog, and Gateway without GPIO / I2C
       devices (not a Hardware Runtime)
-    - Editor host bind 127.0.0.1 unless --lan (does not publish to the Internet)
+    - Editor / Gateway host bind 127.0.0.1 unless --lan (does not publish to the Internet)
     - docker/server/Dockerfile (Node 24, 64-bit)
 
   Optional:
-    --lan            publish Editor 8080 / Example 4173 / Catalog 4200
-                     on 0.0.0.0 (LAN). Does not change Runtime 33330.
-                     Password auth stays required. Do not use this to
-                     publish on the Internet.
+    --lan            publish Editor 8080 / Example 4173 / Catalog 4200 /
+                     Gateway 80 on 0.0.0.0 (LAN). Does not change Runtime
+                     33330. Password auth stays required. Do not use this
+                     to publish on the Internet.
     --no-build       do not pass --build to `docker compose up`.
                      Use on Raspberry Pi 3 B+ (Runtime-only).
                      On-device Docker build is Unsupported on Pi 3 B+.
@@ -380,13 +381,15 @@ log_mapping_summary() {
     log "auth: password will be generated into the editor config volume"
   fi
   if [ "$WANT_LAN" -eq 1 ]; then
-    log "publish: 0.0.0.0 (LAN) 8080/4173/4200"
+    log "publish: 0.0.0.0 (LAN) 80/8080/4173/4200"
     log "examples: http://0.0.0.0:4173/ (no GPIO/I2C devices)"
     log "example-catalog: http://0.0.0.0:4200/ (no GPIO/I2C devices)"
+    log "gateway: http://0.0.0.0/catalog → :4200 (name redirects, no TLS)"
   else
-    log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 8080/4173/4200"
+    log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 80/8080/4173/4200"
     log "examples: http://127.0.0.1:4173/ (no GPIO/I2C devices)"
     log "example-catalog: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
+    log "gateway: http://127.0.0.1/catalog → :4200 (name redirects, no TLS)"
   fi
 }
 
