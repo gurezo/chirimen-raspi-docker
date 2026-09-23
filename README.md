@@ -16,6 +16,8 @@ Raspberry Pi 3 B+ / 4 / 5 で、ブラウザから GPIO / I2C を操作するた
 
 初めて使う場合は [Getting Started](docs/guides/getting-started.md) に従ってください。入口は `./setups/setup.sh` の 1 つです。
 
+**初学者向けに確実な第一導線は Raspberry Pi 4 / Pi 5** です。ローカルに Docker image が無い初回は `docker compose up -d` が image を **build** します（Supported）。Pi 3 B+ は Runtime-only で on-device build は Unsupported です（image の用意が必要。詳細は [Getting Started の Step 2](docs/guides/getting-started.md#step-2-start-runtime)）。
+
 ```sh
 git clone https://github.com/gurezo/chirimen-raspi-docker.git
 cd chirimen-raspi-docker

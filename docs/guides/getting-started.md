@@ -47,7 +47,7 @@ Browser Polyfill → chirimen-runtime :33330 → GPIO / I2C
 
 Host setup（`./setups/setup.sh` または個別の `setups/*.sh`）は **初回だけ** 必要である。毎回実行する必要はない。
 
-### 初回
+### 初回（推奨: Raspberry Pi 4 / Pi 5）
 
 ```text
 git clone
@@ -57,13 +57,18 @@ Host Setup（./setups/setup.sh。必要なら reboot → 再実行）
 Environment Check（setup.sh 経由の doctor.sh。手動再確認は任意）
   ↓
 docker compose up -d
+  （ローカルに image が無いと、ここで初回だけ Compose が build する）
   ↓
 http://localhost:4200 → Example Catalog → Coding
 ```
 
+初回 build でメモリ不足になるときは、先に Development-only の [`swap.sh`](./raspberry-pi-setup.md#development-only-swapsh) を実行する（[Development](./development.md)）。
+
+**Pi 3 B+** は on-device build が Unsupported である。image が無い状態で `up -d` すると build が走り失敗しうる。手順は [Step 2 の Docker image](#docker-image前提)。
+
 ### 2回目以降
 
-Host が既に整っているときは、clone 先で次だけを実行する。
+Host と image が既に揃っているときは、clone 先で次だけを実行する。
 
 ```text
 docker compose up -d
@@ -76,7 +81,7 @@ cd chirimen-raspi-docker
 docker compose up -d
 ```
 
-停止は `docker compose down`。Host を壊した・OS を入れ直した・`doctor.sh` が `[error]` を出すときは [Step 1](#step-1-raspberry-pi-setup) に戻る。
+停止は `docker compose down`。Host を壊した・OS を入れ直した・`doctor.sh` が `[error]` を出すときは [Step 1](#step-1-raspberry-pi-setup) に戻る。image を消したときは再度 [Step 2](#step-2-start-runtime) の機種別手順に従う。
 
 ## workspace/（HTML / JavaScript の保存場所）
 
@@ -274,7 +279,9 @@ http://127.0.0.1:4173/my-first-example/
 - モデル別ロール（正本は [Compatibility](../architecture/compatibility.md)）:
   - **Raspberry Pi 3 B+**: **Runtime-only**（`docker compose up -d` / `down`）。`docker build` / `compose build` / `up --build` および `./scripts/start.sh` 既定の自動 `--build` は Unsupported
   - **Raspberry Pi 4 / Pi 5**: Runtime / Development（Docker build Supported。Development 導線は [Development](./development.md)）
-- Getting Started の第一導線は `./setups/setup.sh` → `docker compose up -d` → `http://localhost:4200` である。Pi 3 B+ では on-device の Docker build を案内しない
+- Getting Started の第一導線は `./setups/setup.sh` → `docker compose up -d` → `http://localhost:4200` である
+- **初学者向けに確実な第一導線は Raspberry Pi 4 / Pi 5**（ローカル image が無い初回は Compose が build する。Supported）
+- **Pi 3 B+** は Runtime-only。on-device の Docker build は案内しない。image 前提は [Step 2](#docker-image前提)
 - Pi 3 B+ の基本体験は Runtime + Example Catalog + GPIO LED Blink / I2C Scan。code-server（Browser Editor `:8080`）は必須ではない。メモリが厳しいときは起動後に `docker compose stop chirimen-editor`。低メモリ時の任意 Swap / Pi 4・Pi 5 の build 用 Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（**Development-only**。beginner Step 1 では必須ではない）
 
 > 32-bit OS は Unsupported です。[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
@@ -358,7 +365,30 @@ Host 上で CHIRIMEN Runtime を起動する。I2C / swap / Docker のインス�
 
 Step 1 で整えた Host 上で Compose サービスを起動し、Example Catalog（`:4200`）を開ける状態にする。
 
+<a id="docker-image前提"></a>
+
+### Docker image 前提（必読）
+
+`compose.yaml` のサービスはローカル tag（例: `chirimen-raspi-docker/server:phase1`）を使う。**GHCR 等からの prebuilt image 配布は、現時点では用意していない。**
+
+`docker compose up -d` は、その tag の image が Host に無いとき **Dockerfile から build する**（Compose の既定動作）。「起動だけ」ではない。
+
+| 機種 | 初回（image 無し） | 2回目以降（image 有り） |
+| --- | --- | --- |
+| **Raspberry Pi 4 / Pi 5**（初学者向け推奨） | `docker compose up -d` で **初回 build してよい**（Supported）。時間とメモリが必要。OOM なら先に [`swap.sh`](./raspberry-pi-setup.md#development-only-swapsh) | `docker compose up -d` |
+| **Raspberry Pi 3 B+**（Runtime-only） | on-device build は **Unsupported**。image が無い状態で `up -d` すると build が走り、失敗・OOM しうる | image を用意したうえで `docker compose up -d --no-build` |
+
+Pi 3 B+ で image を用意する暫定手順（GHCR が無い間）:
+
+1. Raspberry Pi 4 / Pi 5、または `linux/arm64` で build できるマシンで一度 image を作る（`docker compose build` または初回 `up -d`）
+2. `docker save` で保存し、Pi 3 B+ へ運び `docker load` する
+3. Pi 3 B+ で `docker compose up -d --no-build`（image が無ければすぐ失敗する。on-device build に入らない）
+
+必要なローカル tag の例: `chirimen-raspi-docker/server:phase1` / `editor:4.132.0` / `examples:phase8` / `example-catalog:phase8` / `gateway:phase8`（正本は [`compose.yaml`](../../compose.yaml)）。
+
 ### 実行コマンド
+
+#### Raspberry Pi 4 / Pi 5（推奨）
 
 clone したディレクトリで:
 
@@ -366,7 +396,7 @@ clone したディレクトリで:
 docker compose up -d
 ```
 
-停止は `docker compose down`。第一入口は Browser で次を開く:
+初回は image build に時間がかかることがある。完了後の第一入口:
 
 ```text
 http://localhost:4200
@@ -374,7 +404,19 @@ http://localhost:4200
 
 （同等: `http://127.0.0.1:4200/`）
 
-初心者向け第一導線では `docker build` / `compose build` / `up --build` / `./scripts/start.sh` の機種別 `--build` 分岐は使わない。Pi 3 B+ / 4 / 5 とも同じ `docker compose up -d` である。
+停止は `docker compose down`。
+
+#### Raspberry Pi 3 B+（Runtime-only）
+
+image を用意したあと:
+
+```sh
+docker compose up -d --no-build
+```
+
+`--no-build` を付けないと、欠けた image の build が走る。Pi 3 B+ ではそれを行わない。
+
+初心者向け第一導線では `./scripts/start.sh` を使わない（既定が `--build` 相当のため）。Pi 4 / Pi 5 で device mapping 等が必要なときだけ [start.sh](../../scripts/README.md) を使う。
 
 #### 任意: doctor.sh（手動の readiness 再確認）
 
@@ -390,11 +432,11 @@ http://localhost:4200
 
 device マッピングや LAN 公開、Pi 4 / Pi 5 での on-device Docker build が必要なときは `./scripts/start.sh` を使う（既定は `--build` 相当）。**beginner の第一導線ではない。** 詳細は [scripts/README.md](../../scripts/README.md)、[Development](./development.md)、[Compatibility](../architecture/compatibility.md#runtime-support)。
 
-Pi 3 B+ で `start.sh` を使う場合は必ず `--no-build`（on-device build は Unsupported）。
+Pi 3 B+ で `start.sh` を使う場合は必ず `--no-build`（on-device build は Unsupported。Compose にも `--no-build` を渡す）。
 
 ### 実行する理由
 
-`setup.sh` で Host と readiness を済ませたあと、Compose で Runtime / Catalog / Example Server / Editor を起動する。第一入口を Catalog `:4200` に固定し、coding 開始までの手順を短くする。
+`setup.sh` で Host と readiness を済ませたあと、Compose で Runtime / Catalog / Example Server / Editor を起動する。第一入口を Catalog `:4200` に固定し、coding 開始までの手順を短くする。image の初回作成は Pi 4 / Pi 5 では Compose に任せ、Pi 3 B+ では on-device build を避ける。
 
 ### 完了確認
 
@@ -444,6 +486,7 @@ Editor（`:8080`）を使うときは password が必要な場合がある。忘
 ### 失敗時
 
 - Catalog / health が開かない → [Troubleshooting](./troubleshooting.md) と [Runtime Diagnostics](./runtime-diagnostics.md)
+- image が無く build が始まる / Pi 3 B+ で build しようとした → [Docker image 前提](#docker-image前提) と [Pi 3 B+ の on-device Docker build は Unsupported](./troubleshooting.md#pi-3-b-の-on-device-docker-build-は-unsupported)
 - Host 側の不足が疑わしい → `./scripts/doctor.sh`（任意）と [Step 1](#step-1-raspberry-pi-setup)、[Raspberry Pi Setup](./raspberry-pi-setup.md)
 
 ## Step 3: Run Your First Example

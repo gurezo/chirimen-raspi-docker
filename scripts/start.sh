@@ -469,7 +469,15 @@ main() {
     exit 1
   fi
 
-  if [ "$WANT_NO_BUILD" -eq 0 ] && [ "${#up_args[@]}" -eq 0 ]; then
+  if [ "$WANT_NO_BUILD" -eq 1 ]; then
+    # Pass Compose --no-build so a cold cache does not auto-build
+    # missing images (required for Pi 3 B+ Runtime-only).
+    if [ "${#up_args[@]}" -eq 0 ]; then
+      up_args=(--no-build)
+    else
+      up_args=(--no-build "${up_args[@]}")
+    fi
+  elif [ "${#up_args[@]}" -eq 0 ]; then
     up_args=(--build)
   fi
 
