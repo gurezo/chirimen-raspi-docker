@@ -292,7 +292,7 @@ docker compose stop chirimen-editor
 Compose を直接使う場合:
 
 ```sh
-docker compose up chirimen-runtime chirimen-examples chirimen-example-catalog
+docker compose up chirimen-runtime chirimen-example-server chirimen-example-catalog
 ```
 
 8080 が開かない他の原因（`fixuid` / `no-new-privileges`）は [Editor（8080）が開かない](#editor8080が開かない)。低メモリ時の任意の Swap は [Raspberry Pi Setup の swap.sh](./raspberry-pi-setup.md#development-only-swapsh)（Runtime-only では必須ではない。Pi 3 B+ build の回避策ではない）。
@@ -557,13 +557,13 @@ docker compose logs chirimen-editor
 
 ### 原因
 
-`chirimen-examples` が起動していない、または image がまだ build されていない。旧 `--32bit` 経路（削除済み）は Runtime only で Examples を起動しなかった（[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)）。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
+`chirimen-example-server` が起動していない、または image がまだ build されていない。旧 `--32bit` 経路（削除済み）は Runtime only で Examples を起動しなかった（[Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)）。古い compose では 4173 を Editor が publish するだけで、中で HTTP サーバは動かなかった。
 
 ### 対処
 
 - `./scripts/start.sh` で Runtime + Editor + Examples + Catalog を起動する
 - `curl -fsS http://127.0.0.1:4173/led-blink/` が HTML を返すことを確認する
-- `docker compose ps` で `chirimen-examples` が running か見る
+- `docker compose ps` で `chirimen-example-server` が running か見る
 - host から配信する場合は Compose の examples を止めてから `cd workspace && python3 -m http.server 4173`（従来手順）
 
 方針は [browser-editor.md の Example 編集](../architecture/browser-editor.md#example-編集--静的-serve179)。

@@ -17,7 +17,7 @@ Nx application 名は実装形態ではなく責務を表す（[#363](https://gi
 | --- | --- | --- | --- | --- |
 | `runtime` | `apps/runtime` | `chirimen-runtime` | `runtime` | Hardware Runtime / WebSocket |
 | `editor` | （将来 `apps/editor`。現状は Docker のみ） | `chirimen-editor` | `editor` | Browser Editor |
-| `examples` | （将来 `apps/examples`。現状は Docker / `workspace`） | `chirimen-examples` | `example` | Runtime Examples |
+| `examples` | （将来 `apps/examples`。現状は Docker / `workspace`） | `chirimen-example-server` | `example` | Runtime Examples |
 | `catalog` | `apps/catalog` | `chirimen-example-catalog` | `catalog` | Example Catalog |
 
 現行 Nx アプリは `runtime` と `catalog` のみである。

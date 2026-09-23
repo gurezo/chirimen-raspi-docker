@@ -75,7 +75,7 @@ Port / Service / Role の詳細正本は [`compose.yaml`](../../compose.yaml) �
 | --- | --- | --- | --- |
 | 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
 | 8080 | chirimen-editor | Browser Editor / code-server | editor |
-| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4173 | chirimen-example-server | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 短い `name` は Port の別名であり、`chirimen-gateway`（`:80`）が `http://localhost/{name}` を既存 Port へ 302 する（TLS / 中身の reverse proxy ではない）。
@@ -89,7 +89,7 @@ Port / Service / Role の詳細正本は [`compose.yaml`](../../compose.yaml) �
 通常利用手順に旧名称が残っていないかを確認する。
 
 ```bash
-grep -RniE 'web-demo|chirimen-web-demo|docs/examples|nx serve web-demo' \
+grep -RniE 'web-demo|chirimen-web-demo|chirimen-examples|docs/examples|nx serve web-demo' \
   README.md docs .github
 ```
 

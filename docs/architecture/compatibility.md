@@ -230,7 +230,7 @@ GPIO26（LED）/ GPIO5（スイッチ）とはピンが重ならない。
 | Docker version | 既存導入済み（#219） |
 | Editor startup | Compose `chirimen-editor`（#175 / #208）。`curl -fsS http://127.0.0.1:8080/healthz` は HTTP 200 ならプロセス生存 |
 | Workspace save | Editor `/home/coder/project` = host `./workspace`（#176 / #241）。container 内だけには保存されない |
-| Example Server reflection | 同一 bind を `chirimen-examples` が `:4173` で配信（#179 / #241）。hot reload は無い。reload で反映 |
+| Example Server reflection | 同一 bind を `chirimen-example-server` が `:4173` で配信（#179 / #241）。hot reload は無い。reload で反映 |
 | Runtime health | `./scripts/start.sh` のあと `curl http://localhost:33330/health` は `{"name":"chirimen-raspi-docker-server","status":"ok","version":"0.0.1"}`（#219） |
 | WebSocket connection | Protocol E2E Verified（#99）。HTML Example は `ws://localhost:33330/` |
 | GPIO result | sysfs / Verified。port `26` の export / write（#99）。回路は BCM 26 / 物理 pin 37（[gpio-led-blink.md](../examples/gpio-led-blink.md)） |
