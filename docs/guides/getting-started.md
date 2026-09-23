@@ -43,6 +43,41 @@ Example Server :4173 → Save → Browser reload
 Browser Polyfill → chirimen-runtime :33330 → GPIO / I2C
 ```
 
+## 初回と2回目以降
+
+Host setup（`./setups/setup.sh` または個別の `setups/*.sh`）は **初回だけ** 必要である。毎回実行する必要はない。
+
+### 初回
+
+```text
+git clone
+  ↓
+Host Setup（./setups/setup.sh。必要なら reboot → 再実行）
+  ↓
+Environment Check（setup.sh 経由の doctor.sh。手動再確認は任意）
+  ↓
+docker compose up -d
+  ↓
+http://localhost:4200 → Example Catalog → Coding
+```
+
+### 2回目以降
+
+Host が既に整っているときは、clone 先で次だけを実行する。
+
+```text
+docker compose up -d
+  ↓
+http://localhost:4200 → Example Catalog → Coding
+```
+
+```sh
+cd chirimen-raspi-docker
+docker compose up -d
+```
+
+停止は `docker compose down`。Host を壊した・OS を入れ直した・`doctor.sh` が `[error]` を出すときは [Step 1](#step-1-raspberry-pi-setup) に戻る。
+
 ## workspace/（HTML / JavaScript の保存場所）
 
 host 側の `workspace/` は、既存の Runtime Example と、あなたが作る HTML + Vanilla JavaScript Example の作業領域である。container 内部の mount path よりも、「ここに保存すれば Example Server から実行できる」ことを優先する。
