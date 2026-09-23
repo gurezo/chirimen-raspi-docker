@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
-  cacheDir: '../../node_modules/.vite/apps/example-catalog',
+  cacheDir: '../../node_modules/.vite/apps/catalog',
   plugins: [tailwindcss()],
   server: {
     port: 4200,
@@ -27,7 +27,7 @@ export default defineConfig(() => ({
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/example-catalog',
+      reportsDirectory: '../../coverage/apps/catalog',
       provider: 'v8' as const,
     },
   },
