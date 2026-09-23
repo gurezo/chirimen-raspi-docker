@@ -65,7 +65,7 @@ Getting Started Step 2: docker compose up -d → http://localhost:4200
 
 ## スクリプトの責務
 
-このページの対象は `setups/*.sh` だけである。Host 設定を変える。
+このページの対象は `setups/*.sh` だけである。Host 設定を変える。各 script 節の先頭に **What / Why / When / Reboot / Verify** を要約する。詳細は各節と下表を参照する。
 
 | 順 | スクリプト | なぜ実行するか | 変更する Host 設定 | reboot | 再実行 |
 | --- | --- | --- | --- | --- | --- |
@@ -122,6 +122,14 @@ cd chirimen-raspi-docker
 
 ## 1. enable-i2c.sh
 
+| | |
+| --- | --- |
+| **What** | Host の I2C を有効化し `/dev/i2c-1` を使えるようにする |
+| **Why** | I2C Example と Runtime が `/dev/i2c-1` を使うため |
+| **When** | 初回（未 enable 時）。既に `/dev/i2c-1` があれば設定を触らない |
+| **Reboot** | `/dev/i2c-1` が無いときは **必要**。既にあれば不要 |
+| **Verify** | `./setups/enable-i2c.sh --check`（sudo 不要）、または `ls -l /dev/i2c-1` |
+
 ホストで I2C を有効化し `/dev/i2c-1` を確認する。I2C Example と Runtime がこの device を使う。
 
 ### script で有効化する（推奨）
@@ -170,6 +178,14 @@ getent group i2c
 
 ## 2. disable-squeekboard.sh
 
+| | |
+| --- | --- |
+| **What** | Desktop のスクリーンキーボード（Squeekboard）を Always Off にする |
+| **Why** | Browser Editor / Catalog 利用時にスクリーンキーボードが出ないようにする |
+| **When** | 初回（Desktop）。Lite / 非 Desktop / 既に Off なら変更せず終了 |
+| **Reboot** | 通常不要。残る場合のみ再ログインまたは reboot |
+| **Verify** | `./setups/disable-squeekboard.sh --check`（sudo 不要） |
+
 標準順の2番である。Raspberry Pi OS **Desktop**（Bookworm 以降・Wayland）では、テキスト欄にフォーカスするとスクリーンキーボード（Squeekboard）が出ることがある。物理キーボード付きで Browser Editor（`:8080`）や Catalog を使うときに Always Off にする。
 
 標準環境は **Raspberry Pi OS 64-bit Desktop** である（Lite も可）。Lite にはスクリーンキーボードが無い。スクリプトは Desktop を検出しなければ設定を変えずに終了する。Lite でもこの手順を実行してよい。
@@ -190,6 +206,14 @@ sudo ./setups/disable-squeekboard.sh
 
 ## 3. docker.sh
 
+| | |
+| --- | --- |
+| **What** | Host に Docker Engine をインストールする |
+| **Why** | Runtime を `docker compose up -d` で動かすため |
+| **When** | 初回（Docker 未導入時）。再実行しても apt / インストーラのあと reboot する |
+| **Reboot** | **スクリプト末尾が必ず `sudo reboot`** |
+| **Verify** | reboot 後に `docker --version` / `docker info` |
+
 I2C 確認のあと、host に Docker Engine を入れる。Runtime 操作は `docker compose up -d` / `down` のため Docker が必要である（正本は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)）。Development / 上級者向けの `./scripts/start.sh` も Docker を使う。`docker.sh` は I2C 設定を変更しない。
 
 ```sh
@@ -208,6 +232,14 @@ sudo usermod -aG docker "$USER"
 
 ## 4. docker-compose.sh
 
+| | |
+| --- | --- |
+| **What** | standalone `docker-compose` を `/usr/local/bin/docker-compose` に置く |
+| **Why** | beginner の `docker compose up -d` と上級者向け `start.sh` が Compose を使うため（プラグインが既にあれば実質スキップ可） |
+| **When** | `docker.sh` の reboot 後。`docker compose version` が使えるなら必須ではない |
+| **Reboot** | 不要 |
+| **Verify** | `docker compose version`（無ければ `docker-compose --version`） |
+
 `docker.sh` の reboot 後に Compose を入れる。I2C 設定は変更しない。
 
 ```sh
@@ -225,6 +257,14 @@ docker info
 `docker compose version` が無いときは `docker-compose --version`。daemon が動いていない場合は Docker を起動してから再度確認する。Host 全体の一括診断は `./scripts/doctor.sh` である（`setup.sh` 経由でも実行される。手動再確認は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime)）。
 
 ## GPIO
+
+| | |
+| --- | --- |
+| **What** | Host の GPIO device（`/sys/class/gpio` など）の存在を確認する |
+| **Why** | Runtime が Host の GPIO を使う前提条件を満たすため |
+| **When** | Host Setup 完了時の確認（専用の `setups/*.sh` は無い） |
+| **Reboot** | 通常不要（OS / kernel 側の前提） |
+| **Verify** | 下記の `ls` / `getent`。一括診断は `./scripts/doctor.sh` |
 
 setup script のあと、host の GPIO device を確認する。この節は `setups/*.sh` ではない。**Host 側の完了確認**であり、CHIRIMEN Setup の `doctor.sh` ではない。
 
@@ -252,6 +292,14 @@ getent group gpio
 Compose 側の mount 方針は [docker.md](../architecture/docker.md) を参照。
 
 ## Development only: swap.sh
+
+| | |
+| --- | --- |
+| **What** | `/swapfile`（既定 8G）を作成・有効化し `/etc/fstab` に追記する |
+| **Why** | Pi 4 / Pi 5 の Source Development / Docker build 時の OOM 緩和 |
+| **When** | Development / Build が必要なときだけ。Runtime / beginner では必須ではない |
+| **Reboot** | 不要（即時有効。fstab で永続） |
+| **Verify** | `sudo ./setups/swap.sh --check`、または `free -h` |
 
 `swap.sh` の主用途は **Raspberry Pi 4 / Pi 5** での Source Development / Docker build 時の OOM 緩和である。**beginner / Runtime の標準順には含めない。** `setup.sh` からは呼ばない。`swap.sh` は I2C 設定を変更しない。
 
