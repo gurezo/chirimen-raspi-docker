@@ -1,11 +1,11 @@
 {
-  "name": "server",
+  "name": "runtime",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/server/src",
+  "sourceRoot": "apps/runtime/src",
   "projectType": "application",
   "tags": [
     "type:app",
-    "scope:server",
+    "scope:runtime",
     "platform:node"
   ],
   "targets": {
@@ -17,16 +17,16 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
-        "outputPath": "apps/server/dist",
+        "outputPath": "apps/runtime/dist",
         "format": [
           "esm"
         ],
         "bundle": true,
         "thirdParty": false,
-        "main": "apps/server/src/main.ts",
-        "tsConfig": "apps/server/tsconfig.bundle.json",
+        "main": "apps/runtime/src/main.ts",
+        "tsConfig": "apps/runtime/tsconfig.bundle.json",
         "assets": [
-          "apps/server/src/assets"
+          "apps/runtime/src/assets"
         ],
         "esbuildOptions": {
           "sourcemap": true,
@@ -55,15 +55,15 @@
         "build"
       ],
       "options": {
-        "buildTarget": "server:build",
+        "buildTarget": "runtime:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "server:build:development"
+          "buildTarget": "runtime:build:development"
         },
         "production": {
-          "buildTarget": "server:build:production"
+          "buildTarget": "runtime:build:production"
         }
       }
     },
@@ -73,7 +73,7 @@
         "{options.reportsDirectory}"
       ],
       "options": {
-        "reportsDirectory": "{workspaceRoot}/coverage/apps/server"
+        "reportsDirectory": "{workspaceRoot}/coverage/apps/runtime"
       }
     }
   }
