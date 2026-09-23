@@ -342,7 +342,7 @@ host 側の publish と container 内 `--bind-addr` は別である。Dockerfile
 
 対象 port は Editor `8080` / Example `4173` / Catalog `4200`。Runtime `33330` は既存どおり全 interface（PC Browser → Pi の経路）。`--lan` は Runtime の bind を変えない。旧 `--32bit`（削除済み）は Editor 系を起動しなかったため `--lan` は無視された。詳細は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
-GPIO / I2C は Editor / Examples / Catalog に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-runtime` のみ。Examples と Catalog は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
+GPIO / I2C は Editor / Examples / Catalog / Gateway に渡さない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は `chirimen-runtime` のみ。Examples / Catalog / Gateway は `security_opt: no-new-privileges:true`。Editor には `no-new-privileges` も `cap_drop: ALL` も付けない。公式 entrypoint の `fixuid` が setuid を必要とし、どちらも container を 8080 bind 前に終了させる。
 
 ## HTTPS / reverse proxy
 
@@ -360,7 +360,7 @@ HTTPS が必要になる条件:
 - LAN の IP 直打ち HTTP は password 必須だが、Service Worker / webview の登録に失敗しうる
 - Internet 公開はドメイン + TLS 終端が必須
 
-TLS 終端用の `docker/nginx` は [overview.md](./overview.md) どおり未実装のまま残す。reverse proxy の Compose 追加は必要になった別 Issue で行う。
+TLS 終端の reverse proxy は本リポジトリでは提供しない。`chirimen-gateway`（[`docker/nginx`](../../docker/nginx/)）は `http://localhost/{name}` を既存 Port へ 302 するだけである（[#360](https://github.com/gurezo/chirimen-raspi-docker/issues/360)）。中身の `proxy_pass` / Let's Encrypt は別 Issue。
 
 ## Upgrade
 
@@ -428,7 +428,7 @@ Phase 8 の Browser Editor は **Coder `code-server`** とする。
 | 32-bit OS | Unsupported。当時の `Dockerfile.32bit` は削除済み。Editor は出さない（[Historical](./compatibility-32bit.md)） |
 | Pi モデル分岐 | しない。Editor は architecture（64-bit）で揃える |
 | 認証 | 既定は password（`--auth password`）。対話の初回 `start.sh` が `.env` へ書く（#269）。`auth: none` は使わない。詳細は [Authentication](#authentication)（#181 / #269） |
-| HTTPS | 既定は HTTP + password + `127.0.0.1`。Internet 公開時は reverse proxy。`docker/nginx` は未実装のまま（#181） |
+| HTTPS | 既定は HTTP + password + `127.0.0.1`。Internet 公開時は TLS 終端 reverse proxy を別途。`chirimen-gateway` は name パス 302 のみ（#360）。TLS は未実装（#181） |
 | Marketplace | code-server 既定。Microsoft Marketplace 接続設定は追加しない |
 | 初期設定 / extension | プリインストール・配布・推奨・必須化しない。選択・導入・更新・削除はユーザーへ委ねる。ユーザー導入分は named volume で保持する（#201） |
 | GPIO / I2C | Editor に device を渡さない |

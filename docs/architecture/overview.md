@@ -144,7 +144,7 @@ chirimen-raspi-docker/
 │   ├── examples/               # GPIO / I2C Example 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117 / #256）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
-├── compose.yaml                # chirimen-runtime + chirimen-editor / chirimen-examples / chirimen-example-catalog（既定で全起動。#175 / #179 / #180 / #208 / #254）
+├── compose.yaml                # chirimen-runtime + chirimen-editor / chirimen-examples / chirimen-example-catalog / chirimen-gateway（既定で全起動。#175 / #179 / #180 / #208 / #254 / #360）
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -152,7 +152,7 @@ chirimen-raspi-docker/
 
 未実装（予定）:
 
-- `docker/nginx`
+- TLS 終端 reverse proxy（`docker/nginx` の name パス 302 gateway は [#360](https://github.com/gurezo/chirimen-raspi-docker/issues/360) で実装済み。中身の `proxy_pass` / HTTPS は別）
 
 ## apps / libs の責務
 

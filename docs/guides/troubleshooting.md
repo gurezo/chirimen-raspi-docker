@@ -409,7 +409,7 @@ docker compose port chirimen-editor 8080
 
 - LAN が必要なら `./scripts/start.sh --lan`（または `CHIRIMEN_PUBLISH_BIND=0.0.0.0`）
 - 旧 `--32bit` flag（削除済み）は Editor 系を起動しなかった。現行は 64-bit の全サーバー起動のみ。詳細は [Historical: 32-bit Compatibility](../architecture/compatibility-32bit.md)
-- Internet へは出さない。reverse proxy は本リポジトリでは提供しない
+- Internet へは出さない。TLS 終端の reverse proxy は本リポジトリでは提供しない。`:80` の name リダイレクト（`/catalog` など）のみ（#360）
 
 方針は [browser-editor.md の Publish / bind](../architecture/browser-editor.md#publish--bind181)。
 
@@ -463,7 +463,7 @@ code-server の webview は secure context を要求する。`localhost` は常�
 ### 対処
 
 - 既定どおり Pi 上または SSH port forward の `http://127.0.0.1:8080` を使う
-- Internet 公開が必要ならドメイン + HTTPS の reverse proxy を別途用意する。`docker/nginx` は未実装
+- Internet 公開が必要ならドメイン + HTTPS の reverse proxy を別途用意する。本リポジトリの `chirimen-gateway` は name パス 302 のみ（TLS なし、#360）
 - 本リポジトリの既定は HTTP + password + `127.0.0.1`
 
 方針は [browser-editor.md の HTTPS](../architecture/browser-editor.md#https--reverse-proxy)。

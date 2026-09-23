@@ -63,6 +63,8 @@ Catalog  = Example を探す
 | 4173 | chirimen-examples | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
+覚えやすい入口（`chirimen-gateway` `:80` → 302）: `http://127.0.0.1/catalog` / `/editor` / `/example` / `/runtime`。正本の配信は各 Port。
+
 Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Runtime ではない。GPIO / I2C は Browser Polyfill → WebSocket → `chirimen-runtime` → Node Runtime を経由する。Editor container へ `/dev/gpio*` / `/dev/i2c-1` は渡さない。
 
 編集は Editor、実行は別 Browser タブの HTML Example（`:4173`）である。
@@ -71,7 +73,7 @@ Editor と CHIRIMEN Runtime は別 container である。Editor は Hardware Run
 docker compose up -d
   （Development / 上級者: ./scripts/start.sh。Pi 4 / Pi 5 は既定 --build。Pi 3 B+ は --no-build）
 ↓
-Browser で Catalog を開く（http://127.0.0.1:4200/）
+Browser で Catalog を開く（http://127.0.0.1:4200/ または http://127.0.0.1/catalog）
 ↓
 ported「実行」で Example Server を開く（http://127.0.0.1:4173/...）
 ported「編集」で Editor を開く（http://127.0.0.1:8080/?folder=/home/coder/project）
@@ -285,8 +287,8 @@ Security:
 
 - 既定は password 認証。対話の初回 `start.sh` で `.env` へ決める（#269）。`auth: none` は使わない
 - 既定 bind は `127.0.0.1`。LAN は `./scripts/start.sh --lan`。Internet へは出さない。`--lan` でも password 必須
-- HTTPS / reverse proxy は本リポジトリでは提供しない
-- GPIO / I2C device は `chirimen-runtime` のみ。Editor / Examples / Catalog には渡さない
+- HTTPS / TLS 終端 reverse proxy は本リポジトリでは提供しない。`:80` の name リダイレクト（`http://127.0.0.1/catalog` など）のみ（#360）
+- GPIO / I2C device は `chirimen-runtime` のみ。Editor / Examples / Catalog / Gateway には渡さない
 - 秘密情報は named volume または gitignored の `.env`。compose.yaml に `PASSWORD=` は書かない
 
 詳細は [Authentication](../architecture/browser-editor.md#authentication) と [Publish / bind](../architecture/browser-editor.md#publish--bind181)。

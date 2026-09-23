@@ -23,14 +23,14 @@ cd chirimen-raspi-docker
 docker compose up -d
 ```
 
-起動後の第一入口は `http://localhost:4200`（Example Catalog）である。
+起動後の第一入口は `http://localhost:4200`（Example Catalog）である。覚えやすい別名は `http://localhost/catalog`（gateway が `:4200` へ 302）。
 
 Step 3 は Catalog から `led-blink` を実行して **環境構築の成功を確認する**。そのあと [my-first-example を作成する](#my-first-example-を作成する)（First Example Guide）→ Desktop または Browser Editor `:8080` → Example Server `:4173` → Runtime `:33330` が自作 Example の推奨導線である。Step 2 のあとの利用フローは [Browser Development Environment](./browser-development.md) と同じである。編集先は host `workspace/`。Editor は Step 3 の完了条件ではない。
 
 ```text
 ./setups/setup.sh → docker compose up -d
   ↓
-http://localhost:4200（第一入口）
+http://localhost:4200（第一入口。同等: http://localhost/catalog）
   ↓
 Step 3: Example Catalog → :4173/led-blink/（環境確認）
   ↓
@@ -381,10 +381,11 @@ server の期待する応答例:
 }
 ```
 
-`http://localhost:4200` が開き、`status` が `ok` なら Step 2 は完了である。任意の疎通:
+`http://localhost:4200` が開き、`status` が `ok` なら Step 2 は完了である（同等: `http://localhost/catalog`）。任意の疎通:
 
 ```sh
 curl -fsS http://127.0.0.1:4173/led-blink/
+curl -sI http://127.0.0.1/catalog
 ```
 
 | Port | Service | Role | name |
@@ -393,6 +394,8 @@ curl -fsS http://127.0.0.1:4173/led-blink/
 | 8080 | chirimen-editor | Browser Editor / code-server | editor |
 | 4173 | chirimen-examples | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
+
+`name` パス（`:80` → 302）: `/runtime` `/editor` `/example` `/catalog`。正本 URL は各 Port。
 
 Editor（`:8080`）を使うときは password が必要な場合がある。忘れたときの退避は [Troubleshooting](./troubleshooting.md#editor-にログインできない--password-を忘れた)。`Learn → Edit → Save → Run → Verify` の正本は [Browser Development Environment](./browser-development.md)。実機 E2E は [Compatibility](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）。
 
@@ -419,7 +422,7 @@ health だけでは GPIO 操作は確認できない。Example Catalog で題材
 
 配線・部品の正本は [GPIO LED Blink](./gpio-led-blink.md)。Browser で Example Catalog（第一入口）から始める。
 
-1. Example Catalog: `http://localhost:4200/`（同等: `http://127.0.0.1:4200/`）
+1. Example Catalog: `http://localhost:4200/`（同等: `http://localhost/catalog`、`http://127.0.0.1:4200/`）
 2. 実行: ported の「実行」、または直接 `http://127.0.0.1:4173/led-blink/`
 3. 編集（任意）: ported の「編集」→ Editor `:8080` → host `workspace/` に Save → Example タブを reload
 
