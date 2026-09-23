@@ -133,7 +133,9 @@ docker compose up --build
 
 ### Raspberry Pi 3 B+（Runtime-only）
 
-Pi 3 B+ では on-device の Docker build を案内しない。Runtime 利用は `docker compose up -d`（または上級者向け `./scripts/start.sh --no-build`）。手順は [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) を参照する。GHCR / Prebuilt image の手順はここでは書かない。
+Pi 3 B+ では on-device の Docker build を案内しない。Runtime 利用は、image を用意したうえで `docker compose up -d --no-build`（または上級者向け `./scripts/start.sh --no-build`）。手順の正本は [Getting Started の Step 2（Docker image 前提）](./getting-started.md#docker-image前提)。
+
+**現状**: GHCR 等の prebuilt 配布は無い。暫定は Pi 4 / Pi 5（または arm64 build 可能なマシン）で image を作り、`docker save` / `docker load` で運ぶ。初学者向けに確実な第一導線は **Pi 4 / Pi 5**（初回 `up -d` での Compose build が Supported）である。
 
 ## Documentation の整合性
 

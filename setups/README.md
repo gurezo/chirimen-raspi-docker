@@ -2,6 +2,8 @@
 
 **Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。起動（`docker compose up -d`）はしない。標準環境は Raspberry Pi OS 64-bit Desktop（Lite も可）。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
+関連: [#367](https://github.com/gurezo/chirimen-raspi-docker/issues/367) / [#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326)
+
 ## 導線の分離
 
 ```text
@@ -26,6 +28,8 @@ Development / Build（Pi 4 / Pi 5 のみ）
 ```
 
 `setup.sh` は状態を確認し、必要な既存 script（I2C / Squeekboard / Docker / Compose）だけを呼び出したうえで、`workspace/` の利用準備（存在・書き込み可否）と Runtime readiness（`scripts/doctor.sh`）を確認する orchestration script である。`swap.sh`・Docker build・`start.sh` は実行しない。Host に Node.js / pnpm / Nx は不要。完了後は `docker compose up -d` と `http://localhost:4200` を案内する。reboot が必要なら `sudo reboot` を案内して終了し、reboot 後に同じ `./setups/setup.sh` を再実行する（I2C の再開も同じ。単独実行時の `enable-i2c.sh --check` とは別導線）。
+
+**2回目以降** は Host setup を繰り返さず、`docker compose up -d` だけでよい（詳細は [Getting Started の初回と2回目以降](../docs/guides/getting-started.md#初回と2回目以降)）。
 
 各 script の責務と呼び出し可否の正本は [Host setup script 棚卸し](../docs/guides/setup-host-script-audit.md) である。
 

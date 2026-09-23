@@ -76,12 +76,12 @@ Docker image の build（`docker build` / `compose build` / `up --build`）の�
 
 ### Runtime startup
 
-Pi 3 / 4 / 5 とも **Runtime 操作は同じ** `docker compose up -d` / `down`（モデルごとの `compose.yaml` 手編集は不要）。正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-start-runtime)。
+Pi 3 / 4 / 5 とも Compose で Runtime を起動する（モデルごとの `compose.yaml` 手編集は不要）。**コマンドは機種で異なる**（正本は [Getting Started の Step 2](../guides/getting-started.md#step-2-start-runtime)）。
 
 | Model | Runtime 操作 | 備考 |
 | --- | --- | --- |
-| Raspberry Pi 3 B+ | `docker compose up -d` | Runtime-only。on-device Docker build は Unsupported |
-| Raspberry Pi 4 / Pi 5 | `docker compose up -d` | Runtime。Development build は別導線 |
+| Raspberry Pi 3 B+ | `docker compose up -d --no-build` | Runtime-only。image 必須。on-device Docker build は Unsupported。[Getting Started](../guides/getting-started.md#docker-image前提) |
+| Raspberry Pi 4 / Pi 5 | `docker compose up -d` | Runtime。初回は image が無ければ Compose が build（Supported）。Development build は別導線 |
 
 Development / 上級者向けに `./scripts/start.sh` を使う場合のみ、引数なしは既定で `--build` 相当のため次のとおり。
 

@@ -166,11 +166,20 @@ print_success() {
 
 Setup completed.
 
-Start CHIRIMEN:
-  docker compose up -d
+Start CHIRIMEN (from the repository root):
+
+  Raspberry Pi 4 / Pi 5 (recommended for first-time beginners):
+    docker compose up -d
+    (If local images are missing, Compose builds them once. Supported.)
+
+  Raspberry Pi 3 B+ (Runtime-only; on-device build is Unsupported):
+    Prepare images first (see Getting Started Step 2), then:
+    docker compose up -d --no-build
 
 Then open:
   http://localhost:4200
+
+Details: docs/guides/getting-started.md
 EOF
 }
 

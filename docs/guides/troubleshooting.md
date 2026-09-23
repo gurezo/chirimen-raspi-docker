@@ -8,6 +8,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 - [Runtime Diagnostics](./runtime-diagnostics.md)（doctor.sh / `/health` / Reference Examples）
 - [Browser Development Environment](./browser-development.md)
 - [Raspberry Pi Setup](./raspberry-pi-setup.md)（Host 構築。`setups/`）
+- 親 Issue: [#367 Raspberry Pi OS 64-bit Desktop の標準セットアップ手順を Documentation に整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/367)
 - 実機 E2E: [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（[#243](https://github.com/gurezo/chirimen-raspi-docker/issues/243)）
 - [GPIO LED Blink](./gpio-led-blink.md)
 - [GPIO Input](./gpio-input.md)
@@ -18,6 +19,20 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 ## Host と Runtime の切り分け
 
+Runtime が動かないときは、先に Host setup 不足かどうかを切り分ける。setup 不足を Raspberry Pi model compatibility の問題として扱わない。
+
+```text
+Runtime が動作しない
+        ↓
+Environment Check（./scripts/doctor.sh）
+        ↓
+Host setup OK?
+   ├─ No（[error] / device 不足 / Docker 未導入）
+   │     → [Raspberry Pi Setup](./raspberry-pi-setup.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup)
+   └─ Yes
+         → Runtime / Hardware troubleshooting（下記・[Runtime Diagnostics](./runtime-diagnostics.md)）
+```
+
 | 症状の目安 | 見る場所 |
 | --- | --- |
 | swap / I2C 無効 / Docker 未導入 / `/dev/i2c-1` が host に無い | [Raspberry Pi Setup](./raspberry-pi-setup.md)（`setups/`） |
@@ -25,7 +40,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | 起動しない / health が返らない | `docker compose up -d` と [Runtime Diagnostics](./runtime-diagnostics.md)。device mapping が必要なときだけ `./scripts/start.sh` |
 | LED / I2C Example が動かない | [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md) |
 
-`doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。
+`doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。Environment Check が通ってから GPIO LED Blink / I2C Scan などの Runtime / Hardware test に進む。
 
 ## Browser Development の切り分け
 
@@ -40,6 +55,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | 保存後未反映 | [Example を保存しても Browser に反映されない](#example-を保存しても-browser-に反映されない) |
 | Runtime 接続不可 | [LAN から Example は開くが GPIO / I2C が動かない](#lan-から-example-は開くが-gpio-i2c-が動かない) / [Example は開くが GPIO / I2C が動かない](#example-は開くが-gpio-i2c-が動かない) |
 | GPIO / I2C が動かない | [device が無く GPIO / I2C が unavailable になる](#device-が無く-gpio-i2c-が-unavailable-になる) と上記の Runtime 接続 |
+| Pi 3 B+ で `up -d` が build を始める / OOM | [Pi 3 B+ の on-device Docker build は Unsupported](#pi-3-b-の-on-device-docker-build-は-unsupported) / [Docker image 前提](./getting-started.md#docker-image前提) |
 | 実機 E2E の記録を見る | [Compatibility の Browser Development Flow 実機検証](../architecture/compatibility.md#browser-development-flow-実機検証243)（#243）。手順は [browser-development.md](./browser-development.md#実機-e2e-検証243) |
 | スクリーンキーボードが入力を妨げる | [Desktop でスクリーンキーボードが出る](#desktop-でスクリーンキーボードが出る) |
 | Pi 3 B+ でメモリ不足 / Editor が重い | [Pi 3 B+ で Editor が重い / メモリ不足](#pi-3-b-で-editor-が重い--メモリ不足) |
@@ -221,9 +237,11 @@ Raspberry Pi 3 B+ の on-device Docker build は **Unsupported** である。Pi 
 
 ### 対処
 
-- Runtime 利用: [Getting Started](./getting-started.md) の Pi 3 B+ Runtime-only 導線（`--no-build` 等）
-- Source Development / Docker build: **Raspberry Pi 4 / Pi 5** で行う（[Development](./development.md)）
+- **Pi 4 / Pi 5（初学者向け推奨）**: [Getting Started の Step 2](./getting-started.md#step-2-start-runtime) どおり `docker compose up -d`。ローカル image が無ければ初回だけ Compose が build する（Supported）
+- **Pi 3 B+（Runtime-only）**: on-device build をしない。image を用意してから `docker compose up -d --no-build`（[Docker image 前提](./getting-started.md#docker-image前提)）
+- Source Development / 明示的な Docker build: **Raspberry Pi 4 / Pi 5** で行う（[Development](./development.md)）
 - Pi 4 / Pi 5 での build OOM は次節
+- GHCR 等の prebuilt 配布は、現時点ではリポジトリに手順が無い（暫定は save / load）
 
 ## Pi 4 / Pi 5 で Docker ビルドが OOM / killed
 
