@@ -34,7 +34,7 @@ services:
   # PASSWORD. Optional CHIRIMEN_EDITOR_PASSWORD / HASHED_PASSWORD are
   # injected by start.sh when set; empty PASSWORD= is never written here.
   # `docker compose up` / `./scripts/start.sh` start Runtime + Editor +
-  # Examples + Example Catalog + Gateway (#208 / #254 / #263 / #360).
+  # Example Server + Example Catalog + Gateway (#208 / #254 / #263 / #360).
   # Runtime only via Compose is `docker compose up chirimen-runtime`.
   # Persistence (#176 / #241): bind workspace/ for Editor workspace;
   # named volumes for settings / extensions. Host uid via user +
@@ -44,7 +44,7 @@ services:
   # Do not set no-new-privileges or cap_drop ALL here: the official
   # entrypoint runs fixuid (setuid). Either flag exits the container
   # before code-server binds 8080.
-  # Example static server is chirimen-examples (#179), not this service.
+  # Example static server is chirimen-example-server (#179 / #370), not this service.
   # Example Catalog is chirimen-example-catalog (#254 / #263). Node / pnpm
   # / Nx stay out of this image.
   chirimen-editor:
@@ -62,17 +62,17 @@ services:
       - chirimen-editor-local:/home/coder/.local
       - chirimen-editor-config:/home/coder/.config
 
-  # HTML Examples (nginx static of workspace/). Independent of
+  # Example Server (nginx static of workspace/). Independent of
   # Runtime, Editor, and Catalog: no depends_on. This is not a
   # Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. Bind the same host path the Editor
   # edits so Browser reload sees saves. Default host bind is 127.0.0.1
   # (#181). LAN is the same CHIRIMEN_PUBLISH_BIND / --lan as Editor.
-  chirimen-examples:
+  chirimen-example-server:
     build:
-      context: docker/examples
+      context: docker/example-server
       dockerfile: Dockerfile
-    image: chirimen-raspi-docker/examples:phase8
+    image: chirimen-raspi-docker/example-server:phase8
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173"
     volumes:
@@ -81,7 +81,7 @@ services:
       - no-new-privileges:true
 
   # Example Catalog (nginx static of apps/catalog). Independent of
-  # Runtime, Editor, and Examples: no depends_on. This is not a
+  # Runtime, Editor, and Example Server: no depends_on. This is not a
   # Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. Browser JS fetches Device metadata
   # from chirimen-certified-devices and links ported Examples to :4173.
@@ -99,7 +99,7 @@ services:
       - no-new-privileges:true
 
   # Name-path redirect gateway (#360). Independent of Runtime / Editor /
-  # Examples / Catalog: no depends_on. Not a Hardware Runtime and not TLS
+  # Example Server / Catalog: no depends_on. Not a Hardware Runtime and not TLS
   # termination. GET /catalog|/editor|/example|/runtime 302 to the existing
   # ports. Default host bind is 127.0.0.1 (#181). LAN is the same
   # CHIRIMEN_PUBLISH_BIND / --lan as Editor.

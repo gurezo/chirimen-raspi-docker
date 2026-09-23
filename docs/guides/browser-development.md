@@ -60,7 +60,7 @@ Catalog  = Example を探す
 | --- | --- | --- | --- |
 | 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
 | 8080 | chirimen-editor | Browser Editor / code-server | editor |
-| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4173 | chirimen-example-server | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 覚えやすい入口（`chirimen-gateway` `:80` → 302）: `http://127.0.0.1/catalog` / `/editor` / `/example` / `/runtime`。正本の配信は各 Port。
@@ -182,7 +182,7 @@ Host ./workspace
       │
       ├─────────────────────┐
       ↓                     ↓
-chirimen-editor       chirimen-examples
+chirimen-editor       chirimen-example-server
 /home/coder/project   /usr/share/nginx/html
       │                     │
       │ Edit / Save         │ Serve
@@ -218,7 +218,7 @@ Editor で保存する。保存先は Editor `/home/coder/project` = host `./wor
 
 ## Example Server を開く
 
-別タブで Example Server（`:4173`）を開く（Compose `chirimen-examples` が起動済み）。確認先は Example Server `:4173` である。Catalog（`:4200`）は編集結果を表示しない。
+別タブで Example Server（`:4173`）を開く（Compose `chirimen-example-server` が起動済み）。確認先は Example Server `:4173` である。Catalog（`:4200`）は編集結果を表示しない。
 
 ```text
 http://127.0.0.1:4173/my-first-example/

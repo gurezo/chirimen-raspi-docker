@@ -204,7 +204,7 @@ cp ../led-blink/polyfill.js .
 
 ### Example Server :4173 で実行・更新する
 
-Example Server `:4173`（Compose サービス `chirimen-examples`）は、host の `workspace/` を静的ファイルとして配信する。確認先はここである。Catalog（`:4200`）は題材の発見入口であり、編集結果の確認先ではない。GPIO / I2C は Browser の Polyfill が Runtime `:33330` へ接続して操作する。Raspberry Pi 上で Runtime が起動済みなら、Docker build や Node.js / npm / pnpm / Nx は不要である。
+Example Server `:4173`（Compose サービス `chirimen-example-server`）は、host の `workspace/` を静的ファイルとして配信する。確認先はここである。Catalog（`:4200`）は題材の発見入口であり、編集結果の確認先ではない。GPIO / I2C は Browser の Polyfill が Runtime `:33330` へ接続して操作する。Raspberry Pi 上で Runtime が起動済みなら、Docker build や Node.js / npm / pnpm / Nx は不要である。
 
 directory と URL の対応:
 
@@ -230,7 +230,7 @@ http://127.0.0.1:4173/my-first-example/
 
 最低限のトラブル確認:
 
-- `docker compose ps` で `chirimen-examples` と `chirimen-runtime` が running か見る
+- `docker compose ps` で `chirimen-example-server` と `chirimen-runtime` が running か見る
 - 開いている URL が編集中の `workspace/<subdir>/` と一致しているか確認する（Catalog `:4200` を見ていないか）
 - Browser の Developer Tools → Console に JavaScript error が出ていないか見る
 - Runtime: `curl http://127.0.0.1:33330/health`（詳細は [Runtime Diagnostics](./runtime-diagnostics.md)）
@@ -470,7 +470,7 @@ curl -sI http://127.0.0.1/catalog
 | --- | --- | --- | --- |
 | 33330 | chirimen-runtime | Hardware Runtime / WebSocket | runtime |
 | 8080 | chirimen-editor | Browser Editor / code-server | editor |
-| 4173 | chirimen-examples | Example Server / Runtime Examples | example |
+| 4173 | chirimen-example-server | Example Server / Runtime Examples | example |
 | 4200 | chirimen-example-catalog | Example Catalog | catalog |
 
 `name` パス（`:80` → 302）: `/runtime` `/editor` `/example` `/catalog`。正本 URL は各 Port。

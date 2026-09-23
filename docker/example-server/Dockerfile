@@ -1,6 +1,6 @@
 # HTML Example static image (linux/amd64, linux/arm64).
 # This is not a Hardware Runtime: do not add GPIO / I2C tools or devices.
-# Build context is docker/examples. Example files are bind-mounted at
+# Build context is docker/example-server. Example files are bind-mounted at
 # runtime from workspace/ so Editor saves are visible after reload.
 FROM nginx:1.30.4-alpine
 

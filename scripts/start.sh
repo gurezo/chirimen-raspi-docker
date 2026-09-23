@@ -28,7 +28,7 @@ GPIOMEM_DEVICES=()
 GPIOCHIP_DEVICES=()
 I2C_DEV=0
 
-# 1 when --lan is passed. Publishes Editor / Example /
+# 1 when --lan is passed. Publishes Editor / Example Server /
 # Example Catalog on 0.0.0.0 (does not change Runtime 33330).
 WANT_LAN=0
 
@@ -54,7 +54,7 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
   Probe host hardware paths and start services with only the devices
   that exist on this host (capability-aware mapping).
   Starts chirimen-runtime, chirimen-editor (code-server on
-  127.0.0.1:8080, password auth), chirimen-examples
+  127.0.0.1:8080, password auth), chirimen-example-server
   (http://127.0.0.1:4173/), chirimen-example-catalog
   (http://127.0.0.1:4200/), and chirimen-gateway
   (http://127.0.0.1/catalog → :4200, and /editor /example /runtime).
@@ -66,13 +66,13 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
   Always uses:
     - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
-    - Editor, Examples, Example Catalog, and Gateway without GPIO / I2C
+    - Editor, Example Server, Example Catalog, and Gateway without GPIO / I2C
       devices (not a Hardware Runtime)
     - Editor / Gateway host bind 127.0.0.1 unless --lan (does not publish to the Internet)
     - docker/server/Dockerfile (Node 24, 64-bit)
 
   Optional:
-    --lan            publish Editor 8080 / Example 4173 / Catalog 4200 /
+    --lan            publish Editor 8080 / Example Server 4173 / Catalog 4200 /
                      Gateway 80 on 0.0.0.0 (LAN). Does not change Runtime
                      33330. Password auth stays required. Do not use this
                      to publish on the Internet.
@@ -82,7 +82,7 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
                      Pi 4 / Pi 5: omit this flag (default adds --build).
 
   Removed (error if passed):
-    --editor         Editor / Examples / Catalog now start by default
+    --editor         Editor / Example Server / Catalog now start by default
     --64bit          64-bit is the only supported path
     --32bit          32-bit Runtime path is removed; use 64-bit OS
     --arch 32|64     64-bit is the only supported path
@@ -325,9 +325,9 @@ write_compose_override() {
       fi
     fi
 
-    # Editor + Examples + Example Catalog start by default.
+    # Editor + Example Server + Example Catalog start by default.
     # Pass host uid so bind-mounted examples are writable (code-server
-    # fixuid). Do not add GPIO / I2C devices to Editor / Examples /
+    # fixuid). Do not add GPIO / I2C devices to Editor / Example Server /
     # Catalog. Inject password env only when non-empty (empty PASSWORD=
     # can break auth).
     editor_uid="$(id -u)"
@@ -382,12 +382,12 @@ log_mapping_summary() {
   fi
   if [ "$WANT_LAN" -eq 1 ]; then
     log "publish: 0.0.0.0 (LAN) 80/8080/4173/4200"
-    log "examples: http://0.0.0.0:4173/ (no GPIO/I2C devices)"
+    log "example-server: http://0.0.0.0:4173/ (no GPIO/I2C devices)"
     log "example-catalog: http://0.0.0.0:4200/ (no GPIO/I2C devices)"
     log "gateway: http://0.0.0.0/catalog → :4200 (name redirects, no TLS)"
   else
     log "publish: ${CHIRIMEN_PUBLISH_BIND:-127.0.0.1} 80/8080/4173/4200"
-    log "examples: http://127.0.0.1:4173/ (no GPIO/I2C devices)"
+    log "example-server: http://127.0.0.1:4173/ (no GPIO/I2C devices)"
     log "example-catalog: http://127.0.0.1:4200/ (no GPIO/I2C devices)"
     log "gateway: http://127.0.0.1/catalog → :4200 (name redirects, no TLS)"
   fi
@@ -407,7 +407,7 @@ removed_flag_error() {
   local flag="$1"
   case "$flag" in
     --editor)
-      err "--editor is removed; Editor / Examples / Catalog start by default"
+      err "--editor is removed; Editor / Example Server / Catalog start by default"
       err "use: ./scripts/start.sh"
       err "LAN: ./scripts/start.sh --lan"
       ;;

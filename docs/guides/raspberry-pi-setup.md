@@ -365,7 +365,7 @@ docker compose stop chirimen-editor
 Compose を直接使う場合の Runtime + Examples + Catalog は次である。
 
 ```sh
-docker compose up chirimen-runtime chirimen-examples chirimen-example-catalog
+docker compose up chirimen-runtime chirimen-example-server chirimen-example-catalog
 ```
 
 OOM・熱・Editor の切り分けは [Troubleshooting](./troubleshooting.md)。短縮手順は [setups/README.md](../../setups/README.md)。
