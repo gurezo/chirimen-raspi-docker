@@ -18,6 +18,20 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 
 ## Host と Runtime の切り分け
 
+Runtime が動かないときは、先に Host setup 不足かどうかを切り分ける。setup 不足を Raspberry Pi model compatibility の問題として扱わない。
+
+```text
+Runtime が動作しない
+        ↓
+Environment Check（./scripts/doctor.sh）
+        ↓
+Host setup OK?
+   ├─ No（[error] / device 不足 / Docker 未導入）
+   │     → [Raspberry Pi Setup](./raspberry-pi-setup.md) / [Getting Started Step 1](./getting-started.md#step-1-raspberry-pi-setup)
+   └─ Yes
+         → Runtime / Hardware troubleshooting（下記・[Runtime Diagnostics](./runtime-diagnostics.md)）
+```
+
 | 症状の目安 | 見る場所 |
 | --- | --- |
 | swap / I2C 無効 / Docker 未導入 / `/dev/i2c-1` が host に無い | [Raspberry Pi Setup](./raspberry-pi-setup.md)（`setups/`） |
@@ -25,7 +39,7 @@ CHIRIMEN Runtime のセットアップ・起動でよくある障害と対処。
 | 起動しない / health が返らない | `docker compose up -d` と [Runtime Diagnostics](./runtime-diagnostics.md)。device mapping が必要なときだけ `./scripts/start.sh` |
 | LED / I2C Example が動かない | [GPIO LED Blink](./gpio-led-blink.md) / [GPIO Input](./gpio-input.md) / [I2C Scan](./i2c-scan.md) |
 
-`doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。
+`doctor.sh` で `[error]` が出たら Host 側の不足である。Runtime を触る前に Raspberry Pi Setup へ戻る。Environment Check が通ってから GPIO LED Blink / I2C Scan などの Runtime / Hardware test に進む。
 
 ## Browser Development の切り分け
 
