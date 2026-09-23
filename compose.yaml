@@ -80,14 +80,14 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # Example Catalog (nginx static of apps/example-catalog). Independent of
+  # Example Catalog (nginx static of apps/catalog). Independent of
   # Runtime, Editor, and Examples: no depends_on. This is not a
   # Hardware Runtime. Do not add devices, privileged, or
   # /sys/class/gpio / /sys/devices. Browser JS fetches Device metadata
   # from chirimen-certified-devices and links ported Examples to :4173.
   # Default host bind is 127.0.0.1 (#181). LAN is the same
   # CHIRIMEN_PUBLISH_BIND / --lan as Editor. Host `pnpm nx serve
-  # example-catalog` also uses port 4200; stop this service first.
+  # catalog` also uses port 4200; stop this service first.
   chirimen-example-catalog:
     build:
       context: .

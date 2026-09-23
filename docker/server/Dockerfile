@@ -34,7 +34,7 @@ FROM deps AS build
 
 COPY . .
 
-RUN pnpm nx build server
+RUN pnpm nx build runtime
 
 FROM base AS runtime
 
@@ -46,4 +46,4 @@ COPY --from=build /workspace /workspace
 
 EXPOSE 33330
 
-CMD ["node", "apps/server/dist/main.js"]
+CMD ["node", "apps/runtime/dist/main.js"]

@@ -471,7 +471,7 @@ check_hardware_capabilities() {
     log "[warn] no /dev/i2c-* devices found"
   fi
 
-  # Same vocabulary as apps/server startup log
+  # Same vocabulary as apps/runtime startup log
   log "[ capabilities ] gpio=${GPIO_BACKEND} i2c=${I2C_BACKEND}"
   if [ "$GPIO_BACKEND" = "gpiochip" ]; then
     log "[ runtime ] gpio backend gpiochip is unsupported; GPIO unavailable"
