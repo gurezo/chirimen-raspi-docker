@@ -41,7 +41,7 @@ Example metadata             HTML / Vanilla JS
 | Device | `generated/devices.json` | 型番、画像、説明、ドライバ |
 | 回路図 | Example の `schematicUrl` | Device の `circuit` は使わない（[schematic-compatibility.md](./schematic-compatibility.md)） |
 | 実行コード | Example の `runtimeExamplePath` | Device の upstream Example は使わない。ported の実行 URL と Editor 導線の元（[#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)） |
-| Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | iframe せず外部リンク |
+| Device 一覧 UI | [chirimen-device-dashboard](https://chirimen-device-dashboard.web.app/) | iframe せず外部リンク |
 
 本リポジトリへ `devices.json` を正本としてコピーしない。
 
@@ -182,4 +182,4 @@ Catalog UI（#254）は Device 情報の欠落や取得失敗で致命エラー�
 
 ## Device Dashboard
 
-CHIRIMEN 全体の Device Catalog は [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) への外部リンクとする。iframe で埋め込まない。
+CHIRIMEN 全体の Device Catalog は [chirimen-device-dashboard](https://chirimen-device-dashboard.web.app/) への外部リンクとする。iframe で埋め込まない。

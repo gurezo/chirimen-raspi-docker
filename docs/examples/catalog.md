@@ -60,7 +60,7 @@ chirimen-device-dashboard
 | Device metadata | [chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json) | Catalog が `deviceId` で参照する。`devices.json` はコピーしない |
 | 回路図 | Example の `schematicUrl`（chirimen.org の PNG） | PNG はコピーしない。旧 GC デモページは案内しない |
 | Runtime Example | 本リポジトリの [workspace/](../../workspace/) | `runtimeExamplePath`。ported の実行コードだけが対象 |
-| Device 一覧 UI | [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) | Catalog ヘッダーの外部リンク。iframe しない |
+| Device 一覧 UI | [chirimen-device-dashboard](https://chirimen-device-dashboard.web.app/) | Catalog ヘッダーの外部リンク。iframe しない |
 
 Catalog は題材の発見入口である。Hardware Runtime ではない。GPIO / I2C 操作は Runtime Example → Browser Polyfill → `chirimen-runtime` `:33330` が行う。
 
@@ -88,7 +88,7 @@ https://raw.githubusercontent.com/gurezo/chirimen-certified-devices/main/generat
 
 ### Device Dashboard
 
-CHIRIMEN 全体の Device 一覧は [chirimen-device-dashboard](https://github.com/gurezo/chirimen-device-dashboard) の責務である。Example Catalog は Raspberry Pi Runtime 向け Example の発見入口であり、Device Catalog を代替しない。iframe で埋め込まない。
+CHIRIMEN 全体の Device 一覧は [chirimen-device-dashboard](https://chirimen-device-dashboard.web.app/) の責務である。Example Catalog は Raspberry Pi Runtime 向け Example の発見入口であり、Device Catalog を代替しない。iframe で埋め込まない。
 
 ## status の意味
 
