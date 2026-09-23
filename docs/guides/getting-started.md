@@ -240,6 +240,7 @@ http://127.0.0.1:4173/my-first-example/
 
 関連:
 
+- 親 Issue: [#367 Raspberry Pi OS 64-bit Desktop の標準セットアップ手順を Documentation に整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/367)
 - 親 Issue: [#326 初心者向け setup.sh を追加し CHIRIMEN 初期セットアップと Documentation の導線を一本化する](https://github.com/gurezo/chirimen-raspi-docker/issues/326)
 - 子 Issue: [#332 Getting Started を setup.sh → docker compose up → Example Catalog の初心者向け導線へ変更する](https://github.com/gurezo/chirimen-raspi-docker/issues/332)
 - 親 Issue: [#315 初心者が workspace に HTML / JavaScript を作成して CHIRIMEN を実行できる Getting Started を整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/315)

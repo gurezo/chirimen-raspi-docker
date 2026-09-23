@@ -2,6 +2,8 @@
 
 **Raspberry Pi Setup**（Host 構築）用の script。Raspberry Pi OS を CHIRIMEN Runtime が動く Host にする。起動（`docker compose up -d`）はしない。標準環境は Raspberry Pi OS 64-bit Desktop（Lite も可）。手順の正本は [Raspberry Pi Setup](../docs/guides/raspberry-pi-setup.md)。
 
+関連: [#367](https://github.com/gurezo/chirimen-raspi-docker/issues/367) / [#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326)
+
 ## 導線の分離
 
 ```text

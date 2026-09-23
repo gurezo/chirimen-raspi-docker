@@ -53,6 +53,8 @@ Getting Started Step 2: docker compose up -d → http://localhost:4200
 
 - [Getting Started](./getting-started.md)（入口。このページのあとは **Step 2: Start Runtime**）
 - [Host setup script 棚卸し](./setup-host-script-audit.md)（Runtime / Development 分類の正本）
+- 親 Issue: [#367 Raspberry Pi OS 64-bit Desktop の標準セットアップ手順を Documentation に整備する](https://github.com/gurezo/chirimen-raspi-docker/issues/367)
+- 関連: [#326](https://github.com/gurezo/chirimen-raspi-docker/issues/326) / [#334](https://github.com/gurezo/chirimen-raspi-docker/issues/334)
 - [CHIRIMEN Tutorial](./chirimen-tutorial.md)（GPIO / I2C / JavaScript / 回路を学ぶ。環境構築はここではない）
 - [Browser Development Environment](./browser-development.md)（Editor から Example を編集・実行する）
 - [Development](./development.md)（リポジトリ開発・on-device Docker build。Pi 4 / Pi 5）
