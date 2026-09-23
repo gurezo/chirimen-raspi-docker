@@ -6,7 +6,7 @@ const workspaceRoot = resolve(import.meta.dirname, '../..');
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
-  cacheDir: '../../node_modules/.vite/apps/server',
+  cacheDir: '../../node_modules/.vite/apps/runtime',
   resolve: {
     alias: {
       core: resolve(workspaceRoot, 'libs/core/src/index.ts'),
@@ -28,7 +28,7 @@ export default defineConfig(() => ({
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/server',
+      reportsDirectory: '../../coverage/apps/runtime',
       provider: 'v8' as const,
     },
   },

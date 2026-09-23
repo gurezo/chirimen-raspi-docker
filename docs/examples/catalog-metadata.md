@@ -12,7 +12,7 @@ Example Catalog が参照する metadata の責務を、Example 固有情報と 
 - 出典と責務: [catalog.md](./catalog.md)（[#258](https://github.com/gurezo/chirimen-raspi-docker/issues/258)）
 - Device 正本: [gurezo/chirimen-certified-devices](https://github.com/gurezo/chirimen-certified-devices) の [`generated/devices.json`](https://github.com/gurezo/chirimen-certified-devices/blob/main/generated/devices.json)
 
-この文書は **Catalog metadata の設計** が目的である。Catalog UI の実装は [`apps/example-catalog`](../../apps/example-catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)、`http://127.0.0.1:4200/`）。ported Example から Workspace Example を開く導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)。実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
+この文書は **Catalog metadata の設計** が目的である。Catalog UI の実装は [`apps/catalog`](../../apps/catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254)、`http://127.0.0.1:4200/`）。ported Example から Workspace Example を開く導線は [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)。実行コードの移植（[#256](https://github.com/gurezo/chirimen-raspi-docker/issues/256)）は対象外。回路図の再利用と Pi 3 / 4 / 5 互換性確認は [schematic-compatibility.md](./schematic-compatibility.md) を正本とする。
 
 ## 責務分離
 
@@ -162,11 +162,11 @@ Catalog UI（#254）は Device 情報の欠落や取得失敗で致命エラー�
 
 | 状況 | Catalog の振る舞い |
 | --- | --- |
-| `deviceId` が空 | Device なしとして Example だけ表示する。GPIO LED でも I2C Scan でも成立する。画像は [`no_image.png`](../../apps/example-catalog/public/no_image.png)。Device 未登録と誤認させない |
+| `deviceId` が空 | Device なしとして Example だけ表示する。GPIO LED でも I2C Scan でも成立する。画像は [`no_image.png`](../../apps/catalog/public/no_image.png)。Device 未登録と誤認させない |
 | `deviceId` が `devices[]` に無い | 上と同じ。`device` ラベルだけ出す |
 | `devices.json` の取得失敗 | 全 Example を Device なしで描画する。短い警告を出してよい。画面全体を落とさない |
 | JSON として読めない / `version` が `1` 以外 | 取得失敗と同じ |
-| `image` が空または読み込めない | [`no_image.png`](../../apps/example-catalog/public/no_image.png) を表示する。カードは残す |
+| `image` が空または読み込めない | [`no_image.png`](../../apps/catalog/public/no_image.png) を表示する。カードは残す |
 | `packages` が空 / `driver` が `"none"` | ドライバ無し。カードは残す |
 | `description` が空 | Device 説明を出さない。Example の `title` / `notes` は出す |
 

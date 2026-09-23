@@ -60,11 +60,11 @@ Verified でも `Supported` / Recommended とは書かない。推測の新事�
 ### 当時の `Dockerfile.32bit` 導入理由（Historical）
 
 - Node 24 公式 image に `linux/arm/v7` が無かったため、32-bit（`armv7l`）検証では Node 22（`node:22-bookworm-slim`）を使った
-- Nx の native bindings / WASM fallback が `linux/arm/v7` で失敗した（`hashArray is not a function`）。そのため build は `pnpm nx build server` ではなく `node scripts/build-server.mjs`（esbuild 直呼び bundle）だった
+- Nx の native bindings / WASM fallback が `linux/arm/v7` で失敗した（`hashArray is not a function`）。そのため build は `pnpm nx build runtime` ではなく `node scripts/build-server.mjs`（esbuild 直呼び bundle）だった
 - stage 構成は 64-bit `Dockerfile` と揃え、差分は `FROM` と build コマンドのみとした
 - image tag は `chirimen-raspi-docker/server:phase1-32bit` だった
 
-- 32-bit 用 build は当時 `scripts/build-server.mjs`（esbuild 直呼び bundle）。スクリプト本体は [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) で削除済み。64-bit の現行 build は `pnpm nx build server`（`@nx/esbuild:esbuild`）
+- 32-bit 用 build は当時 `scripts/build-server.mjs`（esbuild 直呼び bundle）。スクリプト本体は [#341](https://github.com/gurezo/chirimen-raspi-docker/issues/341) で削除済み。64-bit の現行 build は `pnpm nx build runtime`（`@nx/esbuild:esbuild`）
 - 当時の `./scripts/start.sh --32bit` は Runtime only（Editor / Examples / Catalog を起動しない）。flag は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み
 - Pi 5 の native rebuild `EAI_AGAIN` は [#167](https://github.com/gurezo/chirimen-raspi-docker/pull/167) の `nodedir` 設定で回避する
 

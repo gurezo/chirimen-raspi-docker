@@ -56,7 +56,7 @@ export default [
                             onlyDependOnLibsWithTags: ["layer:core"]
                         },
                         {
-                            sourceTag: "scope:runtime",
+                            sourceTag: "scope:node-runtime",
                             onlyDependOnLibsWithTags: [
                                 "layer:domain",
                                 "layer:core"
@@ -70,25 +70,14 @@ export default [
                                 "layer:core"
                             ],
                             notDependOnLibsWithTags: [
-                                "scope:runtime",
+                                "scope:node-runtime",
                                 "platform:node"
                             ]
                         },
                         {
-                            sourceTag: "scope:server",
+                            sourceTag: "scope:runtime",
                             onlyDependOnLibsWithTags: [
-                                "scope:runtime",
-                                "scope:shared",
-                                "scope:hardware",
-                                "layer:protocol",
-                                "layer:domain",
-                                "layer:core"
-                            ]
-                        },
-                        {
-                            sourceTag: "scope:server",
-                            onlyDependOnLibsWithTags: [
-                                "scope:runtime",
+                                "scope:node-runtime",
                                 "scope:shared",
                                 "scope:hardware",
                                 "layer:protocol",
@@ -102,7 +91,7 @@ export default [
                             notDependOnLibsWithTags: [
                                 "scope:polyfill",
                                 "scope:hardware",
-                                "scope:runtime"
+                                "scope:node-runtime"
                             ]
                         }
                     ]

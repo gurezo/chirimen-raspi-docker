@@ -4,7 +4,7 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/server"
+      "path": "./apps/runtime"
     },
     {
       "path": "./libs/core"
@@ -25,7 +25,7 @@
       "path": "./libs/browser-polyfill"
     },
     {
-      "path": "./apps/example-catalog"
+      "path": "./apps/catalog"
     }
   ]
 }

@@ -9,29 +9,44 @@ Wiki [`01.Development-Concept`](https://github.com/gurezo/chirimen-raspi-docker/
 - 各 project の責務（app / lib、shared / hardware / runtime など）をコード上で可視化する
 - Wiki で禁止した依存（例: `browser-polyfill` → `node-runtime`）を CI / `pnpm lint` で検出する
 
+## Naming Policy（apps）
+
+Nx application 名は実装形態ではなく責務を表す（[#363](https://github.com/gurezo/chirimen-raspi-docker/issues/363)）。
+
+| Nx application | Path（現行 / 将来） | Docker / Service | Access name | Role |
+| --- | --- | --- | --- | --- |
+| `runtime` | `apps/runtime` | `chirimen-runtime` | `runtime` | Hardware Runtime / WebSocket |
+| `editor` | （将来 `apps/editor`。現状は Docker のみ） | `chirimen-editor` | `editor` | Browser Editor |
+| `examples` | （将来 `apps/examples`。現状は Docker / `workspace`） | `chirimen-examples` | `example` | Runtime Examples |
+| `catalog` | `apps/catalog` | `chirimen-example-catalog` | `catalog` | Example Catalog |
+
+現行 Nx アプリは `runtime` と `catalog` のみである。
+
 ## Tag 次元
 
 | 次元 | 意味 | 例 |
 | --- | --- | --- |
 | `type` | project 種別 | `type:app`, `type:lib` |
-| `scope` | 責務領域 | `scope:server`, `scope:shared`, `scope:hardware`, `scope:runtime` |
+| `scope` | 責務領域 | `scope:runtime`, `scope:catalog`, `scope:shared`, `scope:hardware`, `scope:node-runtime` |
 | `layer` | 層（主に lib） | `layer:core`, `layer:domain`, `layer:protocol` |
 | `platform` | 実行環境 | `platform:node`, `platform:browser` |
 
 命名は `次元:値` 形式とする。Issue 本文の「application/server/node」などは説明用であり、実装・文書では上記プレフィックス付き tag を使う。
 
+`scope:runtime` は Hardware Runtime **app**（`apps/runtime`）用、`scope:node-runtime` は **lib**（`libs/node-runtime`）用である。同じ `scope:runtime` を両方に付けると `depConstraints` が衝突するため分離する。
+
 ## 現行 project の tags
 
 | Project | Path | tags |
 | --- | --- | --- |
-| `server` | `apps/server` | `type:app`, `scope:server`, `platform:node` |
+| `runtime` | `apps/runtime` | `type:app`, `scope:runtime`, `platform:node` |
 | `core` | `libs/core` | `type:lib`, `scope:shared`, `layer:core` |
 | `gpio` | `libs/gpio` | `type:lib`, `scope:hardware`, `layer:domain` |
 | `i2c` | `libs/i2c` | `type:lib`, `scope:hardware`, `layer:domain` |
 | `protocol` | `libs/protocol` | `type:lib`, `scope:shared`, `layer:protocol` |
-| `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:runtime`, `platform:node` |
+| `node-runtime` | `libs/node-runtime` | `type:lib`, `scope:node-runtime`, `platform:node` |
 | `browser-polyfill` | `libs/browser-polyfill` | `type:lib`, `scope:polyfill`, `platform:browser` |
-| `example-catalog` | `apps/example-catalog` | `type:app`, `scope:catalog`, `platform:browser` |
+| `catalog` | `apps/catalog` | `type:app`, `scope:catalog`, `platform:browser` |
 
 tags は各 `project.json` の `tags` 配列に設定する。新規 project を追加するときは、この表に沿って `project.json` の `tags` を設定し、必要なら本表も更新する。
 
@@ -40,7 +55,7 @@ tags は各 `project.json` の `tags` 配列に設定する。新規 project を
 許可する依存方向は次のとおり。
 
 ```text
-apps/server
+apps/runtime
   → libs/node-runtime
   → libs/protocol
   → libs/gpio
@@ -53,7 +68,7 @@ libs/browser-polyfill
   → libs/i2c
   → libs/core
 
-apps/example-catalog
+apps/catalog
   → （lib 依存なし。inventory JSON と Device fetch のみ）
 
 libs/node-runtime
@@ -89,10 +104,10 @@ platform:browser ↔ platform:node の直接依存
 | `layer:core` | `onlyDependOnLibsWithTags: []` | `core` は他 lib に依存しない |
 | `layer:domain` | `onlyDependOnLibsWithTags: ['layer:core']` | `gpio` / `i2c` → `core` のみ |
 | `layer:protocol` | `onlyDependOnLibsWithTags: ['layer:core']` | `protocol` → `core` のみ |
-| `scope:runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
-| `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
-| `scope:server` | `onlyDependOnLibsWithTags: ['scope:runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の server 許可依存 |
-| `scope:catalog` | `onlyDependOnLibsWithTags: []` かつ `notDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:runtime']` | Catalog は hardware / polyfill に依存しない |
+| `scope:node-runtime` | `onlyDependOnLibsWithTags: ['layer:domain', 'layer:core']` | `node-runtime` → `gpio` / `i2c` / `core` |
+| `scope:polyfill` | `onlyDependOnLibsWithTags: ['layer:protocol', 'layer:domain', 'layer:core']` かつ `notDependOnLibsWithTags: ['scope:node-runtime', 'platform:node']` | `browser-polyfill` → `node-runtime` を禁止 |
+| `scope:runtime` | `onlyDependOnLibsWithTags: ['scope:node-runtime', 'scope:shared', 'scope:hardware', 'layer:protocol', 'layer:domain', 'layer:core']` | Wiki の runtime app 許可依存 |
+| `scope:catalog` | `onlyDependOnLibsWithTags: []` かつ `notDependOnLibsWithTags: ['scope:polyfill', 'scope:hardware', 'scope:node-runtime']` | Catalog は hardware / polyfill に依存しない |
 
 ## 確認方法
 
@@ -100,14 +115,14 @@ platform:browser ↔ platform:node の直接依存
 
 ```bash
 pnpm nx show projects
-pnpm nx show project server --json
+pnpm nx show project runtime --json
 pnpm nx show project core --json
 pnpm nx show project gpio --json
 pnpm nx show project i2c --json
 pnpm nx show project protocol --json
 pnpm nx show project node-runtime --json
 pnpm nx show project browser-polyfill --json
-pnpm nx show project example-catalog --json
+pnpm nx show project catalog --json
 pnpm nx graph
 ```
 
@@ -119,4 +134,4 @@ pnpm nx graph
 pnpm lint
 ```
 
-意図的に禁止 import（例: `libs/gpio` から `server` や `node-runtime` を import）を追加すると lint が失敗し、削除すると成功することを確認する。
+意図的に禁止 import（例: `libs/gpio` から `runtime` や `node-runtime` を import）を追加すると lint が失敗し、削除すると成功することを確認する。

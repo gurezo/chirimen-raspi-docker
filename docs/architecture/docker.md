@@ -1,6 +1,6 @@
 # Docker 構成
 
-Raspberry Pi 上で CHIRIMEN Runtime（`apps/server`）を Docker / Compose で起動する方針を記録する。
+Raspberry Pi 上で CHIRIMEN Runtime（`apps/runtime`）を Docker / Compose で起動する方針を記録する。
 
 関連:
 
@@ -135,7 +135,7 @@ Example Catalog は Hardware Runtime ではない。題材の発見入口であ�
 | Network | Compose default。`depends_on` なし。`security_opt: no-new-privileges:true` |
 | GPIO / I2C | 渡さない |
 
-host の `pnpm nx serve example-catalog` も port `4200` を使う。同時には使わない。Compose catalog を止めてから host で serve する。
+host の `pnpm nx serve catalog` も port `4200` を使う。同時には使わない。Compose catalog を止めてから host で serve する。
 
 ### chirimen-gateway
 
@@ -297,8 +297,8 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 | --- | --- |
 | `base` | 上記の Node slim image、corepack で pnpm を有効化 |
 | `deps` | native addon 用に `python3` / `make` / `g++` を入れ、`npm_config_nodedir=/usr/local` で lockfile から依存を install |
-| `build` | `pnpm nx build server`（当時の 32-bit path は削除済みの `node scripts/build-server.mjs`。背景は [32-bit Compatibility](./compatibility-32bit.md)） |
-| `runtime` | ビルド成果を含む workspace を起動。`node apps/server/dist/main.js`（build tools は含めない） |
+| `build` | `pnpm nx build runtime`（当時の 32-bit path は削除済みの `node scripts/build-server.mjs`。背景は [32-bit Compatibility](./compatibility-32bit.md)） |
+| `runtime` | ビルド成果を含む workspace を起動。`node apps/runtime/dist/main.js`（build tools は含めない） |
 
 `deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。pnpm は `nodedir` を渡さないため、未設定だと node-gyp が `nodejs.org` から Node headers を取得する。公式 Node image の `/usr/local` を `npm_config_nodedir` に指定し、その通信を避ける（Pi 上の Docker DNS で `EAI_AGAIN` になりやすい）。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
 
@@ -337,7 +337,7 @@ docker compose exec chirimen-runtime ls -l /dev/gpiomem* /dev/gpiochip* /dev/i2c
 
 代替:
 
-- `pnpm install` のうえ `npx nx build server` / `npx nx serve server` で TypeScript / server 開発を続ける
+- `pnpm install` のうえ `npx nx build runtime` / `npx nx serve runtime` で TypeScript / server 開発を続ける
 
 障害の切り分けは [troubleshooting.md](../guides/troubleshooting.md) を参照。
 

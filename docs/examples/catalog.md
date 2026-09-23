@@ -10,7 +10,7 @@ Example Catalog と Legacy 資産の出典・責務・状態・技術構成を�
 - Device join: [catalog-metadata.md](./catalog-metadata.md)（[#252](https://github.com/gurezo/chirimen-raspi-docker/issues/252)）
 - 回路図: [schematic-compatibility.md](./schematic-compatibility.md)（[#253](https://github.com/gurezo/chirimen-raspi-docker/issues/253)）
 - 実機検証: [runtime-verification.md](./runtime-verification.md)（[#257](https://github.com/gurezo/chirimen-raspi-docker/issues/257)）
-- Catalog UI: [`apps/example-catalog`](../../apps/example-catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254) / [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）
+- Catalog UI: [`apps/catalog`](../../apps/catalog/)（[#254](https://github.com/gurezo/chirimen-raspi-docker/issues/254) / [#255](https://github.com/gurezo/chirimen-raspi-docker/issues/255)）
 
 この文書は **出典と責任範囲の案内** が目的である。metadata 設計、回路図ルール、実機記録、Catalog UI 実装は対象外。詳細は上の正本へ。
 
@@ -118,7 +118,7 @@ verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 �
 
 ## Catalog 技術構成
 
-実装は [`apps/example-catalog`](../../apps/example-catalog/)（Nx プロジェクト `example-catalog`、Vite）。HTML と Vanilla JavaScript（TypeScript の DOM 操作）を基本とする。Tailwind CSS はスタイル用途に限定する。Angular / React / Vue などの SPA framework は使わない。
+実装は [`apps/catalog`](../../apps/catalog/)（Nx プロジェクト `catalog`、Vite）。HTML と Vanilla JavaScript（TypeScript の DOM 操作）を基本とする。Tailwind CSS はスタイル用途に限定する。Angular / React / Vue などの SPA framework は使わない。
 
 | 項目 | 内容 |
 | --- | --- |
@@ -133,7 +133,7 @@ verified = portingStatus が ported かつ verificationByModel の 3 かつ 4 �
 
 親 Issue の「Web UI 入口」は Example Catalog である。Catalog の port は **`:4200`** とする（[#263](https://github.com/gurezo/chirimen-raspi-docker/issues/263)）。`:4173` は Example Server（Runtime Example の静的配信）であり、Catalog ではない。
 
-host 開発は `pnpm nx serve example-catalog`。Compose の `chirimen-example-catalog` と同じ port `4200` を使うため同時には使わない。手順は [Development](../guides/development.md) と [Browser Development Environment](../guides/browser-development.md)。
+host 開発は `pnpm nx serve catalog`。Compose の `chirimen-example-catalog` と同じ port `4200` を使うため同時には使わない。手順は [Development](../guides/development.md) と [Browser Development Environment](../guides/browser-development.md)。
 
 ## 関連する正本
 

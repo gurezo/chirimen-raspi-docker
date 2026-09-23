@@ -1,7 +1,7 @@
 {
-  "name": "example-catalog",
+  "name": "catalog",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/example-catalog/src",
+  "sourceRoot": "apps/catalog/src",
   "projectType": "application",
   "tags": ["type:app", "scope:catalog", "platform:browser"],
   "targets": {
@@ -10,7 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "apps/example-catalog/dist"
+        "outputPath": "apps/catalog/dist"
       },
       "configurations": {
         "development": {
@@ -26,14 +26,14 @@
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "example-catalog:build"
+        "buildTarget": "catalog:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "example-catalog:build:development"
+          "buildTarget": "catalog:build:development"
         },
         "production": {
-          "buildTarget": "example-catalog:build:production"
+          "buildTarget": "catalog:build:production"
         }
       }
     },
@@ -42,14 +42,14 @@
       "executor": "@nx/vite:preview-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "example-catalog:build"
+        "buildTarget": "catalog:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "example-catalog:build:development"
+          "buildTarget": "catalog:build:development"
         },
         "production": {
-          "buildTarget": "example-catalog:build:production"
+          "buildTarget": "catalog:build:production"
         }
       }
     },
@@ -57,7 +57,7 @@
       "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "{workspaceRoot}/coverage/apps/example-catalog"
+        "reportsDirectory": "{workspaceRoot}/coverage/apps/catalog"
       }
     }
   }

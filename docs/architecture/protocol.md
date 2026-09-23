@@ -1,6 +1,6 @@
 # Protocol message model
 
-Browser Polyfill と Node Runtime（`apps/server`）の間の通信契約を `libs/protocol` に集約する。
+Browser Polyfill と Node Runtime（`apps/runtime`）の間の通信契約を `libs/protocol` に集約する。
 
 本ドキュメントは Issue #31 時点の **型としてのメッセージ封筒** と、既存 CHIRIMEN（`polyfill.js` / `srv.js`）の function id 方式からの継承・変更方針、Issue #32 / #33 の **GPIO / I2C protocol ↔ Node Runtime 対応**、および Issue #34 の **wire format（encode / decode）** を記録する。
 
@@ -222,7 +222,7 @@ Browser Polyfill 側の搬送層は `libs/browser-polyfill` の `WebSocketClient
 
 ## WebSocket server lifecycle
 
-Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO request routing / onchange 配信は Issue #40。
+Node server 側の接続管理は `apps/runtime` が担う（Issue #39）。GPIO request routing / onchange 配信は Issue #40。
 
 | 項目 | 決定 |
 | --- | --- |
@@ -234,10 +234,10 @@ Node server 側の接続管理は `apps/server` が担う（Issue #39）。GPIO 
 
 実装:
 
-- `apps/server/src/app/client-session.ts`
-- `apps/server/src/app/client-session-registry.ts`
-- `apps/server/src/app/websocket-server.ts`
-- `apps/server/src/app/protocol-router.ts`
+- `apps/runtime/src/app/client-session.ts`
+- `apps/runtime/src/app/client-session-registry.ts`
+- `apps/runtime/src/app/websocket-server.ts`
+- `apps/runtime/src/app/protocol-router.ts`
 
 ## Browser GPIO polyfill 入口
 
@@ -339,7 +339,7 @@ I2C Scan example（Demo-only）
   → navigator.requestI2CAccess()
   → libs/browser-polyfill
   → Protocol: i2c.open / i2c.writeByte（既存 operation。i2c.scan は無い）
-  → apps/server
+  → apps/runtime
   → I2cSession.open + I2CSlaveDevice.writeByte
   → I2C bus
 ```
@@ -379,7 +379,7 @@ demo 用途では往復数は許容する。
 
 ### server の I2C routing（Scan 最小）
 
-本節の Browser 経路は既存の `i2c.open` / `i2c.writeByte` に依存する。`apps/server` は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) でこの 2 operation だけ routing する。既に open 済みの `(port, address)` への `i2c.open` は success（再 Scan 用）。他の `i2c.*` は `Unsupported protocol operation` のまま。
+本節の Browser 経路は既存の `i2c.open` / `i2c.writeByte` に依存する。`apps/runtime` は [#115](https://github.com/gurezo/chirimen-raspi-docker/issues/115) でこの 2 operation だけ routing する。既に open 済みの `(port, address)` への `i2c.open` は success（再 Scan 用）。他の `i2c.*` は `Unsupported protocol operation` のまま。
 
 ## 後続 Issue
 

@@ -32,7 +32,7 @@ FROM deps AS build
 
 COPY . .
 
-RUN pnpm nx build example-catalog
+RUN pnpm nx build catalog
 
 # Pin semver. Do not use latest. Official image is linux/amd64 and linux/arm64.
 FROM nginx:1.30.4-alpine AS runtime
@@ -42,7 +42,7 @@ RUN apk add --no-cache wget \
   && rm /etc/nginx/conf.d/default.conf
 
 COPY docker/example-catalog/nginx.conf /etc/nginx/conf.d/example-catalog.conf
-COPY --from=build /workspace/apps/example-catalog/dist /usr/share/nginx/html
+COPY --from=build /workspace/apps/catalog/dist /usr/share/nginx/html
 
 EXPOSE 4200
 
