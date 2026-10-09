@@ -9,6 +9,7 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/runtime`）を Docker / Compose で
 - 子 Issue: [#122 Docker 起動時の GPIO device mapping を capability-aware にする](https://github.com/gurezo/chirimen-raspi-docker/issues/122)
 - 子 Issue: [#116 I2C Scan の実機検証を行う](https://github.com/gurezo/chirimen-raspi-docker/issues/116)
 - [overview.md](./overview.md)
+- [GHCR 公開仕様](./ghcr.md)（image 名 / tag / `linux/arm64`。[#373](https://github.com/gurezo/chirimen-raspi-docker/issues/373)）
 - [Compatibility](./compatibility.md)
 - [browser-editor.md](./browser-editor.md)（Phase 8 Editor 選定。image は #174。Compose は #175。永続化は #176。既定の全サーバー起動は #208（#177 の optional profile を逆転）。初期設定は #178。Example 編集 / 静的 serve は #179。旧 Web Demo Compose は #180（#263 で廃止し Catalog を `:4200` へ）。Security は #181。Extension は #201。利用ガイドは #183）
 - [Getting Started](../guides/getting-started.md)
@@ -75,6 +76,7 @@ chmod +x scripts/start.sh
 | name | `runtime` |
 | Dockerfile | [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）。唯一の supported path |
 | Image | `chirimen-raspi-docker/server:phase1` |
+| GHCR | `ghcr.io/gurezo/chirimen-runtime`（[公開仕様](./ghcr.md)） |
 | Port | `33330`（host / container） |
 | ENV | `HOST=0.0.0.0`, `PORT=33330` |
 
@@ -88,6 +90,7 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | name | `editor` |
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
+| GHCR | `ghcr.io/gurezo/chirimen-editor`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
 | Workspace | bind `./workspace` → `/home/coder/project`（git 管理。container 削除後も残る） |
 | Extra packages | `python3-minimal` のみ（#179 当時。Compose 経路の HTML 配信は `chirimen-example-server`）。Node / GPIO / I2C ツールは入れない |
@@ -111,7 +114,7 @@ Example Catalog :4200（一覧・選択）
         → Browser → CHIRIMEN Runtime :33330
 ```
 
-#179 で導入したサービス名は `chirimen-examples`。[#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名した。ローカル image は `chirimen-raspi-docker/example-server:phase8`。GHCR 公開時の image 名は `ghcr.io/gurezo/chirimen-example-server`（公開 workflow は未実装。Catalog の将来名は `ghcr.io/gurezo/chirimen-example-catalog`）。
+#179 で導入したサービス名は `chirimen-examples`。[#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名した。ローカル image は `chirimen-raspi-docker/example-server:phase8`。GHCR 名は `ghcr.io/gurezo/chirimen-example-server`。命名・tag・platform の正本は [GHCR 公開仕様](./ghcr.md)（公開 workflow は未実装）。
 
 Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。Browser 内の Polyfill が Runtime の WebSocket へ接続する。正本は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179)。
 
@@ -120,7 +123,8 @@ Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `
 | Service | `chirimen-example-server` |
 | name | `example` |
 | Dockerfile | [`docker/example-server/Dockerfile`](../../docker/example-server/Dockerfile) |
-| Image | `chirimen-raspi-docker/example-server:phase8`（GHCR 公開時は `ghcr.io/gurezo/chirimen-example-server`） |
+| Image | `chirimen-raspi-docker/example-server:phase8` |
+| GHCR | `ghcr.io/gurezo/chirimen-example-server`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | nginx（`nginx:1.30.4-alpine`）が bind `./workspace` を静的配信。Editor で保存したファイルは reload で見える |
 | Health | `GET /led-blink/`（HTTP 200） |
@@ -138,7 +142,8 @@ Example Catalog は Hardware Runtime ではない。題材の発見入口であ�
 | Service | `chirimen-example-catalog` |
 | name | `catalog` |
 | Dockerfile | [`docker/example-catalog/Dockerfile`](../../docker/example-catalog/Dockerfile) |
-| Image | `chirimen-raspi-docker/example-catalog:phase8`（GHCR 公開時は `ghcr.io/gurezo/chirimen-example-catalog`） |
+| Image | `chirimen-raspi-docker/example-catalog:phase8` |
+| GHCR | `ghcr.io/gurezo/chirimen-example-catalog`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | Vite production build を nginx（`nginx:1.30.4-alpine`）で静的配信 |
 | Health | `GET /`（HTTP 200） |
@@ -156,6 +161,7 @@ Gateway は Hardware Runtime ではない。中身の reverse proxy でも TLS �
 | Service | `chirimen-gateway` |
 | Dockerfile | [`docker/nginx/Dockerfile`](../../docker/nginx/Dockerfile) |
 | Image | `chirimen-raspi-docker/gateway:phase8` |
+| GHCR | `ghcr.io/gurezo/chirimen-gateway`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:80:80`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | nginx が `/catalog` `/editor` `/example` `/runtime`（と `/`）を既存 Port へ 302。`proxy_pass` なし |
 | Health | `GET /healthz`（HTTP 200、本文 `ok`） |
@@ -221,6 +227,7 @@ Editor は Hardware Runtime ではない。`/dev/gpio*` / `/dev/i2c-1` / `/sys/c
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
 | Base | `codercom/code-server:4.132.0`（`latest` 禁止） |
 | Image | `chirimen-raspi-docker/editor:4.132.0` |
+| GHCR | `ghcr.io/gurezo/chirimen-editor`（[公開仕様](./ghcr.md)） |
 | Port | `8080`（Editor）。`4173`（Example 静的サーバ。[#179](https://github.com/gurezo/chirimen-raspi-docker/issues/179)） |
 | User | `coder`（UID 1000。root ではない）。実行時は `-u "$(id -u):$(id -g)"` と `DOCKER_USER`（`fixuid`） |
 | Architecture | `linux/amd64`, `linux/arm64`。`arm32` / `armv7` は非対応 |
