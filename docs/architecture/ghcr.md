@@ -1,6 +1,6 @@
 # GHCR 公開仕様
 
-GitHub Container Registry (GHCR) へ公開する Docker image の名前を定める。platform、tag、visibility は後続節で定める。GitHub Actions の publish workflow、通常利用 Compose の image 差し替え、Getting Started の手順更新はここでは扱わない。
+GitHub Container Registry (GHCR) へ公開する Docker image の名前と platform を定める。tag と visibility は後続節で定める。GitHub Actions の publish workflow、通常利用 Compose の image 差し替え、Getting Started の手順更新はここでは扱わない。
 
 関連:
 
@@ -37,3 +37,17 @@ ghcr.io/gurezo/chirimen-gateway
 ```
 
 上記以外の独立した Dockerfile はリポジトリに無い。公開対象はこの 5 image で確定する。
+
+## Platform
+
+公開する image manifest の platform は `linux/arm64` のみとする。対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit である。
+
+| 公開 | platform | 対象 |
+| --- | --- | --- |
+| する | `linux/arm64` | Raspberry Pi OS 64-bit（Pi 3 B+ / 4 / 5） |
+| しない | `linux/arm/v7` | Raspberry Pi OS 32-bit。image は作らない |
+| しない | `linux/amd64` | GHCR の初期スコープ外。multi-architecture は対象外 |
+
+32-bit OS 向け image は公開しない。`Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済みである。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
+
+Editor と Gateway の Dockerfile は、ローカル build で `linux/amd64` を許す記述がある。それは開発機での local build の話であり、GHCR へ push する manifest には `linux/amd64` を含めない。on-device の Docker build 対象機種（Pi 4 / Pi 5）は [Docker 構成](./docker.md) と [Compatibility](./compatibility.md) のままである。本ページは公開 platform だけを決める。
