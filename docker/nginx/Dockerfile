@@ -3,6 +3,9 @@
 # GET /{catalog|editor|example|runtime} 302 to the existing ports (#360).
 FROM nginx:1.30.4-alpine
 
+# Links the GHCR package to this repository. See docs/architecture/ghcr.md.
+LABEL org.opencontainers.image.source="https://github.com/gurezo/chirimen-raspi-docker"
+
 # wget is for HEALTHCHECK. GPIO / I2C tools are not installed.
 RUN apk add --no-cache wget \
   && rm /etc/nginx/conf.d/default.conf

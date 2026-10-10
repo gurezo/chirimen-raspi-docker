@@ -312,7 +312,7 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 
 | Stage | 役割 |
 | --- | --- |
-| `base` | 上記の Node slim image、corepack で pnpm を有効化 |
+| `base` | Node slim image。pnpm の版は root `package.json` の `packageManager` を corepack が読む |
 | `deps` | native addon 用に `python3` / `make` / `g++` を入れ、`npm_config_nodedir=/usr/local` で lockfile から依存を install |
 | `build` | `pnpm nx build runtime`（当時の 32-bit path は削除済みの `node scripts/build-server.mjs`。背景は [32-bit Compatibility](./compatibility-32bit.md)） |
 | `runtime` | ビルド成果を含む workspace を起動。`node apps/runtime/dist/main.js`（build tools は含めない） |
@@ -320,6 +320,22 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 `deps` の build tools は `i2c-bus`（`node-web-i2c` 経由）などが `node-gyp` で native rebuild するために必要。pnpm は `nodedir` を渡さないため、未設定だと node-gyp が `nodejs.org` から Node headers を取得する。公式 Node image の `/usr/local` を `npm_config_nodedir` に指定し、その通信を避ける（Pi 上の Docker DNS で `EAI_AGAIN` になりやすい）。`runtime` は `base` から作るため、最終 image にコンパイラは残らない。
 
 本番 image も現状は workspace 一式をコピーする構成である（将来の slim 化は別 Issue）。
+
+Example Catalog（[`docker/example-catalog/Dockerfile`](../../docker/example-catalog/Dockerfile)）も同じ pnpm の取り方で、最終 stage は nginx が `apps/catalog/dist` だけを配信する。
+
+### GitHub Actions での build
+
+公開対象 5 image の build は Raspberry Pi の `/dev/gpio*` / `/dev/i2c-*` を必要としない。device は起動時の Compose mount であり、Dockerfile は host の device を COPY しない。
+
+pnpm の版は Dockerfile に書かない。`package.json` を COPY したあと `corepack prepare --activate` が `packageManager` を読む。Nx の build は `NX_DAEMON=false` と `CI=true` で行う。
+
+最終 image には次の OCI label を付ける。
+
+```text
+org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
+```
+
+pull request の [`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml) は `linux/arm64` を build し、GHCR へは push しない（[#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374)）。login / tag / push は [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) である。
 
 ## Device / volume mount（privileged なし・capability-aware）
 

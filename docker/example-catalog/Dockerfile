@@ -8,8 +8,8 @@ WORKDIR /workspace
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
-RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
+# corepack prepare reads package.json "packageManager". Do not pin a second version here.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 FROM base AS deps
 
@@ -26,16 +26,24 @@ ENV npm_config_nodedir=/usr/local
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json tsconfig.json ./
 
-RUN pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare --activate \
+  && pnpm install --frozen-lockfile
 
 FROM deps AS build
 
 COPY . .
 
+# The Nx daemon does not run reliably inside a Docker build.
+ENV NX_DAEMON=false
+ENV CI=true
+
 RUN pnpm nx build catalog
 
 # Pin semver. Do not use latest. Official image is linux/amd64 and linux/arm64.
 FROM nginx:1.30.4-alpine AS runtime
+
+# Links the GHCR package to this repository. See docs/architecture/ghcr.md.
+LABEL org.opencontainers.image.source="https://github.com/gurezo/chirimen-raspi-docker"
 
 # wget is for HEALTHCHECK. GPIO / I2C tools are not installed.
 RUN apk add --no-cache wget \

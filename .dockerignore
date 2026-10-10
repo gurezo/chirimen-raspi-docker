@@ -6,3 +6,8 @@
 node_modules
 dist
 tmp
+.env
+.env.*
+coverage
+_site
+docs/api

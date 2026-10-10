@@ -4,6 +4,9 @@
 # This image is not a Hardware Runtime: do not add GPIO / I2C tools or devices.
 FROM codercom/code-server:4.132.0
 
+# Links the GHCR package to this repository. See docs/architecture/ghcr.md.
+LABEL org.opencontainers.image.source="https://github.com/gurezo/chirimen-raspi-docker"
+
 # Official image already runs as UID 1000 (coder) and ships git / curl / nano.
 # Create the three mount points as coder so bind mounts and named volumes work.
 # python3 is the #179 exception to "no extra packages": Editor terminal
