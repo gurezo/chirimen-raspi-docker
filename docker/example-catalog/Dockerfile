@@ -8,8 +8,8 @@ WORKDIR /workspace
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
-RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
+# corepack prepare reads package.json "packageManager". Do not pin a second version here.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 FROM base AS deps
 
@@ -26,11 +26,16 @@ ENV npm_config_nodedir=/usr/local
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json tsconfig.json ./
 
-RUN pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare --activate \
+  && pnpm install --frozen-lockfile
 
 FROM deps AS build
 
 COPY . .
+
+# The Nx daemon does not run reliably inside a Docker build.
+ENV NX_DAEMON=false
+ENV CI=true
 
 RUN pnpm nx build catalog
 
