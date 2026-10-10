@@ -120,7 +120,34 @@ jobs:
               continue
             fi
             printf '%s\n' "$inspect"
-            platforms="$(printf '%s\n' "$inspect" | awk '/Platform:/ { print $2 }')"
+            # Text inspect prints Platform: only for an index. A one-platform
+            # push is an image manifest, and its platform is on the image config.
+            # .Image is that config, or a platform→config map for an index.
+            if ! image_json="$(docker buildx imagetools inspect --format '{{json .Image}}' "$ref" 2>&1)"; then
+              printf '%s\n' "$image_json"
+              echo "::error title=${name}::${name} image config could not be read"
+              missing=1
+              echo "::endgroup::"
+              continue
+            fi
+            if ! platforms="$(printf '%s\n' "$image_json" | jq -r '
+              if (.os | type) == "string" and (.architecture | type) == "string" then
+                if (.variant | type) == "string" and .variant != "" then
+                  "\(.os)/\(.architecture)/\(.variant)"
+                else
+                  "\(.os)/\(.architecture)"
+                end
+              elif type == "object" then
+                keys[]
+              else
+                empty
+              end
+            ')"; then
+              echo "::error title=${name}::${name} image config could not be parsed"
+              missing=1
+              echo "::endgroup::"
+              continue
+            fi
             if [[ -z "$platforms" ]]; then
               echo "::error title=${name}::${name} manifest did not report a platform"
               missing=1
