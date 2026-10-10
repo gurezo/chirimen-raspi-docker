@@ -1,6 +1,7 @@
 # Publish the five GHCR images for linux/arm64.
-# This job pushes only the immutable sha-<12> tag.
-# main / latest / vX.Y.Z are applied in a later job, after every image exists.
+# publish pushes only the immutable sha-<12> tag.
+# verify checks every manifest and reports images that were not published.
+# retag applies main / latest / vX.Y.Z only after verify succeeds.
 # Tag policy: docs/architecture/ghcr.md (#375).
 
 name: Docker publish
@@ -73,3 +74,163 @@ jobs:
           provenance: false
           sbom: false
           tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ steps.tag.outputs.sha }}
+
+  verify:
+    name: Verify manifests
+    needs: publish
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Inspect image manifests
+        env:
+          OWNER: ${{ github.repository_owner }}
+          PUBLISH_RESULT: ${{ needs.publish.result }}
+        run: |
+          sha_tag="sha-$(git rev-parse --short=12 HEAD)"
+          images=(
+            chirimen-runtime
+            chirimen-editor
+            chirimen-example-server
+            chirimen-example-catalog
+            chirimen-gateway
+          )
+          missing=0
+
+          for name in "${images[@]}"; do
+            ref="ghcr.io/${OWNER}/${name}:${sha_tag}"
+            echo "::group::${ref}"
+            if ! inspect="$(docker buildx imagetools inspect "$ref" 2>&1)"; then
+              printf '%s\n' "$inspect"
+              echo "::error title=${name}::${name} was not published at ${sha_tag}"
+              missing=1
+              echo "::endgroup::"
+              continue
+            fi
+            printf '%s\n' "$inspect"
+            platforms="$(printf '%s\n' "$inspect" | awk '/Platform:/ { print $2 }')"
+            if [[ -z "$platforms" ]]; then
+              echo "::error title=${name}::${name} manifest did not report a platform"
+              missing=1
+              echo "::endgroup::"
+              continue
+            fi
+            while IFS= read -r platform; do
+              case "$platform" in
+                linux/arm64|linux/arm64/v8) ;;
+                *)
+                  echo "::error title=${name}::${name} has platform ${platform}"
+                  missing=1
+                  ;;
+              esac
+            done <<< "$platforms"
+            echo "::endgroup::"
+          done
+
+          if [[ "$PUBLISH_RESULT" != "success" ]]; then
+            echo "::error::one or more image publishes failed (${PUBLISH_RESULT})"
+            missing=1
+          fi
+
+          exit "$missing"
+
+  retag:
+    name: Apply release tags
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply moving tags
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          PUBLISH_LATEST: ${{ inputs.publish_latest }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          sha_tag="sha-$(git rev-parse --short=12 HEAD)"
+          images=(
+            chirimen-runtime
+            chirimen-editor
+            chirimen-example-server
+            chirimen-example-catalog
+            chirimen-gateway
+          )
+          tags=()
+
+          add_tag() {
+            local candidate="$1"
+            local existing
+            if [[ ${#tags[@]} -gt 0 ]]; then
+              for existing in "${tags[@]}"; do
+                if [[ "$existing" == "$candidate" ]]; then
+                  return
+                fi
+              done
+            fi
+            tags+=("$candidate")
+          }
+
+          if [[ "$REF_TYPE" == "tag" ]]; then
+            if [[ ! "$REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::git tag ${REF_NAME} is not vX.Y.Z"
+              exit 1
+            fi
+            add_tag "${REF_NAME#v}"
+            add_tag "$REF_NAME"
+            add_tag latest
+          fi
+
+          if [[ "$REF" == "refs/heads/main" ]]; then
+            git fetch origin main
+            tip="$(git rev-parse origin/main)"
+            if [[ "$tip" == "$GITHUB_SHA" ]]; then
+              add_tag main
+            else
+              echo "Skip main tag: origin/main is ${tip}, this run is ${GITHUB_SHA}"
+            fi
+          fi
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "$PUBLISH_LATEST" == "true" ]]; then
+            add_tag latest
+          fi
+
+          if [[ ${#tags[@]} -eq 0 ]]; then
+            echo "No moving tags to apply"
+            exit 0
+          fi
+
+          echo "Apply tags: ${tags[*]}"
+          for name in "${images[@]}"; do
+            source="ghcr.io/${OWNER}/${name}:${sha_tag}"
+            args=()
+            for tag in "${tags[@]}"; do
+              args+=(-t "ghcr.io/${OWNER}/${name}:${tag}")
+            done
+            docker buildx imagetools create "${args[@]}" "$source"
+          done
