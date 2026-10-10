@@ -75,7 +75,8 @@ chmod +x scripts/start.sh
 | Service | `chirimen-runtime` |
 | name | `runtime` |
 | Dockerfile | [`docker/server/Dockerfile`](../../docker/server/Dockerfile)（Node 24）。唯一の supported path |
-| Image | `chirimen-raspi-docker/server:phase1` |
+| Image | `ghcr.io/gurezo/chirimen-runtime:latest`（通常利用の Compose） |
+| Development build | `chirimen-raspi-docker/server:phase1` |
 | GHCR | `ghcr.io/gurezo/chirimen-runtime`（[公開仕様](./ghcr.md)） |
 | Port | `33330`（host / container） |
 | ENV | `HOST=0.0.0.0`, `PORT=33330` |
@@ -89,7 +90,8 @@ Editor は Hardware Runtime ではない。`devices` / `privileged` / `/sys/clas
 | Service | `chirimen-editor` |
 | name | `editor` |
 | Dockerfile | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) |
-| Image | `chirimen-raspi-docker/editor:4.132.0` |
+| Image | `ghcr.io/gurezo/chirimen-editor:latest`（通常利用の Compose） |
+| Development build | `chirimen-raspi-docker/editor:4.132.0` |
 | GHCR | `ghcr.io/gurezo/chirimen-editor`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:8080:8080`（Editor）。LAN は `0.0.0.0`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)）。Internet には出さない |
 | Workspace | bind `./workspace` → `/home/coder/project`（git 管理。container 削除後も残る） |
@@ -114,7 +116,7 @@ Example Catalog :4200（一覧・選択）
         → Browser → CHIRIMEN Runtime :33330
 ```
 
-#179 で導入したサービス名は `chirimen-examples`。[#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名した。ローカル image は `chirimen-raspi-docker/example-server:phase8`。GHCR 名は `ghcr.io/gurezo/chirimen-example-server`。命名・tag・platform の正本は [GHCR 公開仕様](./ghcr.md)（公開 workflow は未実装）。
+#179 で導入したサービス名は `chirimen-examples`。[#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名した。通常利用の Compose は `ghcr.io/gurezo/chirimen-example-server:latest` を参照する。Development 用の build 名は `chirimen-raspi-docker/example-server:phase8`。命名・tag・platform の正本は [GHCR 公開仕様](./ghcr.md)。publish は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml) が行う。
 
 Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `/sys/devices` は付けない。Browser 内の Polyfill が Runtime の WebSocket へ接続する。正本は [browser-editor.md の Example 編集 / 静的 serve](./browser-editor.md#example-編集--静的-serve179)。
 
@@ -123,7 +125,8 @@ Hardware Runtime ではない。`devices` / `privileged` / `/sys/class/gpio` / `
 | Service | `chirimen-example-server` |
 | name | `example` |
 | Dockerfile | [`docker/example-server/Dockerfile`](../../docker/example-server/Dockerfile) |
-| Image | `chirimen-raspi-docker/example-server:phase8` |
+| Image | `ghcr.io/gurezo/chirimen-example-server:latest`（通常利用の Compose） |
+| Development build | `chirimen-raspi-docker/example-server:phase8` |
 | GHCR | `ghcr.io/gurezo/chirimen-example-server`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | nginx（`nginx:1.30.4-alpine`）が bind `./workspace` を静的配信。Editor で保存したファイルは reload で見える |
@@ -142,7 +145,8 @@ Example Catalog は Hardware Runtime ではない。題材の発見入口であ�
 | Service | `chirimen-example-catalog` |
 | name | `catalog` |
 | Dockerfile | [`docker/example-catalog/Dockerfile`](../../docker/example-catalog/Dockerfile) |
-| Image | `chirimen-raspi-docker/example-catalog:phase8` |
+| Image | `ghcr.io/gurezo/chirimen-example-catalog:latest`（通常利用の Compose） |
+| Development build | `chirimen-raspi-docker/example-catalog:phase8` |
 | GHCR | `ghcr.io/gurezo/chirimen-example-catalog`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | Vite production build を nginx（`nginx:1.30.4-alpine`）で静的配信 |
@@ -160,7 +164,8 @@ Gateway は Hardware Runtime ではない。中身の reverse proxy でも TLS �
 | --- | --- |
 | Service | `chirimen-gateway` |
 | Dockerfile | [`docker/nginx/Dockerfile`](../../docker/nginx/Dockerfile) |
-| Image | `chirimen-raspi-docker/gateway:phase8` |
+| Image | `ghcr.io/gurezo/chirimen-gateway:latest`（通常利用の Compose） |
+| Development build | `chirimen-raspi-docker/gateway:phase8` |
 | GHCR | `ghcr.io/gurezo/chirimen-gateway`（[公開仕様](./ghcr.md)） |
 | Port | 既定 `${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:80:80`。LAN は Editor と同じ変数 / `--lan`（[#181](https://github.com/gurezo/chirimen-raspi-docker/issues/181)） |
 | 配信 | nginx が `/catalog` `/editor` `/example` `/runtime`（と `/`）を既存 Port へ 302。`proxy_pass` なし |

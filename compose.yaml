@@ -1,11 +1,14 @@
+# Normal use pulls pre-built GHCR images (tag latest). Do not add build:
+# here. Dockerfiles remain the image source for GHCR publish:
+#   chirimen-runtime: docker/server/Dockerfile
+#     (Node 24; single Runtime path; no bitness override)
+#   chirimen-editor: docker/editor/Dockerfile
+#   chirimen-example-server: docker/example-server/Dockerfile
+#   chirimen-example-catalog: docker/example-catalog/Dockerfile
+#   chirimen-gateway: docker/nginx/Dockerfile
 services:
   chirimen-runtime:
-    build:
-      context: .
-      # Supported path: Node 24 via docker/server/Dockerfile
-      # (linux/arm64, linux/amd64). Single Runtime path; no bitness override.
-      dockerfile: docker/server/Dockerfile
-    image: chirimen-raspi-docker/server:phase1
+    image: ghcr.io/gurezo/chirimen-runtime:latest
     environment:
       HOST: 0.0.0.0
       PORT: 33330
@@ -48,10 +51,7 @@ services:
   # Example Catalog is chirimen-example-catalog (#254 / #263). Node / pnpm
   # / Nx stay out of this image.
   chirimen-editor:
-    build:
-      context: docker/editor
-      dockerfile: Dockerfile
-    image: chirimen-raspi-docker/editor:4.132.0
+    image: ghcr.io/gurezo/chirimen-editor:latest
     user: "${CHIRIMEN_EDITOR_UID:-1000}:${CHIRIMEN_EDITOR_GID:-1000}"
     environment:
       DOCKER_USER: "${CHIRIMEN_EDITOR_USER:-coder}"
@@ -69,10 +69,7 @@ services:
   # edits so Browser reload sees saves. Default host bind is 127.0.0.1
   # (#181). LAN is the same CHIRIMEN_PUBLISH_BIND / --lan as Editor.
   chirimen-example-server:
-    build:
-      context: docker/example-server
-      dockerfile: Dockerfile
-    image: chirimen-raspi-docker/example-server:phase8
+    image: ghcr.io/gurezo/chirimen-example-server:latest
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4173:4173"
     volumes:
@@ -89,10 +86,7 @@ services:
   # CHIRIMEN_PUBLISH_BIND / --lan as Editor. Host `pnpm nx serve
   # catalog` also uses port 4200; stop this service first.
   chirimen-example-catalog:
-    build:
-      context: .
-      dockerfile: docker/example-catalog/Dockerfile
-    image: chirimen-raspi-docker/example-catalog:phase8
+    image: ghcr.io/gurezo/chirimen-example-catalog:latest
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:4200:4200"
     security_opt:
@@ -104,10 +98,7 @@ services:
   # ports. Default host bind is 127.0.0.1 (#181). LAN is the same
   # CHIRIMEN_PUBLISH_BIND / --lan as Editor.
   chirimen-gateway:
-    build:
-      context: docker/nginx
-      dockerfile: Dockerfile
-    image: chirimen-raspi-docker/gateway:phase8
+    image: ghcr.io/gurezo/chirimen-gateway:latest
     ports:
       - "${CHIRIMEN_PUBLISH_BIND:-127.0.0.1}:80:80"
     security_opt:
