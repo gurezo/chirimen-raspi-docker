@@ -42,6 +42,9 @@ RUN pnpm nx build catalog
 # Pin semver. Do not use latest. Official image is linux/amd64 and linux/arm64.
 FROM nginx:1.30.4-alpine AS runtime
 
+# Links the GHCR package to this repository. See docs/architecture/ghcr.md.
+LABEL org.opencontainers.image.source="https://github.com/gurezo/chirimen-raspi-docker"
+
 # wget is for HEALTHCHECK. GPIO / I2C tools are not installed.
 RUN apk add --no-cache wget \
   && rm /etc/nginx/conf.d/default.conf

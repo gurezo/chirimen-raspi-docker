@@ -43,6 +43,9 @@ RUN pnpm nx build runtime
 
 FROM base AS runtime
 
+# Links the GHCR package to this repository. See docs/architecture/ghcr.md.
+LABEL org.opencontainers.image.source="https://github.com/gurezo/chirimen-raspi-docker"
+
 ENV NODE_ENV="production"
 ENV HOST="0.0.0.0"
 ENV PORT="33330"
