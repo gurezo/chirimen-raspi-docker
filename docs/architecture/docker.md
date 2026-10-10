@@ -335,7 +335,7 @@ pnpm の版は Dockerfile に書かない。`package.json` を COPY したあと
 org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
 ```
 
-pull request の [`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml) は `linux/arm64` を build し、GHCR へは push しない（[#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374)）。login / tag / push は [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) である。
+pull request の [`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml) は `linux/arm64` を build し、GHCR へは push しない（[#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374)）。login / tag / push は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)（[#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375)）が行う。
 
 ## Device / volume mount（privileged なし・capability-aware）
 

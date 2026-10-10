@@ -1,6 +1,6 @@
 # GHCR 公開仕様
 
-GitHub Container Registry (GHCR) へ公開する Docker image の名前、platform、tag、visibility を定める。publish workflow のファイル、通常利用 Compose の image 差し替え、Getting Started の手順更新は後続 issue で行う。このページは、その実装が従う契機だけを残す。
+GitHub Container Registry (GHCR) へ公開する Docker image の名前、platform、tag、visibility を定める。publish は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)（[#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375)）が行う。通常利用 Compose の image 差し替えと Getting Started の手順更新は後続 issue で行う。
 
 関連:
 
@@ -80,7 +80,7 @@ ghcr.io/gurezo/chirimen-gateway:latest
 
 ## 公開の契機
 
-Dockerfile が GitHub Actions 上で `linux/arm64` を build できることは [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) である。その workflow（[`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml)）は push しない。login / tag / push の workflow は [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) で追加する。契機と付与 tag は次のとおり。
+Dockerfile が GitHub Actions 上で `linux/arm64` を build できることは [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) である。その workflow（[`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml)）は push しない。login / tag / push は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)（[#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375)）が行う。`sha-<12桁>` は image ごとに push する。`main` / `latest` / `X.Y.Z` / `vX.Y.Z` は、5 image すべての manifest が `linux/arm64` だと確認できたあと、同じ digest に付ける。`main` は、その commit が `origin/main` の先端であるときだけ付ける。`workflow_dispatch` で `latest` を動かすのは、入力 `publish_latest` が true のときだけである。契機と付与 tag は次のとおり。
 
 | 契機 | 付与する tag |
 | --- | --- |
@@ -116,7 +116,7 @@ org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
 仕様の実装は別 issue である。
 
 - [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) Dockerfile を GitHub Actions / GHCR build に対応させる（push しない `linux/arm64` build）
-- [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する（login / tag / push）
+- [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する（[`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)）
 - [#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376) 通常利用の Compose を GHCR pre-built image に変更する
 - [#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377) Development / local build 用 Compose を分離する
 - [#378](https://github.com/gurezo/chirimen-raspi-docker/issues/378) Pi 3 B+ / Pi 4 / Pi 5 で GHCR image の pull / run を実機検証する
