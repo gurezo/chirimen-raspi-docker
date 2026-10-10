@@ -111,25 +111,27 @@ sudo ./setups/swap.sh
 sudo ./setups/swap.sh --check
 ```
 
-対象コマンドの例:
+`swap.sh` は上の Development-only の前準備である。Runtime setup（`setup.sh`）からは呼ばない。対象コマンドの例:
 
 ```text
 docker build
-docker compose build
-docker compose up --build
-./scripts/start.sh（引数なし。既定で --build）
+docker compose -f compose.yaml -f compose.dev.yaml build
+docker compose -f compose.yaml -f compose.dev.yaml up --build
+./scripts/start.sh（引数なし。既定で --build。compose.dev.yaml を読む）
 ```
 
 ### Raspberry Pi 4 / Pi 5（Build Supported）
 
+local build は [`compose.dev.yaml`](../../compose.dev.yaml) を [`compose.yaml`](../../compose.yaml) に重ねる。`docker compose build` 単体は `build:` が無いため image を作らない。
+
 ```sh
-./scripts/start.sh            # 既定で --build
+./scripts/start.sh            # 既定で --build（compose.dev.yaml）
 ./scripts/start.sh --lan
-docker compose build
-docker compose up --build
+docker compose -f compose.yaml -f compose.dev.yaml build
+docker compose -f compose.yaml -f compose.dev.yaml up --build
 ```
 
-個別 image の `docker build` / `docker buildx` は [Docker 構成](../architecture/docker.md) を参照する。
+個別 image の `docker build` / `docker buildx` は [Docker 構成](../architecture/docker.md) を参照する。Pi 3 B+ では `compose.dev.yaml` を使わない。
 
 ### Raspberry Pi 3 B+（Runtime-only）
 

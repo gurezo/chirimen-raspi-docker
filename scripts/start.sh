@@ -22,6 +22,7 @@ I2C_DEVICE="/dev/i2c-1"
 
 DOCKERFILE="docker/server/Dockerfile"
 IMAGE="chirimen-raspi-docker/server:phase1"
+COMPOSE_DEV="compose.dev.yaml"
 
 SYSFS_GPIO=0
 GPIOMEM_DEVICES=()
@@ -32,10 +33,15 @@ I2C_DEV=0
 # Example Catalog on 0.0.0.0 (does not change Runtime 33330).
 WANT_LAN=0
 
-# 1 when --no-build is passed. Skips the default auto --build.
+# 1 when --no-build is passed. Skips the default auto --build and
+# does not load compose.dev.yaml (GHCR images from compose.yaml).
 # Use on Raspberry Pi 3 B+ (Runtime-only); on-device Docker build
 # is Unsupported there. Pi 4 / Pi 5 may use the default --build.
 WANT_NO_BUILD=0
+
+# 1 when this run passes --build and loads compose.dev.yaml.
+# Set in main after argument parsing. Pi 3 B+ --no-build stays 0.
+WANT_BUILD=0
 
 OVERRIDE_FILE=""
 
@@ -64,19 +70,23 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
   a password into the editor config volume. auth: none is not used.
 
   Always uses:
-    - compose.yaml (includes /sys/class/gpio and /sys/devices volumes)
+    - compose.yaml (GHCR images; includes /sys/class/gpio and /sys/devices volumes)
     - no privileged: true
     - Editor, Example Server, Example Catalog, and Gateway without GPIO / I2C
       devices (not a Hardware Runtime)
     - Editor / Gateway host bind 127.0.0.1 unless --lan (does not publish to the Internet)
-    - docker/server/Dockerfile (Node 24, 64-bit)
+
+  Local build (default, or an explicit --build) also loads compose.dev.yaml.
+  That file sets local image tags and Dockerfiles. The device override does
+  not set image or build. Do not use compose.dev.yaml on Raspberry Pi 3 B+.
 
   Optional:
     --lan            publish Editor 8080 / Example Server 4173 / Catalog 4200 /
                      Gateway 80 on 0.0.0.0 (LAN). Does not change Runtime
                      33330. Password auth stays required. Do not use this
                      to publish on the Internet.
-    --no-build       do not pass --build to `docker compose up`.
+    --no-build       do not pass --build and do not load compose.dev.yaml.
+                     Uses GHCR images from compose.yaml.
                      Use on Raspberry Pi 3 B+ (Runtime-only).
                      On-device Docker build is Unsupported on Pi 3 B+.
                      Pi 4 / Pi 5: omit this flag (default adds --build).
@@ -92,9 +102,10 @@ Usage: start.sh [--lan] [--no-build] [docker compose up options...]
     - /dev/gpiochip*
     - /dev/i2c-1
 
-  Extra arguments are passed to `docker compose up` (default: --build).
-  If you pass --no-build, or any up options yourself, --build is not
-  added automatically.
+  Extra arguments are passed to `docker compose up` (default: --build
+  with compose.dev.yaml). If you pass --no-build, or any up options
+  yourself, --build is not added automatically and compose.dev.yaml is
+  not loaded unless you also pass --build.
 
 Examples:
   chmod +x scripts/start.sh
@@ -105,8 +116,9 @@ Examples:
   ./scripts/start.sh --build --force-recreate
 
 Runtime start is the same on Raspberry Pi 3 / 4 / 5 (no per-model
-compose edits). Default auto --build is for Pi 4 / Pi 5. On Pi 3 B+
-(Runtime-only) use --no-build. See docs/guides/getting-started.md.
+compose edits). Default auto --build loads compose.dev.yaml and is for
+Pi 4 / Pi 5. On Pi 3 B+ (Runtime-only) use --no-build (compose.yaml
+GHCR only). See docs/guides/getting-started.md.
 EOF
 }
 
@@ -291,8 +303,6 @@ compose_yaml_string() {
 }
 
 write_compose_override() {
-  local dockerfile="$1"
-  local image="$2"
   local device
   local editor_uid
   local editor_gid
@@ -303,16 +313,16 @@ write_compose_override() {
   OVERRIDE_FILE="$(mktemp "${TMPDIR:-/tmp}/chirimen-compose-devices.XXXXXX.yaml")"
 
   {
+    # Devices and Editor uid / password only. Image tags and build
+    # contexts stay in compose.yaml (GHCR) or compose.dev.yaml (local
+    # build). Do not set image or build here: --no-build on Pi 3 B+
+    # must keep the GHCR image.
     printf '%s\n' 'services:'
-    printf '%s\n' '  chirimen-runtime:'
-    printf '%s\n' "    image: ${image}"
-    printf '%s\n' '    build:'
-    printf '%s\n' '      context: .'
-    printf '%s\n' "      dockerfile: ${dockerfile}"
 
     if [ "${#GPIOMEM_DEVICES[@]}" -gt 0 ] ||
       [ "${#GPIOCHIP_DEVICES[@]}" -gt 0 ] ||
       [ "$I2C_DEV" -eq 1 ]; then
+      printf '%s\n' '  chirimen-runtime:'
       printf '%s\n' '    devices:'
       for device in "${GPIOMEM_DEVICES[@]}"; do
         printf '      - %s:%s\n' "$device" "$device"
@@ -370,8 +380,14 @@ log_mapping_summary() {
     i2c_status="yes"
   fi
 
-  log "dockerfile: ${DOCKERFILE}"
-  log "image: ${IMAGE}"
+  if [ "$WANT_BUILD" -eq 1 ]; then
+    log "compose: compose.yaml + ${COMPOSE_DEV} (local build)"
+    log "dockerfile: ${DOCKERFILE}"
+    log "image: ${IMAGE}"
+  else
+    log "compose: compose.yaml (GHCR, no local build)"
+    log "image: ghcr.io/gurezo/chirimen-runtime:latest"
+  fi
   log "mapping: sysfs=${sysfs_status} gpiomem=${gpiomem_list} gpiochip=${gpiochip_list} i2c-1=${i2c_status}"
   log "privileged: false"
   log "editor: chirimen-editor uid=$(id -u):$(id -g) user=$(id -un) (no GPIO/I2C devices)"
@@ -430,6 +446,7 @@ removed_flag_error() {
 
 main() {
   local -a up_args=()
+  local arg
 
   while [ $# -gt 0 ]; do
     case "$1" in
@@ -464,14 +481,10 @@ main() {
     esac
   done
 
-  if [ ! -f "${REPO_ROOT}/${DOCKERFILE}" ]; then
-    err "Dockerfile not found: ${DOCKERFILE}"
-    exit 1
-  fi
-
   if [ "$WANT_NO_BUILD" -eq 1 ]; then
     # Pass Compose --no-build so a cold cache does not auto-build
-    # missing images (required for Pi 3 B+ Runtime-only).
+    # missing images (required for Pi 3 B+ Runtime-only). Do not load
+    # compose.dev.yaml: that file replaces GHCR tags with local images.
     if [ "${#up_args[@]}" -eq 0 ]; then
       up_args=(--no-build)
     else
@@ -479,6 +492,19 @@ main() {
     fi
   elif [ "${#up_args[@]}" -eq 0 ]; then
     up_args=(--build)
+    WANT_BUILD=1
+  else
+    for arg in "${up_args[@]}"; do
+      if [ "$arg" = "--build" ]; then
+        WANT_BUILD=1
+        break
+      fi
+    done
+  fi
+
+  if [ "$WANT_BUILD" -eq 1 ] && [ ! -f "${REPO_ROOT}/${DOCKERFILE}" ]; then
+    err "Dockerfile not found: ${DOCKERFILE}"
+    exit 1
   fi
 
   trap cleanup EXIT
@@ -505,10 +531,14 @@ main() {
     log "warn: ${I2C_DEVICE} not found on host; I2C will be unavailable (enable with setups/enable-i2c.sh on Pi)"
   fi
 
-  write_compose_override "$DOCKERFILE" "$IMAGE"
+  write_compose_override
   require_docker_compose
 
-  local -a compose_cmd=(docker compose -f compose.yaml -f "$OVERRIDE_FILE" up)
+  local -a compose_cmd=(docker compose -f compose.yaml)
+  if [ "$WANT_BUILD" -eq 1 ]; then
+    compose_cmd+=(-f "$COMPOSE_DEV")
+  fi
+  compose_cmd+=(-f "$OVERRIDE_FILE" up)
 
   log "starting: ${compose_cmd[*]} ${up_args[*]}"
   log ""

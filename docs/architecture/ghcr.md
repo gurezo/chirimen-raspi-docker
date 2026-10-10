@@ -16,7 +16,7 @@ GitHub Container Registry (GHCR) へ公開する Docker image の名前、platfo
 
 `chirimen-examples` は [#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名済みである。GHCR 名は改名後のサービス名を使う。
 
-通常利用の [`compose.yaml`](../../compose.yaml) は次表の GHCR image に `:latest` を付けて参照する。`build:` は付けない。ローカル image 名（`chirimen-raspi-docker/...`）は Development 用の build 名である。`codercom/code-server:4.132.0` と `nginx:1.30.4-alpine` は base image の pin であり、GHCR の image 名でも tag でもない。
+通常利用の [`compose.yaml`](../../compose.yaml) は次表の GHCR image に `:latest` を付けて参照する。`build:` は付けない。ローカル image 名（`chirimen-raspi-docker/...`）は Development 用の build 名であり、[`compose.dev.yaml`](../../compose.dev.yaml) が `image` と `build` として上書きする（[#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377)）。`codercom/code-server:4.132.0` と `nginx:1.30.4-alpine` は base image の pin であり、GHCR の image 名でも tag でもない。
 
 | Compose service | Dockerfile | Development 用 build 名 | GHCR image |
 | --- | --- | --- | --- |
@@ -118,6 +118,6 @@ org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
 - [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) Dockerfile を GitHub Actions / GHCR build に対応させる（push しない `linux/arm64` build）
 - [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する（[`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)）
 - [#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376) 通常利用の Compose を GHCR pre-built image に変更する（[`compose.yaml`](../../compose.yaml) が `:latest` を参照し、`build:` は無い）
-- [#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377) Development / local build 用 Compose を分離する
+- [#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377) Development / local build 用 Compose を分離する（[`compose.dev.yaml`](../../compose.dev.yaml) がローカル tag と `build` を持つ。通常利用の [`compose.yaml`](../../compose.yaml) は GHCR のまま）
 - [#378](https://github.com/gurezo/chirimen-raspi-docker/issues/378) Pi 3 B+ / Pi 4 / Pi 5 で GHCR image の pull / run を実機検証する
 - [#379](https://github.com/gurezo/chirimen-raspi-docker/issues/379) Getting Started / Development Documentation を GHCR 構成へ更新する

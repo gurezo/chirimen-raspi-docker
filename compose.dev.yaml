@@ -1,0 +1,46 @@
+# Development / local build override for Contributors on Raspberry Pi 4 / Pi 5.
+# Do not use this file on Raspberry Pi 3 B+ (Runtime-only; on-device Docker
+# build is Unsupported). Runtime users keep compose.yaml alone (GHCR images,
+# no build).
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml build
+#   docker compose -f compose.yaml -f compose.dev.yaml up --build
+#
+# This file only overrides image tags and build contexts. Ports, volumes, and
+# security stay in compose.yaml. Do not set COMPOSE_FILE; plain
+# `docker compose up` must stay on GHCR.
+#
+# Build preparation such as setups/swap.sh belongs in Development docs
+# (docs/guides/development.md), not in Runtime setup.
+services:
+  chirimen-runtime:
+    image: chirimen-raspi-docker/server:phase1
+    build:
+      context: .
+      # Supported path: Node 24 via docker/server/Dockerfile
+      # (linux/arm64, linux/amd64). Single Runtime path; no bitness override.
+      dockerfile: docker/server/Dockerfile
+
+  chirimen-editor:
+    image: chirimen-raspi-docker/editor:4.132.0
+    build:
+      context: docker/editor
+      dockerfile: Dockerfile
+
+  chirimen-example-server:
+    image: chirimen-raspi-docker/example-server:phase8
+    build:
+      context: docker/example-server
+      dockerfile: Dockerfile
+
+  chirimen-example-catalog:
+    image: chirimen-raspi-docker/example-catalog:phase8
+    build:
+      context: .
+      dockerfile: docker/example-catalog/Dockerfile
+
+  chirimen-gateway:
+    image: chirimen-raspi-docker/gateway:phase8
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
