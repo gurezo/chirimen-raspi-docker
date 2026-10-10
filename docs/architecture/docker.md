@@ -23,7 +23,8 @@ Raspberry Pi 上で CHIRIMEN Runtime（`apps/runtime`）を Docker / Compose で
 - Docker は配布・実行手段であり、中心の責務は Runtime / Protocol / Polyfill
 - **Runtime 操作**の入口は `docker compose up -d` / `down`（初心者正本は [Getting Started](../guides/getting-started.md)）
 - Development / 上級者向けの起動補助は [`scripts/start.sh`](../../scripts/start.sh)（capability-aware device mapping・LAN・on-device build）
-- ベース定義は root の [`compose.yaml`](../../compose.yaml)
+- ベース定義は root の [`compose.yaml`](../../compose.yaml)（GHCR image。`build:` は無い）
+- local build は [`compose.dev.yaml`](../../compose.dev.yaml) を上書きとして足す（Pi 4 / Pi 5 の Contributor。Pi 3 B+ では使わない。[#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377)）
 - サポート対象は Raspberry Pi 3 B+ / 4 / 5 の Raspberry Pi OS 64-bit（Node 24）。標準環境は Raspberry Pi OS 64-bit Desktop（Lite も可）
 - Pi 3 B+ は **Runtime-only**（compose `up` / `down` のみ。on-device Docker build は Pi 4 / Pi 5 のみ。[Compatibility](./compatibility.md#development--docker-build-support)）
 - 32-bit OS は Unsupported（`Dockerfile.32bit` は [#339](https://github.com/gurezo/chirimen-raspi-docker/issues/339) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)）
@@ -35,13 +36,20 @@ docker compose up -d
 docker compose down
 ```
 
-Development / 上級者（device mapping・LAN・build）:
+Development / 上級者（device mapping・LAN・local build。Pi 4 / Pi 5）:
 
 ```sh
 chmod +x scripts/start.sh
-./scripts/start.sh                    # Pi 4 / Pi 5。既定で --build（Runtime + Editor + Example Server + Catalog）
+./scripts/start.sh                    # 既定で --build。compose.dev.yaml を読む
 ./scripts/start.sh --lan              # 同上。Editor / Example / Catalog を LAN 公開
-./scripts/start.sh --no-build         # Pi 3 B+ Runtime-only（build なし）
+docker compose -f compose.yaml -f compose.dev.yaml build
+docker compose -f compose.yaml -f compose.dev.yaml up --build
+```
+
+Pi 3 B+ で `start.sh` を使う場合は `--no-build` とする。`compose.dev.yaml` は読まず、[`compose.yaml`](../../compose.yaml) の GHCR image のまま起動する。
+
+```sh
+./scripts/start.sh --no-build         # Pi 3 B+ Runtime-only（GHCR。build なし）
 ./scripts/start.sh --lan --no-build   # Pi 3 B+。LAN 公開かつ build なし
 ```
 
@@ -63,9 +71,9 @@ chmod +x scripts/start.sh
 | --- | --- | --- | --- |
 | Runtime + Editor + Example Server + Catalog + Gateway（Pi 3 / 4 / 5） | `docker compose up -d` | `docker compose up -d` | Runtime |
 | 停止 | `docker compose down` | `docker compose down` | Runtime |
-| Development（Pi 4 / Pi 5。既定で build） | `docker compose up --build` | `./scripts/start.sh` | Development |
-| 同上 + LAN 公開（80 / 8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose up --build` | `./scripts/start.sh --lan` | Development |
-| Pi 3 B+ で start.sh を使う場合 | `docker compose up`（build なし） | `./scripts/start.sh --no-build` | Development / 上級者 |
+| Development（Pi 4 / Pi 5。既定で local build） | `docker compose -f compose.yaml -f compose.dev.yaml up --build` | `./scripts/start.sh` | Development |
+| 同上 + LAN 公開（80 / 8080 / 4173 / 4200） | `CHIRIMEN_PUBLISH_BIND=0.0.0.0 docker compose -f compose.yaml -f compose.dev.yaml up --build` | `./scripts/start.sh --lan` | Development |
+| Pi 3 B+ で start.sh を使う場合 | `docker compose up`（`compose.yaml` の GHCR。build なし） | `./scripts/start.sh --no-build` | Development / 上級者 |
 | Runtime only（単一サービス） | `docker compose up chirimen-runtime` | 通常フローではない。当時の 32-bit Runtime only は [32-bit Compatibility](./compatibility-32bit.md) | — |
 
 ### chirimen-runtime
@@ -313,7 +321,7 @@ stage 構成は 64-bit を正とする。supported Dockerfile は [`docker/serve
 | 64-bit（`aarch64` / `x86_64` など） | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `node:24-bookworm-slim` | サポート対象。`compose.yaml` の default |
 | 32-bit（`armv7l` など） | （削除済み）`Dockerfile.32bit` | 当時 `node:22-bookworm-slim` | Unsupported。Historical のみ |
 
-`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`up` / `down` のみ。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。かつて存在した `./scripts/start.sh --32bit`（Runtime only）は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
+`./scripts/start.sh` のサポート対象は 64-bit OS である。`docker compose -f compose.yaml -f compose.dev.yaml up --build` を直接使うと 64-bit 用 `Dockerfile` になる。`--build` / `compose build` / `docker build` の on-device 実行は **Raspberry Pi 4 / Pi 5** 向けであり、**Raspberry Pi 3 B+ は Runtime-only**（`compose.yaml` の `up` / `down` のみ。`compose.dev.yaml` は使わない。詳細は [Compatibility](./compatibility.md#development--docker-build-support)）。かつて存在した `./scripts/start.sh --32bit`（Runtime only）は [#340](https://github.com/gurezo/chirimen-raspi-docker/issues/340) で削除済み。背景は [Historical: 32-bit Compatibility](./compatibility-32bit.md)。
 
 | Stage | 役割 |
 | --- | --- |
@@ -354,7 +362,7 @@ pull request の [`.github/workflows/docker-build.yml`](../../.github/workflows/
 | `devices` | `/dev/gpiochip*` | host に存在するときのみ（`start.sh`） | 将来 gpiochip backend 用。現状 unsupported |
 | `devices` | `/dev/i2c-1` | host に存在するときのみ（`start.sh`） | primary I2C bus（`node-web-i2c`） |
 
-`scripts/start.sh` は doctor / Runtime と同じパス基準で host を探査し、存在する device だけを一時 Compose override に書いて `docker compose -f compose.yaml -f <override> up` する。欠如 device はスキップして起動を続ける（Runtime が capability を `unavailable` 等で報告する）。サポート対象は 64-bit OS である。
+`scripts/start.sh` は doctor / Runtime と同じパス基準で host を探査し、存在する device だけを一時 Compose override に書く。local build（既定の `--build`。Pi 4 / Pi 5）は `docker compose -f compose.yaml -f compose.dev.yaml -f <override> up --build` である。`--no-build`（Pi 3 B+）は `compose.dev.yaml` を付けず、`docker compose -f compose.yaml -f <override> up --no-build` で GHCR image のまま起動する。device override は image と build を書かない。欠如 device はスキップして起動を続ける（Runtime が capability を `unavailable` 等で報告する）。サポート対象は 64-bit OS である。
 
 現在の server image は root で起動するため、当面 `group_add`（`gpio` / `i2c` グループ）は必須ではない。
 

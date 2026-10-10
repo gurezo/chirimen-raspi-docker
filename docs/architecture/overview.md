@@ -146,7 +146,8 @@ chirimen-raspi-docker/
 │   ├── examples/               # GPIO / I2C Example 回路・検証仕様（#105 / #108 / #109 / #113 / #116 / #117 / #256）
 │   └── api/                    # Typedoc 生成物（git 管理外）
 ├── workspace/                  # Browser Editor workspace / HTML サンプル（#241）
-├── compose.yaml                # chirimen-runtime + chirimen-editor / chirimen-example-server / chirimen-example-catalog / chirimen-gateway（既定で全起動。#175 / #179 / #180 / #208 / #254 / #360）
+├── compose.yaml                # chirimen-runtime + chirimen-editor / chirimen-example-server / chirimen-example-catalog / chirimen-gateway（既定で全起動。GHCR image。#175 / #179 / #180 / #208 / #254 / #360 / #376）
+├── compose.dev.yaml            # Development / local build の override（Pi 4 / Pi 5。#377）。通常利用は compose.yaml
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
