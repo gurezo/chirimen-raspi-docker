@@ -80,7 +80,7 @@ ghcr.io/gurezo/chirimen-gateway:latest
 
 ## 公開の契機
 
-workflow ファイルは [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) で追加する。契機と付与 tag は次のとおり。
+Dockerfile が GitHub Actions 上で `linux/arm64` を build できることは [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) である。その workflow（[`.github/workflows/docker-build.yml`](../../.github/workflows/docker-build.yml)）は push しない。login / tag / push の workflow は [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) で追加する。契機と付与 tag は次のとおり。
 
 | 契機 | 付与する tag |
 | --- | --- |
@@ -103,7 +103,7 @@ package は public とする。通常利用者は PAT なしで `docker pull` �
 
 ## リポジトリとの関連
 
-各 image に次の OCI label を付ける。
+各 image の最終 stage に次の OCI label を付ける（[#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374)）。
 
 ```text
 org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
@@ -115,8 +115,8 @@ org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
 
 仕様の実装は別 issue である。
 
-- [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) Dockerfile を GitHub Actions / GHCR build に対応させる
-- [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する
+- [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) Dockerfile を GitHub Actions / GHCR build に対応させる（push しない `linux/arm64` build）
+- [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する（login / tag / push）
 - [#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376) 通常利用の Compose を GHCR pre-built image に変更する
 - [#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377) Development / local build 用 Compose を分離する
 - [#378](https://github.com/gurezo/chirimen-raspi-docker/issues/378) Pi 3 B+ / Pi 4 / Pi 5 で GHCR image の pull / run を実機検証する
