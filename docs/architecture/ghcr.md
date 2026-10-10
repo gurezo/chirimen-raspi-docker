@@ -1,6 +1,6 @@
 # GHCR 公開仕様
 
-GitHub Container Registry (GHCR) へ公開する Docker image の名前、platform、tag、visibility を定める。publish は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)（[#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375)）が行う。通常利用 Compose の image 差し替えと Getting Started の手順更新は後続 issue で行う。
+GitHub Container Registry (GHCR) へ公開する Docker image の名前、platform、tag、visibility を定める。publish は [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)（[#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375)）が行う。通常利用の [`compose.yaml`](../../compose.yaml) は `ghcr.io/gurezo/<image>:latest` を参照する（[#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376)）。Getting Started の手順更新は [#379](https://github.com/gurezo/chirimen-raspi-docker/issues/379) で行う。
 
 関連:
 
@@ -16,9 +16,9 @@ GitHub Container Registry (GHCR) へ公開する Docker image の名前、platfo
 
 `chirimen-examples` は [#370](https://github.com/gurezo/chirimen-raspi-docker/issues/370) で `chirimen-example-server` に改名済みである。GHCR 名は改名後のサービス名を使う。
 
-ローカル image 名（`chirimen-raspi-docker/...`）は現行の Compose のままである。GHCR 名への切り替えは後続 issue で行う。`codercom/code-server:4.132.0` と `nginx:1.30.4-alpine` は base image の pin であり、GHCR の image 名でも tag でもない。
+通常利用の [`compose.yaml`](../../compose.yaml) は次表の GHCR image に `:latest` を付けて参照する。`build:` は付けない。ローカル image 名（`chirimen-raspi-docker/...`）は Development 用の build 名である。`codercom/code-server:4.132.0` と `nginx:1.30.4-alpine` は base image の pin であり、GHCR の image 名でも tag でもない。
 
-| Compose service | Dockerfile | 現行ローカル image | GHCR image |
+| Compose service | Dockerfile | Development 用 build 名 | GHCR image |
 | --- | --- | --- | --- |
 | `chirimen-runtime` | [`docker/server/Dockerfile`](../../docker/server/Dockerfile) | `chirimen-raspi-docker/server:phase1` | `ghcr.io/gurezo/chirimen-runtime` |
 | `chirimen-editor` | [`docker/editor/Dockerfile`](../../docker/editor/Dockerfile) | `chirimen-raspi-docker/editor:4.132.0` | `ghcr.io/gurezo/chirimen-editor` |
@@ -58,13 +58,13 @@ Editor と Gateway の Dockerfile は、ローカル build で `linux/amd64` を
 
 | tag | 更新 | 付与するとき | 用途 |
 | --- | --- | --- | --- |
-| `latest` | 移動する | git tag `vX.Y.Z` の公開時だけ。`main` の push では動かさない | 通常利用。後続の Compose が参照する |
+| `latest` | 移動する | git tag `vX.Y.Z` の公開時だけ。`main` の push では動かさない | 通常利用。[`compose.yaml`](../../compose.yaml) が参照する |
 | `X.Y.Z` | 公開後は動かさない | 同じ git tag | 安定版の明示 |
 | `vX.Y.Z` | 公開後は動かさない | 同じ git tag。`X.Y.Z` と同じ digest | git tag 文字列との対応 |
 | `sha-<12桁>` | 動かさない | すべての公開（git tag と `main`） | 検証・再現 |
 | `main` | 移動する | `main` への push | 開発確認。Getting Started では使わない |
 
-`sha-` の 12 桁は `git rev-parse --short=12 HEAD` の短縮 SHA とする。現行 Compose の `phase1` / `phase8` と、Editor base image の pin `4.132.0` は GHCR tag にしない。
+`sha-` の 12 桁は `git rev-parse --short=12 HEAD` の短縮 SHA とする。Development 用のローカル tag `phase1` / `phase8` と、Editor base image の pin `4.132.0` は GHCR tag にしない。
 
 通常利用の参照名:
 
@@ -117,7 +117,7 @@ org.opencontainers.image.source=https://github.com/gurezo/chirimen-raspi-docker
 
 - [#374](https://github.com/gurezo/chirimen-raspi-docker/issues/374) Dockerfile を GitHub Actions / GHCR build に対応させる（push しない `linux/arm64` build）
 - [#375](https://github.com/gurezo/chirimen-raspi-docker/issues/375) GitHub Actions から GHCR へ image を publish する（[`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml)）
-- [#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376) 通常利用の Compose を GHCR pre-built image に変更する
+- [#376](https://github.com/gurezo/chirimen-raspi-docker/issues/376) 通常利用の Compose を GHCR pre-built image に変更する（[`compose.yaml`](../../compose.yaml) が `:latest` を参照し、`build:` は無い）
 - [#377](https://github.com/gurezo/chirimen-raspi-docker/issues/377) Development / local build 用 Compose を分離する
 - [#378](https://github.com/gurezo/chirimen-raspi-docker/issues/378) Pi 3 B+ / Pi 4 / Pi 5 で GHCR image の pull / run を実機検証する
 - [#379](https://github.com/gurezo/chirimen-raspi-docker/issues/379) Getting Started / Development Documentation を GHCR 構成へ更新する
