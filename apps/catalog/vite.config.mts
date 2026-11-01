@@ -2,11 +2,12 @@
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { nxReadySignal } from '@nx/vite/plugins/nx-ready-signal.plugin';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/catalog',
-  plugins: [tailwindcss()],
+  plugins: [tailwindcss(), nxReadySignal()],
   server: {
     port: 4200,
     host: 'localhost',

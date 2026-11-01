@@ -10,12 +10,12 @@
   ],
   "targets": {
     "test": {
-      "executor": "@nx/vitest:test",
       "outputs": [
-        "{options.reportsDirectory}"
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/core"
       ],
       "options": {
-        "reportsDirectory": "{workspaceRoot}/coverage/libs/core"
+        "coverage.reportsDirectory": "../../coverage/libs/core"
       }
     }
   }

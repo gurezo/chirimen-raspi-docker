@@ -1,6 +1,6 @@
 {
   "installation": {
-    "version": "23.2.1"
+    "version": "24.0.3"
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "plugins": [
@@ -23,6 +23,23 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testMode": "watch",
+        "testTargetName": "test"
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "include": ["apps/catalog/**"],
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "devTargetName": "serve",
+        "previewTargetName": "preview"
+      }
     }
   ],
   "targetDefaults": {
@@ -43,14 +60,10 @@
           ]
         }
       ]
-    },
-    "@nx/vitest:test": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "^default"
-      ]
     }
   },
-  "analytics": true
+  "analytics": true,
+  "affected": {
+    "legacy": true
+  }
 }

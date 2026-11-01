@@ -7,6 +7,7 @@ packages:
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
+  epoll: true
   esbuild: true
   i2c-bus: true
   nx: true
@@ -32,6 +33,7 @@ minimumReleaseAgeExclude:
   - '@vitest/*'
   - marked
   - vitest
+  - tslib
 
 # 明示設定時は strict がデフォルト true。false なら未成熟版へフォールバック可
 minimumReleaseAgeStrict: false

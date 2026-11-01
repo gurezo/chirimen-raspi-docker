@@ -10,7 +10,8 @@
   ],
   "targets": {
     "bundle": {
-      "executor": "@nx/vite:build",
+      "command": "vite build --config vite.bundle.config.mts",
+      "cache": true,
       "outputs": [
         "{workspaceRoot}/libs/browser-polyfill/dist/polyfill.js",
         "{workspaceRoot}/workspace/my-first-example/polyfill.js",
@@ -23,18 +24,16 @@
         "{workspaceRoot}/workspace/ads1115/polyfill.js"
       ],
       "options": {
-        "outputPath": "libs/browser-polyfill/dist",
-        "configFile": "libs/browser-polyfill/vite.bundle.config.mts",
-        "skipTypeCheck": true
+        "cwd": "libs/browser-polyfill"
       }
     },
     "test": {
-      "executor": "@nx/vitest:test",
       "outputs": [
-        "{options.reportsDirectory}"
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/browser-polyfill"
       ],
       "options": {
-        "reportsDirectory": "{workspaceRoot}/coverage/libs/browser-polyfill"
+        "coverage.reportsDirectory": "../../coverage/libs/browser-polyfill"
       }
     }
   }
