@@ -7,6 +7,7 @@ packages:
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
+  epoll: true
   esbuild: true
   i2c-bus: true
   nx: true
