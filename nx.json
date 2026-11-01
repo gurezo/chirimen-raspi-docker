@@ -23,6 +23,13 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testMode": "watch",
+        "testTargetName": "test"
+      }
     }
   ],
   "targetDefaults": {
@@ -43,14 +50,10 @@
           ]
         }
       ]
-    },
-    "@nx/vitest:test": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "^default"
-      ]
     }
   },
-  "analytics": true
+  "analytics": true,
+  "affected": {
+    "legacy": true
+  }
 }

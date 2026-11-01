@@ -1,10 +1,12 @@
 /// <reference types='vitest' />
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { nxReadySignal } from '@nx/vite/plugins/nx-ready-signal.plugin';
 
 const workspaceRoot = resolve(import.meta.dirname, '../..');
 
 export default defineConfig(() => ({
+  plugins: [nxReadySignal()],
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/runtime',
   resolve: {

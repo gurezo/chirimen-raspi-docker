@@ -26,3 +26,5 @@ workspace/.vscode/*
 # Editor / Compose secrets (#181). Commit .env.example only.
 .env
 .env.local
+vitest.config.*.timestamp*
+.vitest
