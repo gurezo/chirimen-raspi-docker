@@ -9,63 +9,13 @@
     "platform:browser"
   ],
   "targets": {
-    "build": {
-      "executor": "@nx/vite:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "apps/catalog/dist"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
-      }
-    },
-    "serve": {
-      "continuous": true,
-      "executor": "@nx/vite:dev-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "catalog:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "catalog:build:development"
-        },
-        "production": {
-          "buildTarget": "catalog:build:production"
-        }
-      }
-    },
-    "preview": {
-      "continuous": true,
-      "executor": "@nx/vite:preview-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "catalog:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "catalog:build:development"
-        },
-        "production": {
-          "buildTarget": "catalog:build:production"
-        }
-      }
-    },
     "test": {
       "outputs": [
         "{projectRoot}/{options.coverage.reportsDirectory}",
         "{workspaceRoot}/coverage/apps/catalog"
       ],
       "options": {
-        "coverage.reportsDirectory": "../../{workspaceRoot}/coverage/apps/catalog"
+        "coverage.reportsDirectory": "../../coverage/apps/catalog"
       }
     }
   }

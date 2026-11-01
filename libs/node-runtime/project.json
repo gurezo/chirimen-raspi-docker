@@ -15,7 +15,7 @@
         "{workspaceRoot}/coverage/libs/node-runtime"
       ],
       "options": {
-        "coverage.reportsDirectory": "../../{workspaceRoot}/coverage/libs/node-runtime"
+        "coverage.reportsDirectory": "../../coverage/libs/node-runtime"
       }
     }
   }

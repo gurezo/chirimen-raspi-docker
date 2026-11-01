@@ -15,7 +15,7 @@
         "{workspaceRoot}/coverage/libs/core"
       ],
       "options": {
-        "coverage.reportsDirectory": "../../{workspaceRoot}/coverage/libs/core"
+        "coverage.reportsDirectory": "../../coverage/libs/core"
       }
     }
   }

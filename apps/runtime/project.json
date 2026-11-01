@@ -73,7 +73,7 @@
         "{workspaceRoot}/coverage/apps/runtime"
       ],
       "options": {
-        "coverage.reportsDirectory": "../../{workspaceRoot}/coverage/apps/runtime"
+        "coverage.reportsDirectory": "../../coverage/apps/runtime"
       }
     }
   }
